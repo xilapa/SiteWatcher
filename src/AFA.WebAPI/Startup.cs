@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using IStartup = AFA.WebAPI.Interfaces.IStartup;
 using AFA.Data;
 using AFA.Data.Extensions;
+using AFA.WebAPI.Extensions;
 
 namespace AFA.WebAPI;
 
@@ -26,6 +27,8 @@ public class Startup : IStartup
         services.AddSwaggerGen();
 
         services.AddDataContext<AFAContext>();
+        services.AddDomainServices();
+        services.AddApplicationServices();
     }
 
     // Configure the HTTP request pipeline.
