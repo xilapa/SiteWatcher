@@ -1,4 +1,7 @@
 using System;
+using System.Threading.Tasks;
+using AFA.Application.Interfaces;
+using AFA.Domain.DTOS.InputModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AFA.WebAPI.Controllers;
@@ -7,11 +10,18 @@ namespace AFA.WebAPI.Controllers;
 [Route("[controller]")]
 public class UserController 
 {
+    private readonly IUserAppService userAppService;
+    
+    public UserController(IUserAppService userAppService)
+    {
+        this.userAppService = userAppService;
+    }
+
     [HttpPost]
     [Route("Subscribe")]
-    public void Susbscribe()
+    public async Task Susbscribe(UserSubscribeIM userSubInput)
     {
-        throw new NotImplementedException();
+        await this.userAppService.Subscribe(userSubInput);
     }
 
     [HttpPost]

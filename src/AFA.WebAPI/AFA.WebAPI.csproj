@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AFA.Data\AFA.Data.csproj" />
+    <ProjectReference Include="..\AFA.Domain\AFA.Domain.csproj" />
+    <ProjectReference Include="..\AFA.Application\AFA.Application.csproj" />
   </ItemGroup>
 
 </Project>
