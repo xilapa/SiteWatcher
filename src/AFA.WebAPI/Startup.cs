@@ -4,9 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IStartup = AFA.WebAPI.Interfaces.IStartup;
-using AFA.Data;
-using AFA.Data.Extensions;
 using AFA.WebAPI.Extensions;
+using AFA.Infra.Extensions;
 
 namespace AFA.WebAPI;
 

@@ -2,9 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AFA.Application.Interfaces;
-using AFA.Data;
-using AFA.Data.Entities;
 using AFA.Domain.DTOS.InputModels;
+using AFA.Domain.Entities;
 using AFA.Domain.Interfaces;
 
 namespace AFA.Application.Services;

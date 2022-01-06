@@ -2,7 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AFA.Data.Extensions;
+namespace AFA.Infra.Extensions;
 
 public static class DependencyInjection
 {

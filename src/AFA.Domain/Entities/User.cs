@@ -1,6 +1,6 @@
 using System;
 
-namespace AFA.Data.Entities;
+namespace AFA.Domain.Entities;
 
 public class User
 {

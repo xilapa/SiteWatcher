@@ -1,7 +1,7 @@
 ﻿using AFA.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace AFA.Data;
+namespace AFA.Infra.Data;
 public class AFAContext : DbContext
 {
     public AFAContext(DbContextOptions<AFAContext> dbContextOptions) : base(dbContextOptions)

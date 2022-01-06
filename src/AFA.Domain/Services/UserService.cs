@@ -1,8 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using AFA.Data;
-using AFA.Data.Entities;
+using AFA.Domain.Entities;
 using AFA.Domain.Extensions;
 using AFA.Domain.Interfaces;
 
@@ -10,6 +9,7 @@ namespace AFA.Domain.Services;
 
 public class UserService : IUserService
 {
+    // TODO: trocar por interface de repo
     private readonly AFAContext context;
     public UserService(AFAContext context)
     {

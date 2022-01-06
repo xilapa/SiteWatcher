@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using AFA.Data.Entities;
+using AFA.Domain.Entities;
 
 namespace AFA.Domain.Interfaces;
 
