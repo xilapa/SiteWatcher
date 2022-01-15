@@ -1,8 +1,10 @@
-﻿using AFA.Data.Entities;
+﻿using AFA.Domain.Entities;
+using AFA.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace AFA.Infra.Data;
-public class AFAContext : DbContext
+
+public class AFAContext : DbContext, IUnityOfWork
 {
     public AFAContext(DbContextOptions<AFAContext> dbContextOptions) : base(dbContextOptions)
     {
