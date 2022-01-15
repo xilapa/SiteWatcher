@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using IStartup = AFA.WebAPI.Interfaces.IStartup;
 using AFA.WebAPI.Extensions;
 using AFA.Infra.Extensions;
+using AFA.Infra.Data;
 
 namespace AFA.WebAPI;
 
@@ -26,6 +27,7 @@ public class Startup : IStartup
         services.AddSwaggerGen();
 
         services.AddDataContext<AFAContext>();
+        services.AddRepositories();
         services.AddDomainServices();
         services.AddApplicationServices();
     }
