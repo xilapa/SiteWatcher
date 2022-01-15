@@ -10,17 +10,16 @@ namespace AFA.Domain.Services;
 public class UserService : IUserService
 {
     // TODO: trocar por interface de repo
-    private readonly AFAContext context;
-    public UserService(AFAContext context)
+    private readonly IUserRepository userRepository;
+    public UserService(IUserRepository userRepository)
     {
-        this.context = context;
+        this.userRepository = userRepository;
     }
 
     public async Task<User> AddUser(User userToAdd)
     {
         userToAdd.SecurityStamp = await this.GenerateUserSecurityStamp(userToAdd);
-        this.context.Users.Add(userToAdd);
-        return userToAdd;
+        return this.userRepository.Add(userToAdd);
     }
 
     public User SubscribeUser(User user)
