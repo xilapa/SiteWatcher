@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using AFA.Application.Interfaces;
-using AFA.Domain.DTOS.InputModels;
 using Microsoft.AspNetCore.Mvc;
+using AFA.Application.Interfaces;
+using AFA.Application.DTOS.InputModels;
 
 namespace AFA.WebAPI.Controllers;
 
