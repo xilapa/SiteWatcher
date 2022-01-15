@@ -5,7 +5,7 @@ namespace AFA.WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AuthController
+public class AuthController : ControllerBase
 {
 
     [HttpPost]

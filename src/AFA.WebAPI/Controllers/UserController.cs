@@ -8,7 +8,7 @@ namespace AFA.WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController 
+public class UserController : ControllerBase
 {
     private readonly IUserAppService userAppService;
     
