@@ -1,4 +1,4 @@
-namespace AFA.Domain.DTOS.InputModels;
+namespace AFA.Application.DTOS.InputModels;
 
 public class UserSubscribeIM
 {

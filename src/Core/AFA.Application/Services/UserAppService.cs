@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AFA.Application.Interfaces;
-using AFA.Domain.DTOS.InputModels;
+using AFA.Application.DTOS.InputModels;
 using AFA.Domain.Entities;
 using AFA.Domain.Interfaces;
 

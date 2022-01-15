@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using AFA.Domain.DTOS.InputModels;
+using AFA.Application.DTOS.InputModels;
 
 namespace AFA.Application.Interfaces;
 
