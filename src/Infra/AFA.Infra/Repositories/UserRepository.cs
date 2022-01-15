@@ -3,25 +3,18 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AFA.Domain.Entities;
 using AFA.Domain.Interfaces;
+using AFA.Infra.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace AFA.Infra.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository : Repository<User>, IUserRepository
 {
-    public IUnityOfWork UoW => throw new NotImplementedException();
+    public UserRepository(AFAContext context) : base(context) { }
 
-    public User Add(User entity)
+    public override async Task<User> GetAsync(Expression<Func<User, bool>> predicate)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<User> FindAsync(Expression<Func<User, bool>> predicate)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<User> GetAsync(Expression<Func<User, bool>> predicate)
-    {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(nameof(predicate));
+        return await context.Users.FirstOrDefaultAsync(predicate);
     }
 }

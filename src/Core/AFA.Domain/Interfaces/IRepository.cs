@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace AFA.Domain.Interfaces;
 
-public interface IRepository<T> 
+public interface IRepository<T> where T : class
 {
     public IUnityOfWork UoW { get; }
     T Add(T entity);
