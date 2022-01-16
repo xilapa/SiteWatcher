@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using AFA.Application.Interfaces;
 using AFA.Application.DTOS.InputModels;
-using AFA.Domain.Entities;
 using AFA.Domain.Interfaces;
 
 namespace AFA.Application.Services;
@@ -18,20 +16,15 @@ public class UserAppService : IUserAppService
         this.userRepository = userRepository;
     }
 
-    public async Task Subscribe(UserSubscribeIM userSubscribe)
+    public async Task Subscribe(UserSubscribeIM userSubscribeIM)
     {
-        if (userSubscribe.Email is null) throw new ArgumentNullException(nameof(userSubscribe.Email));
+        var userToSubscribe = await this.userRepository.GetAsync(u => u.Email == userSubscribeIM.Email);
 
-        var userToSubscribe = await this.userRepository.FindAsync(u => u.Email == userSubscribe.Email);
+        if(userToSubscribe is null)        
+            userToSubscribe = await this.userService.CreateUser(userSubscribeIM.Name, userSubscribeIM.Email);        
 
-        if(userToSubscribe is null)
-        {
-            userToSubscribe =  await this.userService.AddUser(
-                new User(userSubscribe.Name, userSubscribe.Email)
-            );
-        }
+        await this.userService.SubscribeUser(userToSubscribe.Id);
 
-        this.userService.SubscribeUser(userToSubscribe);
         await this.userRepository.UoW.SaveChangesAsync();
     }
 }

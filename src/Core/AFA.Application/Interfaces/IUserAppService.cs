@@ -5,5 +5,5 @@ namespace AFA.Application.Interfaces;
 
 public interface IUserAppService
 {
-    Task Subscribe(UserSubscribeIM userSubscribe);
+    Task Subscribe(UserSubscribeIM userSubscribeIM);
 }

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using AFA.Domain.Entities;
+using AFA.Domain.Enums;
 using AFA.Domain.Extensions;
 using AFA.Domain.Interfaces;
 
@@ -9,34 +10,33 @@ namespace AFA.Domain.Services;
 
 public class UserService : IUserService
 {
-    // TODO: trocar por interface de repo
     private readonly IUserRepository userRepository;
     public UserService(IUserRepository userRepository)
     {
         this.userRepository = userRepository;
     }
 
-    public async Task<User> AddUser(User userToAdd)
+    public async Task<User> CreateUser(string name, string email)
     {
+        var userToAdd = new User(name, email);
         userToAdd.SecurityStamp = await this.GenerateUserSecurityStamp(userToAdd);
         return this.userRepository.Add(userToAdd);
     }
 
-    public User SubscribeUser(User user)
+    public async Task<ESubscriptionResult> SubscribeUser(Guid userId)
     {
-        if (user is null) throw new ArgumentNullException(nameof(user));
+        ArgumentNullException.ThrowIfNull(nameof(userId));
+
+        var user = await this.userRepository.FindAsync(u => u.Id == userId);
+
+        // TODO: validar user antes de subscrever
 
         if (user.Subscribed)
-        {
-            // enviar email já esta inscrito
-        }
-        else
-        {
-            user.Subscribed = true;
-            // enviar email para confirmar a inscrição
-        }
+            return ESubscriptionResult.AlreadySubscribed;
 
-        return user;
+        user.Subscribed = true;
+        // enviar email para confirmar a inscrição
+        return ESubscriptionResult.SubscribedSuccessfully;
     }
 
     private async Task<string> GenerateUserSecurityStamp(User user)

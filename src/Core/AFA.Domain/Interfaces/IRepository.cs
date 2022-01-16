@@ -7,7 +7,8 @@ namespace AFA.Domain.Interfaces;
 public interface IRepository<T> where T : class
 {
     public IUnityOfWork UoW { get; }
-    T Add(T entity);
+    
+    internal T Add(T entity);
 
     /// <summary>
     /// Se a entidade já estiver sendo trackeada, retorna sem acesso ao banco.
