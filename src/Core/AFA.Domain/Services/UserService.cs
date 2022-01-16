@@ -19,7 +19,7 @@ public class UserService : IUserService
     public async Task<User> CreateUser(string name, string email)
     {
         var userToAdd = new User(name, email);
-        userToAdd.SecurityStamp = await this.GenerateUserSecurityStamp(userToAdd);
+        userToAdd.SecurityStamp = await GenerateUserSecurityStamp(userToAdd);
         return this.userRepository.Add(userToAdd);
     }
 
@@ -42,7 +42,7 @@ public class UserService : IUserService
         return ESubscriptionResult.SubscribedSuccessfully;
     }
 
-    private async Task<string> GenerateUserSecurityStamp(User user)
+    private async static Task<string> GenerateUserSecurityStamp(User user)
     {
         if (user is null) throw new ArgumentNullException(nameof(user));
 
