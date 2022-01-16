@@ -49,6 +49,8 @@ public class UserService : IUserService
         byte[] securityBytes;
         using (var stream = new MemoryStream())
         {
+            if(user.Id != new Guid())
+                await stream.WriteAsync(user.Id.ToString().GetHashedBytes());
             await stream.WriteAsync(user.Name.GetHashedBytes());
             await stream.WriteAsync(user.Email.GetHashedBytes());
             await stream.WriteAsync(DateTime.UtcNow.ToString().GetHashedBytes());
