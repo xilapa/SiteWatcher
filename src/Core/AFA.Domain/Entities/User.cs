@@ -2,7 +2,7 @@ using System;
 
 namespace AFA.Domain.Entities;
 
-public class User
+public class User : BaseEntity<Guid>
 {
     public User(string name, string email)
     {
@@ -10,7 +10,6 @@ public class User
         Email = email;
     }
 
-    public Guid Id { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
     public bool EmailConfirmed { get; set; } = false;
