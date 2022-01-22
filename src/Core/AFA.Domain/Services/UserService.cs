@@ -28,15 +28,13 @@ public class UserService : IUserService
         var user = await this.userRepository.FindAsync(u => u.Id == userId);
 
         if (user is null)
-            return ESubscriptionResult.UserDoNotExist;
-            
-        // TODO: validar user antes de subscrever
+            return ESubscriptionResult.UserDoesNotExist;            
 
         if (user.Subscribed)
             return ESubscriptionResult.AlreadySubscribed;
 
         user.Subscribed = true;
-        // enviar email para confirmar a inscrição
+
         return ESubscriptionResult.SubscribedSuccessfully;
     }
 
