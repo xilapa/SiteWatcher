@@ -1,4 +1,3 @@
-using System;
 using AFA.Domain.Interfaces;
 using AFA.Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
