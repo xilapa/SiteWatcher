@@ -25,8 +25,6 @@ public class UserService : IUserService
 
     public async Task<ESubscriptionResult> SubscribeUser(Guid userId)
     {
-        ArgumentNullException.ThrowIfNull(nameof(userId));
-
         var user = await this.userRepository.FindAsync(u => u.Id == userId);
 
         if (user is null)
@@ -44,8 +42,6 @@ public class UserService : IUserService
 
     private async static Task<string> GenerateUserSecurityStamp(User user)
     {
-        if (user is null) throw new ArgumentNullException(nameof(user));
-
         byte[] securityBytes;
         using (var stream = new MemoryStream())
         {
