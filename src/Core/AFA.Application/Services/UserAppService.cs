@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using AFA.Application.Interfaces;
 using AFA.Application.DTOS.InputModels;
 using AFA.Domain.Interfaces;
+using AFA.Application.Validators;
 
 namespace AFA.Application.Services;
 
@@ -18,6 +19,11 @@ public class UserAppService : IUserAppService
 
     public async Task Subscribe(UserSubscribeIM userSubscribeIM)
     {
+        var validation = userSubscribeIM.Validate();
+
+        if(!validation.IsValid)
+            return;
+
         var userToSubscribe = await this.userRepository.GetAsync(u => u.Email == userSubscribeIM.Email);
 
         if(userToSubscribe is null)        
