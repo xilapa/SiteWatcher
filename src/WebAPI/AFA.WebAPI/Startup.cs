@@ -7,6 +7,8 @@ using IStartup = AFA.WebAPI.Interfaces.IStartup;
 using AFA.WebAPI.Extensions;
 using AFA.Infra.Extensions;
 using AFA.Infra.Data;
+using AFA.WebAPI.Filters;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AFA.WebAPI;
 
@@ -21,9 +23,12 @@ public class Startup : IStartup
     // Add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers()
-            .AddFluentValidations();
-            
+        
+        services.AddControllers(opt => opt.Filters.Add<ActionFilter>())
+                .AddFluentValidations();
+
+        services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
