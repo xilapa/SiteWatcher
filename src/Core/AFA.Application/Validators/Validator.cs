@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FluentValidation;
@@ -9,36 +9,45 @@ namespace AFA.Application.Validators;
 
 public static class Validator
 {
-    static Validator()
-    {
-        // deve ser maior que a quantidade de AbstractValidators no assembly para evitar resize do dicionário
-        var initialCapacity = 32; 
-        var concurrencyLevel = Environment.ProcessorCount;
-        _validators = new ConcurrentDictionary<Type, object>(concurrencyLevel, initialCapacity);
-    }
-
-    private static ConcurrentDictionary<Type, object> _validators;
+    private static Dictionary<Type, object> _validators;
 
     public static ValidationResult Validate<T>(this IValidable<T> validationTarget) where T : new()
     {
+        if(_validators is null)
+            throw new Exception("Chame o método AddFluentValidators() antes de realizar uma validação.");
+
         var targetType = validationTarget.GetType();
-        var validatorAbstractBaseType = typeof(AbstractValidator<>);
-        var validatorAbstractType = validatorAbstractBaseType.MakeGenericType(targetType);
 
-        object validator;
-
-        if(!_validators.TryGetValue(validatorAbstractType, out validator))
+        try
         {
-            var validatorType = Assembly
-                                    .GetExecutingAssembly()
-                                    .GetTypes()
-                                    .Single(t => t.IsAssignableTo(validatorAbstractType));
+            var validator = _validators[targetType] as AbstractValidator<T>;
+            return validator.Validate((T)validationTarget);
+        }
+        catch (KeyNotFoundException)
+        {
+            throw new KeyNotFoundException($"Não foi definida uma implementação de AbstractValidator para {targetType}.");
+        }
+    }
 
-            validator = Activator.CreateInstance(validatorType);
-            _validators.TryAdd(validatorAbstractType, validator);
-        }       
+    public static void LoadFluentValidators()
+    {
+        var validatorsTypes = Assembly
+                                .GetExecutingAssembly()
+                                .GetTypes()
+                                .Where(t => 
+                                    t.BaseType is not null 
+                                    && t.BaseType.IsGenericType
+                                    && t.BaseType.GetGenericTypeDefinition() == typeof(AbstractValidator<>))
+                                .ToArray();        
+        
+        var capacity = validatorsTypes.Length; 
+        _validators = new Dictionary<Type, object>(capacity);
 
-        var validationResult = (validator as AbstractValidator<T>).Validate((T)validationTarget);
-        return validationResult;
+        foreach(var validatorType in validatorsTypes)
+        {
+            var targetType = validatorType.BaseType.GenericTypeArguments[0];
+            var validator = Activator.CreateInstance(validatorType);
+            _validators.Add(targetType, validator);
+        }
     }
 }
