@@ -7,7 +7,6 @@ using IStartup = AFA.WebAPI.Interfaces.IStartup;
 using AFA.WebAPI.Extensions;
 using AFA.Infra.Extensions;
 using AFA.Infra.Data;
-using AFA.WebAPI.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AFA.WebAPI;
