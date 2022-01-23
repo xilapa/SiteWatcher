@@ -4,7 +4,7 @@ using FluentValidation.Results;
 
 namespace AFA.Application.DTOS.Metadata;
 
-public sealed class ApplicationResponse
+public class ApplicationResponse
 {
     public ApplicationResponse()
     {
@@ -27,6 +27,12 @@ public sealed class ApplicationResponse
         Message = message;
     }
 
+    public ApplicationResponse(string message, object result) : this()
+    {
+        Message = message;
+        Result = result;
+    }
+
     public void AddError(string error)
     {
         _errors.Add(error);
@@ -42,7 +48,7 @@ public sealed class ApplicationResponse
     public string Message { get; set; }
 
     /// <summary>
-    /// Objeto passado como resultado da ação.
+    /// Objeto passado como resultado da ação para o usuário final.
     /// </summary>
     public object Result { get; set; }
 }
