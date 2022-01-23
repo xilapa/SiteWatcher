@@ -26,10 +26,12 @@ public class UserController : ControllerBase
     {
         var appResponse = await this.userAppService.Subscribe(userSubInput);
 
-        var response = new ObjectResult(new WebApiResponse(appResponse));       
-        response.StatusCode = (int)HttpStatusCode.BadRequest;
-        
-        if(appResponse.Success && appResponse.InternalResult == ESubscriptionResult.SubscribedSuccessfully)
+        var response = new ObjectResult(new WebApiResponse(appResponse))
+        {
+            StatusCode = (int)HttpStatusCode.BadRequest
+        };
+
+        if (appResponse.Success && appResponse.InternalResult == ESubscriptionResult.SubscribedSuccessfully)
             response.StatusCode = (int)HttpStatusCode.Created;
         
         if(appResponse.Success && appResponse.InternalResult == ESubscriptionResult.AlreadySubscribed)
