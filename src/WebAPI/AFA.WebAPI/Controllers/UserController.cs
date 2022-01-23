@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AFA.Application.Interfaces;
 using AFA.Application.DTOS.InputModels;
+using AFA.WebAPI.DTOs;
+using System.Net;
+using AFA.Domain.Enums;
 
 namespace AFA.WebAPI.Controllers;
 
@@ -19,9 +22,20 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Route("Subscribe")]
-    public async Task Susbscribe(UserSubscribeIM userSubInput)
+    public async Task<ActionResult<WebApiResponse>> Susbscribe(UserSubscribeIM userSubInput)
     {
-        await this.userAppService.Subscribe(userSubInput);
+        var appResponse = await this.userAppService.Subscribe(userSubInput);
+
+        var response = new ObjectResult(new WebApiResponse(appResponse));       
+        response.StatusCode = (int)HttpStatusCode.BadRequest;
+        
+        if(appResponse.Success && appResponse.InternalResult == ESubscriptionResult.SubscribedSuccessfully)
+            response.StatusCode = (int)HttpStatusCode.Created;
+        
+        if(appResponse.Success && appResponse.InternalResult == ESubscriptionResult.AlreadySubscribed)
+            response.StatusCode = (int)HttpStatusCode.Redirect;
+
+        return response;
     }
 
     [HttpPost]
