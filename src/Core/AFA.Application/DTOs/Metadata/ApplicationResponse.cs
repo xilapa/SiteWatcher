@@ -38,7 +38,7 @@ public class ApplicationResponse
         _errors.Add(error);
     }
 
-    private List<string> _errors;
+    private readonly List<string> _errors;
     public IReadOnlyCollection<string> Errors => _errors;
     public bool Success => !Errors.Any();
 
