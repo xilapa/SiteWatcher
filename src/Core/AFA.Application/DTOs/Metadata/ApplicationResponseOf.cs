@@ -9,6 +9,11 @@ public class ApplicationResponseOf<T> : ApplicationResponse
         InternalResult = internalResult;
     }
 
+    public ApplicationResponseOf(string message, T internalResult) : base(message, null)
+    {
+        InternalResult = internalResult;
+    }
+
     public ApplicationResponseOf(ValidationResult validationResult) : base(validationResult)
     {
         
