@@ -5,6 +5,7 @@ using AFA.Domain.Interfaces;
 using AFA.Application.Validators;
 using AFA.Application.DTOS.Metadata;
 using AFA.Domain.Extensions;
+using AFA.Domain.Enums;
 
 namespace AFA.Application.Services;
 
@@ -19,12 +20,12 @@ public class UserAppService : IUserAppService
         this.userRepository = userRepository;
     }
 
-    public async Task<ApplicationResponse> Subscribe(UserSubscribeIM userSubscribeIM)
+    public async Task<ApplicationResponseOf<ESubscriptionResult>> Subscribe(UserSubscribeIM userSubscribeIM)
     {
         var inputValidation = userSubscribeIM.Validate();
 
         if(!inputValidation.IsValid)
-            return new ApplicationResponse(inputValidation);
+            return new ApplicationResponseOf<ESubscriptionResult>(inputValidation);
 
         var userToSubscribe = await this.userRepository.GetAsync(u => u.Email == userSubscribeIM.Email);
 
@@ -37,6 +38,6 @@ public class UserAppService : IUserAppService
 
         // TODO: enviar email para confirmar a inscrição
 
-        return new ApplicationResponse(subscribeResult.GetDescription());
+        return new ApplicationResponseOf<ESubscriptionResult>(subscribeResult.GetDescription(), subscribeResult);
     }
 }
