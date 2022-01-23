@@ -33,6 +33,7 @@ public class Startup : IStartup
         services.AddRepositories();
         services.AddDomainServices();
         services.AddApplicationServices();
+        services.AddApplicationFluentValidations();
     }
 
     // Configure the HTTP request pipeline.

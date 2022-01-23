@@ -15,6 +15,12 @@ public static class DependencyInjection
         return services;
     }
 
+    public static IServiceCollection AddApplicationFluentValidations(this IServiceCollection services)
+    {
+        Validator.LoadFluentValidators();
+        return services;
+    }
+
     public static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
