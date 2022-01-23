@@ -23,7 +23,7 @@ public class Startup : IStartup
     // Add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers(opt => opt.Filters.Add<ActionFilter>());
+        services.AddControllers();
         services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
