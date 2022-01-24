@@ -42,7 +42,11 @@ public class Startup : IStartup
         if (env.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(opt =>
+            {
+                opt.SwaggerEndpoint("/swagger/v1/swagger.json", "AFA.WebAPI");
+                opt.RoutePrefix = "swagger";
+            });
         }
 
         app.UseHttpsRedirection();
