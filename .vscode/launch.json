@@ -10,20 +10,18 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/AFA.WebAPI/bin/Debug/net6.0/AFA.WebAPI.dll",
+            "program": "${workspaceFolder}/src/WebAPI/AFA.WebAPI/bin/Debug/net6.0/AFA.WebAPI.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/AFA.WebAPI",
+            "cwd": "${workspaceFolder}/src/WebAPI/AFA.WebAPI",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
+            // "serverReadyAction": {
+            //     "action": "openExternally",
+            //     "pattern": "\\bNow listening on:\\s+(https?://\\S+)", // abre a uri que o output do console bate com esse padrão
+            //     "uriFormat": "http://localhost:%s" // pode ser trocado por outra uri
+            // },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
             }
         },
         {
