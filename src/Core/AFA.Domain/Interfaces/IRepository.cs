@@ -8,7 +8,7 @@ public interface IRepository<T> where T : class
 {
     public IUnityOfWork UoW { get; }
     
-    internal T Add(T entity);
+    public T Add(T entity);
 
     /// <summary>
     /// Se a entidade já estiver sendo trackeada, retorna sem acesso ao banco.
