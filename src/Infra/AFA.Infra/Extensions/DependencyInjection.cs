@@ -1,5 +1,6 @@
 using AFA.Domain.Interfaces;
 using AFA.Infra.Repositories;
+using AFA.Infra.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +21,7 @@ public static class DependencyInjection
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddTransient<IFireForgetService, FireForgetService>();// Teste
         return services;
     }
 }
