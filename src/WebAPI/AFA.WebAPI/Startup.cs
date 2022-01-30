@@ -8,6 +8,7 @@ using AFA.WebAPI.Extensions;
 using AFA.Infra.Extensions;
 using AFA.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
+using AFA.WebAPI.HostedServices;
 
 namespace AFA.WebAPI;
 
@@ -34,6 +35,10 @@ public class Startup : IStartup
         services.AddDomainServices();
         services.AddApplicationServices();
         services.AddApplicationFluentValidations();
+
+        services.AddHostedService<TimedService>();
+        services.AddHostedService<QueueListenerService>();
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
     }
 
     // Configure the HTTP request pipeline.
