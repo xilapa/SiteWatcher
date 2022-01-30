@@ -11,8 +11,7 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
 
     public BackgroundTaskQueue()
     {
-        var capacity = Environment.ProcessorCount;
-        var options = new BoundedChannelOptions(capacity)
+        var options = new BoundedChannelOptions(128)
         {
             FullMode = BoundedChannelFullMode.Wait
         };
