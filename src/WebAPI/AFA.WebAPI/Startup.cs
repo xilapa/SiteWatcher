@@ -8,6 +8,7 @@ using AFA.WebAPI.Extensions;
 using AFA.Infra.Extensions;
 using AFA.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace AFA.WebAPI;
 
@@ -37,7 +38,7 @@ public class Startup : IStartup
     }
 
     // Configure the HTTP request pipeline.
-    public void Configure(WebApplication app, IWebHostEnvironment env)
+    public void Configure(WebApplication app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
         if (env.IsDevelopment())
         {
@@ -54,5 +55,7 @@ public class Startup : IStartup
         app.UseAuthorization();
 
         app.MapControllers();
+
+        app.ConfigureGlobalExceptionHandlerMiddleware(env, loggerFactory);
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using AFA.WebAPI.Interfaces;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AFA.WebAPI.Extensions;
 
@@ -16,7 +18,8 @@ public static class StartupExtensions
         startup.ConfigureServices(builder.Services);
 
         var app = builder.Build();
-        startup.Configure(app, app.Environment);
+        var loggerFactory = app.Services.GetService<ILoggerFactory>();
+        startup.Configure(app, app.Environment, loggerFactory);
         app.Run();
 
         return builder;
