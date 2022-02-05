@@ -10,7 +10,7 @@ public sealed class WebApiResponse
         Messages = new List<string>();
     }
 
-    public WebApiResponse(object result, params string[] messages)
+    public WebApiResponse(object result, params string[] messages) : this()
     {
         Messages.AddRange(messages);
         Result = result;
