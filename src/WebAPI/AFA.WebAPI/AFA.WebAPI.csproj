@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Infra\AFA.Infra\AFA.Infra.csproj" />
     <ProjectReference Include="..\..\Core\SiteWatcher.Application\SiteWatcher.Application.csproj" />
     <ProjectReference Include="..\..\Core\SiteWatcher.Domain\SiteWatcher.Domain.csproj" />
+    <ProjectReference Include="..\..\Infra\SiteWatcher.Data\SiteWatcher.Data.csproj" />
   </ItemGroup>
 
 </Project>
