@@ -3,7 +3,7 @@
     <PackageReference Include="FluentValidation" Version="10.3.6" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AFA.Domain\AFA.Domain.csproj" />
+    <ProjectReference Include="..\SiteWatcher.Domain\SiteWatcher.Domain.csproj" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
