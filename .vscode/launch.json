@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/WebAPI/AFA.WebAPI/bin/Debug/net6.0/AFA.WebAPI.dll",
+            "program": "${workspaceFolder}/src/WebAPI/SiteWatcher.WebAPI/bin/Debug/net6.0/SiteWatcher.WebAPI.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/WebAPI/AFA.WebAPI",
+            "cwd": "${workspaceFolder}/src/WebAPI/SiteWatcher.WebAPI",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             // "serverReadyAction": {

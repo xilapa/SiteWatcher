@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using AFA.Application.Interfaces;
-using AFA.Application.Services;
-using AFA.Domain.Interfaces;
-using AFA.Domain.Services;
-using AFA.Application.Validators;
+using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Application.Services;
+using SiteWatcher.Domain.Interfaces;
+using SiteWatcher.Domain.Services;
+using SiteWatcher.Application.Validators;
 
-namespace AFA.WebAPI.Extensions;
+namespace SiteWatcher.WebAPI.Extensions;
 
 public static class DependencyInjection
 {

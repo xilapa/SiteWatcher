@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AFA.WebAPI.Interfaces;
+namespace SiteWatcher.WebAPI.Interfaces;
 
 public interface IStartup
 {

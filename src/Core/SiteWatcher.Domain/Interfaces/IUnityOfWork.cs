@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AFA.Domain.Interfaces;
+namespace SiteWatcher.Domain.Interfaces;
 
 public interface IUnityOfWork : IDisposable
 {

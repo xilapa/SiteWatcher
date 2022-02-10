@@ -1,13 +1,13 @@
 using System.Threading.Tasks;
-using AFA.Application.Interfaces;
-using AFA.Application.DTOS.InputModels;
-using AFA.Domain.Interfaces;
-using AFA.Application.Validators;
-using AFA.Application.DTOS.Metadata;
-using AFA.Domain.Extensions;
-using AFA.Domain.Enums;
+using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Application.DTOS.InputModels;
+using SiteWatcher.Domain.Interfaces;
+using SiteWatcher.Application.Validators;
+using SiteWatcher.Application.DTOS.Metadata;
+using SiteWatcher.Domain.Extensions;
+using SiteWatcher.Domain.Enums;
 
-namespace AFA.Application.Services;
+namespace SiteWatcher.Application.Services;
 
 public class UserAppService : IUserAppService
 {

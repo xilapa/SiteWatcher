@@ -1,6 +1,6 @@
-using AFA.Domain.Entities;
+using SiteWatcher.Domain.Entities;
 
-namespace AFA.Domain.Interfaces;
+namespace SiteWatcher.Domain.Interfaces;
 
 public interface IUserRepository : IRepository<User>
 {

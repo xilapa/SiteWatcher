@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "AFA.WebAPI": {
+    "SiteWatcher.WebAPI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

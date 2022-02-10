@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace AFA.Domain.Enums;
+namespace SiteWatcher.Domain.Enums;
 
 public enum ESubscriptionResult
 {

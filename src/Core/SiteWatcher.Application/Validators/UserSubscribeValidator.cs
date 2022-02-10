@@ -1,8 +1,8 @@
-using AFA.Application.DTOS.InputModels;
-using AFA.Application.Constants;
+using SiteWatcher.Application.DTOS.InputModels;
+using SiteWatcher.Application.Constants;
 using FluentValidation;
 
-namespace AFA.Application.Validators;
+namespace SiteWatcher.Application.Validators;
 
 public class UserSubscribeValidator : AbstractValidator<UserSubscribeIM>
 {

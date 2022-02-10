@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/WebAPI/AFA.WebAPI/bin/Debug/net6.0/AFA.WebAPI.dll",
+                "${workspaceFolder}/src/WebAPI/SiteWatcher.WebAPI/bin/Debug/net6.0/SiteWatcher.WebAPI.dll",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/src/WebAPI/AFA.WebAPI/bin/Debug/net6.0/AFA.WebAPI.dll",
+                "${workspaceFolder}/src/WebAPI/SiteWatcher.WebAPI/bin/Debug/net6.0/SiteWatcher.WebAPI.dll",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -32,7 +32,7 @@
             "args": [
                 "watch",
                 "run",
-                "${workspaceFolder}/src/WebAPI/AFA.WebAPI/bin/Debug/net6.0/AFA.WebAPI.dll",
+                "${workspaceFolder}/src/WebAPI/SiteWatcher.WebAPI/bin/Debug/net6.0/SiteWatcher.WebAPI.dll",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

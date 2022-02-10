@@ -1,16 +1,16 @@
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using AFA.Domain.Entities;
-using AFA.Domain.Interfaces;
-using AFA.Infra.Data;
+using SiteWatcher.Domain.Entities;
+using SiteWatcher.Domain.Interfaces;
+using SiteWatcher.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace AFA.Infra.Repositories;
+namespace SiteWatcher.Infra.Repositories;
 
 public class UserRepository : Repository<User>, IUserRepository
 {
-    public UserRepository(AFAContext context) : base(context) { }
+    public UserRepository(SiteWatcherContext context) : base(context) { }
 
     public override async Task<User> GetAsync(Expression<Func<User, bool>> predicate)
     {

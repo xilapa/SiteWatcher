@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using AFA.Domain.Entities;
-using AFA.Domain.Enums;
+using SiteWatcher.Domain.Entities;
+using SiteWatcher.Domain.Enums;
 
-namespace AFA.Domain.Interfaces;
+namespace SiteWatcher.Domain.Interfaces;
 
 public interface IUserService
 {

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace AFA.Domain.Extensions;
+namespace SiteWatcher.Domain.Extensions;
 
 public static class EnumExtensions
 {

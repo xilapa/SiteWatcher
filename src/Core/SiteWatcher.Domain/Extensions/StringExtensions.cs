@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AFA.Domain.Extensions;
+namespace SiteWatcher.Domain.Extensions;
 
 public static class StringExtensions
 {

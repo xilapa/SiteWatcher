@@ -5,7 +5,7 @@ using System.Reflection;
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace AFA.Application.Validators;
+namespace SiteWatcher.Application.Validators;
 
 public static class Validator
 {

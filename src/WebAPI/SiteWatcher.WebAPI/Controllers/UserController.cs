@@ -1,13 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using AFA.Application.Interfaces;
-using AFA.Application.DTOS.InputModels;
-using AFA.WebAPI.DTOs;
+using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Application.DTOS.InputModels;
+using SiteWatcher.WebAPI.DTOs;
 using System.Net;
-using AFA.Domain.Enums;
+using SiteWatcher.Domain.Enums;
 
-namespace AFA.WebAPI.Controllers;
+namespace SiteWatcher.WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]

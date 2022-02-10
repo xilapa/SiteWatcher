@@ -1,4 +1,4 @@
-namespace AFA.Application.Validators;
+namespace SiteWatcher.Application.Validators;
 
 /// <summary>
 /// Interface para marcação de objetos que podem ser validados.

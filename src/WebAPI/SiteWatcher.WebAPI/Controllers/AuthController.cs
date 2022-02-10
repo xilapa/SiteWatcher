@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AFA.WebAPI.Controllers;
+namespace SiteWatcher.WebAPI.Controllers;
 
 [ApiController]
 [Route("[controller]")]

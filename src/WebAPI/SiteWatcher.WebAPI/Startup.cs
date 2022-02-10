@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using IStartup = AFA.WebAPI.Interfaces.IStartup;
-using AFA.WebAPI.Extensions;
-using AFA.Infra.Extensions;
-using AFA.Infra.Data;
+using IStartup = SiteWatcher.WebAPI.Interfaces.IStartup;
+using SiteWatcher.WebAPI.Extensions;
+using SiteWatcher.Infra.Extensions;
+using SiteWatcher.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace AFA.WebAPI;
+namespace SiteWatcher.WebAPI;
 
 public class Startup : IStartup
 {
@@ -30,7 +30,7 @@ public class Startup : IStartup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.AddDataContext<AFAContext>();
+        services.AddDataContext<SiteWatcherContext>();
         services.AddRepositories();
         services.AddDomainServices();
         services.AddApplicationServices();
@@ -45,7 +45,7 @@ public class Startup : IStartup
             app.UseSwagger();
             app.UseSwaggerUI(opt =>
             {
-                opt.SwaggerEndpoint("/swagger/v1/swagger.json", "AFA.WebAPI");
+                opt.SwaggerEndpoint("/swagger/v1/swagger.json", "SiteWatcher.WebAPI");
                 opt.RoutePrefix = "swagger";
             });
         }

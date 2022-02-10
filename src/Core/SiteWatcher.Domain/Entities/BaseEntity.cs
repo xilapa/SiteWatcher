@@ -1,4 +1,4 @@
-namespace AFA.Domain.Entities;
+namespace SiteWatcher.Domain.Entities;
 
 public abstract class BaseEntity<IdType>
 {

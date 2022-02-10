@@ -1,9 +1,9 @@
-using AFA.Domain.Interfaces;
-using AFA.Infra.Repositories;
+using SiteWatcher.Domain.Interfaces;
+using SiteWatcher.Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AFA.Infra.Extensions;
+namespace SiteWatcher.Infra.Extensions;
 
 public static class DependencyInjection
 {

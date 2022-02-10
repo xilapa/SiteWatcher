@@ -1,6 +1,6 @@
-using AFA.Application.Validators;
+using SiteWatcher.Application.Validators;
 
-namespace AFA.Application.DTOS.InputModels;
+namespace SiteWatcher.Application.DTOS.InputModels;
 
 public class UserSubscribeIM : IValidable<UserSubscribeIM>
 {

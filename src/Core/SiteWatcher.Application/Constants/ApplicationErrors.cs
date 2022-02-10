@@ -1,4 +1,4 @@
-namespace AFA.Application.Constants;
+namespace SiteWatcher.Application.Constants;
 
 public static class ApplicationErrors
 {

@@ -1,12 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using AFA.Domain.Entities;
-using AFA.Domain.Enums;
-using AFA.Domain.Extensions;
-using AFA.Domain.Interfaces;
+using SiteWatcher.Domain.Entities;
+using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Extensions;
+using SiteWatcher.Domain.Interfaces;
 
-namespace AFA.Domain.Services;
+namespace SiteWatcher.Domain.Services;
 
 public class UserService : IUserService
 {

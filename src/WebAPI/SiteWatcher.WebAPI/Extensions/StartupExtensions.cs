@@ -1,11 +1,11 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using AFA.WebAPI.Interfaces;
+using SiteWatcher.WebAPI.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AFA.WebAPI.Extensions;
+namespace SiteWatcher.WebAPI.Extensions;
 
 public static class StartupExtensions 
 {

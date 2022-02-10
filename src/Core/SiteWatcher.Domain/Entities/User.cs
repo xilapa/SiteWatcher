@@ -1,6 +1,6 @@
 using System;
 
-namespace AFA.Domain.Entities;
+namespace SiteWatcher.Domain.Entities;
 
 public class User : BaseEntity<Guid>
 {

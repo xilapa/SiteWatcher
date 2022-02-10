@@ -2,16 +2,16 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using AFA.Domain.Interfaces;
-using AFA.Infra.Data;
+using SiteWatcher.Domain.Interfaces;
+using SiteWatcher.Infra.Data;
 
-namespace AFA.Infra.Repositories;
+namespace SiteWatcher.Infra.Repositories;
 
 public abstract class Repository<T> : IRepository<T> where T : class
 {
-    protected AFAContext context;
+    protected SiteWatcherContext context;
     
-    public Repository(AFAContext context)
+    public Repository(SiteWatcherContext context)
     {
         ArgumentNullException.ThrowIfNull(nameof(context));
         this.context = context;

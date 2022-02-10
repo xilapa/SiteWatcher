@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace AFA.Domain.Interfaces;
+namespace SiteWatcher.Domain.Interfaces;
 
 public interface IRepository<T> where T : class
 {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Builder;
-using AFA.WebAPI.Extensions;
-using AFA.WebAPI;
+using SiteWatcher.WebAPI.Extensions;
+using SiteWatcher.WebAPI;
 
 WebApplication
     .CreateBuilder(args)

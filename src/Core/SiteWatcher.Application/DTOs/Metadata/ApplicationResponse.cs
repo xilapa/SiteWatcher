@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentValidation.Results;
 
-namespace AFA.Application.DTOS.Metadata;
+namespace SiteWatcher.Application.DTOS.Metadata;
 
 public class ApplicationResponse
 {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using AFA.Application.DTOS.Metadata;
+using SiteWatcher.Application.DTOS.Metadata;
 
-namespace AFA.WebAPI.DTOs;
+namespace SiteWatcher.WebAPI.DTOs;
 
 public sealed class WebApiResponse
 {

@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using AFA.Application.DTOS.InputModels;
-using AFA.Application.DTOS.Metadata;
-using AFA.Domain.Enums;
+using SiteWatcher.Application.DTOS.InputModels;
+using SiteWatcher.Application.DTOS.Metadata;
+using SiteWatcher.Domain.Enums;
 
-namespace AFA.Application.Interfaces;
+namespace SiteWatcher.Application.Interfaces;
 
 public interface IUserAppService
 {

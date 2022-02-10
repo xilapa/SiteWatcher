@@ -1,12 +1,12 @@
-﻿using AFA.Domain.Entities;
-using AFA.Domain.Interfaces;
+﻿using SiteWatcher.Domain.Entities;
+using SiteWatcher.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace AFA.Infra.Data;
+namespace SiteWatcher.Infra.Data;
 
-public class AFAContext : DbContext, IUnityOfWork
+public class SiteWatcherContext : DbContext, IUnityOfWork
 {
-    public AFAContext(DbContextOptions<AFAContext> dbContextOptions) : base(dbContextOptions)
+    public SiteWatcherContext(DbContextOptions<SiteWatcherContext> dbContextOptions) : base(dbContextOptions)
     {
         
     }
@@ -14,7 +14,7 @@ public class AFAContext : DbContext, IUnityOfWork
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if(!optionsBuilder.IsConfigured)
-            optionsBuilder.UseInMemoryDatabase("AFATestDb");
+            optionsBuilder.UseInMemoryDatabase("SiteWatcherTestDb");
     }
 
     public DbSet<User> Users { get; set; }

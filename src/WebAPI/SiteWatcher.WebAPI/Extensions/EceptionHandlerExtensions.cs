@@ -1,15 +1,15 @@
 using System;
 using System.Net;
 using System.Text.Json;
-using AFA.Application.Constants;
-using AFA.WebAPI.DTOs;
+using SiteWatcher.Application.Constants;
+using SiteWatcher.WebAPI.DTOs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace AFA.WebAPI.Extensions;
+namespace SiteWatcher.WebAPI.Extensions;
 
 public static class EceptionHandlerExtensions
 {

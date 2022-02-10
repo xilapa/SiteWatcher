@@ -1,6 +1,6 @@
 using System;
 
-namespace AFA.WebAPI.DTOs;
+namespace SiteWatcher.WebAPI.DTOs;
 
 public class ExceptionDevResponse
 {
