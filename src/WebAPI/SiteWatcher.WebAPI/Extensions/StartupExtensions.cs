@@ -15,7 +15,7 @@ public static class StartupExtensions
         var startup = Activator.CreateInstance(typeof(T), builder.Configuration) as IStartup;
         if(startup is null) throw new NullReferenceException(nameof(startup));
         
-        startup.ConfigureServices(builder.Services);
+        startup.ConfigureServices(builder.Services, builder.Environment);
 
         var app = builder.Build();
         var loggerFactory = app.Services.GetService<ILoggerFactory>();
