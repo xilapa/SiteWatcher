@@ -33,7 +33,7 @@ public static class EceptionHandlerExtensions
 
                 object response;
 
-                if(!env.IsDevelopment())        
+                if(env.IsDevelopment())        
                     response = new { Exception = ExceptionDevResponse.From(exception, traceId)};
                 else        
                     response = new WebApiResponse(null, ApplicationErrors.INTERNAL_ERROR, $"traceId: {traceId}");
