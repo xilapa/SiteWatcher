@@ -1,1 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+* {
+    box-sizing: border-box;
+    font-family: 'Rubik', sans-serif;
+}
+
+:root {
+    --main-background-color: #fafafa;
+    --box-background-color: white;
+    --title1-font-size: 2rem;
+    --button-font-size: 1rem;
+    --link-text-font-size: 0.8rem;
+    --gray1: #6c757d;
+}
+
+.icon-right-margin {
+    margin-right: 5px;
+}
