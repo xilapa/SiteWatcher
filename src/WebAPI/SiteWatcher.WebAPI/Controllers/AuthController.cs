@@ -1,8 +1,12 @@
 using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SiteWatcher.WebAPI.DTOs;
 using SiteWatcher.WebAPI.Settings;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -13,29 +17,31 @@ namespace SiteWatcher.WebAPI.Controllers;
 public class GoogleAuthController : ControllerBase
 {
     private readonly GoogleSettings googleSettings;
+    private readonly IHttpClientFactory httpClientFactory;
 
-    public GoogleAuthController(GoogleSettings googleSettings)
+    public GoogleAuthController(GoogleSettings googleSettings, IHttpClientFactory httpClientFactory)
     {
         this.googleSettings = googleSettings;
+        this.httpClientFactory = httpClientFactory;
     }
 
     [HttpGet]
-    public IActionResult LoginWithGoogle([FromQuery] string returnUrl = null) 
+    public IActionResult Login([FromQuery] string returnUrl = null) 
     {
         AddReturnUrlCookie(returnUrl);
-        var redirectUrl = Url.ActionLink(nameof(GoogleLoginCallBack));
-        return StartGoogleAuth(redirectUrl);
+        var redirectUrl = Url.ActionLink(nameof(LoginCallBack));
+        return StartAuth(redirectUrl);
     }
 
     [HttpGet]
-    public IActionResult RegisterWithGoogle([FromQuery] string returnUrl = null) 
+    public IActionResult Register([FromQuery] string returnUrl = null) 
     {
         AddReturnUrlCookie(returnUrl);
-        var redirectUrl = Url.ActionLink(nameof(GoogleRegisterCallBack));
-        return StartGoogleAuth(redirectUrl);
+        var redirectUrl = Url.ActionLink(nameof(RegisterCallBack));
+        return StartAuth(redirectUrl);
     }
 
-    private IActionResult StartGoogleAuth(string redirect)
+    private IActionResult StartAuth(string redirect)
     {
         // TODO: Criar e salvar state no redis
         var state = "STATE";
@@ -65,37 +71,77 @@ public class GoogleAuthController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GoogleLoginCallBack(string state, string code, string scope, string authuser, string prompt)
+    public async Task<IActionResult> LoginCallBack(string state, string code, string scope, string authuser, string prompt)
     {
         // TODO: checar se scopes são os mesmos solicitados
         // TODO: checar state
-        throw new NotImplementedException();
-
+        // throw new NotImplementedException();
+        await ExchangeCode(code, Url.ActionLink(nameof(LoginCallBack)));
+        return Ok("");
     }
 
     [HttpGet]
-    public IActionResult GoogleRegisterCallBack(string state, string code, string scope, string authuser, string prompt)
+    public IActionResult RegisterCallBack(string state, string code, string scope, string authuser, string prompt)
     {
         // TODO: checar se scopes são os mesmos solicitados
         // TODO: checar state
         throw new NotImplementedException();
+    }
 
+    private async Task<GoogleTokenResult> ExchangeCode(string code, string actualRedirectUri)
+    {
+        var httpClient = httpClientFactory.CreateClient();
+
+        var requestBody = new
+        {
+            code,
+            client_id = googleSettings.ClientId,
+            client_secret = googleSettings.ClientSecret,
+            redirect_uri = actualRedirectUri,
+            grant_type = "authorization_code"
+        };
+
+        using(var response = await httpClient.PostAsJsonAsync(googleSettings.TokenEndpoint, requestBody))
+        {
+            if (!response.IsSuccessStatusCode)
+                return new GoogleTokenResult(success: false);
+
+            var tokenResult = await response.Content.ReadFromJsonAsync<GoogleTokenResult>();
+            return tokenResult;
+        }
     }
 
     [HttpPost]
     public void Logout() 
     {
         /* 
-            TODO: inserir token atual na blacklist do redis e sua validade na blacklist deve ser o tempo de expiração do token
-            Método de blacklist deve ser implementado em outra classe
+            TODO: inserir token atual na blacklist do redis e sua validade na blacklist deve ser o tempo de expiração do token.
+            Método de blacklist deve ser implementado em outra classe, aceitando e/ou token ou id de usuário
             Pois deve ser chamado quando:
             - Quando usuário deletar conta;
-            - Quando usuário mudar senha do google? Como fazer? Verificar sempre a validade do token do google
             - Quando for deslogado pelo admin;
+            - Quando usuário deslogar;
+            - Quando usuário deslogar de todos os dispositivos;
 
-            o token do google tbm deve ser revogado
+            TODO: Criar filtro para recusar qualquer token na blacklist.
+            TODO: No front deve have HttpInterceptor para resultados 401 - Unauthorized para que o token seja removido.
+        */
+        throw new NotImplementedException();
+    }
 
-            Criar filtro para recusar qualquer token na blacklist ou access_token do google invalido (checar se ele é valido na user info)
+
+    [HttpPost]
+    public void LogoutOfAllDevices()
+    {
+        /*
+            TODO: Inserir token atual na blacklist e Id do usuário também pelo tempo de expiração do token.
+
+            TODO: Criar whitelist de tokens no redis
+            Caso usuário deslogue de todos os dispositivos e queira logar novamente,
+            o novo token deve ir para a whitelist para que o usuário não seja barrado até a expiração da blacklist.
+            Token deve ser adicionado a whitelist caso usuário tenha seu Id na blacklist.
+
+            TODO: Criar filtro para verificar se usuário esta na blacklist e caso ele tenha um token na white list: Liberar acesso;
         */
         throw new NotImplementedException();
     }
