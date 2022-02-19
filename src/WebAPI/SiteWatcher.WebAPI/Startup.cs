@@ -15,16 +15,17 @@ namespace SiteWatcher.WebAPI;
 public class Startup : IStartup
 {
     public IConfiguration Configuration { get; }
-    private readonly Settings _settings;
+
     public Startup(IConfiguration configuration)
     {
         this.Configuration = configuration;
-        _settings = Configuration.Get<Settings>();
     }
 
     // Add services to the container.
     public void ConfigureServices(IServiceCollection services, IWebHostEnvironment env)
-    {        
+    {       
+        services.AddSettings(Configuration);
+
         services.AddControllers();
         services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
 
