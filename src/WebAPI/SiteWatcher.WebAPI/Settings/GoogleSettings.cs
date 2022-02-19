@@ -8,8 +8,8 @@ public class GoogleSettings
     [ConfigurationKeyName("Google_ClientId")]
     public string ClientId { get; set; }
 
-    [ConfigurationKeyName("Google_SecretId")]
-    public string SecretId { get; set; }
+    [ConfigurationKeyName("Google_ClientSecret")]
+    public string ClientSecret { get; set; }
 
     [ConfigurationKeyName("Google_AuthEndpoint")]
     public string AuthEndpoint { get; set; }
