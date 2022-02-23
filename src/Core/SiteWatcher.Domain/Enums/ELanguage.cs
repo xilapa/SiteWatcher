@@ -1,8 +1,15 @@
+using System.ComponentModel;
+
 namespace SiteWatcher.Domain.Enums;
 
 public enum ELanguage
 {
-    Pt_Br = 1,
-    En_Us = 2,
-    Es_Es = 3
+    [Description("pt")]
+    BrasilianPortuguese = 1,
+
+    [Description("en")]
+    English = 2,
+
+    [Description("es")]
+    Spanish = 3
 }
