@@ -5,7 +5,7 @@ namespace SiteWatcher.Domain.Models;
 
 public class User : BaseModel<Guid>
 {
-    public ulong GoogleId { get; set; }
+    public string GoogleId { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
     public bool EmailConfirmed { get; set; }
