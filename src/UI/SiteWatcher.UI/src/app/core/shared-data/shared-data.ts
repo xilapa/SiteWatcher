@@ -8,7 +8,7 @@ export class Data {
         this._values.set(key, value)
     }
 
-    public static GetAndDelete = (key: string): any => {
+    public static GetAndRemove = (key: string): any => {
         const value = this._values.get(key);
         this._values.delete(key);
         return value;
@@ -17,6 +17,6 @@ export class Data {
     public static ClearAllData = (): void =>
         this._values.clear();    
 
-    public static ClearByKeys = (...keys: string[]): void =>
+    public static RemoveByKeys = (...keys: string[]): void =>
         keys.forEach(key => this._values.delete(key));
 }
