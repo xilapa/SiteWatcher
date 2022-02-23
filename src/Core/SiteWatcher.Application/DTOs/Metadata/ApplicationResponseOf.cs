@@ -1,6 +1,6 @@
 using FluentValidation.Results;
 
-namespace SiteWatcher.Application.DTOS.Metadata;
+namespace SiteWatcher.Application.DTOs.Metadata;
 
 public class ApplicationResponseOf<T> : ApplicationResponse
 {

@@ -1,4 +1,4 @@
-using SiteWatcher.Application.DTOS.InputModels;
+using SiteWatcher.Application.DTOs.InputModels;
 using SiteWatcher.Application.Constants;
 using FluentValidation;
 

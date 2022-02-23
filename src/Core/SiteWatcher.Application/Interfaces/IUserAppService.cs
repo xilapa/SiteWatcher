@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using SiteWatcher.Application.DTOS.InputModels;
-using SiteWatcher.Application.DTOS.Metadata;
+using SiteWatcher.Application.DTOs.InputModels;
+using SiteWatcher.Application.DTOs.Metadata;
 using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Application.Interfaces;
