@@ -1,22 +1,10 @@
-.login-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 90vh;
-    width: 300px;
-}
-
-
 .login-box {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
     background-color: Var(--box-background-color);
-    border: 1px solid lightgray;
-    border-radius: 6px;
     min-height: 250px;
-    min-width: 100%;
 }
 
 .title {
@@ -38,7 +26,7 @@
     cursor: pointer;
 }
 
-/* bootstrap button adjustments */
+/*#region bootstrap button adjustments */
 .btn{
     font-size: var(--button-font-size);
 }
@@ -50,4 +38,4 @@
 .btn:active {
     box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
 }
-/* bootstrap button adjustments END*/
+/*#endregion bootstrap button adjustments */
