@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SiteWatcher.WebAPI.DTOs;
+namespace SiteWatcher.WebAPI.DTOs.Metadata;
 
 public class GoogleTokenResult
 {

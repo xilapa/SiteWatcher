@@ -1,6 +1,6 @@
 using System;
 
-namespace SiteWatcher.WebAPI.DTOs;
+namespace SiteWatcher.WebAPI.DTOs.ViewModels;
 
 public class ExceptionDevResponse
 {

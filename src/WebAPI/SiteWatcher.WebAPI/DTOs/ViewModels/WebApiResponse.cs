@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using SiteWatcher.Application.DTOS.Metadata;
+using SiteWatcher.Application.DTOs.Metadata;
 
-namespace SiteWatcher.WebAPI.DTOs;
+namespace SiteWatcher.WebAPI.DTOs.ViewModels;
 
 public sealed class WebApiResponse
 {
@@ -12,21 +12,17 @@ public sealed class WebApiResponse
 
     public WebApiResponse(object result, params string[] messages) : this()
     {
-        Messages.AddRange(messages);
+        if(messages != null) Messages.AddRange(messages);
         Result = result;
     }
 
     public WebApiResponse(ApplicationResponse appResponse) : this()
     {
-        if(appResponse.Success)
-        {
-            Messages.Add(appResponse.Message);
-        }
-        else
-        {
+        if(appResponse.Success)        
+            Messages.Add(appResponse.Message);        
+        else        
             Messages.AddRange(appResponse.Errors);
-        }
-
+        
         Result = appResponse.Result;
     }
 
