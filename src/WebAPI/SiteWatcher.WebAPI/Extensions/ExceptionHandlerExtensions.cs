@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Text.Json;
 using SiteWatcher.Application.Constants;
-using SiteWatcher.WebAPI.DTOs;
+using SiteWatcher.WebAPI.DTOs.ViewModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +30,8 @@ public static class EceptionHandlerExtensions
                 var logger = loggerFactory.CreateLogger("GlobalExceptionHandlerMiddleware");
                 logger.LogError("Exception ocurred at {date}\n\tTraceId: {traceId}\n\t{type}: {ex}\n\tRoute: {routeData}", 
                     DateTime.Now, traceId, exception.GetType().Name, exception.Message, route);
+                
+                // TODO: logar stack trace, exception.StackTrace
 
                 object response;
 
