@@ -17,11 +17,9 @@ public class GoogleSettings
     [ConfigurationKeyName("Google_TokenEndpoint")]
     public string TokenEndpoint { get; set; }
 
-    private string _Scopes;
     [ConfigurationKeyName("Google_Scopes")]
-    public string Scopes
-    {
-        get => _Scopes;
-        set => _Scopes = HttpUtility.UrlEncode(value);
-    }  
+    public string Scopes { get; set; }
+
+    [ConfigurationKeyName("Google_RedirectUri")]
+    public string RedirectUri { get; set; }
 }
