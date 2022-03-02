@@ -5,7 +5,7 @@ namespace SiteWatcher.Domain.Enums;
 public enum ELanguage
 {
     [Description("pt")]
-    BrasilianPortuguese = 1,
+    BrazilianPortuguese = 1,
 
     [Description("en")]
     English = 2,
