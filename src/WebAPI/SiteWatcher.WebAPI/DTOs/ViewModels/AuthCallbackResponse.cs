@@ -1,18 +1,14 @@
-using SiteWatcher.Application.DTOs.InputModels;
-
 namespace SiteWatcher.WebAPI.DTOs.ViewModels;
 
 public class AuthenticationResult 
 {
-    public AuthenticationResult(EAuthTask task, UserRegisterViewModel registerModel, string token)
+    public AuthenticationResult(EAuthTask task, string token)
     {
         Task = task;
-        RegisterModel = registerModel;
         Token = token;
     }
 
     public EAuthTask Task { get; set; }
-    public UserRegisterViewModel RegisterModel { get; set; }
     public string Token { get; set; }
 }
 
