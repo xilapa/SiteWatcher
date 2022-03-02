@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { AuthService } from 'src/app/core/auth/auth.service';
 
 
@@ -9,8 +8,6 @@ import { AuthService } from 'src/app/core/auth/auth.service';
   styleUrls: ['./log-in.component.css']
 })
 export class LogInComponent {
-
-  public faGoogle = faGoogle;
   
   constructor(private readonly authService: AuthService) { }
   
