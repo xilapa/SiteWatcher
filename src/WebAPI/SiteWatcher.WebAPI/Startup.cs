@@ -1,14 +1,9 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using IStartup = SiteWatcher.WebAPI.Interfaces.IStartup;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.Infra.Extensions;
 using SiteWatcher.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+
 
 namespace SiteWatcher.WebAPI;
 
@@ -16,17 +11,16 @@ public class Startup : IStartup
 {
     public IConfiguration Configuration { get; }
 
-    public Startup(IConfiguration configuration)
-    {
-        this.Configuration = configuration;
-    }
+    public Startup(IConfiguration configuration) => Configuration = configuration; 
 
     // Add services to the container.
     public void ConfigureServices(IServiceCollection services, IWebHostEnvironment env)
     {       
         services.AddSettings(Configuration);
 
-        services.AddControllers();
+        services.AddControllers()
+                .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
+                
         services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,6 +32,22 @@ public class Startup : IStartup
         services.AddDomainServices();
         services.AddApplicationServices();
         services.AddApplicationFluentValidations();
+
+        services.ConfigureAuth(Configuration);
+
+        services.AddHttpClient();
+
+        services.AddCors(options => {
+            options.AddPolicy(name: "DevMode", // TODO: nome da política de cors deve ficar no appsettings
+                              builder =>
+                              {
+                                  // TODO: essa origin deve ficar no appsettings
+                                  builder.WithOrigins("http://localhost:4200");
+                                  builder.AllowAnyHeader();
+                                  builder.AllowAnyMethod();
+                                //   builder.AllowCredentials();
+                              });
+        });
     }
 
     // Configure the HTTP request pipeline.
@@ -54,6 +64,10 @@ public class Startup : IStartup
         }
 
         app.UseHttpsRedirection();
+
+        app.UseCors("DevMode");
+
+        app.UseAuthentication();
 
         app.UseAuthorization();
 
