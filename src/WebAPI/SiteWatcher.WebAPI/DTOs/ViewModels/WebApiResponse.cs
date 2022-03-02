@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using SiteWatcher.Application.DTOs.Metadata;
 
 namespace SiteWatcher.WebAPI.DTOs.ViewModels;
 
+// TODO: tipar result
 public sealed class WebApiResponse
 {
     public WebApiResponse()

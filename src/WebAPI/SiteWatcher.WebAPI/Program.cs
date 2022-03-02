@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Builder;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI;
 

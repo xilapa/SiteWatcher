@@ -1,6 +1,3 @@
-using System.Web;
-using Microsoft.Extensions.Configuration;
-
 namespace SiteWatcher.WebAPI.Settings;
 
 public class GoogleSettings
