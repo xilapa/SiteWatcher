@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using SiteWatcher.Domain.Entities;
+using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Extensions;
 using SiteWatcher.Domain.Interfaces;
@@ -18,7 +18,7 @@ public class UserService : IUserService
 
     public async Task<User> CreateUser(string name, string email)
     {
-        var userToAdd = new User(name, email);
+        var userToAdd = new User();
         userToAdd.SecurityStamp = await GenerateUserSecurityStamp(userToAdd);
         return this.userRepository.Add(userToAdd);
     }
@@ -30,10 +30,10 @@ public class UserService : IUserService
         if (user is null)
             return ESubscriptionResult.UserDoesNotExist;            
 
-        if (user.Subscribed)
-            return ESubscriptionResult.AlreadySubscribed;
+        // if (user.Subscribed)
+        //     return ESubscriptionResult.AlreadySubscribed;
 
-        user.Subscribed = true;
+        // user.Subscribed = true;
 
         return ESubscriptionResult.SubscribedSuccessfully;
     }

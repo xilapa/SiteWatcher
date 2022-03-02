@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using SiteWatcher.Domain.Entities;
+using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Domain.Interfaces;

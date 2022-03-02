@@ -1,4 +1,4 @@
-﻿using SiteWatcher.Domain.Entities;
+﻿using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
