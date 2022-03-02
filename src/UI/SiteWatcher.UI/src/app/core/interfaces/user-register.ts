@@ -1,9 +1,8 @@
-import { ELanguage } from '../enums/language';
+import { ELanguage } from "../enums";
 
 export interface UserRegister{
-    GoogleId: string,
-    Name: string,
-    Email: string,
-    Language: ELanguage
+    googleId: string,
+    name: string,
+    email: string,
+    language: ELanguage
 }
-
