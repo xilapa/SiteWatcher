@@ -1,17 +1,29 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LogInComponent } from './log-in/log-in.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
-
+import { HomeRoutingModule } from './home-routing.module';
+import { AuthComponent } from './auth/auth.component';
+import { HomeComponent } from './home.component';
+import { ButtonModule } from 'primeng/button';
+import { RegisterComponent } from './register/register.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
 
 @NgModule({
   declarations: [
-    LogInComponent
+    HomeComponent,
+    LogInComponent,
+    AuthComponent,
+    RegisterComponent
   ],
   imports: [
     CommonModule,
-    FontAwesomeModule
+    ReactiveFormsModule,
+    ButtonModule,
+    InputTextModule,
+    DropdownModule,
+    HomeRoutingModule
   ],
   exports: [LogInComponent]
 })
