@@ -2,10 +2,12 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Application.DTOS.InputModels;
-using SiteWatcher.WebAPI.DTOs;
+using SiteWatcher.Application.DTOs.InputModels;
 using System.Net;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.WebAPI.DTOs.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using SiteWatcher.WebAPI.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -52,5 +54,13 @@ public class UserController : ControllerBase
     public void ConfirmEmail()
     {
         throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    [Route("register")]
+    [Authorize(AuthenticationSchemes = AuthenticationDefaults.RegisterScheme)]
+    public IActionResult Register()
+    {
+        return Ok("autenticado com token de registro");
     }
 }
