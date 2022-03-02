@@ -72,9 +72,7 @@ public class GoogleAuthController : ControllerBase
     public async Task<ActionResult<WebApiResponse>> Authenticate([FromBody] AuthCallBackData authData)
     {
         // TODO: checar state
-
-        // TODO: checar se é possível span aqui
-        // https://blog.ndepend.com/improve-c-code-performance-with-spant/
+       
         var scopesMissing = googleSettings.Scopes.Split(" ").Any(s => !authData.Scope.Contains(s));
         if(scopesMissing)        
             return BadRequest(new WebApiResponse(null, WebApiErrors.GOOGLE_AUTH_ERROR));        
