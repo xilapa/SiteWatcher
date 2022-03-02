@@ -7,11 +7,6 @@
     min-height: 250px;
 }
 
-.title {
-    font-size: var(--title1-font-size);
-    font-weight: 500;
-}
-
 .links {
     display: flex;
     flex-direction: column;
@@ -25,26 +20,3 @@
     font-weight: 400;
     cursor: pointer;
 }
-
-/*#region ng prime button adjustments */
-.p-button.p-button-outlined {
-    font-size: var(--button-font-size);
-    color: var(--gray-800);
-}
-
-.p-button.p-button-outlined:hover, .p-button.p-button-outlined:enabled:hover {
-    font-size: var(--button-font-size);
-    color: var(--surface-0);
-    background-color: var(--gray-600);
-    border-color: var(--gray-600);
-}
-
-.p-button.p-button-outlined:focus {
-    box-shadow: none;
-}
-
-.p-button.p-button-outlined:active:hover {
-    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
-}
-
-/*#endregion ng prime button adjustments */

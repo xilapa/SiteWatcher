@@ -51,7 +51,6 @@ table {
 }
 /* #endregion css reset */
 
-
 * {
     box-sizing: border-box;
     font-family: 'Rubik', sans-serif;
@@ -63,8 +62,80 @@ table {
     --title1-font-size: 2rem;
     --button-font-size: 1rem;
     --link-text-font-size: 0.9rem;
+	--input-form-height: 40px;
 }
 
 .icon-right-margin {
     margin-right: 5px;
 }
+
+.text-muted {
+	font-size: var(--link-text-font-size);
+    color: var(--gray-700);
+    font-weight: 400;
+}
+
+.title {
+	font-size: var(--title1-font-size);
+    font-weight: 500;
+}
+
+/* prime-ng toast icon size */
+.p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon {
+	font-size: 20px;
+}
+
+/* center label text on prime-ng dropdown */
+.p-dropdown-label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;       
+}
+
+/*#region prime-ng button adjustments */
+.p-button {
+    font-size: var(--button-font-size);
+    color: white;
+	background-color: var(--gray-700);
+	border: none;
+}
+
+.p-button:hover, .p-button:enabled:hover {
+    font-size: var(--button-font-size);
+    color: var(--surface-0);
+    background-color: var(--gray-600);
+    border-color: var(--gray-600);
+}
+
+.p-button:focus {
+    box-shadow: none;
+}
+
+.p-button:active:hover {
+    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
+}
+
+/*#endregion ng prime button adjustments */
+
+/*#region prime-ng button-outlined adjustments */
+.p-button.p-button-outlined {
+    font-size: var(--button-font-size);
+    color: var(--gray-800);
+}
+
+.p-button.p-button-outlined:hover, .p-button.p-button-outlined:enabled:hover {
+    font-size: var(--button-font-size);
+    color: var(--surface-0);
+    background-color: var(--gray-600);
+    border-color: var(--gray-600);
+}
+
+.p-button.p-button-outlined:focus {
+    box-shadow: none;
+}
+
+.p-button.p-button-outlined:active:hover {
+    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
+}
+
+/*#endregion ng prime button-outlined  adjustments */
