@@ -69,37 +69,39 @@ public class GoogleAuthController : ControllerBase
 
     [HttpPost]
     [HttpPost("authenticate")] 
-    public async Task<ActionResult<WebApiResponse>> Authenticate([FromBody] AuthCallBackData authData)
+    public async Task<IActionResult> Authenticate([FromBody] AuthCallBackData authData)
     {
+        var response = new WebApiResponse<AuthenticationResult>();
         // TODO: checar state
        
         var scopesMissing = googleSettings.Scopes.Split(" ").Any(s => !authData.Scope.Contains(s));
         if(scopesMissing)        
-            return BadRequest(new WebApiResponse(null, WebApiErrors.GOOGLE_AUTH_ERROR));        
+            return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));        
 
         var tokenResult = await ExchangeCode(authData.Code);
         if(!tokenResult.Success)
-            return BadRequest(new WebApiResponse(null, WebApiErrors.GOOGLE_AUTH_ERROR));
+            return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));
         
         var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenResult.IdToken);
 
-        var googleId = token.Claims.First(c => c.Type == "sub").Value;
+        var googleId = token.Claims.First(c => c.Type == AuthenticationDefaults.Google.Id).Value;
+        // TODO: get as notracking ou usar Dapper logo
         var user = await userRepository.GetAsync(u => u.GoogleId == googleId);
 
         if(user is null)
         {   
-            var locale = token.Claims.DefaultIfEmpty(new Claim("locale", string.Empty))
-                                     .FirstOrDefault(c => c.Type == "locale").Value
+            var locale = token.Claims.DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
+                                     .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale).Value
                                      .Split("-").First();
 
-            var localeClaim = new Claim("language", ((int)locale.GetEnumValue<ELanguage>()).ToString());
+            var localeClaim = new Claim(AuthenticationDefaults.ClaimTypes.Language, ((int)locale.GetEnumValue<ELanguage>()).ToString());
 
-            var googleIdClaim = new Claim("googleId", googleId);
+            var googleIdClaim = new Claim(AuthenticationDefaults.ClaimTypes.GoogleId, googleId);
 
             var registerToken = tokenService.GenerateRegisterToken(token.Claims, localeClaim, googleIdClaim);
 
-            var authCallbackResponse = new AuthenticationResult(EAuthTask.Register, registerToken);
-            return Ok(new WebApiResponse(authCallbackResponse, null));
+            var authResult = new AuthenticationResult(EAuthTask.Register, registerToken);
+            return Ok(response.SetResult(authResult));
         }       
 
 
