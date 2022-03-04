@@ -1,5 +1,3 @@
-using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Application.Services;
 using SiteWatcher.Domain.Interfaces;
 using SiteWatcher.Domain.Services;
 using SiteWatcher.Application.Validators;
@@ -9,14 +7,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using SiteWatcher.WebAPI.Constants;
+using System.Reflection;
+using SiteWatcher.Application;
+using MediatR;
+using SiteWatcher.Application.Commands;
 
 namespace SiteWatcher.WebAPI.Extensions;
 
 public static class DependencyInjection
 {
+    // TODO: renomear este método
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<IUserAppService, UserAppService>();
+        services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
+        services.AddMediatR(typeof(RegisterUserCommand));
         return services;
     }
 
@@ -46,7 +50,7 @@ public static class DependencyInjection
 
     public static IServiceCollection ConfigureAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<TokenService>();
+        services.AddScoped<ITokenService,TokenService>();
         var appSettings = configuration.Get<AppSettings>();
 
         services.AddAuthentication(opts => {
@@ -54,7 +58,7 @@ public static class DependencyInjection
             opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts => {
-            opts.RequireHttpsMetadata = false;
+            opts.MapInboundClaims = false;
             opts.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateLifetime = true,
@@ -63,9 +67,11 @@ public static class DependencyInjection
                 ClockSkew = TimeSpan.FromSeconds(0),
                 ValidateAudience = false,
                 ValidateIssuer = false,
+                RoleClaimType = AuthenticationDefaults.Roles
             };
         })
         .AddJwtBearer(AuthenticationDefaults.RegisterScheme, opts => {
+            opts.MapInboundClaims = false;
             opts.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateLifetime = true,
@@ -74,6 +80,7 @@ public static class DependencyInjection
                 ClockSkew = TimeSpan.FromSeconds(0),
                 ValidateAudience = false,
                 ValidateIssuer = false,
+                RoleClaimType = AuthenticationDefaults.Roles
             };
         });
 
