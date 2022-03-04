@@ -10,5 +10,4 @@ public class User : BaseModel<Guid>
     public string Email { get; set; }
     public bool EmailConfirmed { get; set; }
     public ELanguage Language { get; set; }
-    public string SecurityStamp { get; set; }
 }
