@@ -2,14 +2,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using SiteWatcher.Domain.Extensions;
+using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Interfaces;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.WebAPI.Constants;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Settings;
 
 namespace SiteWatcher.WebAPI.Services;
 
-public class TokenService
+public class TokenService : ITokenService
 {
     private readonly AppSettings appSettings;
 
@@ -28,10 +30,10 @@ public class TokenService
 
         var claims = new Claim[] 
         {
-            new ("name", user.Name),
-            new ("email", user.Email),
-            new ("email-confirmed", user.EmailConfirmed.ToString()),
-            new ("language", user.Language.GetDescription())            
+            new (AuthenticationDefaults.ClaimTypes.Name, user.Name),
+            new (AuthenticationDefaults.ClaimTypes.Email, user.Email),
+            new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
+            new (AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString())            
         };
 
         return GenerateToken(claims, key);
@@ -66,11 +68,4 @@ public class TokenService
 
         return tokenString;
     }
-
-}
-
-public enum ETokenPurpose 
-{
-    Login,
-    ConfirmEmail
 }
