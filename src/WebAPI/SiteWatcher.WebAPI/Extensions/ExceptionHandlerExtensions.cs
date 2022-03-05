@@ -1,13 +1,8 @@
-using System;
 using System.Net;
 using System.Text.Json;
 using SiteWatcher.Application.Constants;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace SiteWatcher.WebAPI.Extensions;
 
@@ -28,17 +23,15 @@ public static class EceptionHandlerExtensions
                 var exception = exceptionHandlerFeature.Error;
 
                 var logger = loggerFactory.CreateLogger("GlobalExceptionHandlerMiddleware");
-                logger.LogError("Exception ocurred at {date}\n\tTraceId: {traceId}\n\t{type}: {ex}\n\tRoute: {routeData}", 
-                    DateTime.Now, traceId, exception.GetType().Name, exception.Message, route);
-                
-                // TODO: logar stack trace, exception.StackTrace
+                logger.LogError("Exception ocurred at {date}\n\t{type}: {msg}\n\tRoute: {route}\n\tTraceId: {traceId}\n\n\tStackTrace: {stackTrace}", 
+                    DateTime.Now, exception.GetType().Name, exception.Message, route, traceId, exception.StackTrace);
 
                 object response;
 
                 if(env.IsDevelopment())        
                     response = new { Exception = ExceptionDevResponse.From(exception, traceId)};
                 else        
-                    response = new WebApiResponse(null, ApplicationErrors.INTERNAL_ERROR, $"traceId: {traceId}");
+                    response = new WebApiResponse<object>(null, ApplicationErrors.INTERNAL_ERROR, $"traceId: {traceId}");
 
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/problem+json";
