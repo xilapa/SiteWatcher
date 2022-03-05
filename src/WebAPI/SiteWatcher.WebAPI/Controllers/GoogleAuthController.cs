@@ -24,14 +24,14 @@ public class GoogleAuthController : ControllerBase
     private readonly IHttpClientFactory httpClientFactory;
     private readonly IUserRepository userRepository;
     private readonly ILogger<GoogleAuthController> logger;
-    private readonly TokenService tokenService;
+    private readonly ITokenService tokenService;
 
     public GoogleAuthController(
         GoogleSettings googleSettings, 
         IHttpClientFactory httpClientFactory,
         ILogger<GoogleAuthController> logger,
         IUserRepository userRepository,
-        TokenService tokenService)
+        ITokenService tokenService)
     {
         this.googleSettings = googleSettings;
         this.httpClientFactory = httpClientFactory;
