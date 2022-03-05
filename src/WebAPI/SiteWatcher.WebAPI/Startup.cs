@@ -3,7 +3,7 @@ using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.Infra.Extensions;
 using SiteWatcher.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
-
+using SiteWatcher.WebAPI.Filters;
 
 namespace SiteWatcher.WebAPI;
 
@@ -16,9 +16,9 @@ public class Startup : IStartup
     // Add services to the container.
     public void ConfigureServices(IServiceCollection services, IWebHostEnvironment env)
     {       
-        services.AddSettings(Configuration);
+        services.AddSettings();
 
-        services.AddControllers()
+        services.AddControllers(opts => opts.Filters.Add(typeof(CommandValidationFilter)))
                 .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
                 
         services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
