@@ -16,7 +16,6 @@ namespace SiteWatcher.WebAPI.Extensions;
 
 public static class DependencyInjection
 {
-    // TODO: renomear este método
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddAutoMapper(Assembly.GetAssembly(typeof(AutoMapperProfile)));
@@ -36,15 +35,10 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddSettings(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSettings(this IServiceCollection services)
     {
-        // TODO: Mudar lifetime para transient e transformar chaves em byte[],
-        // limpando a chave depois de utilizada. 
-        // Com isso configuration.Get vai pra dentro das classes de settings.
-        var googleSettings = configuration.Get<GoogleSettings>();
-        var appSettings = configuration.Get<AppSettings>();
-        services.AddSingleton(googleSettings);
-        services.AddSingleton(appSettings);
+        services.AddTransient(f => f.GetRequiredService<IConfiguration>().Get<GoogleSettings>());
+        services.AddTransient(f => f.GetRequiredService<IConfiguration>().Get<AppSettings>());
         return services;
     }
 
@@ -53,35 +47,29 @@ public static class DependencyInjection
         services.AddScoped<ITokenService,TokenService>();
         var appSettings = configuration.Get<AppSettings>();
 
+        var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.FromSeconds(0),
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                RoleClaimType = AuthenticationDefaults.Roles
+            };
+
         services.AddAuthentication(opts => {
             opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts => {
             opts.MapInboundClaims = false;
-            opts.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.AuthKey)),
-                ClockSkew = TimeSpan.FromSeconds(0),
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                RoleClaimType = AuthenticationDefaults.Roles
-            };
+            tokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.AuthKey));
+            opts.TokenValidationParameters = tokenValidationParameters;
         })
         .AddJwtBearer(AuthenticationDefaults.RegisterScheme, opts => {
             opts.MapInboundClaims = false;
-            opts.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.RegisterKey)),
-                ClockSkew = TimeSpan.FromSeconds(0),
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                RoleClaimType = AuthenticationDefaults.Roles
-            };
+            tokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.RegisterKey));
+            opts.TokenValidationParameters = tokenValidationParameters;
         });
 
         return services;
