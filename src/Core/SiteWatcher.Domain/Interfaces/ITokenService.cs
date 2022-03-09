@@ -8,5 +8,5 @@ namespace SiteWatcher.Domain.Interfaces;
 public interface ITokenService
 {
     string GenerateUserToken(ETokenPurpose purpose, User user);
-    string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, params Claim[] extraClaims);
+    string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId);
 }

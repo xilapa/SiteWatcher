@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Extensions;
 using SiteWatcher.Domain.Interfaces;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.WebAPI.Constants;
@@ -19,8 +20,9 @@ public class TokenService : ITokenService
 
     public string GenerateUserToken(ETokenPurpose tokenPurpose, User user)
     {
-        var claims = new Claim[] 
+        var claims = new Claim[]
         {
+            new (AuthenticationDefaults.ClaimTypes.Id, user.Id.ToString()),
             new (AuthenticationDefaults.ClaimTypes.Name, user.Name),
             new (AuthenticationDefaults.ClaimTypes.Email, user.Email),
             new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
@@ -30,15 +32,19 @@ public class TokenService : ITokenService
         return GenerateToken(claims, tokenPurpose);
     }
 
-    public string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, params Claim[] extraClaims)
-    {        
-        var defaultClaims = new Claim[] 
+    public string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId)
+    {   
+        var locale = tokenClaims.DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
+                                     .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale).Value
+                                     .Split("-").First();    
+
+        var claims = new Claim[] 
         {
             tokenClaims.GetClaimValue(AuthenticationDefaults.ClaimTypes.Name),
-            tokenClaims.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email)
+            tokenClaims.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email),
+            new Claim(AuthenticationDefaults.ClaimTypes.Language, ((int)locale.GetEnumValue<ELanguage>()).ToString()),
+            new Claim(AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
         };
-
-        var claims = defaultClaims.Concat(extraClaims);
 
         return GenerateToken(claims, ETokenPurpose.Register);   
     }
