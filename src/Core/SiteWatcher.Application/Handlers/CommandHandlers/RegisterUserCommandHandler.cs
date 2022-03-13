@@ -1,11 +1,8 @@
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
 using SiteWatcher.Application.Commands;
 using SiteWatcher.Application.Metadata;
 using SiteWatcher.Application.Notifications;
-using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Exceptions;
 using SiteWatcher.Domain.Interfaces;
 using SiteWatcher.Domain.Models;
@@ -44,7 +41,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
             return appResult.AddError(ex.Message);
         }
 
-        var token = tokenService.GenerateUserToken(ETokenPurpose.Login, user);
+        var token = tokenService.GenerateLoginToken(user);
 
         if(!user.EmailConfirmed)
             await mediator.Publish(mapper.Map<UserRegisteredNotification>(user), cancellationToken);

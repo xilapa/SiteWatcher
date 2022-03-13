@@ -6,6 +6,7 @@ using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Extensions;
 using SiteWatcher.Domain.Interfaces;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.ViewModels;
 using SiteWatcher.WebAPI.Constants;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Settings;
@@ -15,10 +16,32 @@ namespace SiteWatcher.WebAPI.Services;
 public class TokenService : ITokenService
 {
     private readonly AppSettings appSettings;
+    private readonly ICache cache;
 
-    public TokenService(AppSettings appSettings) =>  this.appSettings = appSettings;
+    private readonly int registerTokenExpiration = 15 * 60;
+    private readonly int loginTokenExpiration = 8 * 60 * 60;
 
-    public string GenerateUserToken(ETokenPurpose tokenPurpose, User user)
+    public TokenService(AppSettings appSettings, ICache cache) 
+    {
+        this.appSettings = appSettings;
+        this.cache = cache;
+    }  
+
+    public string GenerateLoginToken(UserViewModel userVM)
+    {
+        var claims = new Claim[]
+        {
+            new (AuthenticationDefaults.ClaimTypes.Id, userVM.Id.ToString()),
+            new (AuthenticationDefaults.ClaimTypes.Name, userVM.Name),
+            new (AuthenticationDefaults.ClaimTypes.Email, userVM.Email),
+            new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVM.EmailConfirmed.ToString().ToLower()),
+            new (AuthenticationDefaults.ClaimTypes.Language, ((int)userVM.Language).ToString())            
+        };
+
+        return GenerateToken(claims, ETokenPurpose.Login, loginTokenExpiration);
+    }
+
+    public string GenerateLoginToken(User user)
     {
         var claims = new Claim[]
         {
@@ -29,7 +52,7 @@ public class TokenService : ITokenService
             new (AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString())            
         };
 
-        return GenerateToken(claims, tokenPurpose);
+        return GenerateToken(claims, ETokenPurpose.Login, loginTokenExpiration);
     }
 
     public string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId)
@@ -46,10 +69,10 @@ public class TokenService : ITokenService
             new Claim(AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
         };
 
-        return GenerateToken(claims, ETokenPurpose.Register);   
+        return GenerateToken(claims, ETokenPurpose.Register, registerTokenExpiration);   
     }
 
-    private string GenerateToken(IEnumerable<Claim> claims, ETokenPurpose tokenPurpose)
+    private string GenerateToken(IEnumerable<Claim> claims, ETokenPurpose tokenPurpose, int expiration)
     {
         var key = tokenPurpose switch
         {
@@ -60,8 +83,8 @@ public class TokenService : ITokenService
 
         var tokenDescriptor = new SecurityTokenDescriptor {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(8),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)), SecurityAlgorithms.HmacSha256Signature)
+            Expires = DateTime.UtcNow.AddSeconds(expiration),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -70,4 +93,25 @@ public class TokenService : ITokenService
 
         return tokenString;
     }
+
+    public async Task InvalidateToken(string token, ETokenPurpose tokenPurpose)
+    {
+        var expiration = tokenPurpose switch
+        {
+            ETokenPurpose.Register => registerTokenExpiration,
+            ETokenPurpose.Login => loginTokenExpiration,
+            _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
+        };
+        await cache.SaveBytesAsync(token.ToBase64HashedString(), appSettings.InvalidToken, TimeSpan.FromSeconds(expiration));
+    }
+
+    public async Task<bool> IsValid(string token)
+    {
+        var value = await cache.GetBytesAsync(token.ToBase64HashedString());
+        if(value.SequenceEqual(appSettings.InvalidToken))
+            return false;
+
+        return true;
+    }   
+    
 }
