@@ -108,6 +108,9 @@ public class TokenService : ITokenService
     public async Task<bool> IsValid(string token)
     {
         var value = await cache.GetBytesAsync(token.ToBase64HashedString());
+        if(value is null)
+            return true;
+
         if(value.SequenceEqual(appSettings.InvalidToken))
             return false;
 
