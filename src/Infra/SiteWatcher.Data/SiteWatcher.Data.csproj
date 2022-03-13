@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
-		<ImplicitUsings>disable</ImplicitUsings>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>disable</Nullable>
 		<GenerateRuntimeConfigurationFiles>True</GenerateRuntimeConfigurationFiles>
 	</PropertyGroup>
@@ -16,6 +16,7 @@
 		</PackageReference>
 		<PackageReference Include="Npgsql" Version="6.0.3" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+		<PackageReference Include="StackExchange.Redis" Version="2.5.43" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Core\SiteWatcher.Domain\SiteWatcher.Domain.csproj" />
