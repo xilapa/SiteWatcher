@@ -10,8 +10,8 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         CreateMap<RegisterUserCommand, User>()
-            .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => src.Email == src.AuthEmail));
-
+            .ConstructUsing(src => new User(src.GoogleId, src.Name, src.Email, src.AuthEmail, src.Language));
+            
         CreateMap<User, UserRegisteredNotification>();
     }
 }
