@@ -102,12 +102,12 @@ public class TokenService : ITokenService
             ETokenPurpose.Login => loginTokenExpiration,
             _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
         };
-        await cache.SaveBytesAsync(token.ToBase64HashedString(), appSettings.InvalidToken, TimeSpan.FromSeconds(expiration));
+        await cache.SaveBytesAsync(token.ToBase64tring(), appSettings.InvalidToken, TimeSpan.FromSeconds(expiration));
     }
 
     public async Task<bool> IsValid(string token)
     {
-        var value = await cache.GetBytesAsync(token.ToBase64HashedString());
+        var value = await cache.GetBytesAsync(token.ToBase64tring());
         if(value is null)
             return true;
 

@@ -1,9 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
-using System.Linq;
 using System.Reflection;
 using System.ComponentModel;
-using System;
 
 namespace SiteWatcher.Domain.Extensions;
 
@@ -14,6 +12,13 @@ public static class StringExtensions
         var textBytes = Encoding.ASCII.GetBytes(text);
         var hashedBytes = SHA256.HashData(textBytes);
         return hashedBytes;
+    }
+
+    public static string ToBase64tring(this string text)
+    {
+        var textBytes = Encoding.ASCII.GetBytes(text);
+        var base64 = Convert.ToBase64String(textBytes);
+        return base64.Replace(" ", "");
     }
 
     /// <summary>
