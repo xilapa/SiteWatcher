@@ -4,21 +4,25 @@ using SiteWatcher.Infra.Extensions;
 using SiteWatcher.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.WebAPI.Filters;
+using SiteWatcher.WebAPI.Settings;
 
 namespace SiteWatcher.WebAPI;
 
 public class Startup : IStartup
 {
-    public IConfiguration Configuration { get; }
+    public AppSettings AppSettings { get; }
 
-    public Startup(IConfiguration configuration) => Configuration = configuration; 
+    public Startup(IConfiguration configuration) => AppSettings = configuration.Get<AppSettings>();
 
     // Add services to the container.
     public void ConfigureServices(IServiceCollection services, IWebHostEnvironment env)
     {       
         services.AddSettings();
 
-        services.AddControllers(opts => opts.Filters.Add(typeof(CommandValidationFilter)))
+        services.AddControllers(opts => {
+                    opts.Filters.Add(typeof(CommandValidationFilter));
+                    opts.Filters.Add(typeof(TokenValidationFilter));
+                })
                 .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
                 
         services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
@@ -27,25 +31,26 @@ public class Startup : IStartup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.AddDataContext<SiteWatcherContext>(env.IsDevelopment());
+        services.AddDataContext<SiteWatcherContext>(env.IsDevelopment(), AppSettings.ConnectionString);
         services.AddRepositories();
+        services.AddDapperRepositories(AppSettings.ConnectionString);
         services.AddDomainServices();
         services.AddApplicationServices();
         services.AddApplicationFluentValidations();
 
-        services.ConfigureAuth(Configuration);
+        services.AddRedisCache(AppSettings.RedisConnectionString);
+
+        services.ConfigureAuth(AppSettings);
 
         services.AddHttpClient();
 
         services.AddCors(options => {
-            options.AddPolicy(name: "DevMode", // TODO: nome da política de cors deve ficar no appsettings
+            options.AddPolicy(name: AppSettings.CorsPolicy,
                               builder =>
                               {
-                                  // TODO: essa origin deve ficar no appsettings
-                                  builder.WithOrigins("http://localhost:4200");
+                                  builder.WithOrigins(AppSettings.FrontEndUrl);
                                   builder.AllowAnyHeader();
-                                  builder.AllowAnyMethod();
-                                //   builder.AllowCredentials();
+                                  builder.WithMethods("OPTIONS", "GET", "POST", "PATCH", "DELETE");
                               });
         });
     }
@@ -65,7 +70,7 @@ public class Startup : IStartup
 
         app.UseHttpsRedirection();
 
-        app.UseCors("DevMode");
+        app.UseCors(AppSettings.CorsPolicy);
 
         app.UseAuthentication();
 
