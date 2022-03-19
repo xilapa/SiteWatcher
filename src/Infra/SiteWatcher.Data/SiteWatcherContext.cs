@@ -2,21 +2,18 @@
 using SiteWatcher.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
 using SiteWatcher.Domain.Exceptions;
 using Npgsql;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace SiteWatcher.Infra.Data;
 
 public class SiteWatcherContext : DbContext, IUnityOfWork
 {
+    public static readonly string Schema = "siteWatcher_webApi";
+
     public SiteWatcherContext(DbContextOptions<SiteWatcherContext> dbContextOptions) : base(dbContextOptions)
     {
-        
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,6 +25,7 @@ public class SiteWatcherContext : DbContext, IUnityOfWork
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
@@ -43,8 +41,9 @@ public class SiteWatcherContext : DbContext, IUnityOfWork
 
             if((inner as PostgresException)?.SqlState == PostgresErrorCodes.UniqueViolation)
             {
-                var modelName = ex.Entries[0].Metadata.Name.Split('.').Last();
-                throw new UniqueViolationException(modelName);
+                var modelNames = string.Join("; " ,  ex.Entries.Select(e => e.Metadata.Name.Split('.').Last()));
+
+                throw new UniqueViolationException(modelNames);
             }
 
             throw ex;
