@@ -36,7 +36,6 @@ public class Startup : IStartup
         services.AddDapperRepositories(AppSettings.ConnectionString);
         services.AddDomainServices();
         services.AddApplicationServices();
-        services.AddApplicationFluentValidations();
 
         services.AddRedisCache(AppSettings.RedisConnectionString);
 

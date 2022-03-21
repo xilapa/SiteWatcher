@@ -5,8 +5,11 @@ using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Application.Commands;
 
-public class RegisterUserCommand : IRequest<ApplicationResult<string>>, IValidable<RegisterUserCommand>
+public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ApplicationResult<string>>
 {
+    public RegisterUserCommand() : base(new RegisterUserCommandValidator())
+    { }
+
     public string Name { get; set; }
     public string Email { get; set; }
     public ELanguage Language { get; set; }

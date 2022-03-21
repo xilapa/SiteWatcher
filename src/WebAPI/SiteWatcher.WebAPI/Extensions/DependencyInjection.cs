@@ -11,6 +11,7 @@ using System.Reflection;
 using SiteWatcher.Application;
 using MediatR;
 using SiteWatcher.Application.Commands;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SiteWatcher.WebAPI.Extensions;
 
@@ -23,12 +24,6 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddApplicationFluentValidations(this IServiceCollection services)
-    {
-        Validator.LoadFluentValidators();
-        return services;
-    }
-
     public static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
@@ -37,15 +32,16 @@ public static class DependencyInjection
 
     public static IServiceCollection AddSettings(this IServiceCollection services)
     {
-        services.AddTransient(f => f.GetRequiredService<IConfiguration>().Get<GoogleSettings>());
-        services.AddTransient(f => f.GetRequiredService<IConfiguration>().Get<AppSettings>());
+        services.AddSingleton(f => f.GetRequiredService<IConfiguration>().Get<GoogleSettings>());
+        services.AddSingleton(f => f.GetRequiredService<IConfiguration>().Get<AppSettings>());
         return services;
     }
 
-    public static IServiceCollection ConfigureAuth(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureAuth(this IServiceCollection services, AppSettings appSettings)
     {
         services.AddScoped<ITokenService,TokenService>();
-        var appSettings = configuration.Get<AppSettings>();
+        var servicesProvider = services.BuildServiceProvider();
+        var tokenService = servicesProvider.GetRequiredService<ITokenService>();
 
         var tokenValidationParameters = new TokenValidationParameters
             {
@@ -63,12 +59,12 @@ public static class DependencyInjection
         })
         .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts => {
             opts.MapInboundClaims = false;
-            tokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.AuthKey));
+            tokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(appSettings.AuthKey);
             opts.TokenValidationParameters = tokenValidationParameters;
         })
         .AddJwtBearer(AuthenticationDefaults.RegisterScheme, opts => {
             opts.MapInboundClaims = false;
-            tokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.RegisterKey));
+            tokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(appSettings.RegisterKey);
             opts.TokenValidationParameters = tokenValidationParameters;
         });
 
