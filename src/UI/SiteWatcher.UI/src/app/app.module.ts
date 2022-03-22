@@ -9,6 +9,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeModule } from './home/home.module';
 import { AuthHeaderInterceptor } from './core/auth/auth-header.interceptor';
+import { UnauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
 
 
 
@@ -30,6 +31,12 @@ import { AuthHeaderInterceptor } from './core/auth/auth-header.interceptor';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHeaderInterceptor,
+      multi: true
+
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: UnauthorizedInterceptor,
       multi: true
 
     }],
