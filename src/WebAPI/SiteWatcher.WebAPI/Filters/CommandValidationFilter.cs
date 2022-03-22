@@ -20,12 +20,11 @@ public class CommandValidationFilter : IActionFilter
 
         foreach(var p in context.ActionDescriptor.Parameters.Where(p => p.BindingInfo.BindingSource == BindingSource.Body))
         {
-            var validable = p as IValidable;
-             
-            if (validable is not null)
-                errors.AddRange(validable.Validate());
+            var command = context.ActionArguments[p.Name] as IValidable;
+            if (command is not null)
+                errors.AddRange(command.Validate());
         }
-                   
+
         if(errors.Any())
         {
             var result = new ObjectResult(new WebApiResponse<object>(null, errors))
