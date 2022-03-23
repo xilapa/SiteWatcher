@@ -19,4 +19,7 @@ public class GoogleSettings
 
     [ConfigurationKeyName("Google_RedirectUri")]
     public string RedirectUri { get; set; }
+
+    [ConfigurationKeyName("Google_StateValue")]
+    public byte[] StateValue { get; set; }
 }
