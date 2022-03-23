@@ -8,6 +8,7 @@ export class TokenService {
 
   private readonly localStorage : Storage;
   private readonly tokenKey = "token";
+  private readonly registerTokenKey = "TOKEN";
 
   constructor(@Inject(DOCUMENT) doc: Document){
     this.localStorage = doc.defaultView?.localStorage as Storage;
@@ -18,5 +19,17 @@ export class TokenService {
   
   getToken = (): string | null => 
     this.localStorage.getItem(this.tokenKey);
+
+  removeToken = () : void =>
+    this.localStorage.removeItem(this.tokenKey);
+
+  setRegisterToken = (token: string) : void =>
+    this.localStorage.setItem(this.registerTokenKey, token);
+  
+  getRegisterToken = () : string | null =>
+    this.localStorage.getItem(this.registerTokenKey);
+
+  removeRegisterToken = () : void =>
+    this.localStorage.removeItem(this.registerTokenKey);
   
 }
