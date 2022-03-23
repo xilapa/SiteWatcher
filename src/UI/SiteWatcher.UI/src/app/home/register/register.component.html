@@ -10,8 +10,15 @@
                 <label for="name">Name</label>
                 <div class="form-input">
                     <i class="pi pi-user form-icon"></i>
-                    <input id="name" type="text" pInputText placeholder="Name" formControlName="name">         
+                    <input 
+                        id="name" type="text" pInputText 
+                        placeholder="Name" formControlName="name" 
+                        [class.invalid-input]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid">         
                 </div>
+                <sw-inline-input-error-msg 
+                    [show_if]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid" 
+                    [message]="inputFormName?.errors?.['invalidCharacters'] ? nameinvalidCharactersErrorMsg : nameMinLenghtErrorMsg">
+                </sw-inline-input-error-msg>
             </div>
 
             <!-- email -->
@@ -19,9 +26,16 @@
                 <label for="email">Email</label>
                 <div class="form-input">
                     <i class="pi pi-at form-icon"></i>
-                    <input id="email" type="text" pInputText placeholder="Email" formControlName="email">
+                    <input 
+                        id="email" type="text" pInputText 
+                        placeholder="Email" formControlName="email"
+                        [class.invalid-input]="inputFormEmail?.touched && inputFormEmail?.dirty && inputFormEmail?.invalid">
                 </div>
                 <span id="email-help" class="text-muted">Email to receive alerts. It doesn't need to be the google account email.</span> 
+                <sw-inline-input-error-msg 
+                    [show_if]="inputFormEmail?.touched && inputFormEmail?.dirty && inputFormEmail?.invalid" 
+                    [message]="emailValidationErrorMsg">
+                </sw-inline-input-error-msg>
             </div>
 
             <!-- language -->
@@ -39,8 +53,8 @@
                 </div>
             </div>
 
-            <!-- submit button --> 
-            <button type="submit" pButton label="Confirm"></button>
+            <!-- submit button -->
+            <button type="submit" pButton label="Confirm" [disabled]="registerForm.invalid"></button>
 
         </form>
     </div>    

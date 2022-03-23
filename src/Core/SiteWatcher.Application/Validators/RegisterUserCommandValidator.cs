@@ -14,7 +14,9 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .NotEmpty()
                 .WithMessage(ApplicationErrors.NAME_NOT_BE_NULL_OR_EMPTY)
             .MinimumLength(3)
-                .WithMessage(ApplicationErrors.NAME_MINIMUM_LENGTH);
+                .WithMessage(ApplicationErrors.NAME_MINIMUM_LENGTH)
+            .HasOnlyLetters()
+                .WithMessage(ApplicationErrors.NAME_MUST_HAVE_ONLY_LETTERS);
 
         RuleFor(cmmd => cmmd.Email)
             .Cascade(CascadeMode.Stop)

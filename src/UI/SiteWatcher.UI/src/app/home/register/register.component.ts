@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { invalidCharactersValidator } from 'src/app/common/validators/invalid-characters.validator';
+import { AuthService } from 'src/app/core/auth/auth.service';
 import { LanguageOptions } from 'src/app/core/dropdown-options/language-options';
-import { UserRegister } from 'src/app/core/interfaces';
-import { Data } from 'src/app/core/shared-data/shared-data';
+import { ApiResponse, UserRegister } from 'src/app/core/interfaces';
+import { UserService } from 'src/app/core/user/user.service';
 
 
 @Component({
@@ -15,43 +17,57 @@ export class RegisterComponent implements OnInit {
 
     public registerForm: FormGroup;
     public languageOptions = LanguageOptions;
-    public userRegister: UserRegister;
+    private userRegisterInitialValues: UserRegister;
+
+    public inputFormName: AbstractControl | null;
+    public nameMinLenghtErrorMsg = "Username length should be at least 3.";
+    public nameinvalidCharactersErrorMsg = "Username must only have letters.";
+
+    public inputFormEmail: AbstractControl | null;
+    public emailValidationErrorMsg = "Email is not valid.";
 
 
-    constructor(private readonly formBuilder: FormBuilder,
-        private readonly router: Router) {
-
-        this.userRegister = Data.Get("register-data") as UserRegister;
-        console.log(this.userRegister);
-
-        //mock data
-        this.userRegister = {
-          email: "dirceu.sjr@gmail.com",
-          googleId: "114086475315666159365",
-          language: 1,
-          name: "Dirceu Junior"
-        }
-
-        if (!this.userRegister) {
-            this.router.navigateByUrl('/home');
-            return;
-        }
+    constructor(
+        private readonly formBuilder: FormBuilder,
+        private readonly authService: AuthService,
+        private readonly userService: UserService,
+        private readonly messageService: MessageService) {        
+        this.userRegisterInitialValues = this.userService.getUserRegisterData();
     }
 
     ngOnInit(): void {        
         this.registerForm = this.formBuilder.group(
             {
-                name: [this.userRegister.name],
-                email: [this.userRegister.email],
-                language: [this.userRegister.language]
+                name: [this.userRegisterInitialValues.name, [Validators.required, Validators.minLength(3), invalidCharactersValidator]],
+                email: [this.userRegisterInitialValues.email, [Validators.required, Validators.email]],
+                language: [this.userRegisterInitialValues.language, [Validators.required]]
             }
-        )
+        );
+        
+        this.inputFormName = this.registerForm.get('name');
+        this.inputFormEmail = this.registerForm.get('email');
     }
 
     public register(): void {
-        console.log("registrado")
+        var registerData = this.registerForm.getRawValue() as UserRegister;
+        this.authService
+                .register(registerData)
+                .subscribe({
+                    next: (resp) =>{
+                        this.userService.setToken(resp.Result);
+                        this.authService.redirecLoggedUser();
+                    },
+                    error: (errorResponse) => {
+                        this.messageService.add(
+                            {
+                                severity: 'error',
+                                summary: 'Error',
+                                detail: (errorResponse.error as ApiResponse<null>).Messages.join("; "),
+                                sticky: true,
+                                closable: true
+                            }
+                        )
+                    }
+                });
     }
-
-
-
 }
