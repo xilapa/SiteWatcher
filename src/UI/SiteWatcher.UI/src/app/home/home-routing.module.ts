@@ -1,10 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { LoginPageGuard } from '../core/guards/login-page.guard';
 import { AuthComponent } from './auth/auth.component';
 import { HomeComponent } from './home.component';
 import { LogInComponent } from './log-in/log-in.component';
-import { RegisterComponent } from './register/register.component';
-
 
 const homeRoutes: Routes = [
   {
@@ -13,12 +12,11 @@ const homeRoutes: Routes = [
     children:
       [ 
         { path: '', pathMatch: 'full', redirectTo: 'login'},
-        { path: 'login', component: LogInComponent },
+        { path: 'login', component: LogInComponent, canActivate: [LoginPageGuard] },
         { path: 'auth', component: AuthComponent }
       ]
   },
-  { path: 'register', component: RegisterComponent }
-
+  { path: 'register', loadChildren: () => import('./register/register.module').then(m => m.RegisterModule)}
 ];
 
 @NgModule({
