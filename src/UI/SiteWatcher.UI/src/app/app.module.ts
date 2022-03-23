@@ -4,14 +4,13 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CookieService } from 'ngx-cookie-service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeModule } from './home/home.module';
 import { AuthHeaderInterceptor } from './core/auth/auth-header.interceptor';
 import { UnauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
-
-
 
 
 @NgModule({
@@ -28,6 +27,7 @@ import { UnauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
 ],
   providers: [
     MessageService,
+    CookieService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHeaderInterceptor,
