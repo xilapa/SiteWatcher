@@ -10,6 +10,5 @@ public class UserService : IUserService
         this.userRepository = userRepository;
 
     public User Register(User user) =>
-        userRepository.Add(user.Activate());
-    
+        userRepository.Add(user);
 }
