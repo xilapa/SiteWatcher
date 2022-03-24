@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using SiteWatcher.Domain.ViewModels;
 
 namespace SiteWatcher.Domain.Interfaces;
