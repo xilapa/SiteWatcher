@@ -22,10 +22,6 @@ export class UserService {
   private userSubject = new BehaviorSubject<User | null>(null);
 
   public setToken(token : string) : void {
-    // TODO: mover para método a ser executado após registro apenas
-    Data.RemoveByKeys(this.registerData);
-    this.tokenService.removeRegisterToken();
-    // fim todo
     this.tokenService.setToken(token);
     this.decodeAndNotify(token);
   }
@@ -38,6 +34,11 @@ export class UserService {
     const userRegister = jwt_decode(token) as UserRegister;
     userRegister.language = parseInt(userRegister.language as any) as ELanguage;
     Data.Share(this.registerData, userRegister);
+  }
+
+  public removeUserRegisterData() : void {
+    Data.RemoveByKeys(this.registerData);
+    this.tokenService.removeRegisterToken();
   }
 
   public getUserRegisterData = () : UserRegister =>
