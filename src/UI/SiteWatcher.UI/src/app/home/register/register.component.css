@@ -27,7 +27,7 @@ form {
 .form-group {
     display: flex;
     flex-direction: column;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
 }
 
 .form-group label {
@@ -67,6 +67,11 @@ button {
 
 .text-muted {
     margin-top: 5px;
+}
+
+.invalid-input:enabled:focus {
+    box-shadow: 0 0 0 0.3rem var(--input-invalid-color-alpha) !important;
+    border-color: var(--input-invalid-color);
 }
 
 /*#region ng prime input text adjustments */

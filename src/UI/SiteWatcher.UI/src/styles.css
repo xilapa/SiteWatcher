@@ -63,6 +63,8 @@ table {
     --button-font-size: 1rem;
     --link-text-font-size: 0.9rem;
 	--input-form-height: 40px;
+    --input-invalid-color: #dc3545;
+    --input-invalid-color-alpha: rgb(220 53 69 / 50%);
 }
 
 .icon-right-margin {
@@ -115,6 +117,10 @@ table {
     box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
 }
 
+.p-disabled, .p-component:disabled {
+    opacity: 0.65;
+    box-shadow: none !important;
+}
 /*#endregion ng prime button adjustments */
 
 /*#region prime-ng button-outlined adjustments */

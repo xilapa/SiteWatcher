@@ -55,6 +55,7 @@ export class RegisterComponent implements OnInit {
                 .subscribe({
                     next: (resp) =>{
                         this.userService.setToken(resp.Result);
+                        this.userService.removeUserRegisterData();
                         this.authService.redirecLoggedUser();
                     },
                     error: (errorResponse) => {
