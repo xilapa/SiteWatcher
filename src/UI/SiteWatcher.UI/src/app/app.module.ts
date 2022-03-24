@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { HomeModule } from './home/home.module';
 import { AuthHeaderInterceptor } from './core/auth/auth-header.interceptor';
 import { UnauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
+import { ContentTypeInterceptor } from './core/interceptors/content-type.interceptor';
 
 
 @NgModule({
@@ -28,6 +29,11 @@ import { UnauthorizedInterceptor } from './core/auth/unauthorized.interceptor';
   providers: [
     MessageService,
     CookieService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ContentTypeInterceptor,
+      multi: true
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthHeaderInterceptor,
