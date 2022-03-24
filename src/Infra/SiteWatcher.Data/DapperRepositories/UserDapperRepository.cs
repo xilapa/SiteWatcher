@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Dapper;
 using SiteWatcher.Domain.Interfaces;
 using SiteWatcher.Domain.ViewModels;
@@ -16,7 +15,7 @@ public class UserDapperRepository : DapperRepository<UserViewModel>, IUserDapper
                     SELECT 
 	                    u.""Id"", u.""Name"", u.""Email"", u.""EmailConfirmed"", u.""Language""
                     FROM 
-	                    ""Users"" AS u
+	                    ""siteWatcher_webApi"".""Users"" AS u
                     WHERE
 	                    u.""GoogleId"" = @googleId AND u.""Active"" ";
 
