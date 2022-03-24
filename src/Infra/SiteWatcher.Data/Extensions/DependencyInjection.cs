@@ -46,14 +46,11 @@ public static class DependencyInjection
 
     public static IServiceCollection AddRedisCache(this IServiceCollection services, string connectionString)
     {
-        var configOptions = new ConfigurationOptions()
-        {
-            AbortOnConnectFail = false,
-            ConnectRetry = 3,
-            ConnectTimeout = 2_000,
-            ReconnectRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(5).Milliseconds, TimeSpan.FromSeconds(20).Milliseconds)
-        };
-        configOptions.EndPoints.Add(connectionString);
+        var configOptions = ConfigurationOptions.Parse(connectionString);        
+        configOptions.AbortOnConnectFail = false;
+        configOptions.ConnectRetry = 3;
+        configOptions.ConnectTimeout = 2_000;
+        configOptions.ReconnectRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(5).Milliseconds, TimeSpan.FromSeconds(20).Milliseconds);
 
         services.AddSingleton<IConnectionMultiplexer>(s => ConnectionMultiplexer.Connect(configOptions));
         services.AddSingleton<ICache, RedisCache>();
