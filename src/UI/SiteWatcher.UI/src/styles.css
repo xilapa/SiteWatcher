@@ -1,0 +1,147 @@
+
+/* #region css reset */
+/* You can add global styles to this file, and also import other style files */
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* #endregion css reset */
+
+* {
+    box-sizing: border-box;
+    font-family: 'Rubik', sans-serif;
+}
+
+:root {
+    --main-background-color: #fafafa;
+    --box-background-color: white;
+    --title1-font-size: 2rem;
+    --button-font-size: 1rem;
+    --link-text-font-size: 0.9rem;
+	--input-form-height: 40px;
+    --input-invalid-color: #dc3545;
+    --input-invalid-color-alpha: rgb(220 53 69 / 50%);
+}
+
+.icon-right-margin {
+    margin-right: 5px;
+}
+
+.text-muted {
+	font-size: var(--link-text-font-size);
+    color: var(--gray-700);
+    font-weight: 400;
+}
+
+.title {
+	font-size: var(--title1-font-size);
+    font-weight: 500;
+}
+
+/* prime-ng toast icon size */
+.p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon {
+	font-size: 20px;
+}
+
+/* center label text on prime-ng dropdown */
+.p-dropdown-label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;       
+}
+
+/*#region prime-ng button adjustments */
+.p-button {
+    font-size: var(--button-font-size);
+    color: white;
+	background-color: var(--gray-700);
+	border: none;
+}
+
+.p-button:hover, .p-button:enabled:hover {
+    font-size: var(--button-font-size);
+    color: var(--surface-0);
+    background-color: var(--gray-600);
+    border-color: var(--gray-600);
+}
+
+.p-button:focus {
+    box-shadow: none;
+}
+
+.p-button:active:hover {
+    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
+}
+
+.p-disabled, .p-component:disabled {
+    opacity: 0.65;
+    box-shadow: none !important;
+}
+/*#endregion ng prime button adjustments */
+
+/*#region prime-ng button-outlined adjustments */
+.p-button.p-button-outlined {
+    font-size: var(--button-font-size);
+    color: var(--gray-800);
+}
+
+.p-button.p-button-outlined:hover, .p-button.p-button-outlined:enabled:hover {
+    font-size: var(--button-font-size);
+    color: var(--surface-0);
+    background-color: var(--gray-600);
+    border-color: var(--gray-600);
+}
+
+.p-button.p-button-outlined:focus {
+    box-shadow: none;
+}
+
+.p-button.p-button-outlined:active:hover {
+    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
+}
+
+/*#endregion ng prime button-outlined  adjustments */

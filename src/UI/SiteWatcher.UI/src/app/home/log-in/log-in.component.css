@@ -1,0 +1,22 @@
+.login-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: Var(--box-background-color);
+    min-height: 250px;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.link-text {
+    font-size: var(--link-text-font-size);
+    margin-top: 1.5rem;
+    color: var(--gray-700);
+    font-weight: 400;
+    cursor: pointer;
+}

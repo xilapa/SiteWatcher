@@ -1,0 +1,132 @@
+.register-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+}
+
+.register-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--box-background-color);
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    min-height: 450px;
+    padding: 0 20px 0 20px;
+    max-width: 514px;    
+}
+
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+}
+
+.form-input {
+    display: flex;
+    flex-direction: row;
+    min-width: 100%;
+}
+
+.form-input input {
+    flex-grow: 1;
+    height: var(--input-form-height);
+}
+
+.form-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e9ecef;
+    color: #495057;
+    border-top: 1px solid #ced4da;
+    border-left: 1px solid #ced4da;
+    border-bottom: 1px solid #ced4da;
+    min-width: 10%;
+    border-radius: 4px 0 0 4px;
+    padding: 8px
+}
+
+button {
+    align-self: center;
+    width: 120px;
+    margin-top: 25px;
+}
+
+.text-muted {
+    margin-top: 5px;
+}
+
+.invalid-input:enabled:focus {
+    box-shadow: 0 0 0 0.3rem var(--input-invalid-color-alpha) !important;
+    border-color: var(--input-invalid-color);
+}
+
+/*#region ng prime input text adjustments */
+.p-inputtext:enabled:focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
+    border-color: var(--gray-600);
+}
+
+:host::ng-deep .p-inputtext {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/*#endregion ng prime active input adjustments */
+
+/*#region ng prime dropdown adjustments */
+:host::ng-deep .p-dropdown {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    height: var(--input-form-height);
+    min-width: 200px;
+}
+
+:host::ng-deep .p-focus {
+    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%) !important;
+    border-color: var(--gray-600) !important;
+}
+
+:host::ng-deep .p-dropdown-item {
+    font-family: 'Rubik', sans-serif !important;
+    font-weight: normal !important;
+    font-size: 1rem !important;
+}
+:host::ng-deep .p-dropdown-item:hover {
+    background: var(--gray-400) !important;
+    color: var(--gray-800) !important;
+    font-family: 'Rubik', sans-serif !important;
+}
+
+:host::ng-deep .p-highlight {
+    background: var(--gray-600) !important;
+    color: white !important;
+}
+/*#endregion ng prime dropdown adjustments */
+
+
+@media screen and (max-width: 500px) {
+    .register-wrapper {
+        width: 100vw;
+    }
+
+    .register-box {
+        border-radius: 0px;
+        padding: 0 10px 0 10px;
+    }
+}

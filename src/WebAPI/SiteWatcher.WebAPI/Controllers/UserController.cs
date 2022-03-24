@@ -1,56 +1,58 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Application.DTOS.InputModels;
-using SiteWatcher.WebAPI.DTOs;
-using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using SiteWatcher.WebAPI.Constants;
+using MediatR;
+using SiteWatcher.Application.Commands;
+using SiteWatcher.WebAPI.DTOs.ViewModels;
+using SiteWatcher.Domain.Interfaces;
+using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Application.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class UserController : ControllerBase
 {
-    private readonly IUserAppService userAppService;
+    private readonly IMediator mediator;
+    private readonly ITokenService tokenService;
     
-    public UserController(IUserAppService userAppService)
+    public UserController(IMediator mediator, ITokenService tokenService)
     {
-        this.userAppService = userAppService;
-    }
-
-    [HttpPost]
-    [Route("Subscribe")]
-    public async Task<ActionResult<WebApiResponse>> Susbscribe(UserSubscribeIM userSubInput)
-    {
-        var appResponse = await this.userAppService.Subscribe(userSubInput);
-
-        var response = new ObjectResult(new WebApiResponse(appResponse))
-        {
-            StatusCode = (int)HttpStatusCode.BadRequest
-        };
-
-        if (appResponse.Success && appResponse.InternalResult == ESubscriptionResult.SubscribedSuccessfully)
-            response.StatusCode = (int)HttpStatusCode.Created;
-        
-        if(appResponse.Success && appResponse.InternalResult == ESubscriptionResult.AlreadySubscribed)
-            response.StatusCode = (int)HttpStatusCode.Redirect;
-
-        return response;
-    }
-
-    [HttpPost]
-    [Route("Unsubscribe")]
-    public void Unsubscribe()
-    {
-        throw new NotImplementedException();
+        this.mediator = mediator;
+        this.tokenService = tokenService;
     }
 
     [HttpGet]
-    [Route("ConfirmEmail")]
     public void ConfirmEmail()
     {
         throw new NotImplementedException();
+    }
+
+    [HttpPost]
+    [Authorize(AuthenticationSchemes = AuthenticationDefaults.RegisterScheme)]
+    public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
+    {       
+        var response = new WebApiResponse<string>();
+        
+        registerUserCommand.AuthEmail = User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
+        registerUserCommand.GoogleId = User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
+
+        if (registerUserCommand.AuthEmail is null || registerUserCommand.GoogleId is null)
+            return BadRequest(response.AddMessages(ApplicationErrors.INVALID_REGISTER_DATA));
+
+        var result = await mediator.Send(registerUserCommand);
+
+        if (result.Success)
+        {
+            var authTokenPayload = HttpContext.GetAuthTokenPayload();
+            await tokenService.InvalidateToken(authTokenPayload, ETokenPurpose.Register);
+        }
+
+        if (!result.Success)
+            return Conflict(response.AddMessages(result.Errors));    
+
+        return Created(string.Empty, response.SetResult(result.Value));
     }
 }

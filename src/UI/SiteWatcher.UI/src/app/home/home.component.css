@@ -1,0 +1,19 @@
+.home-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    width: 300px;
+}
+
+.home-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: Var(--box-background-color);
+    border: 1px solid lightgray;
+    border-radius: 6px;
+    min-height: 250px;
+    min-width: 100%;
+}

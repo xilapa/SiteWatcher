@@ -1,12 +1,8 @@
-using System;
-using System.Threading.Tasks;
-using SiteWatcher.Domain.Entities;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Models;
 
 namespace SiteWatcher.Domain.Interfaces;
 
 public interface IUserService
 {
-    Task<User> CreateUser(string name, string email);
-    Task<ESubscriptionResult> SubscribeUser(Guid userId);
+    User Register(User user);
 }

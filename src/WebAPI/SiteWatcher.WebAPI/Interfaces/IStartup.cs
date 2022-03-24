@@ -1,14 +1,10 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using SiteWatcher.WebAPI.Settings;
 
 namespace SiteWatcher.WebAPI.Interfaces;
 
 public interface IStartup
 {
-    IConfiguration Configuration { get; }
+    AppSettings AppSettings { get; }
     void ConfigureServices(IServiceCollection services, IWebHostEnvironment env);
     void Configure(WebApplication app, IWebHostEnvironment env, ILoggerFactory loggerFactory);
 }

@@ -1,0 +1,14 @@
+<div class="container-fluid m-0 p-0">
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+
+  <!-- toast messages -->
+  <p-toast position="bottom-right"
+  [breakpoints]="{'420px': {  width: '90%',
+                              left: '50%',
+                              transform: 'translate(-50%, 0%)' 
+                           }
+                  }">
+  </p-toast >
+</div>
