@@ -1,31 +1,42 @@
-using SiteWatcher.Application.DTOs.Metadata;
-
 namespace SiteWatcher.WebAPI.DTOs.ViewModels;
 
-// TODO: tipar result
-public sealed class WebApiResponse
+public sealed class WebApiResponse<T>
 {
     public WebApiResponse()
     {
         Messages = new List<string>();
     }
 
-    public WebApiResponse(object result, params string[] messages) : this()
+    public WebApiResponse(T result, params string[] msgs) : this()
     {
-        if(messages != null) Messages.AddRange(messages);
+        if(msgs != null) Messages.AddRange(msgs);
         Result = result;
     }
 
-    public WebApiResponse(ApplicationResponse appResponse) : this()
+    public WebApiResponse(T result, IEnumerable<string> msgs) : this()
     {
-        if(appResponse.Success)        
-            Messages.Add(appResponse.Message);        
-        else        
-            Messages.AddRange(appResponse.Errors);
-        
-        Result = appResponse.Result;
+        if(msgs != null) Messages.AddRange(msgs);
+        Result = result;
+    }
+
+    public WebApiResponse<T> AddMessages(params string[] msgs)
+    {
+       if(msgs != null) Messages.AddRange(msgs);
+       return this;
+    }
+
+    public WebApiResponse<T> AddMessages(IEnumerable<string> msgs)
+    {
+       if(msgs != null) Messages.AddRange(msgs);
+       return this;
+    }
+
+    public WebApiResponse<T> SetResult(T result)
+    {
+        Result = result;
+        return this;
     }
 
     public List<string> Messages { get; set; }
-    public object Result { get; set; }
+    public T Result { get; set; }
 }
