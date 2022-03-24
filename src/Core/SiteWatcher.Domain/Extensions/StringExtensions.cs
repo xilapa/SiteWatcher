@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using System.Text;
 using System.Reflection;
 using System.ComponentModel;
@@ -7,13 +6,6 @@ namespace SiteWatcher.Domain.Extensions;
 
 public static class StringExtensions
 {
-    public static byte[] GetHashedBytes(this string text)
-    {
-        var textBytes = Encoding.ASCII.GetBytes(text);
-        var hashedBytes = SHA256.HashData(textBytes);
-        return hashedBytes;
-    }
-
     public static string ToBase64tring(this string text)
     {
         var textBytes = Encoding.ASCII.GetBytes(text);
@@ -34,7 +26,6 @@ public static class StringExtensions
         var enumOptions = typeof(EnumT)
                             .GetFields(BindingFlags.Public | BindingFlags.Static)
                             .Select(m => new {
-                                m.Name,
                                 Value = m.GetValue(enumInstance),
                                 DescAtt = m.GetCustomAttributes(typeof(DescriptionAttribute),false).FirstOrDefault()
                             });

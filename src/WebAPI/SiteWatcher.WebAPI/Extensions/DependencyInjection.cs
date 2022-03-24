@@ -1,17 +1,14 @@
 using SiteWatcher.Domain.Interfaces;
 using SiteWatcher.Domain.Services;
-using SiteWatcher.Application.Validators;
 using SiteWatcher.WebAPI.Settings;
 using SiteWatcher.WebAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using SiteWatcher.WebAPI.Constants;
 using System.Reflection;
 using SiteWatcher.Application;
 using MediatR;
 using SiteWatcher.Application.Commands;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace SiteWatcher.WebAPI.Extensions;
 
@@ -40,8 +37,6 @@ public static class DependencyInjection
     public static IServiceCollection ConfigureAuth(this IServiceCollection services, AppSettings appSettings)
     {
         services.AddScoped<ITokenService,TokenService>();
-        var servicesProvider = services.BuildServiceProvider();
-        var tokenService = servicesProvider.GetRequiredService<ITokenService>();
 
         var tokenValidationParameters = new TokenValidationParameters
             {
