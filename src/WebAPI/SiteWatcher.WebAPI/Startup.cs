@@ -49,7 +49,7 @@ public class Startup : IStartup
                               {
                                   builder.WithOrigins(AppSettings.FrontEndUrl);
                                   builder.AllowAnyHeader();
-                                  builder.WithMethods("OPTIONS", "GET", "POST", "PATCH", "DELETE");
+                                  builder.WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE");
                               });
         });
     }
