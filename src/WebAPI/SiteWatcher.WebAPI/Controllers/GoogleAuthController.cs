@@ -8,10 +8,7 @@ using SiteWatcher.WebAPI.Settings;
 using SiteWatcher.WebAPI.Constants;
 using SiteWatcher.Domain.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using SiteWatcher.WebAPI.Services;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Extensions;
+using SiteWatcher.WebAPI.Extensions;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -22,32 +19,36 @@ public class GoogleAuthController : ControllerBase
 {
     private readonly GoogleSettings googleSettings;
     private readonly IHttpClientFactory httpClientFactory;
-    private readonly IUserRepository userRepository;
+    private readonly IUserDapperRepository userDapperRepository;
     private readonly ILogger<GoogleAuthController> logger;
     private readonly ITokenService tokenService;
+    private readonly ICache cache;
+
 
     public GoogleAuthController(
         GoogleSettings googleSettings, 
         IHttpClientFactory httpClientFactory,
         ILogger<GoogleAuthController> logger,
-        IUserRepository userRepository,
-        ITokenService tokenService)
+        IUserDapperRepository userDapperRepository,
+        ITokenService tokenService,
+        ICache cache)
     {
         this.googleSettings = googleSettings;
         this.httpClientFactory = httpClientFactory;
         this.logger = logger;
-        this.userRepository = userRepository;
+        this.userDapperRepository = userDapperRepository;
         this.tokenService = tokenService;
+        this.cache = cache;
     }
 
     [HttpGet]
     [Route("login")]
     [Route("register")]
-    public IActionResult StartAuth([FromQuery] string returnUrl = null) 
+    public async Task<IActionResult> StartAuth([FromQuery] string returnUrl = null) 
     {        
         Response.Cookies.Delete("returnUrl");
 
-        if(returnUrl is not null)
+        if(!string.IsNullOrEmpty(returnUrl))
         {
             var cookieOptions = new CookieOptions
             {
@@ -58,54 +59,56 @@ public class GoogleAuthController : ControllerBase
             };
             Response.Cookies.Append("returnUrl", returnUrl, cookieOptions);
         }
-
-        // TODO: Criar e salvar state no redis
-        var state = "STATE";
+ 
+        var state = HttpContext.GenerateStateFromRequest();
+        await cache.SaveBytesAsync(state, googleSettings.StateValue, TimeSpan.FromMinutes(5));       
 
         var authUrl = $"{googleSettings.AuthEndpoint}?scope={HttpUtility.UrlEncode(googleSettings.Scopes)}&response_type=code&include_granted_scopes=false&state={state}&redirect_uri={HttpUtility.UrlEncode(googleSettings.RedirectUri)}&client_id={googleSettings.ClientId}";
 
         return Redirect(authUrl);
     }
 
-    [HttpPost]
     [HttpPost("authenticate")] 
     public async Task<IActionResult> Authenticate([FromBody] AuthCallBackData authData)
     {
         var response = new WebApiResponse<AuthenticationResult>();
-        // TODO: checar state
-       
+
         var scopesMissing = googleSettings.Scopes.Split(" ").Any(s => !authData.Scope.Contains(s));
-        if(scopesMissing)        
-            return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));        
+        if(scopesMissing || string.IsNullOrEmpty(authData.Scope))
+        {
+            logger.LogError("Invalid Scopes passed at {date} \n Scopes: {scopes}", DateTime.Now, authData.Scope);
+            return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));
+        }  
+
+        var storedState = await cache.GetAndRemoveBytesAsync(authData.State);
+        if(storedState is null || !storedState.SequenceEqual(googleSettings.StateValue))
+        {
+            logger.LogError("Invalid State passed at {date} \n State from request: {state} \nCached state {cachedState}", DateTime.Now, authData.State, storedState);
+            return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));       
+        }
 
         var tokenResult = await ExchangeCode(authData.Code);
         if(!tokenResult.Success)
             return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));
         
         var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenResult.IdToken);
-
         var googleId = token.Claims.First(c => c.Type == AuthenticationDefaults.Google.Id).Value;
-        // TODO: get as notracking ou usar Dapper logo
-        var user = await userRepository.GetAsync(u => u.GoogleId == googleId);
+        var user = await userDapperRepository.GetActiveUserAsync(googleId);
 
-        if(user is null)
+        var authResult = new AuthenticationResult();
+
+        if(user.Id == Guid.Empty)
         {   
-            var locale = token.Claims.DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
-                                     .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale).Value
-                                     .Split("-").First();
+            var registerToken = tokenService.GenerateRegisterToken(token.Claims, googleId);
+            authResult.Set(EAuthTask.Register, registerToken);
+        }
+        else
+        {
+            var loginToken = tokenService.GenerateLoginToken(user);
+            authResult.Set(EAuthTask.Login, loginToken);
+        }   
 
-            var localeClaim = new Claim(AuthenticationDefaults.ClaimTypes.Language, ((int)locale.GetEnumValue<ELanguage>()).ToString());
-
-            var googleIdClaim = new Claim(AuthenticationDefaults.ClaimTypes.GoogleId, googleId);
-
-            var registerToken = tokenService.GenerateRegisterToken(token.Claims, localeClaim, googleIdClaim);
-
-            var authResult = new AuthenticationResult(EAuthTask.Register, registerToken);
-            return Ok(response.SetResult(authResult));
-        }       
-
-
-        return Ok("Ok!");
+        return Ok(response.SetResult(authResult));
     }
 
     private async Task<GoogleTokenResult> ExchangeCode(string code)
@@ -125,7 +128,7 @@ public class GoogleAuthController : ControllerBase
         {
             if (!response.IsSuccessStatusCode){
                 var error = await response.Content.ReadAsStringAsync();
-                logger.LogError("Error on exchanging code.\nErrorResponse: {error}", error);
+                logger.LogError("Error on exchanging code at {date}.\nErrorResponse: {error}", DateTime.Now, error);
                 return new GoogleTokenResult(success: false);
             }            
 
@@ -150,6 +153,7 @@ public class GoogleAuthController : ControllerBase
             TODO: Criar filtro para recusar qualquer token na blacklist.
             TODO: No front deve have HttpInterceptor para resultados 401 - Unauthorized para que o token seja removido.
         */
+
         throw new NotImplementedException();
     }
 
