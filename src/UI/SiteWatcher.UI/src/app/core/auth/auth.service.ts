@@ -35,18 +35,18 @@ export class AuthService {
   public authenticate(state: string, code: string, scope: string): Observable<ApiResponse<AuthenticationResult>> {
     return this.httpClient.post<ApiResponse<AuthenticationResult>>(
       `${environment.baseApiUrl}/${this.baseRoute}/authenticate`,
-      { state, code, scope }, {responseType: 'json'})
+      { state, code, scope })
   }
 
   public register(registerData : UserRegister): Observable<ApiResponse<string>> {
     return this.httpClient.post<ApiResponse<string>>(
-      `${environment.baseApiUrl}/user/register`, registerData, {responseType: 'json', headers: {'authorization': `Bearer ${this.tokenService.getRegisterToken()}`}})
+      `${environment.baseApiUrl}/user/register`, registerData, { headers: {'authorization': `Bearer ${this.tokenService.getRegisterToken()}`}})
   }
 
   public redirecLoggedUser() : void {
     var cookie = this.cookieService.get('returnUrl');
 
-    if(cookie) {
+    if(cookie && cookie != 'undefined') {
       this.cookieService.delete('returnUrl');
       this.router.navigateByUrl(cookie);
     } 

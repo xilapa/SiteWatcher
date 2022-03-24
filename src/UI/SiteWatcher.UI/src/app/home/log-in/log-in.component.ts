@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/core/auth/auth.service';
 
 
@@ -7,17 +8,25 @@ import { AuthService } from 'src/app/core/auth/auth.service';
   templateUrl: './log-in.component.html',
   styleUrls: ['./log-in.component.css']
 })
-export class LogInComponent {
-  
-  constructor(private readonly authService: AuthService) { }
-  
-  // TODO: implementar returnUrl
+export class LogInComponent implements OnInit {
 
+  private returnUrl : string;
+  
+  constructor(
+    private readonly authService: AuthService,
+    private readonly activatedRoute : ActivatedRoute
+    ) { }
+
+
+  ngOnInit(): void {
+    this.returnUrl = this.activatedRoute.snapshot.queryParams["returnUrl"];
+  }
+  
   public login() {
-    this.authService.googleLogin();
+    this.authService.googleLogin(this.returnUrl);
   }
 
   public register() {
-    this.authService.googleRegister();
+    this.authService.googleRegister(this.returnUrl);
   }
 }
