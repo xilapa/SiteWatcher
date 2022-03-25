@@ -2,7 +2,7 @@ namespace SiteWatcher.WebAPI.Settings;
 
 public class AppSettings
 {
-    [ConfigurationKeyName("Database_ConnectionString")]
+    [ConfigurationKeyName("DATABASE_URL")]
     public string ConnectionString { get; set;  }
     public string FrontEndUrl { get; set; }
     public byte[] RegisterKey { get; set; }
