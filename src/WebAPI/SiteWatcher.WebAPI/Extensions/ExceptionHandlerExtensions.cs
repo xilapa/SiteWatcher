@@ -23,8 +23,8 @@ public static class EceptionHandlerExtensions
                 var exception = exceptionHandlerFeature.Error;
 
                 var logger = loggerFactory.CreateLogger("GlobalExceptionHandlerMiddleware");
-                logger.LogError("Exception ocurred at {date}\n\t{type}: {msg}\n\tRoute: {route}\n\tTraceId: {traceId}\n\n\tStackTrace: {stackTrace}", 
-                    DateTime.Now, exception.GetType().Name, exception.Message, route, traceId, exception.StackTrace);
+                logger.LogError(exception, "Exception ocurred on Route: {route} at {date}, {type}: {msg}. TraceId: {traceId}",
+                    route, DateTime.UtcNow, exception.GetType().Name, exception.Message, traceId);
 
                 object response;
 
