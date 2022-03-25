@@ -7,6 +7,7 @@ using StackExchange.Redis;
 using SiteWatcher.Infra.Cache;
 using Microsoft.EntityFrameworkCore.Migrations;
 using SiteWatcher.Infra.Data;
+using System.Text.RegularExpressions;
 
 namespace SiteWatcher.Infra.Extensions;
 
@@ -14,6 +15,18 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services,  bool isDevelopment, string connectionString = null) where TContext : DbContext, IUnityOfWork
     {
+
+        if(!isDevelopment)
+        {
+            var regexString = new Regex(@"\:\/\/(?<user>.*?)\:(?<password>.*?)\@(?<host>.*?)\:(?<port>.*?)\/(?<database>.*)");
+            var matches = regexString.Match(connectionString).Groups;
+            connectionString = $"Server={matches["host"].Value};" +
+                                    $"Port={matches["port"].Value};" +
+                                    $"Database={matches["database"].Value};" +
+                                    $"User Id={matches["user"].Value};" +
+                                    $"Password={matches["password"].Value}";
+        }
+
         var optionsBuilder = new DbContextOptionsBuilder<TContext>();
         if(isDevelopment)
         {
@@ -25,7 +38,7 @@ public static class DependencyInjection
         optionsAction = connectionString is null ? null : 
                             options => options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, SiteWatcherContext.Schema));
 
-        // Explicitando que o contexto é o mesmo para todos os repositórios
+        // Making explicit that the context is the same for all repositories
         services.AddDbContext<TContext>(optionsAction, ServiceLifetime.Scoped); 
         services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());    
 
