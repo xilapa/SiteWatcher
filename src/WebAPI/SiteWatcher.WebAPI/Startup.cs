@@ -5,6 +5,7 @@ using SiteWatcher.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.WebAPI.Settings;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace SiteWatcher.WebAPI;
 
@@ -70,6 +71,12 @@ public class Startup : IStartup
         app.UseHttpsRedirection();
 
         app.UseCors(AppSettings.CorsPolicy);
+
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+            ForwardedHeaders.XForwardedProto
+        });  
 
         app.UseAuthentication();
 
