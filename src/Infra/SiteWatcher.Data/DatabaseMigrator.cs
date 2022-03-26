@@ -22,12 +22,13 @@ public class DatabaseMigrator
         
         var stopwatch = new Stopwatch();
         logger.LogInformation("Database migration started at {date}", DateTime.UtcNow);
+
         stopwatch.Start();
         await context.Database.MigrateAsync();
         stopwatch.Stop();
-        var duration = stopwatch.ElapsedMilliseconds/1000;
-        logger.LogInformation("Database migration finished at {date} with a duration of {duration} s", DateTime.UtcNow, duration);
+
+        logger.LogInformation("Database migration finished at {date} with a duration of {duration} ms", DateTime.UtcNow, stopwatch.ElapsedMilliseconds);
         
-        return $"Database migration finished with a duration of {duration} s";
+        return $"Database migration finished with a duration of {stopwatch.ElapsedMilliseconds} s";
     }
 }
