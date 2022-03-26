@@ -34,7 +34,7 @@ public class Startup : IStartup
 
         services.AddDataContext<SiteWatcherContext>(env.IsDevelopment(), AppSettings.ConnectionString);
         services.AddRepositories();
-        services.AddDapperRepositories(AppSettings.ConnectionString);
+        services.AddDapperRepositories(env.IsDevelopment(), AppSettings.ConnectionString);
         services.AddDomainServices();
         services.AddApplicationServices();
 

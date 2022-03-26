@@ -15,17 +15,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services,  bool isDevelopment, string connectionString = null) where TContext : DbContext, IUnityOfWork
     {
-
         if(!isDevelopment)
-        {
-            var regexString = new Regex(@"\:\/\/(?<user>.*?)\:(?<password>.*?)\@(?<host>.*?)\:(?<port>.*?)\/(?<database>.*)");
-            var matches = regexString.Match(connectionString).Groups;
-            connectionString = $"Server={matches["host"].Value};" +
-                                    $"Port={matches["port"].Value};" +
-                                    $"Database={matches["database"].Value};" +
-                                    $"User Id={matches["user"].Value};" +
-                                    $"Password={matches["password"].Value}";
-        }
+            connectionString = ParseHerokuConnectionString(connectionString);
 
         var optionsBuilder = new DbContextOptionsBuilder<TContext>();
         if(isDevelopment)
@@ -54,8 +45,11 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddDapperRepositories(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddDapperRepositories(this IServiceCollection services, bool isDevelopment, string connectionString)
     {
+        if(!isDevelopment)
+            connectionString = ParseHerokuConnectionString(connectionString);
+
         services.AddScoped<IUserDapperRepository>(s => new UserDapperRepository(connectionString));
         return services;
     }
@@ -71,5 +65,16 @@ public static class DependencyInjection
         services.AddSingleton<IConnectionMultiplexer>(s => ConnectionMultiplexer.Connect(configOptions));
         services.AddSingleton<ICache, RedisCache>();
         return services;
+    }
+
+    private static string ParseHerokuConnectionString(string connectionString)
+    {
+            var regexString = new Regex(@"\:\/\/(?<user>.*?)\:(?<password>.*?)\@(?<host>.*?)\:(?<port>.*?)\/(?<database>.*)");
+            var matches = regexString.Match(connectionString).Groups;
+            return  $"Server={matches["host"].Value};" +
+                    $"Port={matches["port"].Value};" +
+                    $"Database={matches["database"].Value};" +
+                    $"User Id={matches["user"].Value};" +
+                    $"Password={matches["password"].Value}";
     }
 }
