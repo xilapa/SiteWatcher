@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseApiUrl: "BACKEND URL"
+  baseApiUrl: "https://site-watcher-xilapa.herokuapp.com"
 };
