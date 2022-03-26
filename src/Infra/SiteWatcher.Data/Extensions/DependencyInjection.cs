@@ -42,6 +42,9 @@ public static class DependencyInjection
         services.AddDbContext<TContext>(optionsAction, ServiceLifetime.Scoped); 
         services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());    
 
+        // Add migrator
+        services.AddScoped(typeof(DatabaseMigrator));
+        
         return services;
     }
 

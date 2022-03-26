@@ -12,5 +12,8 @@ public class AppSettings
     public string RedisConnectionString { get; set; }
 
     public string CorsPolicy { get; set; }
-    public byte[] InvalidToken {get; set;}
+    public byte[] InvalidToken { get; set;}
+
+    public string ApiKeyName { get; set; }
+    public string ApiKey { get; set; }
 }
