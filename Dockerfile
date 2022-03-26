@@ -18,7 +18,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-# Entrypoint do heroku
+# Heroku entrypoint
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet SiteWatcher.WebAPI.dll
 
 # ENV ASPNETCORE_URLS http://*:7126
