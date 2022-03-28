@@ -1,5 +1,3 @@
-to just add some of these new steps to an existing one.
-
 name: front - build and quality
 on:
   push:
