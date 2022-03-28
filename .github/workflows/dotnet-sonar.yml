@@ -1,6 +1,12 @@
 name: back - sonar cloud 
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
