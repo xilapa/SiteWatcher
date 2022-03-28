@@ -1,4 +1,4 @@
-name: .NET
+name: back - build and quality
 
 on:
   push:
