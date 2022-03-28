@@ -2,7 +2,7 @@ name: front - build and quality
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
