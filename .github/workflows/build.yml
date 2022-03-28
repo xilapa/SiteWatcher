@@ -1,4 +1,4 @@
-name: front - build and quality
+name: front - build and quality 
 
 on:
   push:
