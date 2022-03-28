@@ -1,10 +1,6 @@
-name: back - build and quality
+name: back - sonar cloud 
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: workflow_dispatch
 
 jobs:
   build:
@@ -59,4 +55,4 @@ jobs:
       run: |
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"site-watcher" /o:"xilapa" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build
-        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN_BACK }}"
