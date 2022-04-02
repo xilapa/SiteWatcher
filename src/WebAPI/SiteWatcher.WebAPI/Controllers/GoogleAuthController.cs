@@ -24,6 +24,8 @@ public class GoogleAuthController : ControllerBase
     private readonly ITokenService tokenService;
     private readonly ICache cache;
 
+    // ctor for benchs
+    protected GoogleAuthController() { }
 
     public GoogleAuthController(
         GoogleSettings googleSettings, 
@@ -73,8 +75,7 @@ public class GoogleAuthController : ControllerBase
     {
         var response = new WebApiResponse<AuthenticationResult>();
 
-        var scopesMissing = googleSettings.Scopes.Split(" ").Any(s => !authData.Scope.Contains(s));
-        if(scopesMissing || string.IsNullOrEmpty(authData.Scope))
+        if(IsMissingScope(googleSettings.Scopes, authData.Scope))
         {
             logger.LogError("Invalid Scopes passed at {date} \n Scopes: {scopes}", DateTime.Now, authData.Scope);
             return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));
@@ -109,6 +110,36 @@ public class GoogleAuthController : ControllerBase
         }   
 
         return Ok(response.SetResult(authResult));
+    }
+
+    protected static bool IsMissingScope(string defaultScopes, string scopesToBeChecked)
+    {
+        if(string.IsNullOrEmpty(scopesToBeChecked))
+            return true;
+
+        var scopesToBeCheckedSpan = scopesToBeChecked.AsSpan();
+        var scopeSpan = defaultScopes.AsSpan();
+
+        var crrIdx = 0;
+        var sepIdx = 0;
+        var sepDist = scopeSpan.IndexOf(' ');
+
+        while (true)
+        {
+            var scope = scopeSpan.Slice(crrIdx, sepDist);
+            
+            if (scopesToBeCheckedSpan.IndexOf(scope) == -1)
+                return true;
+
+            if (sepIdx == -1)
+                break;
+
+            crrIdx =  crrIdx + sepDist + 1;
+            sepIdx = scopeSpan.Slice(crrIdx).IndexOf(' ');
+            sepDist = sepIdx == -1 ? scopeSpan.Length - crrIdx : sepIdx;
+        }
+
+        return false;
     }
 
     private async Task<GoogleTokenResult> ExchangeCode(string code)
