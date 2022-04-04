@@ -2,7 +2,7 @@
 
 Get notified when an specific change (or not) occurs at an website.
 
-[![Project Status: Concept – Minimal or no implementation has been done yet, or the repository is only intended to be a limited example, demo, or proof-of-concept.](https://www.repostatus.org/badges/latest/concept.svg)](https://www.repostatus.org/#concept) ![Badge](https://img.shields.io/github/license/xilapa/SiteWatcher?color=green)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip) ![Badge](https://img.shields.io/github/license/xilapa/SiteWatcher?color=green) [![Backend Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-back-end&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=site-watcher-back-end) [![Frontend Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
 
 <p align="center"><a href="#Motivation">Motivation</a> • <a href="#Summary">Summary</a> • <a href="#Tecnologies">Tecnologies</a></p>
 
@@ -29,7 +29,8 @@ This project is currently using:
 - Swagger;
 - PostgreSQL;
 - FluentValidation;
-- MediatR
+- MediatR;
 - Redis;
+- BenchmarkDotNet;
 
 To know more about internal decisions see the [/docs](https://github.com/xilapa/SiteWatcher/tree/main/docs "/docs") folder.

@@ -8,13 +8,15 @@ public static class HttpContextExtensions
     public static string GetAuthTokenPayload(this HttpContext httpContext)
     {
         var token = httpContext.Request.Headers.Authorization;
-        if(string.IsNullOrEmpty(token)) return null;
+        if(string.IsNullOrEmpty(token)) 
+            return null;
 
-        var tokenWithoutBearer = token.ToString().Replace("Bearer ","");
-        var firstCharAfterFirstDotIndex = tokenWithoutBearer.IndexOf('.') + 1;
-        var secondDotIndex = tokenWithoutBearer.IndexOf('.', firstCharAfterFirstDotIndex);
-        var payload = tokenWithoutBearer[ firstCharAfterFirstDotIndex .. secondDotIndex ];
-        return payload;
+        var tokenString = token.ToString();
+        var tokenSpan = tokenString.AsSpan();
+        var firstDotIdx = tokenSpan.IndexOf('.') + 1;
+        var secondDotIdx = tokenSpan[firstDotIdx..].IndexOf('.');
+
+        return tokenString[firstDotIdx .. secondDotIdx];
     }
 
     public static string GenerateStateFromRequest(this HttpContext httpContext)
