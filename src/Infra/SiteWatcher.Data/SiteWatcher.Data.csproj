@@ -16,7 +16,7 @@
 		</PackageReference>
 		<PackageReference Include="Npgsql" Version="6.0.3" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
-		<PackageReference Include="StackExchange.Redis" Version="2.5.43" />
+		<PackageReference Include="StackExchange.Redis" Version="2.5.61" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Core\SiteWatcher.Domain\SiteWatcher.Domain.csproj" />
