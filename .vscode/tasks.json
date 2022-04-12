@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/WebAPI/SiteWatcher.WebAPI/bin/Debug/net6.0/SiteWatcher.WebAPI.dll",
+                "${workspaceFolder}",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
