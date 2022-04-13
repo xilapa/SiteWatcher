@@ -101,9 +101,21 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "SiteWatcher.UI"
+  "defaultProject": "SiteWatcher.UI",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }
