@@ -57,7 +57,8 @@ public class GoogleAuthController : ControllerBase
                 Secure = true,
                 SameSite = SameSiteMode.Strict,
                 IsEssential = false,
-                MaxAge = TimeSpan.FromSeconds(90)
+                MaxAge = TimeSpan.FromSeconds(90),
+                HttpOnly = true
             };
             Response.Cookies.Append("returnUrl", returnUrl, cookieOptions);
         }
