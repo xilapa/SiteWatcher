@@ -18,20 +18,19 @@ public class CommandValidationFilter : IActionFilter
     {
         var errors = new List<string>();
 
-        foreach(var p in context.ActionDescriptor.Parameters.Where(p => p.BindingInfo.BindingSource == BindingSource.Body))
+        foreach(var p in context.ActionDescriptor.Parameters.Where(p => p.BindingInfo?.BindingSource == BindingSource.Body))
         {
-            var command = context.ActionArguments[p.Name] as IValidable;
-            if (command is not null)
+            if (context.ActionArguments[p.Name] is IValidable command)
                 errors.AddRange(command.Validate());
         }
 
-        if(errors.Any())
+        if (errors.Count == 0)
+            return;
+
+        var result = new ObjectResult(new WebApiResponse<object>(null!, errors))
         {
-            var result = new ObjectResult(new WebApiResponse<object>(null, errors))
-                            {
-                                StatusCode = (int)HttpStatusCode.BadRequest
-                            };
-            context.Result = result;
-        } 
+            StatusCode = (int)HttpStatusCode.BadRequest
+        };
+        context.Result = result;
     }
 }

@@ -5,10 +5,10 @@ namespace SiteWatcher.Domain.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository userRepository;
+    private readonly IUserRepository _userRepository;
     public UserService(IUserRepository userRepository) =>    
-        this.userRepository = userRepository;
+        this._userRepository = userRepository;
 
     public User Register(User user) =>
-        userRepository.Add(user);
+        _userRepository.Add(user);
 }

@@ -1,11 +1,11 @@
 using IStartup = SiteWatcher.WebAPI.Interfaces.IStartup;
 using SiteWatcher.WebAPI.Extensions;
-using SiteWatcher.Infra.Extensions;
-using SiteWatcher.Infra.Data;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.WebAPI.Settings;
 using Microsoft.AspNetCore.HttpOverrides;
+using SiteWatcher.Data;
+using SiteWatcher.Data.Extensions;
 
 namespace SiteWatcher.WebAPI;
 

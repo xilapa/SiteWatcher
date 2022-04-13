@@ -17,12 +17,12 @@ namespace SiteWatcher.WebAPI.Controllers;
 [Route("google-auth")]
 public class GoogleAuthController : ControllerBase
 {
-    private readonly GoogleSettings googleSettings;
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly IUserDapperRepository userDapperRepository;
-    private readonly ILogger<GoogleAuthController> logger;
-    private readonly ITokenService tokenService;
-    private readonly ICache cache;
+    private readonly GoogleSettings _googleSettings;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IUserDapperRepository _userDapperRepository;
+    private readonly ILogger<GoogleAuthController> _logger;
+    private readonly ITokenService _tokenService;
+    private readonly ICache _cache;
 
     // ctor for benchs
     protected GoogleAuthController() { }
@@ -35,19 +35,19 @@ public class GoogleAuthController : ControllerBase
         ITokenService tokenService,
         ICache cache)
     {
-        this.googleSettings = googleSettings;
-        this.httpClientFactory = httpClientFactory;
-        this.logger = logger;
-        this.userDapperRepository = userDapperRepository;
-        this.tokenService = tokenService;
-        this.cache = cache;
+        _googleSettings = googleSettings;
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
+        _userDapperRepository = userDapperRepository;
+        _tokenService = tokenService;
+        _cache = cache;
     }
 
     [HttpGet]
     [Route("login")]
     [Route("register")]
-    public async Task<IActionResult> StartAuth([FromQuery] string returnUrl = null) 
-    {        
+    public async Task<IActionResult> StartAuth([FromQuery] string? returnUrl = null)
+    {
         Response.Cookies.Delete("returnUrl");
 
         if(!string.IsNullOrEmpty(returnUrl))
@@ -61,62 +61,60 @@ public class GoogleAuthController : ControllerBase
             };
             Response.Cookies.Append("returnUrl", returnUrl, cookieOptions);
         }
- 
-        var state = HttpContext.GenerateStateFromRequest();
-        await cache.SaveBytesAsync(state, googleSettings.StateValue, TimeSpan.FromMinutes(5));       
 
-        var authUrl = $"{googleSettings.AuthEndpoint}?scope={HttpUtility.UrlEncode(googleSettings.Scopes)}&response_type=code&include_granted_scopes=false&state={state}&redirect_uri={HttpUtility.UrlEncode(googleSettings.RedirectUri)}&client_id={googleSettings.ClientId}";
+        // trabalhar com char array pra evitar alocação de string
+        var state = HttpContext.GenerateStateFromRequest();
+        await _cache.SaveBytesAsync(state, _googleSettings.StateValue, TimeSpan.FromMinutes(5));       
+
+        var authUrl = $"{_googleSettings.AuthEndpoint}?scope={HttpUtility.UrlEncode(_googleSettings.Scopes)}&response_type=code&include_granted_scopes=false&state={state}&redirect_uri={HttpUtility.UrlEncode(_googleSettings.RedirectUri)}&client_id={_googleSettings.ClientId}";
 
         return Redirect(authUrl);
     }
 
-    [HttpPost("authenticate")] 
+    [HttpPost("authenticate")]
     public async Task<IActionResult> Authenticate([FromBody] AuthCallBackData authData)
     {
         var response = new WebApiResponse<AuthenticationResult>();
 
-        if(IsMissingScope(googleSettings.Scopes, authData.Scope))
+        if(IsMissingScope(_googleSettings.Scopes, authData.Scope))
         {
-            logger.LogError("Invalid Scopes passed at {date} \n Scopes: {scopes}", DateTime.Now, authData.Scope);
+            _logger.LogError("Invalid Scopes passed at {Date} \n Scopes: {Scopes}", DateTime.Now, authData.Scope);
             return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));
-        }  
-
-        var storedState = await cache.GetAndRemoveBytesAsync(authData.State);
-        if(storedState is null || !storedState.SequenceEqual(googleSettings.StateValue))
-        {
-            logger.LogError("Invalid State passed at {date} \n State from request: {state} \nCached state {cachedState}", DateTime.Now, authData.State, storedState);
-            return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));       
         }
 
-        var tokenResult = await ExchangeCode(authData.Code);
+        var storedState = await _cache.GetAndRemoveBytesAsync(authData.State!);
+        if(!_googleSettings.StateValue.SequenceEqual(storedState))
+        {
+            _logger.LogError("Invalid State passed at {Date} \n State from request: {State} \nCached state {CachedState}", DateTime.Now, authData.State, storedState);
+            return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));
+        }
+
+        var tokenResult = await ExchangeCode(authData.Code!);
         if(!tokenResult.Success)
             return BadRequest(response.AddMessages(WebApiErrors.GOOGLE_AUTH_ERROR));
-        
+
         var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenResult.IdToken);
         var googleId = token.Claims.First(c => c.Type == AuthenticationDefaults.Google.Id).Value;
-        var user = await userDapperRepository.GetActiveUserAsync(googleId);
+        var user = await _userDapperRepository.GetActiveUserAsync(googleId);
 
         var authResult = new AuthenticationResult();
 
         if(user.Id == Guid.Empty)
-        {   
-            var registerToken = tokenService.GenerateRegisterToken(token.Claims, googleId);
+        {
+            var registerToken = _tokenService.GenerateRegisterToken(token.Claims, googleId);
             authResult.Set(EAuthTask.Register, registerToken);
         }
         else
         {
-            var loginToken = tokenService.GenerateLoginToken(user);
+            var loginToken = _tokenService.GenerateLoginToken(user);
             authResult.Set(EAuthTask.Login, loginToken);
-        }   
+        }
 
         return Ok(response.SetResult(authResult));
     }
 
-    protected static bool IsMissingScope(string defaultScopes, string scopesToBeChecked)
+    protected static bool IsMissingScope(string defaultScopes, string? scopesToBeChecked)
     {
-        if(string.IsNullOrEmpty(scopesToBeChecked))
-            return true;
-
         var scopesToBeCheckedSpan = scopesToBeChecked.AsSpan();
         var scopeSpan = defaultScopes.AsSpan();
 
@@ -127,7 +125,7 @@ public class GoogleAuthController : ControllerBase
         while (true)
         {
             var scope = scopeSpan.Slice(crrIdx, sepDist);
-            
+
             if (scopesToBeCheckedSpan.IndexOf(scope) == -1)
                 return true;
 
@@ -135,7 +133,7 @@ public class GoogleAuthController : ControllerBase
                 break;
 
             crrIdx =  crrIdx + sepDist + 1;
-            sepIdx = scopeSpan.Slice(crrIdx).IndexOf(' ');
+            sepIdx = scopeSpan[crrIdx..].IndexOf(' ');
             sepDist = sepIdx == -1 ? scopeSpan.Length - crrIdx : sepIdx;
         }
 
@@ -144,30 +142,29 @@ public class GoogleAuthController : ControllerBase
 
     private async Task<GoogleTokenResult> ExchangeCode(string code)
     {
-        var httpClient = httpClientFactory.CreateClient();
+        var httpClient = _httpClientFactory.CreateClient();
 
         var requestBody = new
         {
             code,
-            client_id = googleSettings.ClientId,
-            client_secret = googleSettings.ClientSecret,
-            redirect_uri = googleSettings.RedirectUri,
+            client_id = _googleSettings.ClientId,
+            client_secret = _googleSettings.ClientSecret,
+            redirect_uri = _googleSettings.RedirectUri,
             grant_type = "authorization_code"
         };
 
-        using(var response = await httpClient.PostAsJsonAsync(googleSettings.TokenEndpoint, requestBody))
-        {
-            if (!response.IsSuccessStatusCode){
-                var error = await response.Content.ReadAsStringAsync();
-                logger.LogError("Error on exchanging code at {date}.\nErrorResponse: {error}", DateTime.Now, error);
-                return new GoogleTokenResult(success: false);
-            }            
-
-            var tokenResult = await response.Content.ReadFromJsonAsync<GoogleTokenResult>();
-            return tokenResult;
+        // TODO: Substituir chamada da api por Refit e adicionar Polly para retentativas
+        using var response = await httpClient.PostAsJsonAsync(_googleSettings.TokenEndpoint, requestBody);
+        if (!response.IsSuccessStatusCode){
+            var error = await response.Content.ReadAsStringAsync();
+            _logger.LogError("Error on exchanging code at {Date}.\nErrorResponse: {Error}", DateTime.Now, error);
+            return new GoogleTokenResult(success: false);
         }
+
+        var tokenResult = await response.Content.ReadFromJsonAsync<GoogleTokenResult>();
+        return tokenResult!;
     }
-    
+
     [HttpPost]
     [Route("logout")]
     public void Logout() 
@@ -204,5 +201,4 @@ public class GoogleAuthController : ControllerBase
         */
         throw new NotImplementedException();
     }
-
 }

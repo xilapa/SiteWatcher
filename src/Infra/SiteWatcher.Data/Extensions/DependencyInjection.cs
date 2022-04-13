@@ -1,21 +1,21 @@
-using SiteWatcher.Domain.Interfaces;
-using SiteWatcher.Infra.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using SiteWatcher.Data.DapperRepositories;
-using StackExchange.Redis;
-using SiteWatcher.Infra.Cache;
-using Microsoft.EntityFrameworkCore.Migrations;
-using SiteWatcher.Infra.Data;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection;
+using SiteWatcher.Data.Cache;
+using SiteWatcher.Data.DapperRepositories;
+using SiteWatcher.Data.Repositories;
+using SiteWatcher.Domain.Interfaces;
+using StackExchange.Redis;
 
-namespace SiteWatcher.Infra.Extensions;
+namespace SiteWatcher.Data.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services,  bool isDevelopment, string connectionString = null) where TContext : DbContext, IUnityOfWork
+    // TODO: Connection String null não faz tanto sentido mais
+    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services,  bool isDevelopment, string? connectionString = null) where TContext : DbContext, IUnityOfWork
     {
-        if(!isDevelopment)
+        if(!isDevelopment && !string.IsNullOrEmpty(connectionString))
             connectionString = ParseHerokuConnectionString(connectionString);
 
         var optionsBuilder = new DbContextOptionsBuilder<TContext>();
@@ -25,17 +25,17 @@ public static class DependencyInjection
             optionsBuilder.LogTo(Console.WriteLine);
         }
 
-        Action<DbContextOptionsBuilder> optionsAction;
-        optionsAction = connectionString is null ? null : 
-                            options => options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, SiteWatcherContext.Schema));
+        Action<DbContextOptionsBuilder>? optionsAction;
+        optionsAction = connectionString is null ? null :
+                options => options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, SiteWatcherContext.Schema));
 
         // Making explicit that the context is the same for all repositories
         services.AddDbContext<TContext>(optionsAction, ServiceLifetime.Scoped); 
-        services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());    
+        services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());
 
         // Add migrator
         services.AddScoped(typeof(DatabaseMigrator));
-        
+
         return services;
     }
 
@@ -50,19 +50,19 @@ public static class DependencyInjection
         if(!isDevelopment)
             connectionString = ParseHerokuConnectionString(connectionString);
 
-        services.AddScoped<IUserDapperRepository>(s => new UserDapperRepository(connectionString));
+        services.AddScoped<IUserDapperRepository>(_ => new UserDapperRepository(connectionString));
         return services;
     }
 
     public static IServiceCollection AddRedisCache(this IServiceCollection services, string connectionString)
     {
-        var configOptions = ConfigurationOptions.Parse(connectionString);        
+        var configOptions = ConfigurationOptions.Parse(connectionString);
         configOptions.AbortOnConnectFail = false;
         configOptions.ConnectRetry = 3;
         configOptions.ConnectTimeout = 2_000;
         configOptions.ReconnectRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(5).Milliseconds, TimeSpan.FromSeconds(20).Milliseconds);
 
-        services.AddSingleton<IConnectionMultiplexer>(s => ConnectionMultiplexer.Connect(configOptions));
+        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(configOptions));
         services.AddSingleton<ICache, RedisCache>();
         return services;
     }

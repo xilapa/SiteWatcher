@@ -10,9 +10,9 @@ public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<Appl
     public RegisterUserCommand() : base(new RegisterUserCommandValidator())
     { }
 
-    public string Name { get; set; }
-    public string Email { get; set; }
+    public string? Name { get; set; }
+    public string? Email { get; set; }
     public ELanguage Language { get; set; }
-    public string GoogleId { get; set; }
-    public string AuthEmail { get; set; }
+    public string? GoogleId { get; set; }
+    public string? AuthEmail { get; set; }
 }

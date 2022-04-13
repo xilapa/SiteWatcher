@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace SiteWatcher.WebAPI.Constants;
 
 public static class AuthenticationDefaults
@@ -7,20 +5,20 @@ public static class AuthenticationDefaults
     public const string RegisterScheme = "register-auth";
     public const string Roles = "roles";
     public const string State = "state";
-    
-    public static class ClaimTypes 
+
+    public static class ClaimTypes
     {
-        public static readonly string Id = "id";
-        public static readonly string Name = "name";
-        public static readonly string Email = "email";
-        public static readonly string EmailConfirmed = "email-confirmed";
-        public static readonly string GoogleId = "googleId";
-        public static readonly string Locale = "locale";
-        public static readonly string Language = "language";
+        public const string Id = "id";
+        public const string Name = "name";
+        public const string Email = "email";
+        public const string EmailConfirmed = "email-confirmed";
+        public const string GoogleId = "googleId";
+        public const string Locale = "locale";
+        public const string Language = "language";
     }
 
-    public static class Google 
+    public static class Google
     {
-        public static readonly string Id = "sub";
+        public const string Id = "sub";
     }
 }

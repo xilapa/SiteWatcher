@@ -5,10 +5,8 @@ namespace SiteWatcher.Domain.Models;
 public class User : BaseModel<Guid>
 {
     // ctor for EF
-    protected User() 
-    {
-        Id = Guid.NewGuid();
-    }
+    protected User() : base(Guid.NewGuid())
+    { }
 
     public User(string googleId, string name, string email, string authEmail, ELanguage language) : this()
     {
@@ -19,9 +17,9 @@ public class User : BaseModel<Guid>
         Language = language;
     }
 
-    public string GoogleId { get; private set; }
-    public string Name { get; private set; }
-    public string Email { get; private set; }
-    public bool EmailConfirmed { get; private set; }
-    public ELanguage Language { get; private set; }
+    public string GoogleId { get; } = null!;
+    public string Name { get; } = null!;
+    public string Email { get; } = null!;
+    public bool EmailConfirmed { get; }
+    public ELanguage Language { get; }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace SiteWatcher.WebAPI.Extensions;
 
-public static class EceptionHandlerExtensions
+public static class ExceptionHandlerExtensions
 {
     public static void ConfigureGlobalExceptionHandlerMiddleware(this WebApplication app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
@@ -23,15 +23,15 @@ public static class EceptionHandlerExtensions
                 var exception = exceptionHandlerFeature.Error;
 
                 var logger = loggerFactory.CreateLogger("GlobalExceptionHandlerMiddleware");
-                logger.LogError(exception, "Exception ocurred on Route: {route} at {date}, {type}: {msg}. TraceId: {traceId}",
+                logger.LogError(exception, "Exception occurred on Route: {Route} at {Date}, {Type}: {Msg}. TraceId: {TraceId}",
                     route, DateTime.UtcNow, exception.GetType().Name, exception.Message, traceId);
 
                 object response;
 
-                if(env.IsDevelopment())        
+                if(env.IsDevelopment())
                     response = new { Exception = ExceptionDevResponse.From(exception, traceId)};
-                else        
-                    response = new WebApiResponse<object>(null, ApplicationErrors.INTERNAL_ERROR, $"traceId: {traceId}");
+                else
+                    response = new WebApiResponse<object?>(null, ApplicationErrors.INTERNAL_ERROR, $"traceId: {traceId}");
 
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/problem+json";

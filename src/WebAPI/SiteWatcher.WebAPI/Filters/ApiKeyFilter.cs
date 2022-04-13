@@ -17,7 +17,7 @@ public class ApiKeyAttribute : Attribute, IResourceFilter
     public void OnResourceExecuting(ResourceExecutingContext context)
     {
         var settings = context.HttpContext.RequestServices.GetService<AppSettings>();
-        if(!context.HttpContext.Request.Headers.TryGetValue(settings.ApiKeyName, out var key))
+        if(!context.HttpContext.Request.Headers.TryGetValue(settings!.ApiKeyName, out var key))
         {
             context.Result = new ContentResult { StatusCode = (int)HttpStatusCode.Unauthorized };
             return;

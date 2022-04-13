@@ -1,5 +1,3 @@
-using System;
-
 namespace SiteWatcher.WebAPI.DTOs.ViewModels;
 
 public class ExceptionDevResponse
@@ -8,11 +6,11 @@ public class ExceptionDevResponse
     public string Type { get; set; }
     public string Message { get; set; }
     public string TraceId { get; set; }
-    public string StackTrace { get; set; }
-    public InnerExceptionDevResponse InnerException { get; set; }
+    public string? StackTrace { get; set; }
+    public InnerExceptionDevResponse? InnerException { get; set; }
 
 
-    public static ExceptionDevResponse From(Exception exception, string traceId)
+    public static ExceptionDevResponse? From(Exception? exception, string traceId)
     {
         if(exception is null)
             return null;
@@ -34,9 +32,9 @@ public class InnerExceptionDevResponse
     public int Code { get; set; }
     public string Type { get; set; }
     public string Message { get; set; }
-    public InnerExceptionDevResponse InnerException { get; set; }
+    public InnerExceptionDevResponse? InnerException { get; set; }
 
-    public static InnerExceptionDevResponse From(Exception exception)
+    public static InnerExceptionDevResponse? From(Exception? exception)
     {
         if(exception is null)
             return null;

@@ -6,7 +6,8 @@ namespace SiteWatcher.Domain.Extensions;
 
 public static class StringExtensions
 {
-    public static string ToBase64tring(this string text)
+    // TODO: melhorar esse método
+    public static string ToBase64String(this string text)
     {
         var textBytes = Encoding.ASCII.GetBytes(text);
         var base64 = Convert.ToBase64String(textBytes);
@@ -15,12 +16,12 @@ public static class StringExtensions
 
     /// <summary>
     /// Return the <typeparamref name="EnumT"/> equivalent value of the current string
-    /// based on <typeparamref name="EnumT"/>'s Description Attributes. 
+    /// based on <typeparamref name="EnumT"/>'s Description Attributes.
     /// </summary>
     /// <typeparam name="EnumT"></typeparam>
     /// <param name="stringValue"></param>
     /// <returns></returns>
-    public static EnumT GetEnumValue<EnumT>(this string stringValue) where EnumT : Enum
+    public static EnumT? GetEnumValue<EnumT>(this string stringValue) where EnumT : Enum
     {
         var enumInstance = Activator.CreateInstance<EnumT>();
         var enumOptions = typeof(EnumT)
@@ -30,11 +31,11 @@ public static class StringExtensions
                                 DescAtt = m.GetCustomAttributes(typeof(DescriptionAttribute),false).FirstOrDefault()
                             });
 
-        var option = enumOptions.FirstOrDefault(opts => (opts.DescAtt as DescriptionAttribute).Description == stringValue.ToLower());
+        var option = enumOptions.FirstOrDefault(opts => (opts.DescAtt as DescriptionAttribute)?.Description == stringValue.ToLower());
 
         if (option is null)
             return default;
 
-        return (EnumT) option.Value;
+        return (EnumT) option.Value!;
     }
 }

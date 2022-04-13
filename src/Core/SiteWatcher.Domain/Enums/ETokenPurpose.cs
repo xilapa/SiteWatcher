@@ -1,5 +1,5 @@
 namespace SiteWatcher.Domain.Enums;
-public enum ETokenPurpose 
+public enum ETokenPurpose
 {
     Register,
     Login,

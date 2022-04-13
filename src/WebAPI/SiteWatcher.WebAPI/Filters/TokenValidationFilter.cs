@@ -8,21 +8,21 @@ namespace SiteWatcher.WebAPI.Filters;
 
 public class TokenValidationFilter : IAsyncResourceFilter
 {
-    private readonly ITokenService tokenService;
-    
+    private readonly ITokenService _tokenService;
+
     public TokenValidationFilter(ITokenService tokenService) =>
-        this.tokenService = tokenService;
+        this._tokenService = tokenService;
 
     public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
     {
         var requestTokenPayload = context.HttpContext.GetAuthTokenPayload();
-        if (requestTokenPayload is null)
+        if (string.Empty.Equals(requestTokenPayload))
         {
             await next();
             return;
-        }       
+        }
 
-        var valid = await tokenService.IsValid(requestTokenPayload);
+        var valid = await _tokenService.IsValid(requestTokenPayload);
         if(!valid)
         {
             var result = new ObjectResult(null) { StatusCode = (int)HttpStatusCode.Forbidden };

@@ -14,30 +14,30 @@ namespace SiteWatcher.WebAPI.Services;
 
 public class TokenService : ITokenService
 {
-    private readonly AppSettings appSettings;
-    private readonly ICache cache;
+    private readonly AppSettings _appSettings;
+    private readonly ICache _cache;
 
-    private readonly int registerTokenExpiration = 15 * 60;
-    private readonly int loginTokenExpiration = 8 * 60 * 60;
+    private const int RegisterTokenExpiration = 15 * 60;
+    private const int LoginTokenExpiration = 8 * 60 * 60;
 
-    public TokenService(AppSettings appSettings, ICache cache) 
+    public TokenService(AppSettings appSettings, ICache cache)
     {
-        this.appSettings = appSettings;
-        this.cache = cache;
-    }  
+        this._appSettings = appSettings;
+        this._cache = cache;
+    }
 
-    public string GenerateLoginToken(UserViewModel userVM)
+    public string GenerateLoginToken(UserViewModel userVm)
     {
         var claims = new Claim[]
         {
-            new (AuthenticationDefaults.ClaimTypes.Id, userVM.Id.ToString()),
-            new (AuthenticationDefaults.ClaimTypes.Name, userVM.Name),
-            new (AuthenticationDefaults.ClaimTypes.Email, userVM.Email),
-            new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVM.EmailConfirmed.ToString().ToLower()),
-            new (AuthenticationDefaults.ClaimTypes.Language, ((int)userVM.Language).ToString())            
+            new (AuthenticationDefaults.ClaimTypes.Id, userVm.Id.ToString()),
+            new (AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
+            new (AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
+            new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),
+            new (AuthenticationDefaults.ClaimTypes.Language, ((int)userVm.Language).ToString())
         };
 
-        return GenerateToken(claims, ETokenPurpose.Login, loginTokenExpiration);
+        return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);
     }
 
     public string GenerateLoginToken(User user)
@@ -48,35 +48,37 @@ public class TokenService : ITokenService
             new (AuthenticationDefaults.ClaimTypes.Name, user.Name),
             new (AuthenticationDefaults.ClaimTypes.Email, user.Email),
             new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
-            new (AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString())            
+            new (AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString())
         };
 
-        return GenerateToken(claims, ETokenPurpose.Login, loginTokenExpiration);
+        return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);
     }
 
     public string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId)
-    {   
-        var locale = tokenClaims.DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
-                                     .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale).Value
-                                     .Split("-").First();    
+    {
+        var tokenClaimsEnumerated = tokenClaims as Claim[] ?? tokenClaims.ToArray();
+        var locale = tokenClaimsEnumerated
+                                    .DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
+                                    .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale)!.Value
+                                    .Split("-").First();
 
-        var claims = new Claim[] 
+        var claims = new []
         {
-            tokenClaims.GetClaimValue(AuthenticationDefaults.ClaimTypes.Name),
-            tokenClaims.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email),
-            new Claim(AuthenticationDefaults.ClaimTypes.Language, ((int)locale.GetEnumValue<ELanguage>()).ToString()),
-            new Claim(AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
+            tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Name),
+            tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email),
+            new (AuthenticationDefaults.ClaimTypes.Language, ((int)locale.GetEnumValue<ELanguage>()).ToString()),
+            new (AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
         };
 
-        return GenerateToken(claims, ETokenPurpose.Register, registerTokenExpiration);   
+        return GenerateToken(claims, ETokenPurpose.Register, RegisterTokenExpiration);
     }
 
     private string GenerateToken(IEnumerable<Claim> claims, ETokenPurpose tokenPurpose, int expiration)
     {
         var key = tokenPurpose switch
         {
-            ETokenPurpose.Register => appSettings.RegisterKey,
-            ETokenPurpose.Login => appSettings.AuthKey,
+            ETokenPurpose.Register => _appSettings.RegisterKey,
+            ETokenPurpose.Login => _appSettings.AuthKey,
             _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
         };
 
@@ -97,23 +99,16 @@ public class TokenService : ITokenService
     {
         var expiration = tokenPurpose switch
         {
-            ETokenPurpose.Register => registerTokenExpiration,
-            ETokenPurpose.Login => loginTokenExpiration,
+            ETokenPurpose.Register => RegisterTokenExpiration,
+            ETokenPurpose.Login => LoginTokenExpiration,
             _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
         };
-        await cache.SaveBytesAsync(token.ToBase64tring(), appSettings.InvalidToken, TimeSpan.FromSeconds(expiration));
+        await _cache.SaveBytesAsync(token.ToBase64String(), _appSettings.InvalidToken, TimeSpan.FromSeconds(expiration));
     }
 
     public async Task<bool> IsValid(string token)
     {
-        var value = await cache.GetBytesAsync(token.ToBase64tring());
-        if(value is null)
-            return true;
-
-        if(value.SequenceEqual(appSettings.InvalidToken))
-            return false;
-
-        return true;
-    }   
-    
+        var value = await _cache.GetBytesAsync(token.ToBase64String());
+        return !_appSettings.InvalidToken.SequenceEqual(value);
+    }
 }

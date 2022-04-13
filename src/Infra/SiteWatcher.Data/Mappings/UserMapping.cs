@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Models;
 
-namespace SiteWatcher.Infra.Mappings;
+namespace SiteWatcher.Data.Mappings;
 
 public class UserMapping : BaseModelMapping<User,Guid>
 {
@@ -25,7 +25,7 @@ public class UserMapping : BaseModelMapping<User,Guid>
         builder.Property(u => u.Name)
                 .HasColumnType("varchar(64)")
                 .IsRequired();
-        
+
         builder.Property(u => u.Email)
                 .HasColumnType("varchar(320)")
                 .IsRequired();

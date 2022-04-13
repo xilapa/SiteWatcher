@@ -4,7 +4,7 @@ namespace SiteWatcher.WebAPI.DTOs.Metadata;
 
 public class GoogleTokenResult
 {
-    public GoogleTokenResult() 
+    public GoogleTokenResult()
     {
         this.Success = true;
     }
@@ -16,13 +16,13 @@ public class GoogleTokenResult
 
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; }
-    
+
     [JsonPropertyName("expires_in")]
-    public ushort Expiresin { get; set; }
+    public ushort ExpiresIn { get; set; }
 
     [JsonPropertyName("id_token")]
     public string IdToken { get; set; }
-    
+
     [JsonPropertyName("scope")]
     public string Scopes { get; set; }
 

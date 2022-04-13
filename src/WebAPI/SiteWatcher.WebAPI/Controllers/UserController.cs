@@ -15,13 +15,13 @@ namespace SiteWatcher.WebAPI.Controllers;
 [Route("[controller]/[action]")]
 public class UserController : ControllerBase
 {
-    private readonly IMediator mediator;
-    private readonly ITokenService tokenService;
-    
+    private readonly IMediator _mediator;
+    private readonly ITokenService _tokenService;
+
     public UserController(IMediator mediator, ITokenService tokenService)
     {
-        this.mediator = mediator;
-        this.tokenService = tokenService;
+        this._mediator = mediator;
+        this._tokenService = tokenService;
     }
 
     [HttpGet]
@@ -33,25 +33,24 @@ public class UserController : ControllerBase
     [HttpPost]
     [Authorize(AuthenticationSchemes = AuthenticationDefaults.RegisterScheme)]
     public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
-    {       
+    {
         var response = new WebApiResponse<string>();
-        
         registerUserCommand.AuthEmail = User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
         registerUserCommand.GoogleId = User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
 
         if (registerUserCommand.AuthEmail is null || registerUserCommand.GoogleId is null)
             return BadRequest(response.AddMessages(ApplicationErrors.INVALID_REGISTER_DATA));
 
-        var result = await mediator.Send(registerUserCommand);
+        var result = await _mediator.Send(registerUserCommand);
 
         if (result.Success)
         {
             var authTokenPayload = HttpContext.GetAuthTokenPayload();
-            await tokenService.InvalidateToken(authTokenPayload, ETokenPurpose.Register);
+            await _tokenService.InvalidateToken(authTokenPayload, ETokenPurpose.Register);
         }
 
         if (!result.Success)
-            return Conflict(response.AddMessages(result.Errors));    
+            return Conflict(response.AddMessages(result.Errors));
 
         return Created(string.Empty, response.SetResult(result.Value));
     }

@@ -5,7 +5,7 @@ namespace SiteWatcher.Application.Validators;
 
 public abstract class Validable<T> : IValidable where T : class
 {
-    public Validable(AbstractValidator<T> validator) 
+    protected Validable(AbstractValidator<T> validator)
     {
         _errors = new List<string>();
         _validator = validator;
@@ -13,17 +13,17 @@ public abstract class Validable<T> : IValidable where T : class
 
     private readonly AbstractValidator<T> _validator;
     private readonly List<string> _errors;
-    public bool IsValid { get => _errors.Any(); }
-    public bool IsInvalid { get => !_errors.Any(); }
+    public bool IsValid => _errors.Count > 0;
+    public bool IsInvalid => _errors.Count == 0;
 
-    public IEnumerable<string> Errors  { get => _errors.ToArray(); }
+    public IEnumerable<string> Errors  => _errors.ToArray();
 
-    protected void AddErrors(IEnumerable<string> errors) =>    
-        _errors.AddRange(errors);    
+    protected void AddErrors(IEnumerable<string> errors) =>
+        _errors.AddRange(errors);
 
     public IEnumerable<string> Validate()
     {
-        var result = _validator.Validate(this as T);
+        var result = _validator.Validate((this as T)!);
         AddErrors(result.Errors.Select(e => e.ErrorMessage));
         return Errors;
     }

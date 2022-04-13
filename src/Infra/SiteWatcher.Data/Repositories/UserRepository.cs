@@ -1,10 +1,9 @@
 using System.Linq.Expressions;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Interfaces;
-using SiteWatcher.Infra.Data;
 using Microsoft.EntityFrameworkCore;
+using SiteWatcher.Domain.Interfaces;
+using SiteWatcher.Domain.Models;
 
-namespace SiteWatcher.Infra.Repositories;
+namespace SiteWatcher.Data.Repositories;
 
 public class UserRepository : Repository<User>, IUserRepository
 {
@@ -13,6 +12,6 @@ public class UserRepository : Repository<User>, IUserRepository
     public override async Task<User> GetAsync(Expression<Func<User, bool>> predicate)
     {
         ArgumentNullException.ThrowIfNull(nameof(predicate));
-        return await context.Users.FirstOrDefaultAsync(predicate);
+        return (await Context.Users.FirstOrDefaultAsync(predicate))!;
     }
 }

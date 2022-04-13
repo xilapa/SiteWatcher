@@ -1,37 +1,36 @@
 using System.Linq.Expressions;
 using SiteWatcher.Domain.Interfaces;
-using SiteWatcher.Infra.Data;
 
-namespace SiteWatcher.Infra.Repositories;
+namespace SiteWatcher.Data.Repositories;
 
 public abstract class Repository<T> : IRepository<T> where T : class
 {
-    protected SiteWatcherContext context;
-    
-    public Repository(SiteWatcherContext context)
+    protected readonly SiteWatcherContext Context;
+
+    protected Repository(SiteWatcherContext context)
     {
         ArgumentNullException.ThrowIfNull(nameof(context));
-        this.context = context;
+        Context = context;
     }
 
-    public IUnityOfWork UoW => context;
+    public IUnityOfWork UoW => Context;
 
     public abstract Task<T> GetAsync(Expression<Func<T, bool>> predicate);
 
-    public T Add(T entity)
+    T IRepository<T>.Add(T entity)
     {
-        context.Add(entity);
+        Context.Add(entity);
         return entity;
     }
 
     public async Task<T> FindAsync(Expression<Func<T,bool>> predicate)
     {
-        var trackedEntities = context.ChangeTracker.Entries<T>().Select(e => e.Entity);
+        var trackedEntities = Context.ChangeTracker.Entries<T>().Select(e => e.Entity);
 
         var entity = trackedEntities.FirstOrDefault(predicate.Compile());
         if (entity is not null)
             return entity;
-  
+
         return await this.GetAsync(predicate);
     }
 }
