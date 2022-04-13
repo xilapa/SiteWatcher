@@ -32,5 +32,6 @@ This project is currently using:
 - MediatR;
 - Redis;
 - BenchmarkDotNet;
+- Roslynator;
 
 To know more about internal decisions see the [/docs](https://github.com/xilapa/SiteWatcher/tree/main/docs "/docs") folder.
