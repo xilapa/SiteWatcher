@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -49,7 +51,7 @@ export class RegisterComponent implements OnInit {
     }
 
     public register(): void {
-        var registerData = this.registerForm.getRawValue() as UserRegister;
+        const registerData = this.registerForm.getRawValue() as UserRegister;
         this.authService
                 .register(registerData)
                 .subscribe({
@@ -63,6 +65,7 @@ export class RegisterComponent implements OnInit {
                             {
                                 severity: 'error',
                                 summary: 'Error',
+                                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                                 detail: (errorResponse.error as ApiResponse<null>).Messages.join("; "),
                                 sticky: true,
                                 closable: true

@@ -8,7 +8,7 @@ using SiteWatcher.WebAPI.Settings;
 using SiteWatcher.WebAPI.Constants;
 using SiteWatcher.Domain.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
-using SiteWatcher.WebAPI.Extensions;
+using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -63,8 +63,8 @@ public class GoogleAuthController : ControllerBase
         }
 
         // trabalhar com char array pra evitar alocação de string
-        var state = HttpContext.GenerateStateFromRequest();
-        await _cache.SaveBytesAsync(state, _googleSettings.StateValue, TimeSpan.FromMinutes(5));       
+        var state = Utils.GenerateSafeRandomBase64String();
+        await _cache.SaveBytesAsync(state, _googleSettings.StateValue, TimeSpan.FromMinutes(5));
 
         var authUrl = $"{_googleSettings.AuthEndpoint}?scope={HttpUtility.UrlEncode(_googleSettings.Scopes)}&response_type=code&include_granted_scopes=false&state={state}&redirect_uri={HttpUtility.UrlEncode(_googleSettings.RedirectUri)}&client_id={_googleSettings.ClientId}";
 
