@@ -15,8 +15,8 @@ public class GetAuthTokenPayload
     [Benchmark]
     public string WithouSpan()
     {
-        if(string.IsNullOrEmpty(_token)) 
-            return null;
+        if(string.IsNullOrEmpty(_token))
+            return String.Empty;
 
         var tokenWithoutBearer = _token.ToString().Replace("Bearer ","");
         var firstCharAfterFirstDotIndex = tokenWithoutBearer.IndexOf('.') + 1;

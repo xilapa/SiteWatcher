@@ -1,6 +1,3 @@
-using System.Security.Cryptography;
-using System.Text.Json;
-
 namespace SiteWatcher.WebAPI.Extensions;
 
 public static class HttpContextExtensions
