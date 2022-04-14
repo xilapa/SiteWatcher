@@ -18,7 +18,7 @@
     "@angular/core": "~13.3.0",
     "@angular/forms": "~13.3.3",
     "@angular/platform-browser": "~13.3.3",
-    "@angular/platform-browser-dynamic": "~13.3.1",
+    "@angular/platform-browser-dynamic": "~13.3.3",
     "@angular/router": "~13.3.3",
     "jwt-decode": "^3.1.2",
     "ngx-cookie-service": "^13.2.0",
