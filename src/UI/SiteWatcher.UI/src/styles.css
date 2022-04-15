@@ -1,11 +1,10 @@
-
-/* #region css reset */
 /* You can add global styles to this file, and also import other style files */
-/* http://meyerweb.com/eric/tools/css/reset/ 
+
+/*#region css reset*/
+/* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
 */
-
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -15,8 +14,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 	margin: 0;
@@ -27,7 +26,7 @@ time, mark, audio, video {
 	vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
@@ -49,22 +48,64 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-/* #endregion css reset */
+/*#endregion css reset*/
+
+:root {
+    /* sizes */
+    --sw-title1-font-size: 2rem;
+    --sw-button-font-size: 1rem;
+    --sw-link-text-font-size: 0.9rem;
+    --sw-input-form-height: 40px;
+    --sw-default-border-size: 2px;
+    --sw-toast-font-size: 20px;
+    --sw-text-muted-font-weight: 400;
+    --sw-title-font-weight: 500;
+}
+
+/* automatic/manual light mode */
+:root, :root.light-theme {
+    color-scheme: light;
+    --sw-main-background-color: #e1a500;
+    --sw-primary-color: #cb1313;
+    --sw-main-contrast-color: #00479d;
+    --sw-second-contrast-color: black;
+    --sw-input-invalid-color: #dc3545;
+    --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
+    --sw-text-muted-color: var(--gray-700);
+    --sw-main-foreground-color: white;
+}
+
+/* automatic dark theme */
+@media(prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+        --sw-main-background-color: #444444;
+        --sw-main-foreground-color: white;
+        --sw-primary-color: #995dbe;
+        --sw-main-contrast-color: #5F6368;
+        --sw-second-contrast-color: black;
+        --sw-input-invalid-color: #dc3545;
+        --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
+        --sw-text-muted-color: var(--gray-700);
+    }
+}
+
+/* manual dark mode */
+:root.dark-theme {
+    color-scheme: dark;
+    --sw-main-background-color: #444444;
+    --sw-main-foreground-color: white;
+    --sw-primary-color: #995dbe;
+    --sw-main-contrast-color: #5F6368;
+    --sw-second-contrast-color: black;
+    --sw-input-invalid-color: #dc3545;
+    --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
+    --sw-text-muted-color: var(--gray-700);
+}
 
 * {
     box-sizing: border-box;
     font-family: 'Rubik', sans-serif;
-}
-
-:root {
-    --main-background-color: #fafafa;
-    --box-background-color: white;
-    --title1-font-size: 2rem;
-    --button-font-size: 1rem;
-    --link-text-font-size: 0.9rem;
-	--input-form-height: 40px;
-    --input-invalid-color: #dc3545;
-    --input-invalid-color-alpha: rgb(220 53 69 / 50%);
 }
 
 .icon-right-margin {
@@ -72,41 +113,41 @@ table {
 }
 
 .text-muted {
-	font-size: var(--link-text-font-size);
-    color: var(--gray-700);
-    font-weight: 400;
+	font-size: var(--sw-link-text-font-size);
+    color: var(--sw-text-muted-color);
+    font-weight: var(--sw-text-muted-font-weight);
 }
 
 .title {
-	font-size: var(--title1-font-size);
-    font-weight: 500;
+	font-size: var(--sw-title1-font-size);
+    font-weight: var(--sw-title-font-weight);
 }
 
 /* prime-ng toast icon size */
 .p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon {
-	font-size: 20px;
+	font-size: var(--sw-toast-font-size);
 }
 
 /* center label text on prime-ng dropdown */
 .p-dropdown-label {
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-start !important;       
+    justify-content: flex-start !important;
 }
 
-/*#region prime-ng button adjustments */
+/*#region prime-ng button adjustments*/
 .p-button {
-    font-size: var(--button-font-size);
-    color: white;
-	background-color: var(--gray-700);
+    font-size: var(--sw-button-font-size);
+    color: var(--sw-main-foreground-color);
+	background-color: var(--sw-primary-color);
 	border: none;
 }
 
 .p-button:hover, .p-button:enabled:hover {
-    font-size: var(--button-font-size);
-    color: var(--surface-0);
-    background-color: var(--gray-600);
-    border-color: var(--gray-600);
+    font-size: var(--sw-button-font-size);
+    color: var(--sw-main-foreground-color);
+    background-color: var(--sw-primary-color);
+    border-color: var(--sw-second-contrast-color);
 }
 
 .p-button:focus {
@@ -123,17 +164,17 @@ table {
 }
 /*#endregion ng prime button adjustments */
 
-/*#region prime-ng button-outlined adjustments */
+/*#region prime-ng button-outlined adjustments*/
 .p-button.p-button-outlined {
-    font-size: var(--button-font-size);
+    font-size: var(--sw-button-font-size);
     color: var(--gray-800);
 }
 
 .p-button.p-button-outlined:hover, .p-button.p-button-outlined:enabled:hover {
-    font-size: var(--button-font-size);
+    font-size: var(--sw-button-font-size);
     color: var(--surface-0);
-    background-color: var(--gray-600);
-    border-color: var(--gray-600);
+    background-color: var(--sw-primary-color);
+    border-color: var(--sw-second-contrast-color);
 }
 
 .p-button.p-button-outlined:focus {
