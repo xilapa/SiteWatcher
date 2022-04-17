@@ -11,9 +11,10 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    background-color: Var(--box-background-color);
-    border: 1px solid lightgray;
+    background-color: var(--sw-surface-1);
+    color: var(--sw-foreground-1);
     border-radius: 6px;
     min-height: 250px;
     min-width: 100%;
+    border: var(--sw-default-border-size) solid var(--sw-border-0);
 }

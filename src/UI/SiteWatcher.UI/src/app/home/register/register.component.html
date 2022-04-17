@@ -1,51 +1,53 @@
 <div class="register-wrapper">
     <div class="register-box">
-        <div class="title">
+        <div class="sw-g-title-foreground-1">
             Register
         </div>
         <form [formGroup]="registerForm" (submit)="register()">
 
             <!-- name -->
             <div class="form-group">
-                <label for="name">Name</label>
+                <label for="name" class="sw-g-text-foreground-1">Name</label>
                 <div class="form-input">
                     <i class="pi pi-user form-icon"></i>
-                    <input 
-                        id="name" type="text" pInputText 
-                        placeholder="Name" formControlName="name" 
-                        [class.invalid-input]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid">         
+                    <input
+                        class="sw-input-color"
+                        id="name" type="text" pInputText
+                        placeholder="Name" formControlName="name"
+                        [class.invalid-input]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid">
                 </div>
-                <sw-inline-input-error-msg 
-                    [show_if]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid" 
+                <sw-inline-input-error-msg
+                    [show_if]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid"
                     [message]="inputFormName?.errors?.['invalidCharacters'] ? nameinvalidCharactersErrorMsg : nameMinLenghtErrorMsg">
                 </sw-inline-input-error-msg>
             </div>
 
             <!-- email -->
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email" class="sw-g-text-foreground-1">Email</label>
                 <div class="form-input">
                     <i class="pi pi-at form-icon"></i>
-                    <input 
-                        id="email" type="text" pInputText 
+                    <input
+                        class="sw-input-color"
+                        id="email" type="text" pInputText
                         placeholder="Email" formControlName="email"
                         [class.invalid-input]="inputFormEmail?.touched && inputFormEmail?.dirty && inputFormEmail?.invalid">
                 </div>
-                <span id="email-help" class="text-muted">Email to receive alerts. It doesn't need to be the google account email.</span> 
-                <sw-inline-input-error-msg 
-                    [show_if]="inputFormEmail?.touched && inputFormEmail?.dirty && inputFormEmail?.invalid" 
+                <span class="sw-g-mt-5 sw-g-text-muted">Email to receive alerts. It doesn't need to be the google account email.</span>
+                <sw-inline-input-error-msg
+                    [show_if]="inputFormEmail?.touched && inputFormEmail?.dirty && inputFormEmail?.invalid"
                     [message]="emailValidationErrorMsg">
                 </sw-inline-input-error-msg>
             </div>
 
             <!-- language -->
             <div class="form-group">
-                <label for="language">Language</label>
+                <label for="language" class="sw-g-text-foreground-1">Language</label>
                 <div class="form-input">
                     <i class="pi pi-globe form-icon"></i>
-                    <p-dropdown id="language" 
+                    <p-dropdown id="language"
                                 [options]="languageOptions"
-                                optionLabel="Display" 
+                                optionLabel="Display"
                                 optionValue="Value"
                                 placeholder="Select a language"
                                 formControlName="language">
@@ -57,5 +59,5 @@
             <button type="submit" pButton label="Confirm" [disabled]="registerForm.invalid"></button>
 
         </form>
-    </div>    
+    </div>
 </div>

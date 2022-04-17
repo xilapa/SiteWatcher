@@ -1,4 +1,4 @@
 .error-msg {
-    color: var(--input-invalid-color);
+    color: var(--sw-input-invalid-color);
     margin-top: 5px;
 }

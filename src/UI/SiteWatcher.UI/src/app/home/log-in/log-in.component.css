@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    background-color: Var(--box-background-color);
+    background-color: var(--sw-surface-1);
     min-height: 250px;
 }
 
@@ -13,10 +13,4 @@
     align-items: center;
 }
 
-.link-text {
-    font-size: var(--link-text-font-size);
-    margin-top: 1.5rem;
-    color: var(--gray-700);
-    font-weight: 400;
-    cursor: pointer;
-}
+

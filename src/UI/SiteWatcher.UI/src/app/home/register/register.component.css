@@ -10,14 +10,13 @@
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    background-color: var(--box-background-color);
-    border: 1px solid lightgray;
+    background-color: var(--sw-surface-1);
+    border: var(--sw-default-border-size) solid var(--sw-border-0);
     border-radius: 6px;
     min-height: 450px;
     padding: 0 20px 0 20px;
-    max-width: 514px;    
+    max-width: 514px;
 }
-
 
 form {
     display: flex;
@@ -42,18 +41,27 @@ form {
 
 .form-input input {
     flex-grow: 1;
-    height: var(--input-form-height);
+    height: var(--sw-input-form-height);
+}
+
+.sw-input-color{
+    background: var(--sw-surface-2);
+    color: var(--sw-foreground-2);
+}
+
+::placeholder {
+    color: var(--sw-text-muted-2);
 }
 
 .form-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #e9ecef;
-    color: #495057;
-    border-top: 1px solid #ced4da;
-    border-left: 1px solid #ced4da;
-    border-bottom: 1px solid #ced4da;
+    background: var(--sw-icon-background-2);
+    color: var(--sw-icon-color-2);
+    border-top: var(--sw-default-border-size) solid var(--sw-border-2);
+    border-left: var(--sw-default-border-size) solid var(--sw-border-2);
+    border-bottom: var(--sw-default-border-size) solid var(--sw-border-2);
     min-width: 10%;
     border-radius: 4px 0 0 4px;
     padding: 8px
@@ -65,26 +73,29 @@ button {
     margin-top: 25px;
 }
 
-.text-muted {
-    margin-top: 5px;
-}
-
-.invalid-input:enabled:focus {
-    box-shadow: 0 0 0 0.3rem var(--input-invalid-color-alpha) !important;
-    border-color: var(--input-invalid-color);
-}
-
 /*#region ng prime input text adjustments */
 .p-inputtext:enabled:focus {
     outline: 0 none;
     outline-offset: 0;
-    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
-    border-color: var(--gray-600);
+    box-shadow: 0 0 0 0.3rem var(--sw-box-shadow-1);
+    border: var(--sw-default-border-size) solid var(--sw-border-2);
 }
 
-:host::ng-deep .p-inputtext {
+.p-inputtext {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    border: var(--sw-default-border-size) solid var(--sw-border-2);
+}
+
+.p-inputtext:hover:not(.ng-invalid) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border: var(--sw-default-border-size) solid var(--sw-border-2);
+}
+
+.invalid-input:enabled:focus {
+    box-shadow: 0 0 0 0.3rem var(--sw-input-invalid-color-alpha) !important;
+    border-color: var(--sw-input-invalid-color) !important;
 }
 
 /*#endregion ng prime active input adjustments */
@@ -93,32 +104,65 @@ button {
 :host::ng-deep .p-dropdown {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    height: var(--input-form-height);
+    height: var(--sw-input-form-height);
     min-width: 200px;
+    background: var(--sw-surface-2);
+    color: var(--sw-foreground-2);
+    border: var(--sw-default-border-size) solid var(--sw-border-2);
+}
+
+:host::ng-deep .p-dropdown:hover {
+    border: var(--sw-default-border-size) solid var(--sw-border-2);
+}
+
+:host::ng-deep .p-dropdown-label {
+    background: var(--sw-surface-2);
+    color: var(--sw-foreground-2);
+}
+
+:host::ng-deep .p-dropdown-items {
+    background: var(--sw-surface-2);
+    color: var(--sw-foreground-2);
+    border: none;
+}
+
+:host::ng-deep .p-dropdown-panel {
+    background: none;
+    border: var(--sw-default-border-size) solid var(--sw-border-2);
 }
 
 :host::ng-deep .p-focus {
-    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%) !important;
+    box-shadow: 0 0 0 0.3rem var(--sw-box-shadow-1) !important;
     border-color: var(--gray-600) !important;
+    background: var(--sw-surface-2);
 }
 
 :host::ng-deep .p-dropdown-item {
     font-family: 'Rubik', sans-serif !important;
-    font-weight: normal !important;
     font-size: 1rem !important;
+    font-weight: 400;
 }
+
+:host::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    background: var(--sw-surface-2);
+    color: var(--sw-foreground-2);
+    font-weight: 400 !important;
+}
+
 :host::ng-deep .p-dropdown-item:hover {
-    background: var(--gray-400) !important;
-    color: var(--gray-800) !important;
     font-family: 'Rubik', sans-serif !important;
 }
 
+:host::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover{
+    background: var(--sw-surface-3);
+    color: var(--sw-foreground-3);
+}
+
 :host::ng-deep .p-highlight {
-    background: var(--gray-600) !important;
-    color: white !important;
+    background: var(--sw-surface-3) !important;
+    color: var(--sw-foreground-3) !important;
 }
 /*#endregion ng prime dropdown adjustments */
-
 
 @media screen and (max-width: 500px) {
     .register-wrapper {

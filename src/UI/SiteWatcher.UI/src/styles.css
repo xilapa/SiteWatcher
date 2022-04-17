@@ -51,56 +51,168 @@ table {
 /*#endregion css reset*/
 
 :root {
+    /*colors*/
+    --sw-light-0: #ffffff;
+    --sw-light-1: #eeeeee;
+    --sw-light-2: #d5d7d3;
+    --sw-light-3 : #cccccc;
+    --sw-light-4: #aaaaaa;
+    --sw-light-5: #939393;
+
+    --sw-dark-0: #161616;
+    --sw-dark-1: #181818;
+    --sw-dark-2: #1C1C1C;
+    --sw-dark-3: #282828;
+    --sw-dark-4: #333333;
+    --sw-dark-5: #444444;
+    --sw-dark-6: #666666;
+
     /* sizes */
+    --sw-default-text-size: 16px;
     --sw-title1-font-size: 2rem;
     --sw-button-font-size: 1rem;
     --sw-link-text-font-size: 0.9rem;
     --sw-input-form-height: 40px;
     --sw-default-border-size: 2px;
     --sw-toast-font-size: 20px;
-    --sw-text-muted-font-weight: 400;
     --sw-title-font-weight: 500;
 }
 
 /* automatic/manual light mode */
 :root, :root.light-theme {
     color-scheme: light;
-    --sw-main-background-color: #e1a500;
-    --sw-primary-color: #cb1313;
-    --sw-main-contrast-color: #00479d;
-    --sw-second-contrast-color: black;
-    --sw-input-invalid-color: #dc3545;
-    --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
-    --sw-text-muted-color: var(--gray-700);
-    --sw-main-foreground-color: white;
+
+    --sw-primary-color: #5b3b8c;
+    --sw-primary-color-border: #271938;
+    --sw-primary-color-hover: #6a40b2;
+
+    --sw-box-shadow-1: rgb(108 117 125 / 50%);
+
+    --sw-input-invalid-color: #c91e2a;
+    --sw-input-invalid-color-alpha: rgba(238, 57, 75, 0.5);
+
+    --sw-surface-0: #f2f3f3;
+    --sw-foreground-0: #16191f;
+    --sw-text-muted-0: #545b64;
+    --sw-border-0: #c2cbcc  ;
+
+    --sw-surface-1: #fafafa;
+    --sw-foreground-1: #16191f;
+    --sw-link-text-muted-1: #545b64;
+    --sw-link-text-muted-1-hover-color: var(--sw-foreground-1);
+    --sw-text-muted-1: #545b64;
+    --sw-text-muted-font-weight: 400;
+
+    --sw-surface-2: #ffffff;
+    --sw-foreground-2: #16191f;
+    --sw-text-muted-2: #545b64;
+    --sw-border-2: #ced4da; /**/
+    --sw-icon-background-2: #e7e7e7;
+    --sw-icon-color-2: #545b64;
+
+    --sw-surface-3: #c2cbcc;
+    --sw-foreground-3: #16191f;
+
+    --sw-surface-4: var(--sw-dark-5); /**/
+    --sw-foreground-4: var(--sw-light-2); /**/
+
+    --sw-surface-5: var(--sw-light-4); /**/
+    --sw-foreground-5: var(--sw-dark-0); /**/
+
+    --sw-hover-color: #ffffff; /**/
+    --sw-outlined-button-hover-text-color: var(--sw-surface-1); /**/
 }
 
 /* automatic dark theme */
 @media(prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;
-        --sw-main-background-color: #444444;
-        --sw-main-foreground-color: white;
-        --sw-primary-color: #995dbe;
-        --sw-main-contrast-color: #5F6368;
-        --sw-second-contrast-color: black;
-        --sw-input-invalid-color: #dc3545;
+
+        --sw-primary-color: #533E85;
+        --sw-primary-color-border: #34244f;
+        --sw-primary-color-hover: #65519b;
+
+        --sw-box-shadow-1: rgb(108 117 125 / 50%);
+
+        --sw-input-invalid-color: #d24646;
         --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
-        --sw-text-muted-color: var(--gray-700);
+
+        --sw-surface-0: var(--sw-dark-0);
+        --sw-foreground-0: var(--sw-light-1);
+        --sw-text-muted-0: var(--sw-light-4);
+        --sw-border-0: var(--sw-dark-3);
+
+        --sw-surface-1: var(--sw-dark-2);
+        --sw-foreground-1: var(--sw-light-4);
+        --sw-link-text-muted-1: var(--sw-dark-6);
+        --sw-link-text-muted-1-hover-color: #ffffff75;
+        --sw-text-muted-1: var(--sw-light-5);
+        --sw-text-muted-font-weight: 400;
+
+        --sw-surface-2: var(--sw-dark-3) ;
+        --sw-foreground-2: var(--sw-light-1);
+        --sw-text-muted-2: var(--sw-light-4);
+        --sw-border-2: var(--sw-dark-1);
+        --sw-icon-background-2: var(--sw-surface-2);
+        --sw-icon-color-2: var(--sw-foreground-1);
+
+        --sw-surface-3: var(--sw-dark-4);
+        --sw-foreground-3: var(--sw-light-3);
+
+        --sw-surface-4: var(--sw-dark-5);
+        --sw-foreground-4: var(--sw-light-2);
+
+        --sw-surface-5: var(--sw-light-4);
+        --sw-foreground-5: var(--sw-dark-0);
+
+        --sw-hover-color: #ffffff;
+        --sw-outlined-button-hover-text-color: rgba(255, 255, 255, 0.9);
     }
 }
 
 /* manual dark mode */
 :root.dark-theme {
     color-scheme: dark;
-    --sw-main-background-color: #444444;
-    --sw-main-foreground-color: white;
-    --sw-primary-color: #995dbe;
-    --sw-main-contrast-color: #5F6368;
-    --sw-second-contrast-color: black;
-    --sw-input-invalid-color: #dc3545;
+
+    --sw-primary-color: #533E85;
+    --sw-primary-color-border: #34244f;
+    --sw-primary-color-hover: #65519b;
+
+    --sw-box-shadow-1: rgb(108 117 125 / 50%);
+
+    --sw-input-invalid-color: #d24646;
     --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
-    --sw-text-muted-color: var(--gray-700);
+
+    --sw-surface-0: var(--sw-dark-0);
+    --sw-foreground-0: var(--sw-light-1);
+    --sw-text-muted-0: var(--sw-light-4);
+    --sw-border-0: var(--sw-dark-3);
+
+    --sw-surface-1: var(--sw-dark-2);
+    --sw-foreground-1: var(--sw-light-4);
+    --sw-link-text-muted-1: var(--sw-dark-6);
+    --sw-link-text-muted-1-hover-color: #ffffff75;
+    --sw-text-muted-1: var(--sw-light-5);
+    --sw-text-muted-font-weight: 400;
+
+    --sw-surface-2: var(--sw-dark-3) ;
+    --sw-foreground-2: var(--sw-light-1);
+    --sw-text-muted-2: var(--sw-light-4);
+    --sw-border-2: var(--sw-dark-1);
+    --sw-icon-background-2: var(--sw-surface-2);
+    --sw-icon-color-2: var(--sw-foreground-1);
+
+    --sw-surface-3: var(--sw-dark-4);
+    --sw-foreground-3: var(--sw-light-3);
+
+    --sw-surface-4: var(--sw-dark-5);
+    --sw-foreground-4: var(--sw-light-2);
+
+    --sw-surface-5: var(--sw-light-4);
+    --sw-foreground-5: var(--sw-dark-0);
+
+    --sw-hover-color: #ffffff;
+    --sw-outlined-button-hover-text-color: rgba(255, 255, 255, 0.9);
 }
 
 * {
@@ -108,20 +220,50 @@ table {
     font-family: 'Rubik', sans-serif;
 }
 
-.icon-right-margin {
+/*#region global styles*/
+
+.sw-g-title-foreground-1 {
+    font-size: var(--sw-title1-font-size);
+    font-weight: var(--sw-title-font-weight);
+    color: var(--sw-foreground-1);
+    cursor: default;
+}
+
+.sw-g-text-foreground-1 {
+    font-size: var(--sw-default-text-size);
+    color: var(--sw-foreground-1);
+    cursor: default;
+}
+
+.sw-g-link-text-muted {
+    font-size: var(--sw-link-text-font-size);
+    margin-top: 1.5rem;
+    color: var(--sw-link-text-muted-1);
+    font-weight: var(--sw-text-muted-font-weight);
+    cursor: pointer;
+}
+
+.sw-g-link-text-muted:hover {
+    color: var(--sw-link-text-muted-1-hover-color);
+}
+
+.sw-g-text-muted {
+    font-size: var(--sw-link-text-font-size);
+    margin-top: 1.5rem;
+    color: var(--sw-text-muted-1);
+    font-weight: 400;
+    cursor: default;
+}
+
+.sw-g-mt-5 {
+    margin-top: 5px;
+}
+
+.sw-g-mr-5 {
     margin-right: 5px;
 }
+/*#endregion*/
 
-.text-muted {
-	font-size: var(--sw-link-text-font-size);
-    color: var(--sw-text-muted-color);
-    font-weight: var(--sw-text-muted-font-weight);
-}
-
-.title {
-	font-size: var(--sw-title1-font-size);
-    font-weight: var(--sw-title-font-weight);
-}
 
 /* prime-ng toast icon size */
 .p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon {
@@ -138,16 +280,21 @@ table {
 /*#region prime-ng button adjustments*/
 .p-button {
     font-size: var(--sw-button-font-size);
-    color: var(--sw-main-foreground-color);
-	background-color: var(--sw-primary-color);
-	border: none;
+    color: var(--sw-outlined-button-hover-text-color) !important;
+	background: var(--sw-primary-color) !important;
+	border: var(--sw-primary-color-border) !important;
 }
 
 .p-button:hover, .p-button:enabled:hover {
-    font-size: var(--sw-button-font-size);
-    color: var(--sw-main-foreground-color);
-    background-color: var(--sw-primary-color);
-    border-color: var(--sw-second-contrast-color);
+    background: var(--sw-primary-color-hover) !important;
+    border-color: var(--sw-primary-color-border) !important;
+    border: var(--sw-primary-color-border) !important;
+}
+
+.p-button:disabled:hover {
+    background: var(--sw-primary-color) !important;
+    border-color: var(--sw-primary-color-border) !important;
+    border: var(--sw-primary-color-border) !important;
 }
 
 .p-button:focus {
@@ -155,7 +302,7 @@ table {
 }
 
 .p-button:active:hover {
-    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
+    box-shadow: 0 0 0 0.3rem var(--sw-box-shadow-1);
 }
 
 .p-disabled, .p-component:disabled {
@@ -167,14 +314,14 @@ table {
 /*#region prime-ng button-outlined adjustments*/
 .p-button.p-button-outlined {
     font-size: var(--sw-button-font-size);
-    color: var(--gray-800);
+    color: var(--sw-foreground-1);
 }
 
 .p-button.p-button-outlined:hover, .p-button.p-button-outlined:enabled:hover {
     font-size: var(--sw-button-font-size);
-    color: var(--surface-0);
+    color: var(--sw-outlined-button-hover-text-color);
     background-color: var(--sw-primary-color);
-    border-color: var(--sw-second-contrast-color);
+    border-color: var(--sw-primary-color-border);
 }
 
 .p-button.p-button-outlined:focus {
@@ -182,7 +329,7 @@ table {
 }
 
 .p-button.p-button-outlined:active:hover {
-    box-shadow: 0 0 0 0.3rem rgb(108 117 125 / 50%);
+    box-shadow: none;
 }
 
 /*#endregion ng prime button-outlined  adjustments */
