@@ -3,10 +3,10 @@ LABEL version="0.0.1" mantainer="xilapa"
 WORKDIR /app
 
 # Copy project files
-COPY src/Core/SiteWatcher.Application ./src/Core/SiteWatcher.Application
-COPY src/Core/SiteWatcher.Domain ./src/Core/SiteWatcher.Domain
-COPY src/Infra/SiteWatcher.Data ./src/Infra/SiteWatcher.Data
-COPY src/WebAPI/SiteWatcher.WebAPI ./src/WebAPI/SiteWatcher.WebAPI
+COPY src/Application ./src/Application
+COPY src/Domain ./src/Domain
+COPY src/Infra ./src/Infra/
+COPY src/WebAPI ./src/WebAPI/
 COPY *.sln .
 RUN dotnet restore
 
