@@ -1,0 +1,12 @@
+.top-bar-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+
+    /*background-color: ;*/
+    min-height: 64px;
+    width: 100vw;
+
+    border-bottom: 2px solid var(--sw-primary-color);
+
+}
