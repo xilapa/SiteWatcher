@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Application.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;

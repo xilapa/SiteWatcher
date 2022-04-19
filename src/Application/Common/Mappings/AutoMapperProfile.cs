@@ -1,5 +1,4 @@
 using AutoMapper;
-using SiteWatcher.Application.Notifications;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.Models;
 

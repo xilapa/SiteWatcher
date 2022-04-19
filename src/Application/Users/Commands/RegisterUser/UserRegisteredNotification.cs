@@ -1,7 +1,7 @@
 using MediatR;
 using SiteWatcher.Domain.Enums;
 
-namespace SiteWatcher.Application.Notifications;
+namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
 public class UserRegisteredNotification : INotification
 {

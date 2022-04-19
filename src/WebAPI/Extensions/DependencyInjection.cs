@@ -1,4 +1,4 @@
-using Application.Interfaces;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.WebAPI.Settings;
 
 namespace SiteWatcher.WebAPI.Extensions;

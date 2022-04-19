@@ -1,9 +1,9 @@
+using SiteWatcher.Application.Users.Commands.RegisterUser;
 using MediatR;
-using SiteWatcher.Application.Notifications;
 
 namespace SiteWatcher.Application.Handlers.EventHandlers;
 
-public class EmailConfirmationEventHandler : INotificationHandler<UserRegisteredNotification>
+public class SendEmailConfirmationEventHandler : INotificationHandler<UserRegisteredNotification>
 {
     public Task Handle(UserRegisteredNotification notification, CancellationToken cancellationToken)
     {

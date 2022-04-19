@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 
-namespace Application;
+namespace SiteWatcher.Application;
 
 public static class DependencyInjection
 {

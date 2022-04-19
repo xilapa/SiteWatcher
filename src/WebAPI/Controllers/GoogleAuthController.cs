@@ -5,7 +5,6 @@ using SiteWatcher.WebAPI.DTOs.ViewModels;
 using SiteWatcher.WebAPI.DTOs.InputModels;
 using SiteWatcher.WebAPI.DTOs.Metadata;
 using System.IdentityModel.Tokens.Jwt;
-using Application.Interfaces;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Utils;

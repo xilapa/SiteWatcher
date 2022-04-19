@@ -1,8 +1,8 @@
+using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Interfaces;
 using AutoMapper;
 using MediatR;
 using SiteWatcher.Application.Metadata;
-using SiteWatcher.Application.Notifications;
 using SiteWatcher.Application.Validators;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Exceptions;

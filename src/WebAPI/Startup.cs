@@ -1,5 +1,5 @@
-using Application;
-using Application.Interfaces;
+using SiteWatcher.Application;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.WebAPI.Filters;
