@@ -10,6 +10,6 @@ public class UserDapperRepository : DapperRepository<UserViewModel>, IUserDapper
     { }
 
     public async Task<UserViewModel> GetActiveUserAsync(string googleId) =>
-        await UsingConnectionAsync(conn => 
+        await UsingConnectionAsync(conn =>
             conn.QuerySingleOrDefaultAsync<UserViewModel>(Queries.GetActiveUserByGoogleId, new { googleId }));
 }

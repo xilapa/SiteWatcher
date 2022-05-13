@@ -58,6 +58,8 @@ public class Startup : IStartup
     // Configure the HTTP request pipeline.
     public void Configure(WebApplication app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
+        app.ConfigureGlobalExceptionHandlerMiddleware(env, loggerFactory);
+
         if (env.IsDevelopment())
         {
             app.UseSwagger();
@@ -83,7 +85,5 @@ public class Startup : IStartup
         app.UseAuthorization();
 
         app.MapControllers();
-
-        app.ConfigureGlobalExceptionHandlerMiddleware(env, loggerFactory);
     }
 }

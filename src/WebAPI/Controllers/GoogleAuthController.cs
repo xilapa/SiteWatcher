@@ -24,7 +24,9 @@ public class GoogleAuthController : ControllerBase
     private readonly ICache _cache;
 
     // ctor for benchs
+#pragma warning disable CS8618
     protected GoogleAuthController() { }
+#pragma warning restore CS8618
 
     public GoogleAuthController(
         IGoogleSettings googleSettings,

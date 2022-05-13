@@ -1,6 +1,6 @@
 namespace SiteWatcher.WebAPI.Extensions;
 
-public static class StartupExtensions 
+public static class StartupExtensions
 {
     public static WebApplicationBuilder UseStartup<T>(this WebApplicationBuilder builder) where T : IStartup
     {
