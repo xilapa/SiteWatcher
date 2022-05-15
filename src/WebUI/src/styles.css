@@ -57,6 +57,7 @@ table {
     --sw-light-2: #d5d7d3;
     --sw-light-3 : #cccccc;
     --sw-light-4: #aaaaaa;
+    --sw-light-4-alpha-30: rgb(170, 170, 170, 0.3);
     --sw-light-5: #939393;
 
     --sw-dark-0: #161616;
@@ -117,6 +118,7 @@ table {
     --sw-foreground-4: var(--sw-light-2); /**/
 
     --sw-surface-5: var(--sw-light-4); /**/
+    --sw-surface-5-hover: var(--sw-light-4-alpha-30);
     --sw-foreground-5: var(--sw-dark-0); /**/
 
     --sw-hover-color: #ffffff; /**/
@@ -163,6 +165,7 @@ table {
         --sw-foreground-4: var(--sw-light-2);
 
         --sw-surface-5: var(--sw-light-4);
+        --sw-surface-5-hover: var(--sw-light-4-alpha-30);
         --sw-foreground-5: var(--sw-dark-0);
 
         --sw-hover-color: #ffffff;
@@ -209,6 +212,7 @@ table {
     --sw-foreground-4: var(--sw-light-2);
 
     --sw-surface-5: var(--sw-light-4);
+    --sw-surface-5-hover: var(--sw-light-4-alpha-30);
     --sw-foreground-5: var(--sw-dark-0);
 
     --sw-hover-color: #ffffff;
