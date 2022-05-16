@@ -11,17 +11,15 @@ export class DeviceService implements OnDestroy {
     private mobileScreen = new BehaviorSubject<boolean>(false);
     private resizeEventSub: Subscription;
 
-    constructor(private media: MediaMatcher, private window: Window) {
+    constructor(private readonly media: MediaMatcher, private window: Window) {
         const _hasTouch = media.matchMedia('(hover: none)').matches;
         this.hasTouch.next(_hasTouch ?? false);
 
+        this.mobileScreen.next(this.checkMobileScreen());
         this.resizeEventSub = fromEvent(window, 'resize')
             .pipe(
                 debounceTime(500),
-                tap(() => {
-                    const _mobileScreen = media.matchMedia('only screen and (max-width: 600px)').matches;
-                    this.mobileScreen.next(_mobileScreen);
-                }))
+                tap(() => this.mobileScreen.next(this.checkMobileScreen())))
             .subscribe();
     }
 
@@ -35,5 +33,9 @@ export class DeviceService implements OnDestroy {
 
     hasTouchScreen(): Observable<boolean> {
         return this.hasTouch.asObservable();
+    }
+
+    private checkMobileScreen() : boolean {
+        return this.media.matchMedia('only screen and (max-width: 600px)').matches;
     }
 }
