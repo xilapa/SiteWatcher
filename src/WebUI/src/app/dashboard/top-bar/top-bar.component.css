@@ -5,14 +5,14 @@
     min-height: 66px;
     width: 100vw;
     border-bottom: 4px solid var(--sw-primary-color);
+    justify-content: space-between;
 }
 
-.left-wrapper {
+.left-wrapper, .settings-button-wrapper {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    margin-left: 12px;
 }
 
 .tags-button {
@@ -24,8 +24,8 @@
     border-radius: 50%;
 }
 
-.show-tags-icon {
-    font-size: 20px;
+.top-bar-icons {
+    font-size: 22px;
 }
 
 .app-title {
@@ -39,12 +39,14 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    flex-grow: 1
+    flex-grow: 1;
+    max-width: 615px;
+    margin-right: 165px; /*app-title-size*/
 }
 
 .search-box {
     background-color: var(--sw-surface-2);
-    border-radius: 4px;
+    border-radius: 14px;
     width: 100%
 }
 
@@ -52,12 +54,21 @@
     background-color: var(--sw-surface-2);
 }
 
+.left-wrapper{
+    margin-left: 12px;
+}
+
+.settings-button-wrapper {
+    margin-right: 12px;
+}
+
 /*#region ng-prime input text adjusts */
 .p-inputtext {
     border: var(--sw-default-border-size) solid var(--sw-border-2);
     color: var(--sw-text-muted-0);
-    padding: 6px 8px;
+    padding: 8px 8px;
     width:100%;
+    border-radius: 14px;
 }
 
 .p-inputtext:hover {
@@ -76,4 +87,9 @@
 }
 /*#endregion*/
 
+@media screen and (max-width: 600px) {
+    .search-box-wrapper {
+        margin-right: 0; /*app-title-size*/
+    }
+}
 

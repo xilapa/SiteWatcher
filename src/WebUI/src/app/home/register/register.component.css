@@ -164,7 +164,7 @@ button {
 }
 /*#endregion ng prime dropdown adjustments */
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
     .register-wrapper {
         width: 100vw;
     }

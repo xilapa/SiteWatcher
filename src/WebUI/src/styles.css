@@ -77,6 +77,7 @@ table {
     --sw-default-border-size: 2px;
     --sw-toast-font-size: 20px;
     --sw-title-font-weight: 500;
+    --sw-max-mobile-screen-width: 600px;
 }
 
 /* automatic/manual light mode */
@@ -107,7 +108,7 @@ table {
     --sw-surface-2: #ffffff;
     --sw-foreground-2: var(--sw-dark-6);
     --sw-text-muted-2: #545b64;
-    --sw-border-2: var(--sw-input-text-border-color-light);
+    --sw-border-2: #ced4da;
     --sw-icon-background-2: #e7e7e7;
     --sw-icon-color-2: #545b64;
 

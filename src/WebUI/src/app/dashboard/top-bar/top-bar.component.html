@@ -1,7 +1,7 @@
 <div class="top-bar-wrapper">
     <div class="left-wrapper">
         <div class="tags-button" (click)="showTagsToggle()">
-            <i class="pi pi-bars show-tags-icon"></i>
+            <i class="pi pi-bars top-bar-icons"></i>
         </div>
         <div *ngIf="!(mobileScreen$ | async) as boolean" class="app-title">
             Site Watcher
@@ -17,6 +17,11 @@
             <input type="text" pInputText [(ngModel)]="searchText" (keyup.enter)="search()">
         </div>
     </div>
-    <!-- settings button -->
+
+    <div class="settings-button-wrapper">
+        <div class="tags-button" (click)="showSettingsToggle()">
+            <i class="pi pi-cog top-bar-icons"></i>
+        </div>
+    </div>
 </div>
 

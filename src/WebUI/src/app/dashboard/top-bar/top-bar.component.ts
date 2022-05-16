@@ -10,6 +10,7 @@ import {Observable} from "rxjs";
 export class TopBarComponent implements OnInit {
 
     showTags = false;
+    showSettings = false;
     mobileScreen$ :Observable<boolean>;
     searchText: string;
     searching = false;
@@ -28,6 +29,11 @@ export class TopBarComponent implements OnInit {
 
     search(): void {
         this.searching = !this.searching;
+    }
+
+    showSettingsToggle(): void {
+        this.showSettings = !this.showSettings;
+        console.log(`show settings: ${this.showSettings}`);
     }
 
 }
