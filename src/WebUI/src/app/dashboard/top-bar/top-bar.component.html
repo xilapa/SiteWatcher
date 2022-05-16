@@ -1,3 +1,9 @@
+<div *ngIf="(mobileScreen$ | async) as boolean" class="mobile-title">
+    <div class="app-title">
+        Site Watcher
+    </div>
+</div>
+
 <div class="top-bar-wrapper">
     <div class="left-wrapper">
         <div class="tags-button" (click)="showTagsToggle()">

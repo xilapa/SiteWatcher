@@ -1,3 +1,8 @@
+.mobile-title {
+    display: flex;
+    justify-content: center;
+}
+
 .top-bar-wrapper {
     display: flex;
     flex-direction: row;
@@ -32,6 +37,10 @@
     font-size: 24px;
     padding: 12px;
     user-select: none;
+}
+
+.mobile-title .app-title{
+    padding-bottom: 0px;
 }
 
 .search-box-wrapper {
@@ -87,7 +96,7 @@
 }
 /*#endregion*/
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 800px) {
     .search-box-wrapper {
         margin-right: 0; /*app-title-size*/
     }
