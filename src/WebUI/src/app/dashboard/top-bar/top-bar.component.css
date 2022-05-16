@@ -74,7 +74,7 @@
 /*#region ng-prime input text adjusts */
 .p-inputtext {
     border: var(--sw-default-border-size) solid var(--sw-border-2);
-    color: var(--sw-text-muted-0);
+    color: var(--sw-foreground-0);
     padding: 8px 8px;
     width:100%;
     border-radius: 14px;
@@ -96,7 +96,7 @@
 }
 /*#endregion*/
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 1200px) {
     .search-box-wrapper {
         margin-right: 0; /*app-title-size*/
     }
