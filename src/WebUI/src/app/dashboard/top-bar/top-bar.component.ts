@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DeviceService} from "../../core/device/device.service";
-import {Observable, Subscription} from "rxjs";
+import {Observable} from "rxjs";
 
 @Component({
     selector: 'sw-top-bar',
@@ -11,6 +11,8 @@ export class TopBarComponent implements OnInit {
 
     showTags = false;
     mobileScreen$ :Observable<boolean>;
+    searchText: string;
+    searching = false;
 
     constructor(private readonly deviceService: DeviceService)
     { }
@@ -22,6 +24,10 @@ export class TopBarComponent implements OnInit {
     showTagsToggle(): void {
         this.showTags = !this.showTags;
         console.log(`show tags: ${this.showTags}`);
+    }
+
+    search(): void {
+        this.searching = !this.searching;
     }
 
 }

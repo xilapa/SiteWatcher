@@ -105,9 +105,9 @@ table {
     --sw-text-muted-font-weight: 400;
 
     --sw-surface-2: #ffffff;
-    --sw-foreground-2: #16191f;
+    --sw-foreground-2: var(--sw-dark-6);
     --sw-text-muted-2: #545b64;
-    --sw-border-2: #ced4da; /**/
+    --sw-border-2: var(--sw-input-text-border-color-light);
     --sw-icon-background-2: #e7e7e7;
     --sw-icon-color-2: #545b64;
 

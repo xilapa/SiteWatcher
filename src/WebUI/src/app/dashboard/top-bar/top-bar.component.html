@@ -1,5 +1,5 @@
 <div class="top-bar-wrapper">
-    <div class="left-buttons">
+    <div class="left-wrapper">
         <div class="tags-button" (click)="showTagsToggle()">
             <i class="pi pi-bars show-tags-icon"></i>
         </div>
@@ -7,7 +7,16 @@
             Site Watcher
         </div>
     </div>
-    <!-- search bar -->
+
+    <div class="search-box-wrapper">
+        <div class="p-input-icon-right search-box">
+            <i *ngIf="!searching; else loading" class="pi pi-search search-icon" (click)="search()"></i>
+            <ng-template #loading >
+                <i class="pi pi-spin pi-spinner"></i>
+            </ng-template>
+            <input type="text" pInputText [(ngModel)]="searchText" (keyup.enter)="search()">
+        </div>
+    </div>
     <!-- settings button -->
 </div>
 
