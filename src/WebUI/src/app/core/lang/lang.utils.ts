@@ -1,4 +1,4 @@
-﻿import {ELanguage, LanguageFileName} from "../enums";
+﻿import {ELanguage, LanguageFileName} from "./language";
 
 export class LangUtils {
 

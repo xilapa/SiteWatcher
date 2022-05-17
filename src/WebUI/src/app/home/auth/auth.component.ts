@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/core/auth/auth.service';
-import { EAuthTask } from 'src/app/core/enums';
 import { ApiResponse } from 'src/app/core/interfaces';
 import { Data } from 'src/app/core/shared-data/shared-data';
 import { MessageService } from 'primeng/api';
 import { UserService } from 'src/app/core/user/user.service';
+import {AuthService} from "../../core/auth/service/auth.service";
+import {EAuthTask} from "../../core/auth/service/auth-task";
 
 @Component({
     selector: 'sw-auth',

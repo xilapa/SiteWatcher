@@ -1,4 +1,4 @@
-import { EAuthTask } from '../enums/';
+import {EAuthTask} from "./auth-task";
 
 export interface AuthenticationResult {
     Task: EAuthTask,

@@ -2,14 +2,15 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MessageService} from 'primeng/api';
 import {invalidCharactersValidator} from 'src/app/common/validators/invalid-characters.validator';
-import {AuthService} from 'src/app/core/auth/auth.service';
-import {LanguageOptions} from 'src/app/core/dropdown-options/language-options';
-import {ApiResponse, UserRegister} from 'src/app/core/interfaces';
+import {ApiResponse} from 'src/app/core/interfaces';
 import {UserService} from 'src/app/core/user/user.service';
 import {TranslocoService} from "@ngneat/transloco";
-import {ELanguage} from "../../core/enums";
 import {LangUtils} from "../../core/lang/lang.utils";
 import {Subscription} from "rxjs";
+import {LanguageOptions} from "./language-options";
+import {ELanguage} from "../../core/lang/language";
+import {UserRegister} from "../../core/auth/user-register";
+import {AuthService} from "../../core/auth/service/auth.service";
 
 @Component({
     selector: 'sw-register',

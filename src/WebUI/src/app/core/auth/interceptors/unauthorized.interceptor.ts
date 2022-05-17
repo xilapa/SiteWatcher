@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { UserService } from '../user/user.service';
+import {UserService} from "../../user/user.service";
 
 @Injectable()
 export class UnauthorizedInterceptor implements HttpInterceptor {

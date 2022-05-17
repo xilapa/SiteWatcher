@@ -1,4 +1,4 @@
-import { ELanguage } from "../enums";
+import {ELanguage} from "../lang/language";
 
 export interface User {
     id: string,
