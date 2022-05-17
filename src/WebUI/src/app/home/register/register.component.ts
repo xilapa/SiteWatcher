@@ -8,7 +8,7 @@ import {ApiResponse, UserRegister} from 'src/app/core/interfaces';
 import {UserService} from 'src/app/core/user/user.service';
 import {TranslocoService} from "@ngneat/transloco";
 import {ELanguage} from "../../core/enums";
-import {LangUtils} from "../../core/lang/lang-utils";
+import {LangUtils} from "../../core/lang/lang.utils";
 import {Subscription} from "rxjs";
 
 @Component({

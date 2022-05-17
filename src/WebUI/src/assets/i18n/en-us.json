@@ -1,5 +1,10 @@
 {
     "home": {
+        "login" : {
+            "title": "Login",
+            "continueGoogle": "Continue with Google",
+            "registerGoogle": "Or register with google"
+        },
         "register": {
             "title": "Register",
             "name": "Name",

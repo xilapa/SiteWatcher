@@ -1,11 +1,13 @@
+<ng-container *transloco="let t; read: 'home.login'">
 <div class="login-box">
     <div class="sw-g-title-foreground-1">
-        Log In
+        {{ t("title")}}
     </div>
     <div class="links">
         <button pButton type="button" class="p-button-outlined" (click)="login()">
-            <i class="pi pi-google sw-g-mr-5"></i> Continue with Google
+            <i class="pi pi-google sw-g-mr-5"></i> {{ t("continueGoogle")}}
         </button>
-        <a class="sw-g-link-text-muted" (click)="register()">Or register with google</a>
+        <a class="sw-g-link-text-muted" (click)="register()">{{ t("registerGoogle")}}</a>
     </div>
 </div>
+</ng-container>

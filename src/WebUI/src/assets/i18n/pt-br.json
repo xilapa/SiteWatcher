@@ -1,5 +1,10 @@
 {
     "home": {
+        "login" : {
+            "title": "Entrar",
+            "continueGoogle": "Continuar com Google",
+            "registerGoogle": "Ou registrar com google"
+        },
         "register": {
             "title": "Registrar",
             "name": "Nome",
