@@ -1,5 +1,8 @@
 {
     "home": {
+        "auth" : {
+            "authenticating" : "Autenticando"
+        },
         "login" : {
             "title": "Entrar",
             "continueGoogle": "Continuar com Google",
