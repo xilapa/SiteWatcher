@@ -12,6 +12,7 @@ import {HomeModule} from './home/home.module';
 import {AuthHeaderInterceptor} from './core/auth/auth-header.interceptor';
 import {UnauthorizedInterceptor} from './core/auth/unauthorized.interceptor';
 import {ContentTypeInterceptor} from './core/interceptors/content-type.interceptor';
+import {TranslocoRootModule} from './transloco-root.module';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import {ContentTypeInterceptor} from './core/interceptors/content-type.intercept
         HomeModule,
         AppRoutingModule,
         ToastModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+        TranslocoRootModule
     ],
     providers: [
         MessageService,

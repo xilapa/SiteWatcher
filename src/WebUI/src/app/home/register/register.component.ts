@@ -1,41 +1,41 @@
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageService } from 'primeng/api';
-import { invalidCharactersValidator } from 'src/app/common/validators/invalid-characters.validator';
-import { AuthService } from 'src/app/core/auth/auth.service';
-import { LanguageOptions } from 'src/app/core/dropdown-options/language-options';
-import { ApiResponse, UserRegister } from 'src/app/core/interfaces';
-import { UserService } from 'src/app/core/user/user.service';
-
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MessageService} from 'primeng/api';
+import {invalidCharactersValidator} from 'src/app/common/validators/invalid-characters.validator';
+import {AuthService} from 'src/app/core/auth/auth.service';
+import {LanguageOptions} from 'src/app/core/dropdown-options/language-options';
+import {ApiResponse, UserRegister} from 'src/app/core/interfaces';
+import {UserService} from 'src/app/core/user/user.service';
+import {TranslocoService} from "@ngneat/transloco";
+import {ELanguage} from "../../core/enums";
+import {LangUtils} from "../../core/lang/lang-utils";
+import {Subscription} from "rxjs";
 
 @Component({
     selector: 'sw-register',
     templateUrl: './register.component.html',
     styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
 
     public registerForm: FormGroup;
     public languageOptions = LanguageOptions;
     private userRegisterInitialValues: UserRegister;
-
     public inputFormName: AbstractControl | null;
-    public nameMinLenghtErrorMsg = "Username length should be at least 3.";
-    public nameinvalidCharactersErrorMsg = "Username must only have letters.";
-
     public inputFormEmail: AbstractControl | null;
-    public emailValidationErrorMsg = "Email is not valid.";
-
+    private langSub: Subscription | undefined;
 
     constructor(
         private readonly formBuilder: FormBuilder,
         private readonly authService: AuthService,
         private readonly userService: UserService,
-        private readonly messageService: MessageService) {        
+        private readonly messageService: MessageService,
+        private readonly translocoService: TranslocoService
+    ) {
         this.userRegisterInitialValues = this.userService.getUserRegisterData();
     }
 
-    ngOnInit(): void {        
+    ngOnInit(): void {
         this.registerForm = this.formBuilder.group(
             {
                 name: [this.userRegisterInitialValues.name, [Validators.required, Validators.minLength(3), invalidCharactersValidator]],
@@ -43,32 +43,41 @@ export class RegisterComponent implements OnInit {
                 language: [this.userRegisterInitialValues.language, [Validators.required]]
             }
         );
-        
+
         this.inputFormName = this.registerForm.get('name');
         this.inputFormEmail = this.registerForm.get('email');
+
+        this.translocoService.setActiveLang(LangUtils.getLangFileName(this.userRegisterInitialValues.language));
+        this.langSub = this.registerForm.get('language')?.valueChanges.subscribe(
+            (lang: ELanguage) => this.translocoService.setActiveLang(LangUtils.getLangFileName(lang))
+        );
+    }
+
+    ngOnDestroy(): void {
+        this.langSub?.unsubscribe();
     }
 
     public register(): void {
         const registerData = this.registerForm.getRawValue() as UserRegister;
         this.authService
-                .register(registerData)
-                .subscribe({
-                    next: (resp) =>{
-                        this.userService.setToken(resp.Result);
-                        this.userService.removeUserRegisterData();
-                        this.authService.redirecLoggedUser();
-                    },
-                    error: (errorResponse) => {
-                        this.messageService.add(
-                            {
-                                severity: 'error',
-                                summary: 'Error',
-                                detail: (errorResponse.error as ApiResponse<null>).Messages.join("; "),
-                                sticky: true,
-                                closable: true
-                            }
-                        )
-                    }
-                });
+            .register(registerData)
+            .subscribe({
+                next: (resp) => {
+                    this.userService.setToken(resp.Result);
+                    this.userService.removeUserRegisterData();
+                    this.authService.redirecLoggedUser();
+                },
+                error: (errorResponse) => {
+                    this.messageService.add(
+                        {
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: (errorResponse.error as ApiResponse<null>).Messages.join("; "),
+                            sticky: true,
+                            closable: true
+                        }
+                    )
+                }
+            });
     }
 }

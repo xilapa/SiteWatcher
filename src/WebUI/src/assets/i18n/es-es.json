@@ -1,0 +1,15 @@
+{
+    "home": {
+        "register": {
+            "title": "Registro",
+            "name": "Nombre",
+            "email" : "Correo electrónico",
+            "emailDescription": "Correo electrónico para recibir alertas. No es necesario que sea el correo electrónico de la cuenta de Google.",
+            "language": "Idioma",
+            "nameMinLenghtErrorMsg": "La longitud del nombre debe tener al menos 3 caracteres.",
+            "nameinvalidCharactersErrorMsg" : "El nombre solo debe tener letras.",
+            "emailValidationErrorMsg" : "El correo no es válido.",
+            "confirm" : "Confirm"
+        }
+    }
+}

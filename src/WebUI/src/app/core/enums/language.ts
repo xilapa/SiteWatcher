@@ -3,3 +3,9 @@ export enum ELanguage{
     English = 2,
     Spanish = 3
 }
+
+export class LanguageFileName{
+    public static readonly BrazilianPortuguese = "pt-br";
+    public static readonly English = "en-us";
+    public static readonly Spanish = "es-es";
+}

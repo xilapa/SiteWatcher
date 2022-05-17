@@ -20,6 +20,7 @@
     "@angular/platform-browser": "~13.3.3",
     "@angular/platform-browser-dynamic": "~13.3.3",
     "@angular/router": "~13.3.3",
+    "@ngneat/transloco": "^4.0.0",
     "jwt-decode": "^3.1.2",
     "ngx-cookie-service": "^13.2.0",
     "primeicons": "^5.0.0",
