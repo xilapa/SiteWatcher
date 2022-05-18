@@ -1,13 +1,5 @@
 ﻿{
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:38680",
-      "sslPort": 44348
-    }
-  },
+  "$schema": "https://json.schemastore.org/launchsettings.json",  
   "profiles": {
     "SiteWatcher.WebAPI": {
       "commandName": "Project",
@@ -18,14 +10,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
     }
-  }
+    }
 }
