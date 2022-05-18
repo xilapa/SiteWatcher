@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Infra.Configuration;
 
-public class UserMapping : BaseModelMapping<User,Guid>
+public class UserMapping : BaseModelMapping<User,UserId>
 {
     public override void Configure(EntityTypeBuilder<User> builder)
     {
@@ -13,6 +14,7 @@ public class UserMapping : BaseModelMapping<User,Guid>
         builder.ToTable("Users");
 
         builder.Property(u => u.Id)
+                .HasConversion<UserId.EfCoreValueConverter>()
                 .HasColumnType("uuid");
 
         builder.Property(u => u.GoogleId)

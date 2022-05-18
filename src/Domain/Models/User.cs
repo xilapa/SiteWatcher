@@ -1,11 +1,12 @@
+using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Domain.Models;
 
-public class User : BaseModel<Guid>
+public class User : BaseModel<UserId>
 {
     // ctor for EF
-    protected User() : base(Guid.NewGuid())
+    protected User() : base(new UserId(Guid.NewGuid()))
     { }
 
     public User(string googleId, string name, string email, string authEmail, ELanguage language) : this()

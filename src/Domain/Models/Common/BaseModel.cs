@@ -1,4 +1,4 @@
-namespace SiteWatcher.Domain.Models;
+namespace SiteWatcher.Domain.Models.Common;
 
 public abstract class BaseModel<IdType>
 {
