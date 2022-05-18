@@ -24,6 +24,7 @@ You can choose be notified if:
 ## Tecnologies
 
 This project is currently using:
+- Angular 13;
 - NET 6;
 - EF Core 6;
 - Swagger;
@@ -33,5 +34,6 @@ This project is currently using:
 - Redis;
 - BenchmarkDotNet;
 - Roslynator;
+- StronglyTypedId;
 
 To know more about internal decisions see the [/docs](https://github.com/xilapa/SiteWatcher/tree/main/docs "/docs") folder.
