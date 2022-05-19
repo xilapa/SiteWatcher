@@ -12,14 +12,18 @@ namespace SiteWatcher.WebAPI;
 
 public class Startup : IStartup
 {
-    public IAppSettings AppSettings { get; }
+    private readonly IConfiguration _configuration;
+    public IAppSettings AppSettings { get; set; }
 
-    public Startup(IConfiguration configuration) => AppSettings = configuration.Get<AppSettings>();
+    public Startup(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     // Add services to the container.
     public void ConfigureServices(IServiceCollection services, IWebHostEnvironment env)
     {
-        services.AddSettings();
+        AppSettings = services.AddSettings(_configuration, env);
 
         services.AddControllers(opts => {
                     opts.Filters.Add(typeof(CommandValidationFilter));
@@ -33,12 +37,12 @@ public class Startup : IStartup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
 
-        services.AddDataContext<SiteWatcherContext>(env.IsDevelopment(), AppSettings.ConnectionString);
+        services.AddDataContext<SiteWatcherContext>();
         services.AddRepositories();
-        services.AddDapperRepositories(env.IsDevelopment(), AppSettings.ConnectionString);
+        services.AddDapperRepositories();
         services.AddApplication();
 
-        services.AddRedisCache(AppSettings.RedisConnectionString);
+        services.AddRedisCache(AppSettings);
 
         services.AddSessao();
 

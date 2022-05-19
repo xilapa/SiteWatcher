@@ -8,8 +8,8 @@ public abstract class DapperRepository<T> : IDapperRepository<T>
 {
     private readonly string _connectionString;
 
-    protected DapperRepository(string connectionString) =>
-        _connectionString = connectionString;
+    protected DapperRepository(IAppSettings appSettings) =>
+        _connectionString = appSettings.ConnectionString;
 
     public async Task<T> UsingConnectionAsync(Func<IDbConnection, Task<T>> func)
     {

@@ -14,6 +14,7 @@ namespace SiteWatcher.WebAPI.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Route("google-auth")]
+//TODO: Melhorar essa controller, criar handlers para cada método
 public class GoogleAuthController : ControllerBase
 {
     private readonly IGoogleSettings _googleSettings;

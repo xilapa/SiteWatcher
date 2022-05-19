@@ -5,10 +5,12 @@ namespace SiteWatcher.WebAPI.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddSettings(this IServiceCollection services)
+    public static IAppSettings AddSettings(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
     {
-        services.AddSingleton<IAppSettings>(f => f.GetRequiredService<IConfiguration>().Get<AppSettings>());
+        var appSettings = new AppSettings(env);
+        configuration.Bind(appSettings);
+        services.AddSingleton<IAppSettings>(_ => appSettings);
         services.AddSingleton<IGoogleSettings>(f => f.GetRequiredService<IConfiguration>().Get<GoogleSettings>());
-        return services;
+        return appSettings;
     }
 }

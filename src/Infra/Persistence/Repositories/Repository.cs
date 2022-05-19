@@ -31,6 +31,6 @@ public abstract class Repository<T> : IRepository<T> where T : class
         if (entity is not null)
             return entity;
 
-        return await this.GetAsync(predicate);
+        return await GetAsync(predicate);
     }
 }

@@ -1,9 +1,7 @@
 using System.Net;
-using SiteWatcher.Infra.Authorization.Extensions;
 using SiteWatcher.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SiteWatcher.WebAPI.Extensions;
 
 namespace SiteWatcher.WebAPI.Filters;
 

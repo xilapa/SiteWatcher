@@ -1,6 +1,4 @@
-using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Data.Cache;
@@ -13,25 +11,10 @@ namespace SiteWatcher.Infra;
 
 public static class DependencyInjection
 {
-    // TODO: Connection String null não faz tanto sentido mais
-    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services,  bool isDevelopment, string? connectionString = null) where TContext : DbContext, IUnityOfWork
+    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services) where TContext : DbContext, IUnityOfWork
     {
-        if(!isDevelopment && !string.IsNullOrEmpty(connectionString))
-            connectionString = ParseHerokuConnectionString(connectionString);
-
-        var optionsBuilder = new DbContextOptionsBuilder<TContext>();
-        if(isDevelopment)
-        {
-            optionsBuilder.EnableSensitiveDataLogging();
-            optionsBuilder.LogTo(Console.WriteLine);
-        }
-
-        Action<DbContextOptionsBuilder>? optionsAction;
-        optionsAction = connectionString is null ? null :
-                options => options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, SiteWatcherContext.Schema));
-
         // Making explicit that the context is the same for all repositories
-        services.AddDbContext<TContext>(optionsAction, ServiceLifetime.Scoped);
+        services.AddDbContext<TContext>(ServiceLifetime.Scoped);
         services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());
 
         // Add migrator
@@ -46,18 +29,15 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddDapperRepositories(this IServiceCollection services, bool isDevelopment, string connectionString)
+    public static IServiceCollection AddDapperRepositories(this IServiceCollection services)
     {
-        if(!isDevelopment)
-            connectionString = ParseHerokuConnectionString(connectionString);
-
-        services.AddScoped<IUserDapperRepository>(_ => new UserDapperRepository(connectionString));
+        services.AddScoped<IUserDapperRepository, UserDapperRepository>();
         return services;
     }
 
-    public static IServiceCollection AddRedisCache(this IServiceCollection services, string connectionString)
+    public static IServiceCollection AddRedisCache(this IServiceCollection services, IAppSettings appSettings)
     {
-        var configOptions = ConfigurationOptions.Parse(connectionString);
+        var configOptions = ConfigurationOptions.Parse(appSettings.RedisConnectionString);
         configOptions.AbortOnConnectFail = false;
         configOptions.ConnectRetry = 3;
         configOptions.ConnectTimeout = 2_000;
@@ -73,16 +53,5 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<ISessao, Sessao>();
         return services;
-    }
-
-    private static string ParseHerokuConnectionString(string connectionString)
-    {
-            var regexString = new Regex(@"\:\/\/(?<user>.*?)\:(?<password>.*?)\@(?<host>.*?)\:(?<port>.*?)\/(?<database>.*)");
-            var matches = regexString.Match(connectionString).Groups;
-            return  $"Server={matches["host"].Value};" +
-                    $"Port={matches["port"].Value};" +
-                    $"Database={matches["database"].Value};" +
-                    $"User Id={matches["user"].Value};" +
-                    $"Password={matches["password"].Value}";
     }
 }

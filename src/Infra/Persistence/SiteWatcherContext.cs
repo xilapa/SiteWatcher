@@ -9,15 +9,24 @@ namespace SiteWatcher.Infra;
 
 public class SiteWatcherContext : DbContext, IUnityOfWork
 {
+    private readonly IAppSettings _appSettings;
     public const string Schema = "siteWatcher_webApi";
 
-    public SiteWatcherContext(DbContextOptions<SiteWatcherContext> dbContextOptions) : base(dbContextOptions)
-    { }
+    public SiteWatcherContext(IAppSettings appSettings)
+    {
+        _appSettings = appSettings;
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if(!optionsBuilder.IsConfigured)
-            optionsBuilder.UseInMemoryDatabase("SiteWatcherTestDb");
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.UseNpgsql(_appSettings.ConnectionString);
+        if (_appSettings.IsDevelopment)
+        {
+            optionsBuilder
+                .EnableSensitiveDataLogging()
+                .LogTo(Console.WriteLine);
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,5 +54,5 @@ public class SiteWatcherContext : DbContext, IUnityOfWork
         }
     }
 
-    public DbSet<User> Users { get; } = null!;
+    public DbSet<User> Users { get; set; }
 }

@@ -2,6 +2,7 @@
 
 public interface IAppSettings
 {
+    public bool IsDevelopment { get; }
     string ConnectionString { get; set; }
     string FrontEndUrl { get; set; }
     byte[] RegisterKey { get; set; }

@@ -6,7 +6,7 @@ namespace SiteWatcher.Infra.DapperRepositories;
 
 public class UserDapperRepository : DapperRepository<UserViewModel>, IUserDapperRepository
 {
-    public UserDapperRepository(string connectionString) : base(connectionString)
+    public UserDapperRepository(IAppSettings appSettings) : base(appSettings)
     { }
 
     public async Task<UserViewModel> GetActiveUserAsync(string googleId) =>
