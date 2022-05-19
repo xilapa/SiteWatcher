@@ -37,6 +37,8 @@ public static class Auth
                 opts.TokenValidationParameters = tokenValidationParameters;
             });
 
+        services.AddAuthorization();
+
         return services;
     }
 }
