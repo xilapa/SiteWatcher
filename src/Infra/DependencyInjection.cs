@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Data.Cache;
+using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.Repositories;
 using StackExchange.Redis;
@@ -30,7 +31,7 @@ public static class DependencyInjection
                 options => options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, SiteWatcherContext.Schema));
 
         // Making explicit that the context is the same for all repositories
-        services.AddDbContext<TContext>(optionsAction, ServiceLifetime.Scoped); 
+        services.AddDbContext<TContext>(optionsAction, ServiceLifetime.Scoped);
         services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());
 
         // Add migrator
@@ -64,6 +65,13 @@ public static class DependencyInjection
 
         services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(configOptions));
         services.AddSingleton<ICache, RedisCache>();
+        return services;
+    }
+
+    public static IServiceCollection AddSessao(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        services.AddScoped<ISessao, Sessao>();
         return services;
     }
 

@@ -40,6 +40,8 @@ public class Startup : IStartup
 
         services.AddRedisCache(AppSettings.RedisConnectionString);
 
+        services.AddSessao();
+
         services.ConfigureAuth(AppSettings);
 
         services.AddHttpClient();
