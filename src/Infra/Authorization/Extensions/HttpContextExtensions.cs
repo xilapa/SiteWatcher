@@ -1,4 +1,6 @@
-namespace SiteWatcher.WebAPI.Extensions;
+using Microsoft.AspNetCore.Http;
+
+namespace SiteWatcher.Infra.Authorization.Extensions;
 
 public static class HttpContextExtensions
 {
