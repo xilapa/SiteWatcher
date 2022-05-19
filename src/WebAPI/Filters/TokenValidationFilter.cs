@@ -1,4 +1,5 @@
 using System.Net;
+using SiteWatcher.Infra.Authorization.Extensions;
 using SiteWatcher.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -8,21 +9,24 @@ namespace SiteWatcher.WebAPI.Filters;
 
 public class TokenValidationFilter : IAsyncResourceFilter
 {
+    private readonly ISessao _sessao;
     private readonly ITokenService _tokenService;
 
-    public TokenValidationFilter(ITokenService tokenService) =>
-        this._tokenService = tokenService;
+    public TokenValidationFilter(ISessao sessao, ITokenService tokenService)
+    {
+        _sessao = sessao;
+        _tokenService = tokenService;
+    }
 
     public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
     {
-        var requestTokenPayload = context.HttpContext.GetAuthTokenPayload();
-        if (string.Empty.Equals(requestTokenPayload))
+        if (string.Empty.Equals(_sessao.AuthTokenPayload))
         {
             await next();
             return;
         }
 
-        var valid = await _tokenService.IsValid(requestTokenPayload);
+        var valid = await _tokenService.IsValid(_sessao.AuthTokenPayload);
         if(!valid)
         {
             var result = new ObjectResult(null) { StatusCode = (int)HttpStatusCode.Forbidden };
