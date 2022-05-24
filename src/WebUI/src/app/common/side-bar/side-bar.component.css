@@ -10,22 +10,22 @@
 
 .left-inactive .side-bar-wrapper{
     left:-100%;
-    transition: left 0.5s ease-in-out;
+    transition: left 0.4s ease-in-out;
 }
 
 .left-active .side-bar-wrapper{
     left: 0;
-    transition: left 0.5s ease-in-out;
+    transition: left 0.4s ease-in-out;
 }
 
 .right-inactive .side-bar-wrapper{
     right:-100%;
-    transition: right 0.5s ease-in-out;
+    transition: right 0.4s ease-in-out;
 }
 
 .right-active .side-bar-wrapper{
     right: 0;
-    transition: right 0.5s ease-in-out;
+    transition: right 0.4s ease-in-out;
 }
 
 .side-bar-overlay {
@@ -51,4 +51,8 @@
     align-items: center;
     width: 36px;
     height: 36px;
+}
+
+.icon-color {
+    color: var(--sw-foreground-1);
 }
