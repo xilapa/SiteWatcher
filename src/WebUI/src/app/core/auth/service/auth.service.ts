@@ -55,4 +55,9 @@ export class AuthService {
             this.router.navigate(['dash']);
         }
     }
+
+    public logout() : void {
+        this.httpClient.post(`${environment.baseApiUrl}/${this.baseRoute}/logout`, {}).subscribe();
+    }
 }
+

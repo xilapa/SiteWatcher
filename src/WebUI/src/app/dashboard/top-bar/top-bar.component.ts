@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {DeviceService} from "../../core/device/device.service";
 import {Observable} from "rxjs";
+import {UserService} from "../../core/user/user.service";
+import {User} from "../../core/interfaces";
 
 @Component({
     selector: 'sw-top-bar',
@@ -10,16 +12,19 @@ import {Observable} from "rxjs";
 export class TopBarComponent implements OnInit {
 
     showTags = false;
-    showSettings = false;
     mobileScreen$ :Observable<boolean>;
     searchText: string;
     searching = false;
+    user$: Observable<User | null>
+    profilePicError = false;
 
-    constructor(private readonly deviceService: DeviceService)
-    { }
+    constructor(private readonly deviceService: DeviceService,
+                private readonly userService: UserService) {
+    }
 
     ngOnInit(): void {
         this.mobileScreen$ = this.deviceService.isMobileScreen();
+        this.user$ = this.userService.getUser();
     }
 
     showTagsToggle(): void {
@@ -31,9 +36,12 @@ export class TopBarComponent implements OnInit {
         this.searching = !this.searching;
     }
 
-    showSettingsToggle(): void {
-        this.showSettings = !this.showSettings;
-        console.log(`show settings: ${this.showSettings}`);
+    onProfilePicError(): void {
+        this.profilePicError = true;
+    }
+
+    logout(): void {
+        this.userService.logout();
     }
 
 }

@@ -8,6 +8,8 @@ import {UserRegister} from "../auth/user-register";
 import {ELanguage} from "../lang/language";
 import {AuthenticationResult} from "../auth/service/authentication-result";
 import {LocalStorageService} from "../local-storage/local-storage.service";
+import {Router} from "@angular/router";
+import {AuthService} from "../auth/service/auth.service";
 
 @Injectable({
     providedIn: 'root'
@@ -15,7 +17,9 @@ import {LocalStorageService} from "../local-storage/local-storage.service";
 export class UserService {
 
     constructor(private readonly tokenService: TokenService,
-                private readonly localStorage : LocalStorageService) {
+                private readonly localStorage : LocalStorageService,
+                private readonly authService: AuthService,
+                private readonly router: Router) {
         const token = this.tokenService.getToken();
         if (token)
             this.decodeAndNotify(token);
@@ -75,8 +79,15 @@ export class UserService {
     }
 
     public logout(): void {
+        this.authService.logout();
+        this.clearLocalDataAndRedirect();
+    }
+
+    private clearLocalDataAndRedirect() : void {
+        this.localStorage.removeItem(this.profilePicKey);
         this.tokenService.removeToken();
         this.userSubject.next(null);
+        this.router.navigate(['/']);
     }
 }
 

@@ -11,6 +11,7 @@
     width: 100vw;
     border-bottom: 4px solid var(--sw-primary-color);
     justify-content: space-between;
+    color: var(--sw-foreground-0);
 }
 
 .left-wrapper, .settings-button-wrapper {
@@ -70,6 +71,57 @@
 .settings-button-wrapper {
     margin-right: 12px;
 }
+
+/*#region  settings side-bar*/
+.settings-side-bar-options {
+    color: var(--sw-foreground-1);
+    user-select: none;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-pic img{
+    border-radius: 50%;
+    width: 96px;
+    height: 96px;
+}
+
+.user-no-pic {
+    border: 2px var(--sw-foreground-1) solid;
+    border-radius: 50%;
+}
+
+.user-icon {
+    font-size: 60px;
+    padding: 18px;
+    color: var(--sw-foreground-1);
+}
+
+.user-name {
+    padding: 12px 0 16px 0;
+    font-size: 20px;
+}
+
+.settings-side-bar-options .options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 18px;
+}
+
+.settings-side-bar-options .options span {
+    padding: 8px 0 8px 0;
+    margin: 8px 0 8px 0;
+}
+
+.settings-side-bar-options .options span:hover {
+    cursor: pointer;
+}
+/*#endregion*/
 
 /*#region ng-prime input text adjusts */
 .p-inputtext {

@@ -4,30 +4,53 @@
     </div>
 </div>
 
-<div class="top-bar-wrapper">
-    <div class="left-wrapper">
-        <div class="tags-button" (click)="showTagsToggle()">
-            <i class="pi pi-bars top-bar-icons"></i>
+<ng-container *transloco="let t; read: 'dashboard.topBar'">
+    <div class="top-bar-wrapper">
+        <div class="left-wrapper">
+            <div class="tags-button" (click)="showTagsToggle()">
+                <i class="pi pi-bars top-bar-icons"></i>
+            </div>
+            <div *ngIf="!(mobileScreen$ | async) as boolean" class="app-title">
+                Site Watcher
+            </div>
         </div>
-        <div *ngIf="!(mobileScreen$ | async) as boolean" class="app-title">
-            Site Watcher
+
+        <div class="search-box-wrapper">
+            <div class="p-input-icon-right search-box">
+                <i *ngIf="!searching; else loading" class="pi pi-search search-icon" (click)="search()"></i>
+                <ng-template #loading>
+                    <i class="pi pi-spin pi-spinner"></i>
+                </ng-template>
+                <input type="text" pInputText [(ngModel)]="searchText" (keyup.enter)="search()">
+            </div>
+        </div>
+
+        <div class="settings-button-wrapper">
+            <div class="tags-button" (click)="settingsBar.toggle()">
+                <i class="pi pi-cog top-bar-icons"></i>
+            </div>
         </div>
     </div>
 
-    <div class="search-box-wrapper">
-        <div class="p-input-icon-right search-box">
-            <i *ngIf="!searching; else loading" class="pi pi-search search-icon" (click)="search()"></i>
-            <ng-template #loading >
-                <i class="pi pi-spin pi-spinner"></i>
-            </ng-template>
-            <input type="text" pInputText [(ngModel)]="searchText" (keyup.enter)="search()">
+    <!--settings side bar-->
+    <sw-side-bar position="right" #settingsBar>
+        <div class="settings-side-bar-options">
+            <div class="user-info" *ngIf="user$ | async as user">
+                <div class="user-pic" *ngIf="!profilePicError">
+                    <img [src]="user.profilePic" [alt]="t('profilePicAlt')"
+                         (error)="onProfilePicError()"/>
+                </div>
+                <div class="user-no-pic" *ngIf="profilePicError">
+                    <i class="pi pi-user user-icon"></i>
+                </div>
+                <div class="user-name">{{user.name}}</div>
+            </div>
+            <div class="options">
+                <span>{{t('profile')}}</span>
+                <span (click)="logout()">{{t('logout')}}</span>
+                <span>{{t('logoutAll')}}</span>
+                <span>{{t('about')}}</span>
+            </div>
         </div>
-    </div>
-
-    <div class="settings-button-wrapper">
-        <div class="tags-button" (click)="showSettingsToggle()">
-            <i class="pi pi-cog top-bar-icons"></i>
-        </div>
-    </div>
-</div>
-
+    </sw-side-bar>
+</ng-container>

@@ -1,9 +1,9 @@
 {
     "home": {
-        "auth" : {
-            "authenticating" : "Autenticando"
+        "auth": {
+            "authenticating": "Autenticando"
         },
-        "login" : {
+        "login": {
             "title": "Acesso",
             "continueGoogle": "Continuar com Google",
             "registerGoogle": "O registrate con google"
@@ -11,13 +11,22 @@
         "register": {
             "title": "Registro",
             "name": "Nombre",
-            "email" : "Correo electrónico",
+            "email": "Correo electrónico",
             "emailDescription": "Correo electrónico para recibir alertas. No es necesario que sea el correo electrónico de la cuenta de Google.",
             "language": "Idioma",
             "nameMinLenghtErrorMsg": "La longitud del nombre debe tener al menos 3 caracteres.",
-            "nameinvalidCharactersErrorMsg" : "El nombre solo debe tener letras.",
-            "emailValidationErrorMsg" : "El correo no es válido.",
-            "confirm" : "Confirm"
+            "nameinvalidCharactersErrorMsg": "El nombre solo debe tener letras.",
+            "emailValidationErrorMsg": "El correo no es válido.",
+            "confirm": "Confirm"
+        }
+    },
+    "dashboard": {
+        "topBar": {
+            "profilePicAlt": "Foto de perfil",
+            "profile": "Perfil",
+            "logout": "Salir",
+            "logoutAll": "Salir en todos los dispositivos",
+            "about": "Acerca de"
         }
     }
 }
