@@ -20,7 +20,7 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 
 # Heroku entrypoint
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet SiteWatcher.WebAPI.dll
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet WebAPI.dll
 
 # ENV ASPNETCORE_URLS http://*:7126
 # ENTRYPOINT ["dotnet", "SiteWatcher.WebAPI.dll"]
