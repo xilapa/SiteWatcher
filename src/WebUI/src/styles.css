@@ -141,7 +141,7 @@ table {
         --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
 
         --sw-surface-0: var(--sw-dark-0);
-        --sw-foreground-0: var(--sw-light-1);
+        --sw-foreground-0: var(--sw-light-3);
         --sw-text-muted-0: var(--sw-light-4);
         --sw-border-0: var(--sw-dark-3);
 
@@ -188,7 +188,7 @@ table {
     --sw-input-invalid-color-alpha: rgb(220 53 69 / 50%);
 
     --sw-surface-0: var(--sw-dark-0);
-    --sw-foreground-0: var(--sw-light-1);
+    --sw-foreground-0: var(--sw-light-3);
     --sw-text-muted-0: var(--sw-light-4);
     --sw-border-0: var(--sw-dark-3);
 
