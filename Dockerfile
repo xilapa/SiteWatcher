@@ -7,6 +7,7 @@ COPY src/Application ./src/Application
 COPY src/Domain ./src/Domain
 COPY src/Infra ./src/Infra/
 COPY src/WebAPI ./src/WebAPI/
+COPY test/Benchmark ./test/Benchmark
 COPY *.sln .
 RUN dotnet restore
 
