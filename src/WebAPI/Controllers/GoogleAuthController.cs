@@ -97,6 +97,7 @@ public class GoogleAuthController : ControllerBase
 
         var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenResult.IdToken);
         var googleId = token.Claims.First(c => c.Type == AuthenticationDefaults.Google.Id).Value;
+        var profilePic = token.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.Google.Picture)?.Value;
         var user = await _userDapperRepository.GetActiveUserAsync(googleId);
 
         var authResult = new AuthenticationResult();
@@ -104,12 +105,12 @@ public class GoogleAuthController : ControllerBase
         if(user.Id == Guid.Empty)
         {
             var registerToken = _tokenService.GenerateRegisterToken(token.Claims, googleId);
-            authResult.Set(EAuthTask.Register, registerToken);
+            authResult.Set(EAuthTask.Register, registerToken, profilePic);
         }
         else
         {
             var loginToken = _tokenService.GenerateLoginToken(user);
-            authResult.Set(EAuthTask.Login, loginToken);
+            authResult.Set(EAuthTask.Login, loginToken, profilePic);
         }
 
         return Ok(response.SetResult(authResult));

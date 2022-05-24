@@ -35,12 +35,12 @@ export class AuthComponent implements OnInit {
                 next: (response) => {
 
                     if(response.Result.Task == EAuthTask.Register){
-                        this.userService.setUserRegisterData(response.Result.Token);
+                        this.userService.setUserRegisterData(response.Result);
                         this.router.navigateByUrl('/home/register');
                     }
 
                     if(response.Result.Task == EAuthTask.Login){
-                        this.userService.setToken(response.Result.Token);
+                        this.userService.setUserData(response.Result);
                         this.authService.redirecLoggedUser();
                     }
 

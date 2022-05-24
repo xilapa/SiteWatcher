@@ -5,5 +5,6 @@ export interface User {
     name: string,
     email: string,
     emailConfirmed: boolean,
-    language: ELanguage
+    language: ELanguage,
+    profilePic: string | null
 }

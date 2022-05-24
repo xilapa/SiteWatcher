@@ -20,5 +20,6 @@ public static class AuthenticationDefaults
     public static class Google
     {
         public const string Id = "sub";
+        public const string Picture = "picture";
     }
 }
