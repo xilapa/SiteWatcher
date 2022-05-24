@@ -1,0 +1,16 @@
+<div [ngClass]="{
+    'left-active': position === 'left' && active,
+    'right-active': position === 'right' && active,
+    'left-inactive': position === 'left' && !active,
+    'right-inactive': position === 'right' && !active
+ }">
+    <div class="side-bar-wrapper">
+        <div class="close-button-wrapper">
+            <div class="close-button" (click)="toggle()">
+                <i class="pi pi-times" style="font-size: 1.3rem"></i>
+            </div>
+        </div>
+        <ng-content></ng-content>
+    </div>
+    <div [ngClass]="{'side-bar-overlay': active }" (click)="toggle()"></div>
+</div>
