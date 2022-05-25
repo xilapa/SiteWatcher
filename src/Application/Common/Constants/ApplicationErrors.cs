@@ -1,4 +1,4 @@
-namespace SiteWatcher.Application.Constants;
+namespace SiteWatcher.Application.Common.Constants;
 
 public static class ApplicationErrors
 {
@@ -9,5 +9,4 @@ public static class ApplicationErrors
     public static readonly string EMAIL_NOT_BE_NULL_OR_EMPTY = "Email not be null or empty.";
     public static readonly string EMAIL_IS_INVALID = "Email is not valid.";
     public static readonly string LANGUAGE_IS_INVALID = "Language is not valid";
-
 }

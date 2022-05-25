@@ -1,8 +1,8 @@
 using System.Net;
 using System.Text.Json;
-using SiteWatcher.Application.Constants;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 using Microsoft.AspNetCore.Diagnostics;
+using SiteWatcher.Application.Common.Constants;
 
 namespace SiteWatcher.WebAPI.Extensions;
 

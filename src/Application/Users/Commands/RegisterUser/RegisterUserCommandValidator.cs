@@ -1,6 +1,6 @@
 using FluentValidation;
-using SiteWatcher.Application.Constants;
-using SiteWatcher.Application.Validators;
+using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;

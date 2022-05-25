@@ -1,10 +1,9 @@
-using SiteWatcher.Application;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.WebAPI.Filters;
-using SiteWatcher.WebAPI.Settings;
 using Microsoft.AspNetCore.HttpOverrides;
+using SiteWatcher.Application;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 

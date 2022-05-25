@@ -1,7 +1,7 @@
-using SiteWatcher.Application.Users.Commands.RegisterUser;
 using MediatR;
+using SiteWatcher.Application.Users.Commands.RegisterUser;
 
-namespace SiteWatcher.Application.Handlers.EventHandlers;
+namespace SiteWatcher.Application.Users.EventHandlers;
 
 public class SendEmailConfirmationEventHandler : INotificationHandler<UserRegisteredNotification>
 {

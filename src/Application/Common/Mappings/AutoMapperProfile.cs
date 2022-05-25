@@ -2,7 +2,7 @@ using AutoMapper;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.Models;
 
-namespace SiteWatcher.Application;
+namespace SiteWatcher.Application.Common.Mappings;
 
 public class AutoMapperProfile : Profile
 {

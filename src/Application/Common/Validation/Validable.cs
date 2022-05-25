@@ -1,7 +1,7 @@
-using SiteWatcher.Application.Interfaces;
 using FluentValidation;
+using SiteWatcher.Application.Interfaces;
 
-namespace SiteWatcher.Application.Validators;
+namespace SiteWatcher.Application.Common.Validation;
 
 public abstract class Validable<T> : IValidable where T : class
 {
@@ -18,7 +18,7 @@ public abstract class Validable<T> : IValidable where T : class
 
     public IEnumerable<string> Errors  => _errors.ToArray();
 
-    protected void AddErrors(IEnumerable<string> errors) =>
+    private void AddErrors(IEnumerable<string> errors) =>
         _errors.AddRange(errors);
 
     public IEnumerable<string> Validate()

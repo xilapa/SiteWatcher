@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using SiteWatcher.Application;
+using SiteWatcher.Application.Common.Mappings;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 
 namespace SiteWatcher.Application;

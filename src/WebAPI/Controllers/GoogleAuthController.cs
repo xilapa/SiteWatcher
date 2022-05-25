@@ -5,8 +5,8 @@ using SiteWatcher.WebAPI.DTOs.ViewModels;
 using SiteWatcher.WebAPI.DTOs.InputModels;
 using SiteWatcher.WebAPI.DTOs.Metadata;
 using System.IdentityModel.Tokens.Jwt;
-using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -170,7 +170,7 @@ public class GoogleAuthController : ControllerBase
 
     [HttpPost]
     [Route("logout")]
-    public void Logout() 
+    public void Logout()
     {
         /* 
             TODO: inserir token atual na blacklist do redis e sua validade na blacklist deve ser o tempo de expiração do token.

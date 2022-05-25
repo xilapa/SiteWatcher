@@ -1,7 +1,7 @@
 using System.Net;
-using SiteWatcher.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.WebAPI.Filters;
 

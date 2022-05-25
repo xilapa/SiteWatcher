@@ -1,16 +1,14 @@
-using SiteWatcher.Application.Interfaces;
 using AutoMapper;
 using MediatR;
-using SiteWatcher.Application.Metadata;
-using SiteWatcher.Application.Validators;
+using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Exceptions;
 using SiteWatcher.Domain.Models;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-//Todo criar interface ICommand que herda de Validable e IRequest
-public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ApplicationResult<string>>
+public class RegisterUserCommand : CommandBase<RegisterUserCommand, string>
 {
     public RegisterUserCommand() : base(new RegisterUserCommandValidator())
     { }
@@ -28,8 +26,7 @@ public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<Appl
     }
 }
 
-//TODO: fazer o mesmo para o requesthandler, criar uma interface que vai herdar de IRequestHandler
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ApplicationResult<string>>
+public class RegisterUserCommandHandler : ICommandHandlerBase<RegisterUserCommand, string>
 {
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
@@ -49,11 +46,11 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
         _sessao = sessao;
     }
 
-    public async Task<ApplicationResult<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<ICommandResult<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         request.GetSessionValues(_sessao);
         var user = _mapper.Map<User>(request);
-        var appResult = new ApplicationResult<string>();
+        var appResult = new CommandResult<string>();
 
         try
         {
@@ -62,8 +59,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
         }
         catch(UniqueViolationException ex)
         {
-            // renomear para with error, ou adicionar outro método
-            return appResult.AddError(ex.Message);
+            return appResult.WithError(ex.Message);
         }
 
         var token = _tokenService.GenerateLoginToken(user);
@@ -72,6 +68,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
         if(!user.EmailConfirmed)
             await _mediator.Publish(_mapper.Map<UserRegisteredNotification>(user), cancellationToken);
 
-        return appResult.SetValue(token);
+        return appResult.WithValue(token);
     }
 }

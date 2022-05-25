@@ -1,8 +1,8 @@
 using System.Net;
-using SiteWatcher.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Filters;

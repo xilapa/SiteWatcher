@@ -1,10 +1,9 @@
 using SiteWatcher.Infra.Authorization.Constants;
-using SiteWatcher.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MediatR;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
+using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -13,12 +12,10 @@ namespace SiteWatcher.WebAPI.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly ITokenService _tokenService;
 
-    public UserController(IMediator mediator, ITokenService tokenService)
+    public UserController(IMediator mediator)
     {
         _mediator = mediator;
-        _tokenService = tokenService;
     }
 
     [HttpGet]
