@@ -22,7 +22,6 @@ public static class Utils
         // allocating spans
         Span<byte> randomBytes = stackalloc byte[32 + LongSize];
         Span<byte> stateBytes = stackalloc byte[SpanSize];
-        Span<char> stateChars = stackalloc char[SpanSize];
 
         // generating a secure random number
         using (var rng = RandomNumberGenerator.Create())
@@ -37,18 +36,25 @@ public static class Utils
         Base64.EncodeToUtf8(randomBytes, stateBytes, out _, out _);
 
         // converting base64 bytes to chars
-        for (var i = 0; i < SpanSize; i++)
+        return ConvertBase64BytesToString(stateBytes);
+    }
+
+    internal static string ConvertBase64BytesToString(Span<byte> base64Bytes)
+    {
+        Span<char> chars = stackalloc char[base64Bytes.Length];
+
+        for (var i = 0; i < base64Bytes.Length; i++)
         {
-            stateChars[i] = stateBytes[i] switch
+            chars[i] = base64Bytes[i] switch
             {
                 WhiteSpaceByte => HyphenChar,
                 PlusByte => HyphenChar,
                 SlashByte => HyphenChar,
                 DefaultByte => HyphenChar,
-                _ => (char) stateBytes[i]
+                _ => (char) base64Bytes[i]
             };
         }
 
-        return stateChars.ToString();
+        return chars.ToString();
     }
 }
