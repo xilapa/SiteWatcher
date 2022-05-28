@@ -57,4 +57,13 @@ public static class Utils
 
         return chars.ToString();
     }
+
+    public static string GetTokenPayload(string token)
+    {
+        var tokenSpan = token.AsSpan();
+        var firstDotIdx = tokenSpan.IndexOf('.') + 1;
+        var secondDotIdx = tokenSpan[firstDotIdx..].IndexOf('.');
+
+        return token[firstDotIdx .. (firstDotIdx + secondDotIdx)];
+    }
 }
