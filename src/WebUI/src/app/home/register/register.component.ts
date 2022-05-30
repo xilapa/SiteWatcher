@@ -60,13 +60,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     public register(): void {
         const registerData = this.registerForm.getRawValue() as UserRegister;
-        this.authService
+        this.userService
             .register(registerData)
             .subscribe({
                 next: (resp) => {
                     this.userService.setToken(resp.Result);
                     this.userService.removeUserRegisterData();
-                    this.authService.redirecLoggedUser();
+                    this.userService.redirecLoggedUser();
                 },
                 error: (errorResponse) => {
                     this.messageService.add(

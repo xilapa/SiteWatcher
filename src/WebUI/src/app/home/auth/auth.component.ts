@@ -41,7 +41,7 @@ export class AuthComponent implements OnInit {
 
                     if(response.Result.Task == EAuthTask.Login){
                         this.userService.setUserData(response.Result);
-                        this.authService.redirecLoggedUser();
+                        this.userService.redirecLoggedUser();
                     }
 
                 },

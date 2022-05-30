@@ -3,13 +3,15 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Data} from '../shared-data/shared-data';
 import {TokenService} from '../token/token.service';
 import jwt_decode from "jwt-decode";
-import {User} from '../interfaces';
+import {ApiResponse, User} from '../interfaces';
 import {UserRegister} from "../auth/user-register";
 import {ELanguage} from "../lang/language";
 import {AuthenticationResult} from "../auth/service/authentication-result";
 import {LocalStorageService} from "../local-storage/local-storage.service";
 import {Router} from "@angular/router";
-import {AuthService} from "../auth/service/auth.service";
+import {environment} from "../../../environments/environment";
+import {HttpClient} from "@angular/common/http";
+import {CookieService} from "ngx-cookie-service";
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +20,8 @@ export class UserService {
 
     constructor(private readonly tokenService: TokenService,
                 private readonly localStorage : LocalStorageService,
-                private readonly authService: AuthService,
+                private readonly httpClient: HttpClient,
+                private readonly cookieService: CookieService,
                 private readonly router: Router) {
         const token = this.tokenService.getToken();
         if (token)
@@ -27,6 +30,7 @@ export class UserService {
 
     private readonly registerData = "register-data";
     private readonly profilePicKey = "profilePic";
+    private readonly baseRoute = "user";
     private userSubject = new BehaviorSubject<User | null>(null);
 
     public setUserData(userData: AuthenticationResult) : void {
@@ -79,7 +83,11 @@ export class UserService {
     }
 
     public logout(): void {
-        this.authService.logout();
+        this.clearLocalDataAndRedirect();
+    }
+
+    public logoutAllDevices() : void {
+        this.httpClient.post(`${environment.baseApiUrl}/${this.baseRoute}/logout-all-devices`, {}).subscribe();
         this.clearLocalDataAndRedirect();
     }
 
@@ -89,5 +97,22 @@ export class UserService {
         this.userSubject.next(null);
         this.router.navigate(['/']);
     }
+
+    public register(registerData: UserRegister): Observable<ApiResponse<string>> {
+        return this.httpClient.post<ApiResponse<string>>(
+            `${environment.baseApiUrl}/${this.baseRoute}/register`, registerData, {headers: {'authorization': `Bearer ${this.tokenService.getRegisterToken()}`}})
+    }
+
+    public redirecLoggedUser(): void {
+        var cookie = this.cookieService.get('returnUrl');
+
+        if (cookie && cookie != 'undefined') {
+            this.cookieService.delete('returnUrl');
+            this.router.navigateByUrl(cookie);
+        } else {
+            this.router.navigate(['dash']);
+        }
+    }
+
 }
 
