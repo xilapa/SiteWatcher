@@ -5,30 +5,34 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Extensions;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Utils;
 using SiteWatcher.Domain.ViewModels;
 using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.Infra.Authorization;
 
-public class TokenService : ITokenService
+public class AuthService : IAuthService
 {
     private readonly IAppSettings _appSettings;
     private readonly ICache _cache;
+    private readonly ISessao _sessao;
 
     private const int RegisterTokenExpiration = 15 * 60;
     private const int LoginTokenExpiration = 8 * 60 * 60;
 
-    public TokenService(IAppSettings appSettings, ICache cache)
+    public AuthService(IAppSettings appSettings, ICache cache, ISessao sessao)
     {
-        this._appSettings = appSettings;
-        this._cache = cache;
+        _appSettings = appSettings;
+        _cache = cache;
+        _sessao = sessao;
     }
 
     public string GenerateLoginToken(UserViewModel userVm)
     {
         var claims = new Claim[]
         {
-            new (AuthenticationDefaults.ClaimTypes.Id, userVm.Id.ToString()),
+            new (AuthenticationDefaults.ClaimTypes.Id, userVm.UserId.ToString()),
             new (AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
             new (AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
             new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),
@@ -80,7 +84,15 @@ public class TokenService : ITokenService
             _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
         };
 
+        var issuer = tokenPurpose switch
+        {
+            ETokenPurpose.Register => AuthenticationDefaults.Issuers.Register,
+            ETokenPurpose.Login => AuthenticationDefaults.Issuers.Login,
+            _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
+        };
+
         var tokenDescriptor = new SecurityTokenDescriptor {
+            Issuer = issuer,
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddSeconds(expiration),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -93,20 +105,66 @@ public class TokenService : ITokenService
         return tokenString;
     }
 
-    public async Task InvalidateToken(string token, ETokenPurpose tokenPurpose)
+    public async Task InvalidateCurrenUser()
     {
-        var expiration = tokenPurpose switch
-        {
-            ETokenPurpose.Register => RegisterTokenExpiration,
-            ETokenPurpose.Login => LoginTokenExpiration,
-            _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
-        };
-        await _cache.SaveBytesAsync(token.ToBase64String(), _appSettings.InvalidToken, TimeSpan.FromSeconds(expiration));
+        var key = CacheKeys.InvalidUser(_sessao.UserId!.Value);
+        var whiteListedTokens = await _cache.GetAsync<List<string>>(key) ?? new List<string>();
+
+        // Remove the current token from whitelist
+        if(whiteListedTokens.Count > 0)
+            whiteListedTokens.Remove(_sessao.AuthTokenPayload);
+
+        await _cache.SaveAsync(key, whiteListedTokens, TimeSpan.FromSeconds(LoginTokenExpiration));
     }
 
-    public async Task<bool> IsValid(string token)
+    public async Task<bool> UserCanLogin()
     {
-        var value = await _cache.GetBytesAsync(token.ToBase64String());
+        var key = CacheKeys.InvalidUser(_sessao.UserId!.Value);
+        var whiteListedTokens = await _cache.GetAsync<List<string>>(key);
+
+        // There is no whitelisted tokens, so the user was not invalidated
+        if (whiteListedTokens is null)
+            return true;
+
+        // If there is a whitelisted tokens list, the user was invalidated by logging out of all devices,
+        // or by being deleted, or by admin. Then we need to check if the current token payload is whitelisted.
+        var currentTokenWhiteListed = whiteListedTokens.Contains(_sessao.AuthTokenPayload);
+        return currentTokenWhiteListed;
+    }
+
+    public async Task WhiteListToken(UserId userId, string token)
+    {
+        var key = CacheKeys.InvalidUser(userId);
+        var whiteListedTokens = await _cache.GetAsync<List<string>>(key);
+
+        // There is no whitelisted tokens, so the user was not invalidated
+        if (whiteListedTokens is null)
+            return;
+
+        var tokenPayload = Utils.GetTokenPayload(token);
+        whiteListedTokens.Add(tokenPayload);
+        await _cache.SaveAsync(key, whiteListedTokens, TimeSpan.FromSeconds(LoginTokenExpiration));
+    }
+
+    public async Task InvalidateCurrentRegisterToken()
+    {
+        await _cache.SaveBytesAsync(
+            _sessao.AuthTokenPayload,
+            _appSettings.InvalidToken,
+            TimeSpan.FromSeconds(RegisterTokenExpiration));
+    }
+
+    public async Task<bool> IsRegisterTokenValid()
+    {
+        var key = _sessao.AuthTokenPayload;
+        var value = await _cache.GetBytesAsync(key);
         return !_appSettings.InvalidToken.SequenceEqual(value ?? Array.Empty<byte>());
+    }
+
+    public async Task<string> GenerateLoginState(byte[] stateBytes)
+    {
+        var state = Utils.GenerateSafeRandomBase64String();
+        await _cache.SaveBytesAsync(state, stateBytes, TimeSpan.FromMinutes(5));
+        return state;
     }
 }
