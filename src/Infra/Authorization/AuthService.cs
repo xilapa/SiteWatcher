@@ -9,6 +9,7 @@ using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Domain.Utils;
 using SiteWatcher.Domain.ViewModels;
 using SiteWatcher.Infra.Authorization.Constants;
+using SiteWatcher.Infra.Authorization.Extensions;
 
 namespace SiteWatcher.Infra.Authorization;
 
