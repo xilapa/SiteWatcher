@@ -1,4 +1,3 @@
-using System.Text;
 using System.Reflection;
 using System.ComponentModel;
 
@@ -6,14 +5,6 @@ namespace SiteWatcher.Domain.Extensions;
 
 public static class StringExtensions
 {
-    // TODO: melhorar esse método
-    public static string ToBase64String(this string text)
-    {
-        var textBytes = Encoding.ASCII.GetBytes(text);
-        var base64 = Convert.ToBase64String(textBytes);
-        return base64.Replace(" ", "");
-    }
-
     /// <summary>
     /// Return the <typeparamref name="EnumT"/> equivalent value of the current string
     /// based on <typeparamref name="EnumT"/>'s Description Attributes.
