@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization.Constants;
@@ -11,20 +12,23 @@ public class Sessao : ISessao
     public Sessao(IHttpContextAccessor httpContextAccessor)
     {
         var claims = httpContextAccessor.HttpContext.User.Claims;
-        var userIdString = claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
+        var claimsEnumerated = claims as Claim[] ?? claims.ToArray();
+        var userIdString = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
         Guid.TryParse(userIdString, out var userIdGuid);
         UserId = new UserId(userIdGuid);
 
-        Email = claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
-        GoogleId = claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
-        UserName = claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Name)?.Value;
-        AuthTokenPayload = httpContextAccessor.HttpContext.GetAuthTokenPayload();
+        Email = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
+        GoogleId = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
+        UserName = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Name)?.Value; 
+
+        var authenticated = httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
+        AuthTokenPayload = authenticated ? httpContextAccessor.HttpContext.GetAuthTokenPayload() : string.Empty;
     }
 
     public DateTime Now => DateTime.Now;
     public UserId? UserId { get; }
     public string? Email { get; }
     public string? GoogleId { get; }
-    public string UserName { get; }
+    public string? UserName { get; }
     public string AuthTokenPayload { get; }
 }
