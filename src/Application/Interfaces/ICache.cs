@@ -23,4 +23,6 @@ public interface ICache
     Task<byte[]?> GetAndRemoveBytesAsync(string key);
     Task<string> GetStringAsync(string key);
     Task<byte[]?> GetBytesAsync(string key);
+    Task SaveAsync(string key, object? value, TimeSpan expiration);
+    Task<T?> GetAsync<T>(string key);
 }

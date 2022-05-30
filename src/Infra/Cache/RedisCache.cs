@@ -1,3 +1,4 @@
+using System.Text.Json;
 using SiteWatcher.Application.Interfaces;
 using StackExchange.Redis;
 
@@ -8,7 +9,7 @@ public class RedisCache : ICache
     private readonly IConnectionMultiplexer _connectionMultiplexer;
 
     public RedisCache(IConnectionMultiplexer connectionMultiplexer) =>
-        this._connectionMultiplexer = connectionMultiplexer;
+        _connectionMultiplexer = connectionMultiplexer;
 
     public async Task SaveStringAsync(string key, string value, TimeSpan expiration) =>
         await _connectionMultiplexer.GetDatabase().StringSetAsync(key, value, expiration, flags: CommandFlags.FireAndForget);
@@ -27,4 +28,19 @@ public class RedisCache : ICache
 
     public async Task<byte[]?> GetBytesAsync(string key) =>
         await _connectionMultiplexer.GetDatabase().StringGetAsync(key);
+
+    public async Task SaveAsync(string key, object? value, TimeSpan expiration)
+    {
+        if(value is null) return;
+        var objectJson = JsonSerializer.Serialize(value);
+        await _connectionMultiplexer.GetDatabase().StringSetAsync(key, objectJson, expiration, flags: CommandFlags.FireAndForget);
+    }
+
+    public async Task<T?> GetAsync<T>(string key)
+    {
+        var objectJson = await _connectionMultiplexer.GetDatabase().StringGetAsync(key);
+        if (objectJson.IsNullOrEmpty) return default;
+        var @object = JsonSerializer.Deserialize<T>(objectJson);
+        return @object;
+    }
 }
