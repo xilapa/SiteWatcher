@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SiteWatcher.WebAPI.Settings;
@@ -6,9 +7,8 @@ using SiteWatcher.WebAPI.Settings;
 namespace SiteWatcher.WebAPI.Filters;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class ApiKeyAttribute : Attribute, IResourceFilter
+public class ApiKeyAttribute : Attribute, IResourceFilter, IAllowAnonymous
 {
-
     public void OnResourceExecuted(ResourceExecutedContext context)
     {
         // Do nothing
@@ -26,4 +26,4 @@ public class ApiKeyAttribute : Attribute, IResourceFilter
         if(key != settings.ApiKey)
             context.Result = new ContentResult { StatusCode = (int)HttpStatusCode.Forbidden };
     }
-} 
+}
