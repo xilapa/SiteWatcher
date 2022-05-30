@@ -23,7 +23,7 @@
     "dashboard": {
         "topBar": {
             "profilePicAlt": "Foto de perfil",
-            "profile": "Perfil",
+            "settings": "Configuración",
             "logout": "Salir",
             "logoutAll": "Salir en todos los dispositivos",
             "about": "Acerca de"
