@@ -1,8 +1,9 @@
-using SiteWatcher.Infra.Authorization.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MediatR;
+using SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
+using SiteWatcher.Domain.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -18,8 +19,7 @@ public class UserController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
-    [Route("confirm-email")]
+    [HttpGet("confirm-email")]
     public void ConfirmEmail()
     {
         throw new NotImplementedException();
@@ -27,7 +27,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Route("register")]
-    [Authorize(AuthenticationSchemes = AuthenticationDefaults.RegisterScheme)]
+    [Authorize(Policy = Policies.ValidRegisterData)]
     public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
     {
         var response = new WebApiResponse<string>();
@@ -38,4 +38,9 @@ public class UserController : ControllerBase
 
         return Created(string.Empty, response.SetResult(result.Value));
     }
+
+    [Authorize]
+    [HttpPost("logout-all-devices")]
+    public async Task LogoutOfAllDevices() =>
+        await _mediator.Send(new LogoutUserOfAllDevicesCommand());
 }

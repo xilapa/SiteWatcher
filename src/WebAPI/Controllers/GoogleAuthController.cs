@@ -6,13 +6,13 @@ using SiteWatcher.WebAPI.DTOs.InputModels;
 using SiteWatcher.WebAPI.DTOs.Metadata;
 using System.IdentityModel.Tokens.Jwt;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization.Constants;
-using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
-[AllowAnonymous]
 [ApiController]
+[AllowAnonymous]
 [Route("google-auth")]
 //TODO: Melhorar essa controller, criar handlers para cada método
 public class GoogleAuthController : ControllerBase
@@ -21,7 +21,7 @@ public class GoogleAuthController : ControllerBase
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IUserDapperRepository _userDapperRepository;
     private readonly ILogger<GoogleAuthController> _logger;
-    private readonly ITokenService _tokenService;
+    private readonly IAuthService _authService;
     private readonly ICache _cache;
 
     // ctor for benchs
@@ -34,14 +34,14 @@ public class GoogleAuthController : ControllerBase
         IHttpClientFactory httpClientFactory,
         ILogger<GoogleAuthController> logger,
         IUserDapperRepository userDapperRepository,
-        ITokenService tokenService,
+        IAuthService authService,
         ICache cache)
     {
         _googleSettings = googleSettings;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
         _userDapperRepository = userDapperRepository;
-        _tokenService = tokenService;
+        _authService = authService;
         _cache = cache;
     }
 
@@ -65,9 +65,7 @@ public class GoogleAuthController : ControllerBase
             Response.Cookies.Append("returnUrl", returnUrl, cookieOptions);
         }
 
-        var state = Utils.GenerateSafeRandomBase64String();
-        await _cache.SaveBytesAsync(state, _googleSettings.StateValue, TimeSpan.FromMinutes(5));
-
+        var state = await _authService.GenerateLoginState(_googleSettings.StateValue);
         var authUrl = $"{_googleSettings.AuthEndpoint}?scope={HttpUtility.UrlEncode(_googleSettings.Scopes)}&response_type=code&include_granted_scopes=false&state={state}&redirect_uri={HttpUtility.UrlEncode(_googleSettings.RedirectUri)}&client_id={_googleSettings.ClientId}";
 
         return Redirect(authUrl);
@@ -102,14 +100,15 @@ public class GoogleAuthController : ControllerBase
 
         var authResult = new AuthenticationResult();
 
-        if(user.Id == Guid.Empty)
+        if(user.UserId.Equals(UserId.Empty))
         {
-            var registerToken = _tokenService.GenerateRegisterToken(token.Claims, googleId);
+            var registerToken = _authService.GenerateRegisterToken(token.Claims, googleId);
             authResult.Set(EAuthTask.Register, registerToken, profilePic);
         }
         else
         {
-            var loginToken = _tokenService.GenerateLoginToken(user);
+            var loginToken = _authService.GenerateLoginToken(user);
+            await _authService.WhiteListToken(user.UserId, loginToken);
             authResult.Set(EAuthTask.Login, loginToken, profilePic);
         }
 
@@ -166,42 +165,5 @@ public class GoogleAuthController : ControllerBase
 
         var tokenResult = await response.Content.ReadFromJsonAsync<GoogleTokenResult>();
         return tokenResult!;
-    }
-
-    [HttpPost]
-    [Route("logout")]
-    public void Logout()
-    {
-        /* 
-            TODO: inserir token atual na blacklist do redis e sua validade na blacklist deve ser o tempo de expiração do token.
-            Método de blacklist deve ser implementado em outra classe, aceitando e/ou token ou id de usuário
-            Pois deve ser chamado quando:
-            - Quando usuário deletar conta;
-            - Quando for deslogado pelo admin;
-            - Quando usuário deslogar;
-            - Quando usuário deslogar de todos os dispositivos;
-
-            TODO: Criar filtro para recusar qualquer token na blacklist.
-            TODO: No front deve have HttpInterceptor para resultados 401 - Unauthorized para que o token seja removido.
-        */
-
-        throw new NotImplementedException();
-    }
-
-    [HttpPost]
-    [Route("logout-all-devices")]
-    public void LogoutOfAllDevices()
-    {
-        /*
-            TODO: Inserir token atual na blacklist e Id do usuário também pelo tempo de expiração do token.
-
-            TODO: Criar whitelist de tokens no redis
-            Caso usuário deslogue de todos os dispositivos e queira logar novamente,
-            o novo token deve ir para a whitelist para que o usuário não seja barrado até a expiração da blacklist.
-            Token deve ser adicionado a whitelist caso usuário tenha seu Id na blacklist.
-
-            TODO: Criar filtro para verificar se usuário esta na blacklist e caso ele tenha um token na white list: Liberar acesso;
-        */
-        throw new NotImplementedException();
     }
 }
