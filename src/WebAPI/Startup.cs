@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using SiteWatcher.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.WebAPI.Filters;
@@ -6,6 +7,7 @@ using SiteWatcher.Application;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.Infra.Authorization.Middleware;
 
 namespace SiteWatcher.WebAPI;
 
@@ -24,10 +26,7 @@ public class Startup : IStartup
     {
         AppSettings = services.AddSettings(_configuration, env);
 
-        services.AddControllers(opts => {
-                    opts.Filters.Add(typeof(CommandValidationFilter));
-                    opts.Filters.Add(typeof(TokenValidationFilter));
-                })
+        services.AddControllers(opts => opts.Filters.Add(typeof(CommandValidationFilter)))
                 .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
 
         services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
@@ -75,9 +74,8 @@ public class Startup : IStartup
             });
         }
 
-        app.UseHttpsRedirection();
-
         app.UseCors(AppSettings.CorsPolicy);
+        app.UseHttpsRedirection();
 
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
@@ -86,7 +84,10 @@ public class Startup : IStartup
         });
 
         app.UseAuthentication();
-
+        // Session is instantiated first on authz handlers (AuthService) before the authz occurs
+        // This middleware ensures that the session has the correct auth info on authz handlers
+        // And through the request
+        app.UseMiddleware<MultipleJwtsMiddleware>();
         app.UseAuthorization();
 
         app.MapControllers();

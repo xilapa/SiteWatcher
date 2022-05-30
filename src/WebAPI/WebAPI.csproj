@@ -6,7 +6,6 @@
 		<UserSecretsId>0d9fea6b-08af-480a-9317-a52518f3f7d7</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="Roslynator.Analyzers" Version="4.1.0">
 		  <PrivateAssets>all</PrivateAssets>

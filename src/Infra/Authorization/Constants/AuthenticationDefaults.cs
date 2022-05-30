@@ -2,7 +2,6 @@ namespace SiteWatcher.Infra.Authorization.Constants;
 
 public static class AuthenticationDefaults
 {
-    public const string RegisterScheme = "register-auth";
     public const string Roles = "roles";
     public const string State = "state";
 
@@ -22,4 +21,17 @@ public static class AuthenticationDefaults
         public const string Id = "sub";
         public const string Picture = "picture";
     }
+
+    public static class Issuers
+    {
+        public const string Login = nameof(Login);
+        public const string Register = nameof(Register);
+    }
+
+    public static class Schemes
+    {
+        public const string Login = "login-auth";
+        public const string Register = "register-auth";
+    }
+    
 }
