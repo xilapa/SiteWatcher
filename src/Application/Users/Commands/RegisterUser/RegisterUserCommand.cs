@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Exceptions;
@@ -8,7 +9,7 @@ using SiteWatcher.Domain.Models;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommand : CommandBase<RegisterUserCommand, string>
+public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICommandResult<string>>
 {
     public RegisterUserCommand() : base(new RegisterUserCommandValidator())
     { }
@@ -26,23 +27,23 @@ public class RegisterUserCommand : CommandBase<RegisterUserCommand, string>
     }
 }
 
-public class RegisterUserCommandHandler : ICommandHandlerBase<RegisterUserCommand, string>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ICommandResult<string>>
 {
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
     private readonly IUserRepository _userRepository;
     private readonly IUnityOfWork _uow;
-    private readonly ITokenService _tokenService;
+    private readonly IAuthService _authService;
     private readonly ISessao _sessao;
 
     public RegisterUserCommandHandler(IMapper mapper, IMediator mediator, IUserRepository userRepository,
-        IUnityOfWork uow, ITokenService tokenService, ISessao sessao)
+        IUnityOfWork uow, IAuthService authService, ISessao sessao)
     {
         _mapper = mapper;
         _mediator = mediator;
         _userRepository = userRepository;
         _uow = uow;
-        _tokenService = tokenService;
+        _authService = authService;
         _sessao = sessao;
     }
 
@@ -62,8 +63,8 @@ public class RegisterUserCommandHandler : ICommandHandlerBase<RegisterUserComman
             return appResult.WithError(ex.Message);
         }
 
-        var token = _tokenService.GenerateLoginToken(user);
-        await _tokenService.InvalidateToken(_sessao.AuthTokenPayload!, ETokenPurpose.Register);
+        var token = _authService.GenerateLoginToken(user);
+        await _authService.InvalidateCurrentRegisterToken();
 
         if(!user.EmailConfirmed)
             await _mediator.Publish(_mapper.Map<UserRegisteredNotification>(user), cancellationToken);
