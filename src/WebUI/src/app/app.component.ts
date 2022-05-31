@@ -22,12 +22,7 @@ export class AppComponent {
         private readonly themeService: ThemeService
     ) {
         translocoService.setActiveLang(LangUtils.getCurrentBrowserLanguageFileName(window));
-        themeService.loadSavedTheme();
+        themeService.loadUserTheme();
         AuthUtils.checkAuthAndRedirect(doc.location.href, router);
-    }
-
-    //TODO: remover daqui, está apenas para teste
-    public toogleTheme() {
-        this.themeService.toggleTheme();
     }
 }
