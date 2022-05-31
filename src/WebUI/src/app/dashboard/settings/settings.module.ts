@@ -4,6 +4,13 @@ import {ProfilePageComponent} from './profile-page/profile-page.component';
 import {SecurityPageComponent} from './security-page/security-page.component';
 import {SettingsPageComponent} from "./settings-page.component";
 import {SettingsRoutingModule} from "./settings-routing.module";
+import {InputTextModule} from "primeng/inputtext";
+import {ReactiveFormsModule} from "@angular/forms";
+import {InlineInputErrorMsgModule} from "../../common/inline-input-error-msg/inline-input-error-msg.module";
+import {TranslocoModule} from "@ngneat/transloco";
+import {DropdownModule} from "primeng/dropdown";
+import {ButtonModule} from "primeng/button";
+import {InputSwitchModule} from "primeng/inputswitch";
 
 
 @NgModule({
@@ -14,7 +21,14 @@ import {SettingsRoutingModule} from "./settings-routing.module";
     ],
   imports: [
     CommonModule,
-    SettingsRoutingModule
+    SettingsRoutingModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    InlineInputErrorMsgModule,
+    TranslocoModule,
+    DropdownModule,
+    ButtonModule,
+    InputSwitchModule
   ]
 })
 export class SettingsModule {

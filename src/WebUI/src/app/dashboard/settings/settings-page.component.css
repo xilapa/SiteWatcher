@@ -1,0 +1,99 @@
+.settings-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 6px;
+    padding: 0 16px 0 16px;
+    width: 100vw;
+    color: var(--sw-foreground-0);
+    align-items: center;
+}
+
+.settings-page-title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width:740px;
+}
+
+.flex-fix {
+    opacity: 0;
+    padding: 12px;
+    width: 46px;
+}
+
+.back-button {
+    padding: 12px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.back-icon {
+    font-size: 22px;
+}
+
+.page-title {
+    font-size: 24px;
+    user-select: none;
+}
+
+.settings-page-content-wrapper {
+    display: flex;
+    margin-top: 20px;
+}
+
+.side-options-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-right: 24px;
+}
+
+.side-options-wrapper, .option {
+    display: flex;
+    margin-bottom: 24px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    user-select: none;
+    cursor: pointer;
+}
+
+.option, .option-icon {
+    font-size: 24px;
+}
+
+.settings-page-content-wrapper .page-content {
+    width: 100%;
+    max-width: 550px;
+    display: flex;
+}
+
+.active {
+    color: var(--sw-hover-color);
+}
+
+.active .text {
+    text-decoration: underline;
+}
+
+.text {
+    font-size: 18px;
+    margin-left: 1rem;
+}
+
+@media screen and (min-width: 670px) {
+    .settings-page-content-wrapper .page-content {
+        display: flex;
+    }
+
+    .settings-page-content-wrapper {
+        justify-content: center;
+    }
+
+    .side-options-wrapper, .option {
+        margin-right: 30px;
+    }
+}
