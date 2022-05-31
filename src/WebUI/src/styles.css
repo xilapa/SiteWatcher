@@ -94,7 +94,7 @@ table {
     --sw-input-invalid-color-alpha: rgba(238, 57, 75, 0.5);
 
     --sw-surface-0: #f2f3f3;
-    --sw-foreground-0: #16191f;
+    --sw-foreground-0: #191f23;
     --sw-text-muted-0: #545b64;
     --sw-border-0: #c2cbcc  ;
 
@@ -106,6 +106,7 @@ table {
     --sw-text-muted-font-weight: 400;
 
     --sw-surface-2: #ffffff;
+    --sw-switch-background-color: #ced4da;
     --sw-foreground-2: var(--sw-dark-6);
     --sw-text-muted-2: #545b64;
     --sw-border-2: #ced4da;
@@ -122,7 +123,7 @@ table {
     --sw-surface-5-hover: var(--sw-light-4-alpha-30);
     --sw-foreground-5: var(--sw-dark-0); /**/
 
-    --sw-hover-color: #ffffff; /**/
+    --sw-hover-color: #000000;
     --sw-outlined-button-hover-text-color: var(--sw-surface-1); /**/
 }
 
@@ -153,6 +154,7 @@ table {
         --sw-text-muted-font-weight: 400;
 
         --sw-surface-2: var(--sw-dark-3) ;
+        --sw-switch-background-color: var(--sw-dark-3);
         --sw-foreground-2: var(--sw-light-1);
         --sw-text-muted-2: var(--sw-light-4);
         --sw-border-2: var(--sw-dark-1);
@@ -200,6 +202,7 @@ table {
     --sw-text-muted-font-weight: 400;
 
     --sw-surface-2: var(--sw-dark-3) ;
+    --sw-switch-background-color: var(--sw-dark-3);
     --sw-foreground-2: var(--sw-light-1);
     --sw-text-muted-2: var(--sw-light-4);
     --sw-border-2: var(--sw-dark-1);
