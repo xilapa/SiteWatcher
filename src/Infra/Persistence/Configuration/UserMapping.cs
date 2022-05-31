@@ -40,5 +40,9 @@ public class UserMapping : BaseModelMapping<User,UserId>
         builder.Property(u => u.Language)
                 .HasColumnType("smallint")
                 .IsRequired();
+
+        builder.Property(u => u.Theme)
+                .HasColumnType("smallint")
+                .IsRequired();
     }
 }

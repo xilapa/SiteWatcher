@@ -17,6 +17,7 @@ public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICom
     public string? Name { get; set; }
     public string? Email { get; set; }
     public ELanguage Language { get; set; }
+    public ETheme Theme { get; set; }
     public string? GoogleId { get; set; }
     public string? AuthEmail { get; set; }
 

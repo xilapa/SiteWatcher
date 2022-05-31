@@ -11,4 +11,5 @@ public struct UserViewModel
     public string Email { get; set; }
     public bool EmailConfirmed { get; set; }
     public ELanguage Language { get; set; }
+    public ETheme Theme { get; set; }
 }

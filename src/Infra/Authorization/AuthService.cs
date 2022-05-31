@@ -37,7 +37,8 @@ public class AuthService : IAuthService
             new (AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
             new (AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
             new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),
-            new (AuthenticationDefaults.ClaimTypes.Language, ((int)userVm.Language).ToString())
+            new (AuthenticationDefaults.ClaimTypes.Language, ((int)userVm.Language).ToString()),
+            new (AuthenticationDefaults.ClaimTypes.Theme, ((int)userVm.Theme).ToString())
         };
 
         return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);
@@ -51,7 +52,8 @@ public class AuthService : IAuthService
             new (AuthenticationDefaults.ClaimTypes.Name, user.Name),
             new (AuthenticationDefaults.ClaimTypes.Email, user.Email),
             new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
-            new (AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString())
+            new (AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString()),
+            new (AuthenticationDefaults.ClaimTypes.Theme, ((int)user.Theme).ToString())
         };
 
         return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);

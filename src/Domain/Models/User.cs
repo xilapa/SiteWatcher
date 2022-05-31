@@ -9,13 +9,14 @@ public class User : BaseModel<UserId>
     protected User() : base(new UserId(Guid.NewGuid()))
     { }
 
-    public User(string googleId, string name, string email, string authEmail, ELanguage language) : this()
+    public User(string googleId, string name, string email, string authEmail, ELanguage language, ETheme theme) : this()
     {
         GoogleId = googleId;
         Name = name;
         Email = email;
         EmailConfirmed = email == authEmail;
         Language = language;
+        Theme = theme;
     }
 
     public string GoogleId { get; } = null!;
@@ -23,4 +24,5 @@ public class User : BaseModel<UserId>
     public string Email { get; } = null!;
     public bool EmailConfirmed { get; }
     public ELanguage Language { get; }
+    public ETheme Theme { get; }
 }

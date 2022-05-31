@@ -14,6 +14,7 @@ public static class AuthenticationDefaults
         public const string GoogleId = "googleId";
         public const string Locale = "locale";
         public const string Language = "language";
+        public const string Theme = "theme";
     }
 
     public static class Google
