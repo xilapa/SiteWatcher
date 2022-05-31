@@ -8,18 +8,17 @@ import {ButtonModule} from 'primeng/button';
 import {TranslocoModule} from "@ngneat/transloco";
 
 @NgModule({
-    declarations: [
-        HomeComponent,
-        LogInComponent,
-        AuthComponent
-    ],
-    imports: [
-        CommonModule,
-        ButtonModule,
-        HomeRoutingModule,
-        TranslocoModule
-    ],
-    exports: [LogInComponent]
+  declarations: [
+    HomeComponent,
+    LogInComponent,
+    AuthComponent
+  ],
+  imports: [
+    CommonModule,
+    ButtonModule,
+    HomeRoutingModule,
+    TranslocoModule
+  ]
 })
 export class HomeModule {
 }
