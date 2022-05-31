@@ -1,1 +1,70 @@
-<p>profile-page works!</p>
+<ng-container *transloco="let t">
+    <div class="profile-page-wrapper">
+        <form [formGroup]="updateForm" (submit)="update()">
+            <div class="page-title" *ngIf="(mobileScreen$ | async) as boolean">
+                {{ t('settings.profile.title') }}
+            </div>
+            <!-- name -->
+            <div class="form-group">
+                <label for="name" class="sw-g-text-foreground-1">{{ t('home.register.name') }}</label>
+                <div class="form-input">
+                    <i class="pi pi-user form-icon"></i>
+                    <input
+                            class="sw-input-color"
+                            id="name" type="text" pInputText
+                            placeholder="Name" formControlName="name"
+                            [class.invalid-input]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid">
+                </div>
+                <sw-inline-input-error-msg
+                        [show_if]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid"
+                        [message]="inputFormName?.errors?.['invalidCharacters'] ? t('home.register.nameinvalidCharactersErrorMsg') : t('home.register.nameMinLenghtErrorMsg')">
+                </sw-inline-input-error-msg>
+            </div>
+
+            <!-- email -->
+            <div class="form-group">
+                <label for="email" class="sw-g-text-foreground-1">{{ t("home.register.email") }}</label>
+                <div class="form-input">
+                    <i class="pi pi-at form-icon"></i>
+                    <input
+                            class="sw-input-color"
+                            id="email" type="text" pInputText
+                            placeholder="Email" formControlName="email"
+                            [class.invalid-input]="inputFormEmail?.touched && inputFormEmail?.dirty && inputFormEmail?.invalid">
+                </div>
+                <sw-inline-input-error-msg
+                        [show_if]="inputFormEmail?.touched && inputFormEmail?.dirty && inputFormEmail?.invalid"
+                        [message]="t('home.register.emailValidationErrorMsg')">
+                </sw-inline-input-error-msg>
+            </div>
+
+            <!-- language -->
+            <div class="form-group">
+                <label for="language" class="sw-g-text-foreground-1">{{ t("home.register.language") }}</label>
+                <div class="form-input">
+                    <i class="pi pi-globe form-icon"></i>
+                    <p-dropdown id="language"
+                                [options]="languageOptions"
+                                optionLabel="Display"
+                                optionValue="Value"
+                                placeholder="Select a language"
+                                formControlName="language">
+                    </p-dropdown>
+                </div>
+            </div>
+
+            <!-- theme -->
+            <div class="form-group form-group-last">
+                <label for="theme" class="sw-g-text-foreground-1">{{ t("settings.profile.theme") }}</label>
+                <div class="form-input switch-input">
+                    <p-inputSwitch formControlName="theme" id="theme" class="no-focus" ></p-inputSwitch>
+                    <div class="theme-label">{{darkThemeEnabled ? t('settings.profile.darkTheme') : t('settings.profile.lightTheme')}}</div>
+                </div>
+            </div>
+
+            <!-- submit button -->
+            <button type="submit" pButton [label]="t('settings.profile.update')" [disabled]="updateForm.invalid || !dataChanged"></button>
+
+        </form>
+    </div>
+</ng-container>
