@@ -5,6 +5,7 @@ import {FormsModule} from "@angular/forms";
 import {InputTextModule} from "primeng/inputtext";
 import {SideBarModule} from "../../common/side-bar/side-bar.module";
 import {TranslocoModule} from "@ngneat/transloco";
+import {RouterModule} from "@angular/router";
 
 @NgModule({
     declarations: [TopBarComponent],
@@ -13,7 +14,8 @@ import {TranslocoModule} from "@ngneat/transloco";
         FormsModule,
         InputTextModule,
         SideBarModule,
-        TranslocoModule
+        TranslocoModule,
+        RouterModule
     ],
     exports: [TopBarComponent]
 })

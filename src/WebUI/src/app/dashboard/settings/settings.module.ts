@@ -12,10 +12,10 @@ import {SettingsRoutingModule} from "./settings-routing.module";
         ProfilePageComponent,
         SecurityPageComponent
     ],
-    imports: [
-        CommonModule,
-        SettingsRoutingModule
-    ]
+  imports: [
+    CommonModule,
+    SettingsRoutingModule
+  ]
 })
 export class SettingsModule {
 }

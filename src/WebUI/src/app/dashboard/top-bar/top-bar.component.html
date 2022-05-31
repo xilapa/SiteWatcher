@@ -1,4 +1,4 @@
-<div *ngIf="(mobileScreen$ | async) as boolean" class="mobile-title">
+<div *ngIf="(mobileScreen$ | async) as boolean" class="mobile-title" routerLink="/dash">
     <div class="app-title">
         Site Watcher
     </div>
@@ -10,7 +10,7 @@
             <div class="tags-button" (click)="showTagsToggle()">
                 <i class="pi pi-bars top-bar-icons"></i>
             </div>
-            <div *ngIf="!(mobileScreen$ | async) as boolean" class="app-title">
+            <div *ngIf="!(mobileScreen$ | async) as boolean" class="app-title" routerLink="/dash">
                 Site Watcher
             </div>
         </div>
@@ -46,7 +46,7 @@
                 <div class="user-name">{{user.name}}</div>
             </div>
             <div class="options">
-                <span>{{t('settings')}}</span>
+                <span routerLink="settings">{{t('settings')}}</span>
                 <span (click)="logout()">{{t('logout')}}</span>
                 <span (click)="logoutAllDevices()">{{t('logoutAll')}}</span>
                 <span>{{t('about')}}</span>
