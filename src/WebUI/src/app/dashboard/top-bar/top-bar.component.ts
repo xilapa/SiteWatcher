@@ -3,6 +3,7 @@ import {DeviceService} from "../../core/device/device.service";
 import {Observable} from "rxjs";
 import {UserService} from "../../core/user/user.service";
 import {User} from "../../core/interfaces";
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'sw-top-bar',
@@ -19,7 +20,8 @@ export class TopBarComponent implements OnInit {
     profilePicError = false;
 
     constructor(private readonly deviceService: DeviceService,
-                private readonly userService: UserService) {
+                private readonly userService: UserService,
+                private readonly router: Router) {
     }
 
     ngOnInit(): void {

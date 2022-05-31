@@ -38,6 +38,7 @@
     font-size: 24px;
     padding: 12px;
     user-select: none;
+    cursor: pointer;
 }
 
 .mobile-title .app-title{

@@ -46,7 +46,7 @@
                 <div class="user-name">{{user.name}}</div>
             </div>
             <div class="options">
-                <span routerLink="settings">{{t('settings')}}</span>
+                <span routerLink="/dash/settings" (click)="settingsBar.toggle()">{{t('settings')}}</span>
                 <span (click)="logout()">{{t('logout')}}</span>
                 <span (click)="logoutAllDevices()">{{t('logoutAll')}}</span>
                 <span>{{t('about')}}</span>
