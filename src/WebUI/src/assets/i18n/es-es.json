@@ -1,32 +1,47 @@
 {
-    "home": {
-        "auth": {
-            "authenticating": "Autenticando"
-        },
-        "login": {
-            "title": "Acesso",
-            "continueGoogle": "Continuar com Google",
-            "registerGoogle": "O registrate con google"
-        },
-        "register": {
-            "title": "Registro",
-            "name": "Nombre",
-            "email": "Correo electrónico",
-            "emailDescription": "Correo electrónico para recibir alertas. No es necesario que sea el correo electrónico de la cuenta de Google.",
-            "language": "Idioma",
-            "nameMinLenghtErrorMsg": "La longitud del nombre debe tener al menos 3 caracteres.",
-            "nameinvalidCharactersErrorMsg": "El nombre solo debe tener letras.",
-            "emailValidationErrorMsg": "El correo no es válido.",
-            "confirm": "Confirm"
-        }
+  "home": {
+    "auth": {
+      "authenticating": "Autenticando"
     },
-    "dashboard": {
-        "topBar": {
-            "profilePicAlt": "Foto de perfil",
-            "settings": "Configuración",
-            "logout": "Salir",
-            "logoutAll": "Salir en todos los dispositivos",
-            "about": "Acerca de"
-        }
+    "login": {
+      "title": "Acesso",
+      "continueGoogle": "Continuar com Google",
+      "registerGoogle": "O registrate con google"
+    },
+    "register": {
+      "title": "Registro",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "emailDescription": "Correo electrónico para recibir alertas. No es necesario que sea el correo electrónico de la cuenta de Google.",
+      "language": "Idioma",
+      "nameMinLenghtErrorMsg": "La longitud del nombre debe tener al menos 3 caracteres.",
+      "nameinvalidCharactersErrorMsg": "El nombre solo debe tener letras.",
+      "emailValidationErrorMsg": "El correo no es válido.",
+      "confirm": "Confirm"
     }
+  },
+  "dashboard": {
+    "topBar": {
+      "profilePicAlt": "Foto de perfil",
+      "settings": "Configuración",
+      "logout": "Salir",
+      "logoutAll": "Salir en todos los dispositivos",
+      "about": "Acerca de"
+    }
+  },
+  "settings": {
+    "main": {
+      "title": "Ajustes"
+    },
+    "profile": {
+      "title": "Perfil",
+      "theme": "Tema",
+      "darkTheme": "Tema oscuro",
+      "lightTheme": "Tema claro",
+      "update": "Actualizar"
+    },
+    "security": {
+      "title": "Seguridad"
+    }
+  }
 }

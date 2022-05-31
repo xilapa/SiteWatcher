@@ -1,32 +1,47 @@
 {
-    "home": {
-        "auth": {
-            "authenticating": "Authenticating"
-        },
-        "login": {
-            "title": "Login",
-            "continueGoogle": "Continue with Google",
-            "registerGoogle": "Or register with google"
-        },
-        "register": {
-            "title": "Register",
-            "name": "Name",
-            "email": "Email",
-            "emailDescription": "Email to receive alerts. It doesn't need to be the google account email.",
-            "language": "Language",
-            "nameMinLenghtErrorMsg": "Name length should be at least 3 characters.",
-            "nameinvalidCharactersErrorMsg": "Name must only have letters.",
-            "emailValidationErrorMsg": "Email is not valid.",
-            "confirm": "Confirm"
-        }
+  "home": {
+    "auth": {
+      "authenticating": "Authenticating"
     },
-    "dashboard": {
-        "topBar": {
-            "profilePicAlt": "Profile picture",
-            "settings": "Settings",
-            "logout": "Logout",
-            "logoutAll": "Logout from all devices",
-            "about": "About"
-        }
+    "login": {
+      "title": "Login",
+      "continueGoogle": "Continue with Google",
+      "registerGoogle": "Or register with google"
+    },
+    "register": {
+      "title": "Register",
+      "name": "Name",
+      "email": "Email",
+      "emailDescription": "Email to receive alerts. It doesn't need to be the google account email.",
+      "language": "Language",
+      "nameMinLenghtErrorMsg": "Name length should be at least 3 characters.",
+      "nameinvalidCharactersErrorMsg": "Name must only have letters.",
+      "emailValidationErrorMsg": "Email is not valid.",
+      "confirm": "Confirm"
     }
+  },
+  "dashboard": {
+    "topBar": {
+      "profilePicAlt": "Profile picture",
+      "settings": "Settings",
+      "logout": "Logout",
+      "logoutAll": "Logout from all devices",
+      "about": "About"
+    }
+  },
+  "settings": {
+    "main": {
+      "title": "Settings"
+    },
+    "profile": {
+      "title": "Profile",
+      "theme": "Theme",
+      "darkTheme": "Dark theme",
+      "lightTheme": "Light theme",
+      "update": "Update"
+    },
+    "security": {
+      "title": "Security"
+    }
+  }
 }
