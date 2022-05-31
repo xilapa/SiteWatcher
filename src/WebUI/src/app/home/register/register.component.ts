@@ -11,6 +11,7 @@ import {LanguageOptions} from "./language-options";
 import {ELanguage} from "../../core/lang/language";
 import {UserRegister} from "../../core/auth/user-register";
 import {AuthService} from "../../core/auth/service/auth.service";
+import {ThemeService} from "../../core/theme/theme.service";
 
 @Component({
     selector: 'sw-register',
@@ -31,7 +32,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
         private readonly authService: AuthService,
         private readonly userService: UserService,
         private readonly messageService: MessageService,
-        private readonly translocoService: TranslocoService
+        private readonly translocoService: TranslocoService,
+        private readonly themeService: ThemeService
     ) {
         this.userRegisterInitialValues = this.userService.getUserRegisterData();
     }
@@ -60,6 +62,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     public register(): void {
         const registerData = this.registerForm.getRawValue() as UserRegister;
+        registerData.theme = this.themeService.getCurrentTheme();
         this.userService
             .register(registerData)
             .subscribe({

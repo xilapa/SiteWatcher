@@ -12,6 +12,7 @@ import {Router} from "@angular/router";
 import {environment} from "../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {CookieService} from "ngx-cookie-service";
+import {ETheme} from "../theme/theme";
 
 @Injectable({
     providedIn: 'root'
@@ -78,6 +79,7 @@ export class UserService {
         const user = jwt_decode(token) as User;
         user.language = parseInt(user.language as any) as ELanguage;
         user.emailConfirmed = JSON.parse((user as any)["email-confirmed"]);
+        user.theme = parseInt(user.theme as any) as ETheme;
         user.profilePic = this.localStorage.getItem(this.profilePicKey);
         this.userSubject.next(user);
     }
