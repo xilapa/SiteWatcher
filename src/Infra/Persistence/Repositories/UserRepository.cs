@@ -9,9 +9,9 @@ public class UserRepository : Repository<User>, IUserRepository
 {
     public UserRepository(SiteWatcherContext context) : base(context) { }
 
-    public override async Task<User> GetAsync(Expression<Func<User, bool>> predicate)
+    public override async Task<User?> GetAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(nameof(predicate));
-        return (await Context.Users.FirstOrDefaultAsync(predicate))!;
+        return (await Context.Users.FirstOrDefaultAsync(predicate, cancellationToken: cancellationToken))!;
     }
 }

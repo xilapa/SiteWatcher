@@ -13,9 +13,7 @@ public abstract class Repository<T> : IRepository<T> where T : class
         Context = context;
     }
 
-    public IUnityOfWork UoW => Context;
-
-    public abstract Task<T> GetAsync(Expression<Func<T, bool>> predicate);
+    public abstract Task<T?> GetAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
 
     public T Add(T entity)
     {
@@ -23,7 +21,7 @@ public abstract class Repository<T> : IRepository<T> where T : class
         return entity;
     }
 
-    public async Task<T> FindAsync(Expression<Func<T,bool>> predicate)
+    public async Task<T?> FindAsync(Expression<Func<T,bool>> predicate, CancellationToken cancellationToken)
     {
         var trackedEntities = Context.ChangeTracker.Entries<T>().Select(e => e.Entity);
 
@@ -31,6 +29,6 @@ public abstract class Repository<T> : IRepository<T> where T : class
         if (entity is not null)
             return entity;
 
-        return await GetAsync(predicate);
+        return await GetAsync(predicate, cancellationToken: cancellationToken);
     }
 }
