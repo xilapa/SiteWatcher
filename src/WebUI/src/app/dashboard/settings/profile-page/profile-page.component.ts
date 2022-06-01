@@ -4,7 +4,7 @@ import {invalidCharactersValidator} from "../../../common/validators/invalid-cha
 import {Location} from "@angular/common";
 import {DeviceService} from "../../../core/device/device.service";
 import {UserService} from "../../../core/user/user.service";
-import {User, UserUpdate} from "../../../core/interfaces";
+import {User, UpdateUser, ApiResponse} from "../../../core/interfaces";
 import {LanguageOptions} from "../../../home/register/language-options";
 import {LangUtils} from "../../../core/lang/lang.utils";
 import {ELanguage} from "../../../core/lang/language";
@@ -12,6 +12,8 @@ import {TranslocoService} from "@ngneat/transloco";
 import {Observable, Subscription} from "rxjs";
 import {ThemeService} from "../../../core/theme/theme.service";
 import {ETheme} from "../../../core/theme/theme";
+import {MessageService} from "primeng/api";
+import {NavigationStart, Router} from "@angular/router";
 
 @Component({
   selector: 'sw-profile-page',
@@ -34,6 +36,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   private langSub: Subscription | undefined;
   private themeSub: Subscription | undefined;
   private formSub: Subscription | undefined;
+  private routerSub: Subscription | undefined;
 
 
   constructor(private readonly location: Location,
@@ -41,12 +44,24 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
               private readonly formBuilder: FormBuilder,
               private readonly userService: UserService,
               private readonly translocoService: TranslocoService,
-              private readonly themeService: ThemeService) {
+              private readonly themeService: ThemeService,
+              private readonly messageService: MessageService,
+              private readonly router: Router) {
     this.userSub = this.userService.getUser().subscribe(u => this.initialUser = this.user = u as User);
     this.mobileScreen$ = this.deviceService.isMobileScreen();
   }
 
   ngOnInit(): void {
+    // if route changes, the theme and language will be reset
+    this.routerSub = this.router.events.subscribe(
+      event => {
+        console.log(event);
+        if (event instanceof NavigationStart) {
+          this.themeService.loadUserTheme();
+          this.translocoService.setActiveLang(LangUtils.getLangFileName(this.initialUser.language));
+        }
+      });
+
     this.darkThemeEnabledInitial = this.darkThemeEnabled = this.user.theme != ETheme.light;
     this.updateForm = this.formBuilder.group(
       {
@@ -60,7 +75,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     this.inputFormName = this.updateForm.get('name');
     this.inputFormEmail = this.updateForm.get('email');
 
-    this.translocoService.setActiveLang(LangUtils.getLangFileName(this.user.language));
     this.langSub = this.updateForm.get('language')?.valueChanges.subscribe(
       (lang: ELanguage) => this.translocoService.setActiveLang(LangUtils.getLangFileName(lang))
     );
@@ -80,6 +94,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     this.langSub?.unsubscribe();
     this.themeSub?.unsubscribe();
     this.formSub?.unsubscribe();
+    this.routerSub?.unsubscribe();
   }
 
   checkIfDataChanged(): void {
@@ -90,11 +105,39 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   }
 
   update(): void {
-    const updateData = this.updateForm.getRawValue() as UserUpdate;
+    const updateData = this.updateForm.getRawValue() as UpdateUser;
     updateData.name = updateData.name.trim();
     updateData.email = updateData.email.trim();
     updateData.theme = this.darkThemeEnabled ? ETheme.dark : ETheme.light;
     console.log(updateData);
+
+    this.userService.update(updateData)
+      .subscribe({
+        next: (resp) => {
+          console.log(resp);
+          if (resp.Result.ConfirmationEmailSend)
+            this.messageService.add(
+              {
+                severity: 'success',
+                summary: 'Dados Atualizados com sucesso',
+                detail: 'Um email de confirmação foi enviado para o seu email',
+                sticky: true,
+                closable: true
+              }
+            )
+        },
+        error: (errorResponse) => {
+          this.messageService.add(
+            {
+              severity: 'error',
+              summary: 'Error',
+              detail: (errorResponse.error as ApiResponse<null>).Messages.join("; "),
+              sticky: true,
+              closable: true
+            }
+          );
+        }
+      })
 
     // Todo toast dizendo para confirmar email
     // todo: ao registrar colocar mesmo toast

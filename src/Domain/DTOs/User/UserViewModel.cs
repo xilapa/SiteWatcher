@@ -1,7 +1,7 @@
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Common;
 
-namespace SiteWatcher.Domain.ViewModels;
+namespace SiteWatcher.Domain.DTOs.User;
 
 public struct UserViewModel
 {
