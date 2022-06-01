@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using SiteWatcher.Data;
 using SiteWatcher.Infra;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 using SiteWatcher.WebAPI.Filters;
@@ -32,8 +31,7 @@ public class HomeController : ControllerBase
     }
 
     [ApiKey]
-    [HttpPost]
-    [Route("migrate")]
+    [HttpPost("migrate")]
     public async Task<IActionResult> ApplyPendingMigrations()
     {
         var result = await _migrator.Migrate();

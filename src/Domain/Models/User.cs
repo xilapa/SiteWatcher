@@ -1,3 +1,4 @@
+using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Domain.Enums;
 
@@ -20,9 +21,19 @@ public class User : BaseModel<UserId>
     }
 
     public string GoogleId { get; } = null!;
-    public string Name { get; } = null!;
-    public string Email { get; } = null!;
-    public bool EmailConfirmed { get; }
-    public ELanguage Language { get; }
-    public ETheme Theme { get; }
+    public string Name { get; private set; } = null!;
+    public string Email { get; private set;} = null!;
+    public bool EmailConfirmed { get; private set;}
+    public ELanguage Language { get; private set;}
+    public ETheme Theme { get; private set;}
+
+    public void Update(UpdateUserInput updatedValues, DateTime updateDate)
+    {
+        Name = updatedValues.Name;
+        if (EmailConfirmed) EmailConfirmed = updatedValues.Email == Email;
+        Email = updatedValues.Email;
+        Language = updatedValues.Language;
+        Theme = updatedValues.Theme;
+        LastUpdatedAt = updateDate;
+    }
 }

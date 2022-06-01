@@ -1,6 +1,6 @@
 using Dapper;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.ViewModels;
+using SiteWatcher.Domain.DTOs.User;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 

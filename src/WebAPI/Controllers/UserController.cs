@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using MediatR;
 using SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
+using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
@@ -37,6 +38,19 @@ public class UserController : ControllerBase
             return Conflict(response.AddMessages(result.Errors));
 
         return Created(string.Empty, response.SetResult(result.Value));
+    }
+
+    [Authorize]
+    [HttpPut]
+    public async Task<IActionResult> UpdateUser(UpdateUserCommand updateUserCommand)
+    {
+        var response = new WebApiResponse<UpdateUserResult>();
+        var appResult = await _mediator.Send(updateUserCommand);
+
+        if (!appResult.Success)
+            return BadRequest(response.AddMessages(appResult.Errors));
+
+        return Ok(response.SetResult(appResult.Value!));
     }
 
     [Authorize]

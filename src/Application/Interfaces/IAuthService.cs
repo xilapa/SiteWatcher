@@ -1,6 +1,6 @@
 using System.Security.Claims;
+using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Models.Common;
-using SiteWatcher.Domain.ViewModels;
 
 namespace SiteWatcher.Application.Interfaces;
 
@@ -11,9 +11,8 @@ public interface IAuthService
     string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId);
 
     /// <summary>
-    /// Invalidate the login token of the current user
+    /// Invalidate the current user
     /// </summary>
-    /// <param name="invalidateUser">Also invalidated the current user</param>
     Task InvalidateCurrenUser();
 
     Task InvalidateCurrentRegisterToken();

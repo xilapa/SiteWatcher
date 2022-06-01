@@ -17,7 +17,6 @@ public class LogoutUserOfAllDevicesCommandHandler : IRequestHandler<LogoutUserOf
 
     public async Task<Unit> Handle(LogoutUserOfAllDevicesCommand request, CancellationToken cancellationToken)
     {
-        // invalidate current token and user
         await _authService.InvalidateCurrenUser();
 
         return Unit.Value;

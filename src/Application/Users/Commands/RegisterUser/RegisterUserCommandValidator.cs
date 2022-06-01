@@ -30,6 +30,6 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .NotEmpty()
                 .WithMessage(ApplicationErrors.LANGUAGE_IS_INVALID)
             .NotEqual(default(ELanguage))
-                .WithMessage(ApplicationErrors.LANGUAGE_IS_INVALID); 
+                .WithMessage(ApplicationErrors.LANGUAGE_IS_INVALID);
     }
 }

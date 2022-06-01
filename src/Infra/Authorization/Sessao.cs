@@ -25,7 +25,7 @@ public class Sessao : ISessao
         AuthTokenPayload = authenticated ? httpContextAccessor.HttpContext.GetAuthTokenPayload() : string.Empty;
     }
 
-    public DateTime Now => DateTime.Now;
+    public DateTime Now => new(DateTime.UtcNow.Ticks);
     public UserId? UserId { get; }
     public string? Email { get; }
     public string? GoogleId { get; }
