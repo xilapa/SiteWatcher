@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ApiResponse } from 'src/app/core/interfaces';
-import { Data } from 'src/app/core/shared-data/shared-data';
-import { MessageService } from 'primeng/api';
-import { UserService } from 'src/app/core/user/user.service';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {Data} from 'src/app/core/shared-data/shared-data';
+import {MessageService} from 'primeng/api';
+import {UserService} from 'src/app/core/user/user.service';
 import {AuthService} from "../../core/auth/service/auth.service";
 import {EAuthTask} from "../../core/auth/service/auth-task";
+import {utils} from "../../core/utils/utils";
+import {TranslocoService} from "@ngneat/transloco";
 
 @Component({
     selector: 'sw-auth',
@@ -15,9 +16,11 @@ import {EAuthTask} from "../../core/auth/service/auth-task";
 export class AuthComponent implements OnInit {
 
     constructor(private readonly authService: AuthService,
-        private readonly router: Router,
-        private readonly messageService: MessageService,
-        private readonly userService: UserService) { }
+                private readonly router: Router,
+                private readonly messageService: MessageService,
+                private readonly userService: UserService,
+                private readonly translocoService: TranslocoService) {
+    }
 
     ngOnInit(): void {
         const url = Data.GetAndRemove('authURL') as URL;
@@ -34,27 +37,20 @@ export class AuthComponent implements OnInit {
             .subscribe({
                 next: (response) => {
 
-                    if(response.Result.Task == EAuthTask.Register){
+                    if (response.Result.Task == EAuthTask.Register) {
                         this.userService.setUserRegisterData(response.Result);
                         this.router.navigateByUrl('/home/register');
                     }
 
-                    if(response.Result.Task == EAuthTask.Login){
+                    if (response.Result.Task == EAuthTask.Login) {
                         this.userService.setUserData(response.Result);
                         this.userService.redirecLoggedUser();
                     }
 
                 },
                 error: (errorResponse) => {
-                    this.messageService.add(
-                        {
-                            severity: 'error',
-                            summary: 'Error',
-                            detail: (errorResponse.error as ApiResponse<null>).Messages.join("; "),
-                            sticky: true,
-                            closable: true
-                        }
-                    )
+                    utils.errorToast(errorResponse, this.messageService,
+                        this.translocoService)
                     this.router.navigateByUrl('/home');
                 }
             });
