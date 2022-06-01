@@ -11,10 +11,16 @@ export interface User {
     theme: ETheme
 }
 
-export interface UserUpdate {
-  id: string,
+export interface UpdateUser {
   name: string,
   email: string,
   language: ELanguage,
   theme: ETheme
 }
+
+export interface UpdateUserResult {
+  token : string,
+  ConfirmationEmailSend: boolean
+}
+
+
