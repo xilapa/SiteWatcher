@@ -41,7 +41,20 @@
       "update": "Update"
     },
     "security": {
-      "title": "Security"
+      "title": "Security",
+      "confirmEmailTitle": "Confirm email",
+      "emailConfirmedText": "Your email has been already confirmed.",
+      "emailNotConfirmedText": "Your email has not been confirmed. You will not receive alerts until the email is confirmed.",
+      "confirmEmailButton": "Resend confirmation email",
+      "logoutAllDevicesTitle": "Log out of all devices",
+      "logoutAllDevicesText": "You will be logged out of all devices.",
+      "logoutAllDevicesButton": "Log out of all devices",
+      "deactivateAccountTitle": "Deactivate account",
+      "deactivateAccountText": "You will deactivate your account and no longer receive alerts.",
+      "deactivateAccountButton": "Deactivate account",
+      "deleteAccountTitle": "Delete account",
+      "deleteAccountText": "Remove your account and all your data from the platform.",
+      "deleteAccountButton": "Delete"
     }
   }
 }
