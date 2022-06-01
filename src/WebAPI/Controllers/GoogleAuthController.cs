@@ -50,21 +50,6 @@ public class GoogleAuthController : ControllerBase
     [Route("register")]
     public async Task<IActionResult> StartAuth([FromQuery] string? returnUrl = null)
     {
-        Response.Cookies.Delete("returnUrl");
-
-        if(!string.IsNullOrEmpty(returnUrl))
-        {
-            var cookieOptions = new CookieOptions
-            {
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                IsEssential = false,
-                MaxAge = TimeSpan.FromSeconds(90),
-                HttpOnly = true
-            };
-            Response.Cookies.Append("returnUrl", returnUrl, cookieOptions);
-        }
-
         var state = await _authService.GenerateLoginState(_googleSettings.StateValue);
         var authUrl = $"{_googleSettings.AuthEndpoint}?scope={HttpUtility.UrlEncode(_googleSettings.Scopes)}&response_type=code&include_granted_scopes=false&state={state}&redirect_uri={HttpUtility.UrlEncode(_googleSettings.RedirectUri)}&client_id={_googleSettings.ClientId}";
 

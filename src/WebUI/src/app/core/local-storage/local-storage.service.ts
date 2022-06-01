@@ -20,4 +20,10 @@ export class LocalStorageService {
 
     public removeItem = (key: string): void =>
         this.storage.removeItem(key);
+
+    public getAndRemove = (key: string): any => {
+        const value = this.getItem(key);
+        this.removeItem(key);
+        return value;
+    }
 }

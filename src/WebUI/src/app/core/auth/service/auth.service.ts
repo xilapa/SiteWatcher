@@ -19,12 +19,12 @@ export class AuthService {
     ) {
     }
 
-    public googleLogin(returnUrl: string | null): void {
-        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/login?returnUrl=${returnUrl ?? ''}`;
+    public googleLogin(): void {
+        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/login`;
     }
 
-    public googleRegister(returnUrl: string | null): void {
-        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/register?returnUrl=${returnUrl ?? ''}`;
+    public googleRegister(): void {
+        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/register`;
     }
 
     public authenticate(state: string, code: string, scope: string): Observable<ApiResponse<AuthenticationResult>> {
