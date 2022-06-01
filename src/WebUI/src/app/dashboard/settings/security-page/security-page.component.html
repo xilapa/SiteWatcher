@@ -1,1 +1,53 @@
-<p>security-page works!</p>
+<ng-container *transloco="let t; read: 'settings.security'">
+    <div class="settings-page-wrapper">
+        <div class="page-title" *ngIf="(mobileScreen$ | async) as boolean">
+            {{ t('title') }}
+        </div>
+    </div>
+
+    <!-- confirm email -->
+    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+        <div class="sw-g-text-foreground-1">
+            {{ t('confirmEmailTitle') }}
+        </div>
+        <div class="sw-g-text-muted options-text">
+            {{ user.emailConfirmed ? t('emailConfirmedText') : t('emailNotConfirmedText') }}
+        </div>
+        <button type="submit" pButton [label]="t('confirmEmailButton')"
+                [disabled]="user.emailConfirmed"></button>
+    </div>
+
+
+    <!-- logout all devices -->
+    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+        <div class="sw-g-text-foreground-1">
+            {{ t('logoutAllDevicesTitle') }}
+        </div>
+        <div class="sw-g-text-muted options-text">
+            {{ t('logoutAllDevicesText') }}
+        </div>
+        <button type="submit" pButton [label]="t('logoutAllDevicesButton')"></button>
+    </div>
+
+    <!-- deactivate account -->
+    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+        <div class="sw-g-text-foreground-1">
+            {{ t('deactivateAccountTitle') }}
+        </div>
+        <div class="sw-g-text-muted options-text">
+            {{ t('deactivateAccountText') }}
+        </div>
+        <button type="submit" pButton [label]="t('deactivateAccountButton')"></button>
+    </div>
+
+    <!-- delete account -->
+    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+        <div class="sw-g-text-foreground-1">
+            {{ t('deleteAccountTitle') }}
+        </div>
+        <div class="sw-g-text-muted options-text">
+            {{ t('deleteAccountText') }}
+        </div>
+        <button type="submit" pButton [label]="t('deleteAccountButton')"></button>
+    </div>
+</ng-container>

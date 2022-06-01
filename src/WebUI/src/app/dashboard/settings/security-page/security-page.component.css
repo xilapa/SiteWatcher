@@ -1,0 +1,19 @@
+.settings-page-wrapper {
+    width: 75vw;
+    max-width: 550px;
+}
+
+.page-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.settings-option-wrapper {
+    padding-bottom: 28px;
+}
+
+.options-text {
+    margin: 12px 0 12px 0;
+    font-size: 16px;
+    width: 80vw
+}
