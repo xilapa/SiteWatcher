@@ -3,6 +3,7 @@ import {LocalStorageService} from "../local-storage/local-storage.service";
 import {DOCUMENT} from "@angular/common";
 import {ETheme} from "./theme";
 import {UserService} from '../user/user.service';
+import {first} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -22,17 +23,26 @@ export class ThemeService {
   }
 
   public loadUserTheme(): void {
+
     this.userService.getUser()
+      .pipe(first())
       .subscribe(user => {
         let themeToLoad;
+        let themeToRemove;
         if(!user)
           themeToLoad = this.localStorage.getItem(this.themeKey) as string;
-        if(user && user.theme === ETheme.dark)
+        if(user && user.theme === ETheme.dark){
           themeToLoad = this.darkTheme;
-        else if(user && user.theme === ETheme.light)
+          themeToRemove = this.lightTheme;
+        }
+        else if(user && user.theme === ETheme.light){
           themeToLoad = this.lightTheme;
+          themeToRemove = this.darkTheme;
+        }
 
         themeToLoad && this.docClassList.add(themeToLoad);
+        themeToLoad && this.localStorage.setItem(this.themeKey, themeToLoad);
+        themeToRemove && this.docClassList.remove(themeToRemove);
       });
   }
 
@@ -66,7 +76,6 @@ export class ThemeService {
       this.doc.defaultView?.matchMedia('(prefers-color-scheme: dark)').matches) {
       theme = ETheme.dark;
     }
-    console.log(theme);
     return theme;
   }
 }
