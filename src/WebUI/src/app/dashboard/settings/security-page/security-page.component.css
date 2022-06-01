@@ -15,5 +15,17 @@
 .options-text {
     margin: 12px 0 12px 0;
     font-size: 16px;
-    width: 80vw
+}
+
+
+@media screen and (min-width: 600px) {
+    .settings-page-wrapper, .options-text {
+        max-width: 450px;
+    }
+}
+
+@media screen and (min-width: 760px) {
+    .settings-page-wrapper, .options-text {
+        max-width: 550px;
+    }
 }

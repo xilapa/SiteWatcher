@@ -69,7 +69,7 @@ table {
     --sw-dark-6: #666666;
 
     /* sizes */
-    --sw-default-text-size: 16px;
+    --sw-default-text-size: 20px;
     --sw-title1-font-size: 2rem;
     --sw-button-font-size: 1rem;
     --sw-link-text-font-size: 0.9rem;
@@ -258,7 +258,7 @@ table {
 .sw-g-text-muted {
     font-size: var(--sw-link-text-font-size);
     margin-top: 1.5rem;
-    color: var(--sw-text-muted-1);
+    color: var(--sw-foreground-1);
     font-weight: 400;
     cursor: default;
 }

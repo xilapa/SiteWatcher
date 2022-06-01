@@ -14,7 +14,6 @@ form {
     display: flex;
     flex-direction: column;
     width: 80vw;
-    max-width: 550px;
 }
 
 label {
@@ -90,11 +89,21 @@ button {
     margin: 15px 0 50px 0;
 }
 
-@media screen and (min-width: 670px) {
+@media screen and (min-width: 600px) {
+    form {
+        max-width: 450px;
+    }
+}
+
+@media screen and (min-width: 760px) {
     .profile-page-wrapper {
         display: flex;
         width: auto;
         justify-content: flex-start;
+    }
+
+    form {
+        max-width: 550px;
     }
 }
 

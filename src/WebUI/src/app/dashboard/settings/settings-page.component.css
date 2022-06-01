@@ -84,7 +84,7 @@
     margin-left: 1rem;
 }
 
-@media screen and (min-width: 670px) {
+@media screen and (min-width: 600px) {
     .settings-page-content-wrapper .page-content {
         display: flex;
     }
