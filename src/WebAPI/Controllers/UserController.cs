@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MediatR;
+using SiteWatcher.Application.Users.Commands.ActivateAccount;
+using SiteWatcher.Application.Users.Commands.DeactivateAccount;
+using SiteWatcher.Application.Users.Commands.DeleteUser;
 using SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
@@ -52,6 +55,21 @@ public class UserController : ControllerBase
 
         return Ok(response.SetResult(appResult.Value!));
     }
+
+    [Authorize]
+    [HttpPut("deactivate")]
+    public async Task DeactivateAccount() =>
+        await _mediator.Send(new DeactivateAccountCommand());
+
+    [AllowAnonymous]
+    [HttpPut("reactivate-account-email")]
+    public async Task RectivateAccount(SendActivateAccountEmailCommand emailCommand) =>
+        await _mediator.Send(emailCommand);
+
+    [Authorize]
+    [HttpDelete]
+    public async Task DeleteAccount() =>
+        await _mediator.Send(new DeleteAccountCommand());
 
     [Authorize]
     [HttpPost("logout-all-devices")]
