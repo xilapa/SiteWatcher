@@ -7,6 +7,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.0.123" />
+		<PackageReference Include="MailKit" Version="3.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -15,20 +16,20 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.17.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.18.0" />
 		<PackageReference Include="Npgsql" Version="6.0.4" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
-		<PackageReference Include="Roslynator.Analyzers" Version="4.1.0">
+		<PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.1.0">
+		<PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.1.1">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="SqlKata" Version="2.3.7" />
 		<PackageReference Include="StackExchange.Redis" Version="2.5.61" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.17.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.18.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
