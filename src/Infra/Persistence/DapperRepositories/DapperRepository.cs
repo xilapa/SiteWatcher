@@ -19,4 +19,13 @@ public abstract class DapperRepository<T> : IDapperRepository<T>
 
         return await func(connection);
     }
+
+    public async Task UsingConnectionAsync(Func<IDbConnection, Task> func)
+    {
+        await using var connection = new NpgsqlConnection(_connectionString);
+        if(connection.State == ConnectionState.Closed)
+            await connection.OpenAsync();
+
+        await func(connection);
+    }
 }
