@@ -45,10 +45,4 @@ export class TopBarComponent implements OnInit {
     logout(): void {
         this.userService.logout();
     }
-
-    // TODO: move to settings page
-    logoutAllDevices(): void {
-        this.userService.logoutAllDevices();
-    }
-
 }

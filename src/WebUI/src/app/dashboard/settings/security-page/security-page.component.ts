@@ -22,4 +22,8 @@ export class SecurityPageComponent implements OnInit {
     this.user$ = this.userService.getUser();
   }
 
+  logoutAllDevices() : void {
+      this.userService.logoutAllDevices();
+  }
+
 }
