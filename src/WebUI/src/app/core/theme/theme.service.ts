@@ -11,7 +11,7 @@ import {first} from "rxjs";
 export class ThemeService {
 
   private readonly docClassList: DOMTokenList;
-  private readonly themeKey: string = 'theme';
+  static readonly themeKey: string = 'theme';
   private readonly darkTheme: string = 'dark-theme';
   private readonly lightTheme: string = 'light-theme';
   private oldTheme: string | null;
@@ -23,27 +23,22 @@ export class ThemeService {
   }
 
   public loadUserTheme(): void {
+    let user = this.userService.getCurrentUser();
+    let themeToLoad;
+    let themeToRemove;
+    if (!user)
+      themeToLoad = this.localStorage.getItem(ThemeService.themeKey) as string;
+    if (user && user.theme === ETheme.dark) {
+      themeToLoad = this.darkTheme;
+      themeToRemove = this.lightTheme;
+    } else if (user && user.theme === ETheme.light) {
+      themeToLoad = this.lightTheme;
+      themeToRemove = this.darkTheme;
+    }
 
-    this.userService.getUser()
-      .pipe(first())
-      .subscribe(user => {
-        let themeToLoad;
-        let themeToRemove;
-        if(!user)
-          themeToLoad = this.localStorage.getItem(this.themeKey) as string;
-        if(user && user.theme === ETheme.dark){
-          themeToLoad = this.darkTheme;
-          themeToRemove = this.lightTheme;
-        }
-        else if(user && user.theme === ETheme.light){
-          themeToLoad = this.lightTheme;
-          themeToRemove = this.darkTheme;
-        }
-
-        themeToLoad && this.docClassList.add(themeToLoad);
-        themeToLoad && this.localStorage.setItem(this.themeKey, themeToLoad);
-        themeToRemove && this.docClassList.remove(themeToRemove);
-      });
+    themeToLoad && this.docClassList.add(themeToLoad);
+    themeToLoad && this.localStorage.setItem(ThemeService.themeKey, themeToLoad);
+    themeToRemove && this.docClassList.remove(themeToRemove);
   }
 
   public toggleTheme(): void {
@@ -63,11 +58,11 @@ export class ThemeService {
       }
     }
 
-        this.docClassList.add(newTheme);
-        this.oldTheme && this.docClassList.remove(this.oldTheme);
+    this.docClassList.add(newTheme);
+    this.oldTheme && this.docClassList.remove(this.oldTheme);
 
-        this.localStorage.setItem(this.themeKey, newTheme);
-    }
+    this.localStorage.setItem(ThemeService.themeKey, newTheme);
+  }
 
   public getCurrentTheme(): ETheme {
     let theme = ETheme.light;
