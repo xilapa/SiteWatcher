@@ -11,8 +11,6 @@ namespace SiteWatcher.Application.Users.Commands.UpdateUser;
 
 public class UpdateUserCommand : Validable<UpdateUserCommand>, IRequest<ICommandResult<UpdateUserResult>>
 {
-    public UpdateUserCommand() : base(new UpdateUserCommandValidator())
-    { }
     public string? Name { get; set; }
     public string? Email { get; set; }
     public ELanguage Language { get; set; }
@@ -56,6 +54,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, IComm
         await _uow.SaveChangesAsync(cancellationToken);
 
         var newToken = _authService.GenerateLoginToken(user);
+        await _authService.WhiteListTokenForCurrentUser(newToken);
 
         if(!user.EmailConfirmed)
             await _mediator.Publish(_mapper.Map<UserUpdatedNotification>(user), cancellationToken);

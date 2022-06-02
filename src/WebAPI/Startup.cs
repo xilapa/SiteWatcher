@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using SiteWatcher.WebAPI.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -5,6 +6,7 @@ using SiteWatcher.WebAPI.Filters;
 using Microsoft.AspNetCore.HttpOverrides;
 using SiteWatcher.Application;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Authorization.Middleware;
@@ -27,7 +29,12 @@ public class Startup : IStartup
         AppSettings = services.AddSettings(_configuration, env);
 
         services.AddControllers(opts => opts.Filters.Add(typeof(CommandValidationFilter)))
-                .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
+                .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null)
+                .AddFluentValidation(opts =>
+                {
+                    opts.AutomaticValidationEnabled = false;
+                    opts.RegisterValidatorsFromAssemblyContaining<RegisterUserCommand>();
+                });
 
         services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
 

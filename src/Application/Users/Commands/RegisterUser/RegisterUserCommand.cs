@@ -11,9 +11,6 @@ namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
 public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICommandResult<RegisterUserResult>>
 {
-    public RegisterUserCommand() : base(new RegisterUserCommandValidator())
-    { }
-
     public string? Name { get; set; }
     public string? Email { get; set; }
     public ELanguage Language { get; set; }
