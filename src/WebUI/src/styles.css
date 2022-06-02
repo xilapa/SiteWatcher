@@ -341,3 +341,29 @@ table {
 }
 
 /*#endregion ng prime button-outlined  adjustments */
+
+/*#region prime-ng button-outlined adjustments*/
+.p-dialog {
+    user-select: none;
+}
+
+.p-dialog, .p-dialog-header, .p-dialog-content, .p-dialog-footer {
+    background-color: var(--sw-surface-2) !important;
+}
+
+.p-dialog-header {
+    border-bottom: none !important;
+}
+
+.p-dialog-footer {
+    border-top: none !important;
+}
+
+.p-dialog-title, .p-dialog-content {
+    color: var(--sw-foreground-1) !important;
+}
+
+.p-dialog-header-icon{
+    display: none !important;
+}
+/*#endregion prime-ng toast adjustments*/
