@@ -24,7 +24,8 @@ export class SettingsPageComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.mobileScreen$ = this.deviceService.isMobileScreen();
-    this.activePage = 'profile';
+    const slashIndex = this.router.url.lastIndexOf('/');
+    this.activePage = this.router.url.substring(slashIndex + 1);
   }
 
   ngAfterViewChecked() {
