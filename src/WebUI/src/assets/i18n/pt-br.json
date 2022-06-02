@@ -1,4 +1,9 @@
 {
+  "common": {
+    "success": "Sucesso",
+    "error": "Erro",
+    "unexpectedError": "Erro inesperado"
+  },
   "home": {
     "auth": {
       "authenticating": "Autenticando"
@@ -54,7 +59,9 @@
       "deactivateAccountButton": "Desativar conta",
       "deleteAccountTitle": "Excluir conta",
       "deleteAccountText": "Remover sua conta e todos os seus dados da plataforma.",
-      "deleteAccountButton": "Excluir"
+      "deleteAccountButton": "Excluir",
+      "successMessage": "Seus dados foram atualizados.",
+      "successMessageEmailSent": "Um email de confirmação foi enviado para o seu email."
     }
   }
 }

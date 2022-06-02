@@ -1,4 +1,9 @@
 {
+  "common": {
+    "success": "Éxito",
+    "error": "Error",
+    "unexpectedError": "Error inesperado"
+  },
   "home": {
     "auth": {
       "authenticating": "Autenticando"
@@ -44,17 +49,19 @@
       "title": "Seguridad",
       "confirmEmailTitle": "Confirmar correo electrónico",
       "emailConfirmedText": "Su correo electrónico ya ha sido confirmado.",
-      "emailNotConfirmedText": "Su correo electrónico no ha sido confirmado. No recibirá alertas hasta que se confirme el correo electrónico.\n",
+      "emailNotConfirmedText": "Su correo electrónico no ha sido confirmado. No recibirá alertas hasta que se confirme el correo electrónico.",
       "confirmEmailButton": "Reenviar correo electrónico de confirmación",
       "logoutAllDevicesTitle": "Cerrar sesión en todos los dispositivos",
       "logoutAllDevicesText": "Se cerrará la sesión de todos los dispositivos.",
       "logoutAllDevicesButton": "Cerrar sesión en todos los dispositivos",
       "deactivateAccountTitle": "Desactivar cuenta",
-      "deactivateAccountText": "\nDesactivarás tu cuenta y dejarás de recibir alertas.",
+      "deactivateAccountText": "Desactivarás tu cuenta y dejarás de recibir alertas.",
       "deactivateAccountButton": "Desactivar cuenta",
       "deleteAccountTitle": "Borrar cuenta",
       "deleteAccountText": "Elimina tu cuenta y todos tus datos de la plataforma.",
-        "deleteAccountButton": "Borrar"
+      "deleteAccountButton": "Borrar",
+      "successMessage": "Tus datos fueron actualizados.",
+      "successMessageEmailSent": "Se envió un correo electrónico de confirmación a su correo electrónico."
     }
   }
 }
