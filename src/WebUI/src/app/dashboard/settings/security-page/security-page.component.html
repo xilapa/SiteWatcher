@@ -13,7 +13,7 @@
         <div class="sw-g-text-muted options-text">
             {{ user.emailConfirmed ? t('emailConfirmedText') : t('emailNotConfirmedText') }}
         </div>
-        <button type="submit" pButton [label]="t('confirmEmailButton')"
+        <button pButton [label]="t('confirmEmailButton')"
                 [disabled]="user.emailConfirmed"></button>
     </div>
 
@@ -26,7 +26,7 @@
         <div class="sw-g-text-muted options-text">
             {{ t('logoutAllDevicesText') }}
         </div>
-        <button type="submit" pButton [label]="t('logoutAllDevicesButton')" (click)="logoutAllDevices()"></button>
+        <button pButton [label]="t('logoutAllDevicesButton')" (click)="logoutAllDevices()"></button>
     </div>
 
     <!-- deactivate account -->
@@ -37,7 +37,7 @@
         <div class="sw-g-text-muted options-text">
             {{ t('deactivateAccountText') }}
         </div>
-        <button type="submit" pButton [label]="t('deactivateAccountButton')"></button>
+        <button (click)="deactivateAccount()" pButton [label]="t('deactivateAccountButton')"></button>
     </div>
 
     <!-- delete account -->
@@ -48,6 +48,6 @@
         <div class="sw-g-text-muted options-text">
             {{ t('deleteAccountText') }}
         </div>
-        <button type="submit" pButton [label]="t('deleteAccountButton')"></button>
+        <button (click)="deleteAccount()" pButton [label]="t('deleteAccountButton')"></button>
     </div>
 </ng-container>

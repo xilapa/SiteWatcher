@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {Data} from 'src/app/core/shared-data/shared-data';
-import {MessageService} from 'primeng/api';
+import {ConfirmationService, MessageService} from 'primeng/api';
 import {UserService} from 'src/app/core/user/user.service';
 import {AuthService} from "../../core/auth/service/auth.service";
 import {EAuthTask} from "../../core/auth/service/auth-task";
 import {utils} from "../../core/utils/utils";
 import {TranslocoService} from "@ngneat/transloco";
+import {finalize, first} from "rxjs";
 
 @Component({
     selector: 'sw-auth',
@@ -19,7 +20,8 @@ export class AuthComponent implements OnInit {
                 private readonly router: Router,
                 private readonly messageService: MessageService,
                 private readonly userService: UserService,
-                private readonly translocoService: TranslocoService) {
+                private readonly translocoService: TranslocoService,
+                private readonly confirmationService: ConfirmationService) {
     }
 
     ngOnInit(): void {
@@ -47,12 +49,33 @@ export class AuthComponent implements OnInit {
                         this.userService.redirecLoggedUser();
                     }
 
+                    if (response.Result.Task == EAuthTask.Activate) {
+                        utils.openModal(this.confirmationService, this.translocoService,
+                            'home.auth.activateUserTitle', 'home.auth.activateUserMessage',
+                            () => this.sendEmailToActivateAccount(response.Result.Token), () => this.router.navigateByUrl('/home')
+                        );
+                    }
                 },
                 error: (errorResponse) => {
-                    utils.errorToast(errorResponse, this.messageService,
+                    utils.toastError(errorResponse, this.messageService,
                         this.translocoService)
                     this.router.navigateByUrl('/home');
                 }
             });
+    }
+
+    private sendEmailToActivateAccount(userId: string): void {
+        this.userService.reactivateAccountEmail(userId)
+            .pipe(finalize(() => this.router.navigateByUrl('/home')))
+            .subscribe({
+            next: () => {
+                utils.toastSuccess(this.messageService, this.translocoService,
+                    this.translocoService.translate('home.auth.reactivateEmailSend'));
+            },
+            error: (errorResponse) => {
+                utils.toastError(errorResponse, this.messageService,
+                    this.translocoService)
+            }
+        });
     }
 }
