@@ -12,7 +12,7 @@ public abstract class BaseModel<IdType>
     }
 
     public IdType Id { get; }
-    public bool Active { get; }
+    public bool Active { get; protected set; }
     public DateTime CreatedAt { get; }
     public DateTime LastUpdatedAt { get; protected set; }
 }

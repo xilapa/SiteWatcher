@@ -7,6 +7,7 @@ public struct UserViewModel
 {
     private Guid Id { get; set; }
     public UserId UserId => new UserId(Id);
+    public bool Active { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
     public bool EmailConfirmed { get; set; }
