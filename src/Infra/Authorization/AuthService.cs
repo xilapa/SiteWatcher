@@ -149,6 +149,9 @@ public class AuthService : IAuthService
         await _cache.SaveAsync(key, whiteListedTokens, TimeSpan.FromSeconds(LoginTokenExpiration));
     }
 
+    public async Task WhiteListTokenForCurrentUser(string token) =>
+        await WhiteListToken(_sessao.UserId!.Value, token);
+
     public async Task InvalidateCurrentRegisterToken()
     {
         await _cache.SaveBytesAsync(
