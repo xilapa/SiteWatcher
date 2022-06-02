@@ -2,11 +2,16 @@
   "common": {
     "success": "Sucesso",
     "error": "Erro",
-    "unexpectedError": "Erro inesperado"
+    "unexpectedError": "Erro inesperado",
+    "yes": "Sim",
+    "no": "Não"
   },
   "home": {
     "auth": {
-      "authenticating": "Autenticando"
+      "authenticating": "Autenticando",
+      "activateUserTitle": "Ative sua conta",
+      "activateUserMessage": "Você precisa ativar sua conta para entrar. Deseja ativar agora?",
+      "reactivateEmailSend": "Enviamos um e-mail com o link de ativação. Por favor verifique seu email."
     },
     "login": {
       "title": "Entrar",
@@ -58,11 +63,15 @@
       "deactivateAccountTitle": "Desativar conta",
       "deactivateAccountText": "Você desativará sua conta e não receberá mais alertas.",
       "deactivateAccountButton": "Desativar conta",
+      "deactivateAccountConfirmation": "Tem certeza de que deseja desativar sua conta?",
+      "deactivateAccountSuccessToast": "Conta desativada com sucesso.",
       "deleteAccountTitle": "Excluir conta",
       "deleteAccountText": "Remover sua conta e todos os seus dados da plataforma.",
       "deleteAccountButton": "Excluir",
       "successMessage": "Seus dados foram atualizados.",
-      "successMessageEmailSent": "Um email de confirmação foi enviado para o seu email."
+      "successMessageEmailSent": "Um email de confirmação foi enviado para o seu email.",
+      "deleteAccountConfirmation": "Tem certeza de que deseja deletar sua conta?",
+      "deleteAccountSuccess": "Conta excluída com sucesso."
     }
   }
 }

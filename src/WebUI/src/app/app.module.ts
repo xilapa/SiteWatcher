@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {ToastModule} from 'primeng/toast';
-import {MessageService} from 'primeng/api';
+import {ConfirmationService, MessageService} from 'primeng/api';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CookieService} from 'ngx-cookie-service';
 
@@ -13,6 +13,7 @@ import {ContentTypeInterceptor} from './core/interceptors/content-type.intercept
 import {TranslocoRootModule} from './transloco-root.module';
 import {AuthHeaderInterceptor} from "./core/auth/interceptors/auth-header.interceptor";
 import {UnauthorizedInterceptor} from "./core/auth/interceptors/unauthorized.interceptor";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
 
 
 @NgModule({
@@ -26,10 +27,12 @@ import {UnauthorizedInterceptor} from "./core/auth/interceptors/unauthorized.int
         AppRoutingModule,
         ToastModule,
         BrowserAnimationsModule,
-        TranslocoRootModule
+        TranslocoRootModule,
+        ConfirmDialogModule
     ],
     providers: [
         MessageService,
+        ConfirmationService,
         CookieService,
         {
             provide: HTTP_INTERCEPTORS,

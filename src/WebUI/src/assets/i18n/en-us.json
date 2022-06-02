@@ -2,11 +2,16 @@
   "common": {
     "success": "Success",
     "error": "Error",
-    "unexpectedError": "Unexpected error"
+    "unexpectedError": "Unexpected error",
+    "yes": "Yes",
+    "no": "No"
   },
   "home": {
     "auth": {
-      "authenticating": "Authenticating"
+      "authenticating": "Authenticating",
+      "activateUserTitle": "Activate your account",
+      "activateUserMessage": "You need to activate your account to login. Do you to activate it now?",
+      "reactivateEmailSend": "We have sent you an email with the activation link. Please check your email."
     },
     "login": {
       "title": "Login",
@@ -58,11 +63,15 @@
       "deactivateAccountTitle": "Deactivate account",
       "deactivateAccountText": "You will deactivate your account and no longer receive alerts.",
       "deactivateAccountButton": "Deactivate account",
+      "deactivateAccountConfirmation": "Are you sure you want to deactivate your account?",
+      "deactivateAccountSuccessToast": "Successfully deactivated account.",
       "deleteAccountTitle": "Delete account",
       "deleteAccountText": "Remove your account and all your data from the platform.",
       "deleteAccountButton": "Delete",
       "successMessage": "Your data was updated.",
-      "successMessageEmailSent": "A confirmation email was sent to your email."
+      "successMessageEmailSent": "A confirmation email was sent to your email.",
+      "deleteAccountConfirmation": "Are you sure you want to delete your account?",
+      "deleteAccountSuccess": "Successfully deleted account."
     }
   }
 }
