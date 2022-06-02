@@ -20,4 +20,5 @@ public interface IAuthService
     Task<bool> UserCanLogin();
     Task<string> GenerateLoginState(byte[] stateBytes);
     Task WhiteListToken(UserId userId, string token);
+    Task WhiteListTokenForCurrentUser(string token);
 }

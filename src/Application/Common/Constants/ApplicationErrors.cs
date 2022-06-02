@@ -12,4 +12,6 @@ public static class ApplicationErrors
     public static readonly string LANGUAGE_IS_INVALID = "Language is not valid";
     public static readonly string THEME_IS_INVALID = "Theme is not valid";
     public static readonly string USER_DO_NOT_EXIST = "User does not exist.";
+    public static readonly string GOOGLE_AUTH_ERROR = "An error has ocurred during Google Authorization";
+
 }

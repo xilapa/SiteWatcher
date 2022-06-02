@@ -1,8 +1,8 @@
-namespace SiteWatcher.WebAPI.DTOs.ViewModels;
+﻿namespace SiteWatcher.Application.Authentication.Common;
 
 public class AuthenticationResult
 {
-    public void Set(EAuthTask task, string token, string? profilePicUrl)
+    public AuthenticationResult(EAuthTask task, string token, string? profilePicUrl)
     {
         Task = task;
         Token = token;
@@ -17,5 +17,6 @@ public class AuthenticationResult
 public enum EAuthTask
 {
     Register = 1,
-    Login = 2
+    Login,
+    Activate
 }
