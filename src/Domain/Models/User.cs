@@ -36,4 +36,10 @@ public class User : BaseModel<UserId>
         Theme = updatedValues.Theme;
         LastUpdatedAt = updateDate;
     }
+
+    public void Deactivate(DateTime deactivateDate)
+    {
+        Active = false;
+        LastUpdatedAt = deactivateDate;
+    }
 }
