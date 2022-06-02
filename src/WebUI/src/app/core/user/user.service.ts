@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Data} from '../shared-data/shared-data';
 import {TokenService} from '../token/token.service';
 import jwt_decode from "jwt-decode";
-import {ApiResponse, User, UpdateUser, UpdateUserResult} from '../interfaces';
+import {ApiResponse, User, UpdateUser, UpdateUserResult, RegisterUserResult} from '../interfaces';
 import {UserRegister} from "../auth/user-register";
 import {ELanguage} from "../lang/language";
 import {AuthenticationResult} from "../auth/service/authentication-result";
@@ -47,6 +47,9 @@ export class UserService {
   public getUser = (): Observable<User | null> =>
     this.userSubject.asObservable();
 
+  public getCurrentUser = (): User | null =>
+    this.userSubject.getValue();
+
   public setUserRegisterData(registerData: AuthenticationResult) {
     this.saveProfilePicUrl(registerData.ProfilePicUrl);
     this.tokenService.setRegisterToken(registerData.Token);
@@ -75,6 +78,7 @@ export class UserService {
     !!this.tokenService.getRegisterToken() && !!Data.Get(this.registerData);
 
   private decodeAndNotify(token: string): void {
+    if(!token || token == 'null' || token == 'undefined') return;
     const user = jwt_decode(token) as User;
     user.language = parseInt(user.language as any) as ELanguage;
     user.emailConfirmed = JSON.parse((user as any)["email-confirmed"]);
@@ -99,8 +103,8 @@ export class UserService {
     this.router.navigate(['/']);
   }
 
-  public register(registerData: UserRegister): Observable<ApiResponse<string>> {
-    return this.httpClient.post<ApiResponse<string>>(
+  public register(registerData: UserRegister): Observable<ApiResponse<RegisterUserResult>> {
+    return this.httpClient.post<ApiResponse<RegisterUserResult>>(
       `${environment.baseApiUrl}/${this.baseRoute}/register`, registerData, {headers: {'authorization': `Bearer ${this.tokenService.getRegisterToken()}`}})
   }
 

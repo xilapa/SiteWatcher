@@ -31,13 +31,13 @@ public class UserController : ControllerBase
     [Authorize(Policy = Policies.ValidRegisterData)]
     public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
     {
-        var response = new WebApiResponse<string>();
-        var result = await _mediator.Send(registerUserCommand);
+        var response = new WebApiResponse<RegisterUserResult>();
+        var appResult = await _mediator.Send(registerUserCommand);
 
-        if (!result.Success)
-            return Conflict(response.AddMessages(result.Errors));
+        if (!appResult.Success)
+            return Conflict(response.AddMessages(appResult.Errors));
 
-        return Created(string.Empty, response.SetResult(result.Value));
+        return Created(string.Empty, response.SetResult(appResult.Value!));
     }
 
     [Authorize]

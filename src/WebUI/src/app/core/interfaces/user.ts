@@ -19,8 +19,13 @@ export interface UpdateUser {
 }
 
 export interface UpdateUserResult {
-  token : string,
+  Token : string,
   ConfirmationEmailSend: boolean
+}
+
+export interface RegisterUserResult {
+    Token : string,
+    ConfirmationEmailSend: boolean
 }
 
 

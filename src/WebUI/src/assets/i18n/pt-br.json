@@ -22,7 +22,8 @@
       "nameMinLenghtErrorMsg": "O nome deve ter no mínimo 3 caracteres.",
       "nameinvalidCharactersErrorMsg": "O nome deve conter apenas letras",
       "emailValidationErrorMsg": "O email não é válido.",
-      "confirm": "Confirmar"
+      "confirm": "Confirmar",
+      "registerSuccessToast": "Cadastro realizado com sucesso."
     }
   },
   "dashboard": {

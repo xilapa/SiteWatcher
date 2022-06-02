@@ -67,8 +67,23 @@ export class RegisterComponent implements OnInit, OnDestroy {
             .register(registerData)
             .subscribe({
                 next: (resp) => {
-                    this.userService.setToken(resp.Result);
+                    this.userService.setToken(resp.Result.Token);
                     this.userService.removeUserRegisterData();
+
+                    const toastMessage = `${this.translocoService.translate('home.register.registerSuccessToast')}
+                    ${resp.Result.ConfirmationEmailSend ?
+                        this.translocoService.translate('settings.security.successMessageEmailSent') : ''}`;
+
+                    this.messageService.add(
+                        {
+                            severity: 'success',
+                            summary: this.translocoService.translate('common.success'),
+                            detail: toastMessage,
+                            sticky: false,
+                            closable: true,
+                            life: utils.successToastLifeTime
+                        }
+                    )
                     this.userService.redirecLoggedUser();
                 },
                 error: (errorResponse) => {

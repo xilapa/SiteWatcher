@@ -9,7 +9,7 @@ using SiteWatcher.Domain.Models;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICommandResult<string>>
+public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICommandResult<RegisterUserResult>>
 {
     public RegisterUserCommand() : base(new RegisterUserCommandValidator())
     { }
@@ -28,7 +28,7 @@ public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICom
     }
 }
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ICommandResult<string>>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ICommandResult<RegisterUserResult>>
 {
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
@@ -48,11 +48,11 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, I
         _sessao = sessao;
     }
 
-    public async Task<ICommandResult<string>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<ICommandResult<RegisterUserResult>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         request.GetSessionValues(_sessao);
         var user = _mapper.Map<User>(request);
-        var appResult = new CommandResult<string>();
+        var appResult = new CommandResult<RegisterUserResult>();
 
         try
         {
@@ -70,6 +70,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, I
         if(!user.EmailConfirmed)
             await _mediator.Publish(_mapper.Map<UserRegisteredNotification>(user), cancellationToken);
 
-        return appResult.WithValue(token);
+        return appResult.WithValue(new RegisterUserResult(token, !user.EmailConfirmed));
     }
 }
