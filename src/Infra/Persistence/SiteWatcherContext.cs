@@ -1,20 +1,24 @@
 ﻿using System.Reflection;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Exceptions;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Infra.Extensions;
 
 namespace SiteWatcher.Infra;
 
 public class SiteWatcherContext : DbContext, IUnityOfWork
 {
     private readonly IAppSettings _appSettings;
+    private readonly IMediator _mediator;
     public const string Schema = "siteWatcher_webApi";
 
-    public SiteWatcherContext(IAppSettings appSettings)
+    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator)
     {
         _appSettings = appSettings;
+        _mediator = mediator;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -40,6 +44,7 @@ public class SiteWatcherContext : DbContext, IUnityOfWork
     {
         try
         {
+            await _mediator.DispatchDomainEvents(this);
             return await base.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateException ex)
