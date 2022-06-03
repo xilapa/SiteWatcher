@@ -1,3 +1,4 @@
+using Domain.Events;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Domain.Enums;
@@ -26,6 +27,7 @@ public class User : BaseModel<UserId>
     public bool EmailConfirmed { get; private set;}
     public ELanguage Language { get; private set;}
     public ETheme Theme { get; private set;}
+    public string? SecurityStamp { get; private set;}
 
     public void Update(UpdateUserInput updatedValues, DateTime updateDate)
     {
@@ -41,5 +43,23 @@ public class User : BaseModel<UserId>
     {
         Active = false;
         LastUpdatedAt = deactivateDate;
+    }
+
+    public void GenerateEmailConfirmation(DateTime currentDate)
+    {
+        SecurityStamp = Utils.Utils.GenerateSafeRandomBase64String();
+        LastUpdatedAt = currentDate;
+        AddDomainEvent(new EmailConfirmationTokenGeneratedEvent(this));
+    }
+
+    public bool ConfirmEmail(string token, DateTime currentDate)
+    {
+        if (token == SecurityStamp)
+            EmailConfirmed = true;
+
+        SecurityStamp = null;
+        LastUpdatedAt = currentDate;
+
+        return EmailConfirmed;
     }
 }
