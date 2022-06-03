@@ -49,7 +49,9 @@ public class Startup : IStartup
 
         services.AddRedisCache(AppSettings);
 
-        services.AddSessao();
+        services.AddSessao()
+            .AddEmailService()
+            .AddFireAndForgetService();
 
         services.ConfigureAuth(AppSettings);
 

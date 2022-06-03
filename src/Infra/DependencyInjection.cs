@@ -4,6 +4,8 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Data.Cache;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.DapperRepositories;
+using SiteWatcher.Infra.Email;
+using SiteWatcher.Infra.FireAndForget;
 using SiteWatcher.Infra.Repositories;
 using StackExchange.Redis;
 
@@ -52,6 +54,18 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ISessao, Sessao>();
+        return services;
+    }
+
+    public static IServiceCollection AddEmailService(this IServiceCollection services)
+    {
+        services.AddScoped<IEmailService, EmailService>();
+        return services;
+    }
+
+    public static IServiceCollection AddFireAndForgetService(this IServiceCollection services)
+    {
+        services.AddScoped<IFireAndForgetService, FireAndForgetService>();
         return services;
     }
 }
