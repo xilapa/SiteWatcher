@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MediatR;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
+using SiteWatcher.Application.Users.Commands.ConfirmEmail;
 using SiteWatcher.Application.Users.Commands.DeactivateAccount;
 using SiteWatcher.Application.Users.Commands.DeleteUser;
 using SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
+using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
@@ -23,12 +25,6 @@ public class UserController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("confirm-email")]
-    public void ConfirmEmail()
-    {
-        throw new NotImplementedException();
-    }
-
     [HttpPost]
     [Route("register")]
     [Authorize(Policy = Policies.ValidRegisterData)]
@@ -41,6 +37,24 @@ public class UserController : ControllerBase
             return Conflict(response.AddMessages(appResult.Errors));
 
         return Created(string.Empty, response.SetResult(appResult.Value!));
+    }
+
+    [Authorize]
+    [HttpPut("resend-confirmation-email")]
+    public async Task ResendConfirmationEmail() =>
+        await _mediator.Send(new SendEmailConfirmationCommand());
+
+    [AllowAnonymous]
+    [HttpPut("confirm-email")]
+    public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand confirmEmailCommand)
+    {
+        var appResult = await _mediator.Send(confirmEmailCommand);
+
+        if (appResult.Success)
+            return Ok();
+
+        var response = new WebApiResponse<object>();
+        return BadRequest(response.AddMessages(appResult.Errors));
     }
 
     [Authorize]
@@ -62,8 +76,8 @@ public class UserController : ControllerBase
         await _mediator.Send(new DeactivateAccountCommand());
 
     [AllowAnonymous]
-    [HttpPut("reactivate-account-email")]
-    public async Task RectivateAccount(SendActivateAccountEmailCommand emailCommand) =>
+    [HttpPut("send-reactivate-account-email")]
+    public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand emailCommand) =>
         await _mediator.Send(emailCommand);
 
     [Authorize]

@@ -21,6 +21,8 @@ public class AuthService : IAuthService
 
     private const int RegisterTokenExpiration = 15 * 60;
     private const int LoginTokenExpiration = 8 * 60 * 60;
+    private const int EmailConfirmationTokenExpiration = 24 * 60 * 60;
+    private const int LoginStateExpiration = 15 * 60 * 60;
 
     public AuthService(IAppSettings appSettings, ICache cache, ISessao sessao)
     {
@@ -33,12 +35,12 @@ public class AuthService : IAuthService
     {
         var claims = new Claim[]
         {
-            new (AuthenticationDefaults.ClaimTypes.Id, userVm.UserId.ToString()),
-            new (AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
-            new (AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
-            new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),
-            new (AuthenticationDefaults.ClaimTypes.Language, ((int)userVm.Language).ToString()),
-            new (AuthenticationDefaults.ClaimTypes.Theme, ((int)userVm.Theme).ToString())
+            new(AuthenticationDefaults.ClaimTypes.Id, userVm.UserId.ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
+            new(AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
+            new(AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int) userVm.Language).ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Theme, ((int) userVm.Theme).ToString())
         };
 
         return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);
@@ -48,12 +50,12 @@ public class AuthService : IAuthService
     {
         var claims = new Claim[]
         {
-            new (AuthenticationDefaults.ClaimTypes.Id, user.Id.ToString()),
-            new (AuthenticationDefaults.ClaimTypes.Name, user.Name),
-            new (AuthenticationDefaults.ClaimTypes.Email, user.Email),
-            new (AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
-            new (AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString()),
-            new (AuthenticationDefaults.ClaimTypes.Theme, ((int)user.Theme).ToString())
+            new(AuthenticationDefaults.ClaimTypes.Id, user.Id.ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Name, user.Name),
+            new(AuthenticationDefaults.ClaimTypes.Email, user.Email),
+            new(AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int) user.Language).ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Theme, ((int) user.Theme).ToString())
         };
 
         return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);
@@ -63,16 +65,16 @@ public class AuthService : IAuthService
     {
         var tokenClaimsEnumerated = tokenClaims as Claim[] ?? tokenClaims.ToArray();
         var locale = tokenClaimsEnumerated
-                                    .DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
-                                    .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale)!.Value
-                                    .Split("-").First();
+            .DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
+            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale)!.Value
+            .Split("-").First();
 
-        var claims = new []
+        var claims = new[]
         {
             tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Name),
             tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email),
-            new (AuthenticationDefaults.ClaimTypes.Language, ((int)locale.GetEnumValue<ELanguage>()).ToString()),
-            new (AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int) locale.GetEnumValue<ELanguage>()).ToString()),
+            new(AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
         };
 
         return GenerateToken(claims, ETokenPurpose.Register, RegisterTokenExpiration);
@@ -94,11 +96,13 @@ public class AuthService : IAuthService
             _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
         };
 
-        var tokenDescriptor = new SecurityTokenDescriptor {
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
             Issuer = issuer,
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddSeconds(expiration),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -114,7 +118,7 @@ public class AuthService : IAuthService
         var whiteListedTokens = await _cache.GetAsync<List<string>>(key) ?? new List<string>();
 
         // Remove the current token from whitelist
-        if(whiteListedTokens.Count > 0)
+        if (whiteListedTokens.Count > 0)
             whiteListedTokens.Remove(_sessao.AuthTokenPayload);
 
         await _cache.SaveAsync(key, whiteListedTokens, TimeSpan.FromSeconds(LoginTokenExpiration));
@@ -170,7 +174,23 @@ public class AuthService : IAuthService
     public async Task<string> GenerateLoginState(byte[] stateBytes)
     {
         var state = Utils.GenerateSafeRandomBase64String();
-        await _cache.SaveBytesAsync(state, stateBytes, TimeSpan.FromMinutes(5));
+        await _cache.SaveBytesAsync(state, stateBytes, TimeSpan.FromSeconds(LoginStateExpiration));
         return state;
+    }
+
+    public async Task<string> SetEmailConfirmationTokenExpiration(string token, UserId userId)
+    {
+        await _cache.SaveStringAsync(token,userId.Value.ToString(),
+            TimeSpan.FromSeconds(EmailConfirmationTokenExpiration));
+        return token;
+    }
+
+    public async Task<UserId?> GetUserIdFromEmailConfirmationToken(string token)
+    {
+        var userIdString = await _cache.GetAndRemoveStringAsync(token);
+        if(string.IsNullOrEmpty(userIdString))
+            return null;
+        var userId = new UserId(new Guid(userIdString));
+        return userId;
     }
 }

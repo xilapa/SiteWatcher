@@ -20,6 +20,11 @@ public class CommandResult<T> : ICommandResult<T>
         return this;
     }
 
+    public void SetError(string error)
+    {
+        _errors.Add(error);
+    }
+
     private readonly List<string> _errors;
     public IEnumerable<string> Errors => _errors.ToArray();
     public bool Success => _errors.Count == 0;

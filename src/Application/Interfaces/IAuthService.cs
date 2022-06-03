@@ -21,4 +21,14 @@ public interface IAuthService
     Task<string> GenerateLoginState(byte[] stateBytes);
     Task WhiteListToken(UserId userId, string token);
     Task WhiteListTokenForCurrentUser(string token);
+
+    /// <summary>
+    /// The token is saved on redis as key, and the user id is saved as value.
+    /// </summary>
+    /// <param name="token"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<string> SetEmailConfirmationTokenExpiration(string token, UserId userId);
+
+    Task<UserId?> GetUserIdFromEmailConfirmationToken(string token);
 }
