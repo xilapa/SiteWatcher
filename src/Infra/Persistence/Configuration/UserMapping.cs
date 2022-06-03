@@ -44,5 +44,12 @@ public class UserMapping : BaseModelMapping<User,UserId>
         builder.Property(u => u.Theme)
                 .HasColumnType("smallint")
                 .IsRequired();
+
+        builder.Property(u => u.SecurityStamp)
+                .HasColumnType("varchar(120)")
+                .IsRequired(false);
+
+        builder.HasIndex(u => u.SecurityStamp, "IX_User_SecurityStamp")
+                .IsUnique(false);
     }
 }
