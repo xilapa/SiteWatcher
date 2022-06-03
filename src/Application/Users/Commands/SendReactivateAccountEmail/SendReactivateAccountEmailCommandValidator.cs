@@ -3,9 +3,9 @@ using SiteWatcher.Application.Common.Constants;
 
 namespace SiteWatcher.Application.Users.Commands.ActivateAccount;
 
-public class SendActivateAccountEmailCommandValidator : AbstractValidator<SendActivateAccountEmailCommand>
+public class SendReactivateAccountEmailCommandValidator : AbstractValidator<SendReactivateAccountEmailCommand>
 {
-    public SendActivateAccountEmailCommandValidator()
+    public SendReactivateAccountEmailCommandValidator()
     {
         RuleFor(cmmd => cmmd.UserId)
             .NotEmpty()

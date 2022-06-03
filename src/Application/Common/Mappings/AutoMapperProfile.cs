@@ -26,6 +26,6 @@ public class AutoMapperProfile : Profile
         CreateMap<ISessao, AccountDeactivatedNotification>()
             .ForMember(opt => opt.Name, opt => opt.MapFrom(src => src.UserName));
 
-        CreateMap<UserViewModel, AccountActivationNotification>();
+        CreateMap<UserViewModel, AccountReactivationEmailNotification>();
     }
 }
