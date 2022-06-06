@@ -73,8 +73,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             }
         )
 
-
-
         this.inputFormName = this.updateForm.get('name');
         this.inputFormEmail = this.updateForm.get('email');
 

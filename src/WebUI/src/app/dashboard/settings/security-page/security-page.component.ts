@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {DeviceService} from "../../../core/device/device.service";
-import {Observable} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {UserService} from "../../../core/user/user.service";
 import {User} from "../../../core/interfaces";
 import {ConfirmationService, MessageService} from "primeng/api";
@@ -12,10 +12,11 @@ import {utils} from "../../../core/utils/utils";
     templateUrl: './security-page.component.html',
     styleUrls: ['./security-page.component.css']
 })
-export class SecurityPageComponent implements OnInit {
+export class SecurityPageComponent implements OnInit, OnDestroy {
 
     mobileScreen$: Observable<Boolean>;
-    user$: Observable<User | null>;
+    userSub: Subscription;
+    userEmailConfirmed: boolean;
 
     constructor(private readonly deviceService: DeviceService,
                 private readonly userService: UserService,
@@ -26,33 +27,61 @@ export class SecurityPageComponent implements OnInit {
 
     ngOnInit(): void {
         this.mobileScreen$ = this.deviceService.isMobileScreen();
-        this.user$ = this.userService.getUser();
+        this.userSub = this.userService.getUser().subscribe(user => this.userEmailConfirmed = user?.emailConfirmed as boolean);
+    }
+
+    ngOnDestroy() {
+        this.userSub?.unsubscribe();
     }
 
     logoutAllDevices(): void {
         this.userService.logoutAllDevices();
     }
 
-    deactivateAccount() {
+    resendConfirmationEmail(): void {
+        this.userService.resendConfirmationEmail().subscribe({
+            next: () => {
+                utils.toastSuccess(this.messageService, this.translocoService, 'settings.security.confirmationEmailSend')
+            },
+            error: (errorResponse) => {
+                utils.toastError(errorResponse, this.messageService,
+                    this.translocoService)
+            }
+        });
+    }
+
+    deactivateAccount(): void {
         utils.openModal(this.confirmationService, this.translocoService,
-            'settings.security.deactivateAccountTitle','settings.security.deactivateAccountConfirmation',
+            'settings.security.deactivateAccountTitle', 'settings.security.deactivateAccountConfirmation',
             () => this.userService.deactivateAccount()
-                .subscribe(() => {
-                    utils.toastSuccess(this.messageService,this.translocoService,
-                        'settings.security.deactivateAccountSuccess');
-                    this.userService.logout(true);
+                .subscribe({
+                    next: () => {
+                        utils.toastSuccess(this.messageService, this.translocoService,
+                            'settings.security.deactivateAccountSuccess');
+                        this.userService.logout(true);
+                    },
+                    error: (errorResponse) => {
+                        utils.toastError(errorResponse, this.messageService,
+                            this.translocoService)
+                    }
                 })
         );
     }
 
-    deleteAccount() {
+    deleteAccount(): void {
         utils.openModal(this.confirmationService, this.translocoService,
-            'settings.security.deleteAccountTitle','settings.security.deleteAccountConfirmation',
+            'settings.security.deleteAccountTitle', 'settings.security.deleteAccountConfirmation',
             () => this.userService.deleteAccount()
-                .subscribe(() => {
-                    utils.toastSuccess(this.messageService,this.translocoService,
-                        'settings.security.deleteAccountSuccess');
-                    this.userService.logout(true);
+                .subscribe({
+                    next: () => {
+                        utils.toastSuccess(this.messageService, this.translocoService,
+                            'settings.security.deleteAccountSuccess');
+                        this.userService.logout(true);
+                    },
+                    error: (errorResponse) => {
+                        utils.toastError(errorResponse, this.messageService,
+                            this.translocoService)
+                    }
                 })
         );
     }

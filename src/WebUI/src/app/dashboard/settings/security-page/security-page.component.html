@@ -6,20 +6,20 @@
     </div>
 
     <!-- confirm email -->
-    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+    <div class="settings-option-wrapper">
         <div class="sw-g-text-foreground-1">
             {{ t('confirmEmailTitle') }}
         </div>
         <div class="sw-g-text-muted options-text">
-            {{ user.emailConfirmed ? t('emailConfirmedText') : t('emailNotConfirmedText') }}
+            {{ userEmailConfirmed ? t('emailConfirmedText') : t('emailNotConfirmedText') }}
         </div>
-        <button pButton [label]="t('confirmEmailButton')"
-                [disabled]="user.emailConfirmed"></button>
+        <button (click)="resendConfirmationEmail()" pButton [label]="t('confirmEmailButton')"
+                [disabled]="userEmailConfirmed"></button>
     </div>
 
 
     <!-- logout all devices -->
-    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+    <div class="settings-option-wrapper">
         <div class="sw-g-text-foreground-1">
             {{ t('logoutAllDevicesTitle') }}
         </div>
@@ -30,7 +30,7 @@
     </div>
 
     <!-- deactivate account -->
-    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+    <div class="settings-option-wrapper">
         <div class="sw-g-text-foreground-1">
             {{ t('deactivateAccountTitle') }}
         </div>
@@ -41,7 +41,7 @@
     </div>
 
     <!-- delete account -->
-    <div class="settings-option-wrapper" *ngIf="(user$ | async) as user">
+    <div class="settings-option-wrapper">
         <div class="sw-g-text-foreground-1">
             {{ t('deleteAccountTitle') }}
         </div>

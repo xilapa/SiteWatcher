@@ -23,30 +23,31 @@ export class UserService {
                 private readonly localStorage: LocalStorageService,
                 private readonly httpClient: HttpClient,
                 private readonly router: Router) {
-        const token = this.tokenService.getToken();
-        if (token)
-            this.decodeAndNotify(token);
+        this.decodeAndNotify();
     }
 
     private readonly registerData = "register-data";
     private readonly profilePicKey = "profilePic";
     private readonly returnUrlKey = "returnUrl";
+    private readonly emailConfirmedKey = "emailConfirmed";
     private readonly baseRoute = "user";
     private userSubject = new BehaviorSubject<User | null>(null);
 
     public setUserData(userData: AuthenticationResult): void {
+        this.localStorage.removeItem(this.emailConfirmedKey);
         this.saveProfilePicUrl(userData.ProfilePicUrl);
         this.tokenService.setToken(userData.Token);
         this.decodeAndNotify(userData.Token);
     }
 
     public setToken(token: string): void {
+        this.localStorage.removeItem(this.emailConfirmedKey);
         this.tokenService.setToken(token);
         this.decodeAndNotify(token);
     }
 
     public getUser = (): Observable<User | null> =>
-        this.userSubject.asObservable();
+        this.userSubject;
 
     public getCurrentUser = (): User | null =>
         this.userSubject.getValue();
@@ -78,13 +79,24 @@ export class UserService {
     public hasRegisterData = (): boolean =>
         !!this.tokenService.getRegisterToken() && !!Data.Get(this.registerData);
 
-    private decodeAndNotify(token: string): void {
-        if (!token || token == 'null' || token == 'undefined') return;
+    public decodeAndNotify(token: string | null = null): void {
+        if (!token || token == 'null' || token == 'undefined')
+            token = this.tokenService.getToken();
+
+        if (!token || token == 'null' || token == 'undefined')
+            return;
+
         const user = jwt_decode(token) as User;
         user.language = parseInt(user.language as any) as ELanguage;
-        user.emailConfirmed = JSON.parse((user as any)["email-confirmed"]);
         user.theme = parseInt(user.theme as any) as ETheme;
         user.profilePic = this.localStorage.getItem(this.profilePicKey);
+
+        const emailConfirmedValue = this.localStorage.getItem(this.emailConfirmedKey);
+        if (emailConfirmedValue)
+            user.emailConfirmed = JSON.parse(emailConfirmedValue);
+        else
+            user.emailConfirmed = JSON.parse((user as any)["email-confirmed"]);
+
         this.userSubject.next(user);
     }
 
@@ -137,7 +149,20 @@ export class UserService {
     }
 
     public reactivateAccountEmail(userId: string): Observable<any> {
-        return this.httpClient.put(`${environment.baseApiUrl}/${this.baseRoute}/reactivate-account-email`, {userId});
+        return this.httpClient.put(`${environment.baseApiUrl}/${this.baseRoute}/send-reactivate-account-email`, {userId});
+    }
+
+    public resendConfirmationEmail(): Observable<any> {
+        return this.httpClient.put(`${environment.baseApiUrl}/${this.baseRoute}/resend-confirmation-email`, {});
+    }
+
+    public confirmEmail(token: string): Observable<ApiResponse<any>> {
+        return this.httpClient.put<ApiResponse<any>>(`${environment.baseApiUrl}/${this.baseRoute}/confirm-email`, {token});
+    }
+
+    emailConfirmed(): void {
+        this.localStorage.setItem(this.emailConfirmedKey, 'true');
+        this.decodeAndNotify();
     }
 }
 
