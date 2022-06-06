@@ -9,9 +9,9 @@
   "home": {
     "auth": {
       "authenticating": "Autenticando",
-      "activateUserTitle": "Ative sua conta",
-      "activateUserMessage": "Você precisa ativar sua conta para entrar. Deseja ativar agora?",
-      "reactivateEmailSend": "Enviamos um e-mail com o link de ativação. Por favor verifique seu email."
+      "reactivateUserTitle": "Ative sua conta",
+      "reactivateUserMessage": "Você precisa ativar sua conta para entrar. Deseja ativar agora?",
+      "reactivateEmailSend": "Enviamos um e-mail com o link de ativação válido pelas próximas 24h. Por favor verifique seu email."
     },
     "login": {
       "title": "Entrar",
@@ -71,7 +71,13 @@
       "successMessage": "Seus dados foram atualizados.",
       "successMessageEmailSent": "Um email de confirmação foi enviado para o seu email.",
       "deleteAccountConfirmation": "Tem certeza de que deseja deletar sua conta?",
-      "deleteAccountSuccess": "Conta excluída com sucesso."
+      "deleteAccountSuccess": "Conta excluída com sucesso.",
+      "confirmationEmailSend": "Enviamos um e-mail com o link de confirmação válido pelas próximas 24h. Por favor verifique seu email.",
+      "deactivateAccountSuccess": "Conta desativada com sucesso."
+    },
+    "externalRoutes": {
+      "confirmingEmail": "Confirmando seu email",
+      "confirmEmailSuccess": "Email confirmado com sucesso."
     }
   }
 }

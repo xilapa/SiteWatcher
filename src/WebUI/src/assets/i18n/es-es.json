@@ -9,9 +9,9 @@
   "home": {
     "auth": {
       "authenticating": "Autenticando",
-      "activateUserTitle": "Activa tu cuenta",
-      "activateUserMessage": "Necesitas activar tu cuenta para iniciar sesión. ¿Quieres activarlo ahora?",
-      "reactivateEmailSend": "Le hemos enviado un correo electrónico con el enlace de activación. Por favor revise su correo electrónico.\n"
+      "reactivateUserTitle": "Activa tu cuenta",
+      "reactivateUserMessage": "Necesitas activar tu cuenta para iniciar sesión. ¿Quieres activarlo ahora?",
+      "reactivateEmailSend": "Le hemos enviado un correo electrónico con el enlace de activación válido para las próximas 24h. Por favor revise su correo electrónico."
     },
     "login": {
       "title": "Acesso",
@@ -71,7 +71,13 @@
       "successMessage": "Tus datos fueron actualizados.",
       "successMessageEmailSent": "Se envió un correo electrónico de confirmación a su correo electrónico.",
       "deleteAccountConfirmation": "¿Estás seguro(a) de que quieres eliminar tu cuenta?",
-      "deleteAccountSuccess": "Cuenta eliminada con éxito."
+      "deleteAccountSuccess": "Cuenta eliminada con éxito.",
+      "confirmationEmailSend": "Le hemos enviado un correo electrónico con el enlace de confirmación válido para las próximas 24h. Por favor revise su correo electrónico",
+      "deactivateAccountSuccess": "Cuenta desactivada con éxito."
+    },
+    "externalRoutes": {
+      "confirmingEmail": "Confirmando tu correo electrónico",
+      "confirmEmailSuccess": "Correo electrónico confirmado con éxito."
     }
   }
 }

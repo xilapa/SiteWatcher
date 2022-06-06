@@ -9,9 +9,9 @@
   "home": {
     "auth": {
       "authenticating": "Authenticating",
-      "activateUserTitle": "Activate your account",
-      "activateUserMessage": "You need to activate your account to login. Do you to activate it now?",
-      "reactivateEmailSend": "We have sent you an email with the activation link. Please check your email."
+      "reactivateUserTitle": "Activate your account",
+      "reactivateUserMessage": "You need to activate your account to login. Do you to activate it now?",
+      "reactivateEmailSend": "We have sent you an email with the activation link valid for the next 24h. Please check your email."
     },
     "login": {
       "title": "Login",
@@ -71,7 +71,13 @@
       "successMessage": "Your data was updated.",
       "successMessageEmailSent": "A confirmation email was sent to your email.",
       "deleteAccountConfirmation": "Are you sure you want to delete your account?",
-      "deleteAccountSuccess": "Successfully deleted account."
+      "deleteAccountSuccess": "Successfully deleted account.",
+      "confirmationEmailSend": "We have sent you an email with the confirmation link valid for the next 24h. Please check your email.",
+      "deactivateAccountSuccess": "Account deactivated successfully."
+    },
+    "externalRoutes": {
+      "confirmingEmail": "Confirming your email",
+      "confirmEmailSuccess": "Email confirmed successfully."
     }
   }
 }
