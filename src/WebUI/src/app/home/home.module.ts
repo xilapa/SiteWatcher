@@ -6,6 +6,7 @@ import {AuthComponent} from './auth/auth.component';
 import {HomeComponent} from './home.component';
 import {ButtonModule} from 'primeng/button';
 import {TranslocoModule} from "@ngneat/transloco";
+import {LoadingPulseBubblesModule} from "../common/loading-pulse-bubbles/loading-pulse-bubbles.module";
 
 @NgModule({
   declarations: [
@@ -13,12 +14,13 @@ import {TranslocoModule} from "@ngneat/transloco";
     LogInComponent,
     AuthComponent
   ],
-  imports: [
-    CommonModule,
-    ButtonModule,
-    HomeRoutingModule,
-    TranslocoModule
-  ]
+    imports: [
+        CommonModule,
+        ButtonModule,
+        HomeRoutingModule,
+        TranslocoModule,
+        LoadingPulseBubblesModule
+    ]
 })
 export class HomeModule {
 }

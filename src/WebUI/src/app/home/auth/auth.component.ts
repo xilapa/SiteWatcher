@@ -11,8 +11,7 @@ import {finalize, first} from "rxjs";
 
 @Component({
     selector: 'sw-auth',
-    templateUrl: './auth.component.html',
-    styleUrls: ['./auth.component.css']
+    templateUrl: './auth.component.html'
 })
 export class AuthComponent implements OnInit {
 
@@ -51,8 +50,8 @@ export class AuthComponent implements OnInit {
 
                     if (response.Result.Task == EAuthTask.Activate) {
                         utils.openModal(this.confirmationService, this.translocoService,
-                            'home.auth.activateUserTitle', 'home.auth.activateUserMessage',
-                            () => this.sendEmailToActivateAccount(response.Result.Token), () => this.router.navigateByUrl('/home')
+                            'home.auth.reactivateUserTitle', 'home.auth.reactivateUserMessage',
+                            () => this.sendEmailToReactivateAccount(response.Result.Token), () => this.router.navigateByUrl('/home')
                         );
                     }
                 },
@@ -64,7 +63,7 @@ export class AuthComponent implements OnInit {
             });
     }
 
-    private sendEmailToActivateAccount(userId: string): void {
+    private sendEmailToReactivateAccount(userId: string): void {
         this.userService.reactivateAccountEmail(userId)
             .pipe(finalize(() => this.router.navigateByUrl('/home')))
             .subscribe({

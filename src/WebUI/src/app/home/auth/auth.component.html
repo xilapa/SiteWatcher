@@ -1,12 +1,3 @@
 <ng-container *transloco="let t; read: 'home.auth'">
-    <div class="loading-box">
-        <div class="spinner-box">
-            <div class="pulse-container">
-                <div class="pulse-bubble pulse-bubble-1"></div>
-                <div class="pulse-bubble pulse-bubble-2"></div>
-                <div class="pulse-bubble pulse-bubble-3"></div>
-            </div>
-        </div>
-        <div class="sw-g-text-foreground-1">{{ t("authenticating") }}</div>
-    </div>
+        <sw-loading-pulse-bubbles [loadindText]="t('authenticating')"></sw-loading-pulse-bubbles>
 </ng-container>
