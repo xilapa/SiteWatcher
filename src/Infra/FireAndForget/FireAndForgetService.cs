@@ -15,7 +15,7 @@ public class FireAndForgetService : IFireAndForgetService
         _loggerFactory = loggerFactory;
     }
 
-    public async void ExecuteWith<T>(Func<T, Task> func) where T: notnull
+    public void ExecuteWith<T>(Func<T, Task> func) where T: notnull
     {
         Task.Run(async () =>
         {
@@ -41,7 +41,7 @@ public class FireAndForgetService : IFireAndForgetService
         });
     }
 
-    public async void ExecuteWith<T1,T2>(Func<T1, T2, Task> func)
+    public void ExecuteWith<T1,T2>(Func<T1, T2, Task> func)
         where T1: notnull
         where T2: notnull
     {
