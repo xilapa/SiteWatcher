@@ -44,7 +44,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"site-watcher-back-end" /o:"xilapa" /d:sonar.login="${{ secrets.SONAR_TOKEN_BACK }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"site-watcher-back-end" /o:"xilapa" /d:sonar.login="${{ secrets.SONAR_TOKEN_BACK }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
           dotnet build
       - name: Test Coverage
         env:
