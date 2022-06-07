@@ -52,7 +52,7 @@ jobs:
         shell: powershell
         run: |
           dotnet build --no-incremental
-          coverlet --target "dotnet" --targetargs "test --no-build" -f=opencover -o="coverage.xml"
+          coverlet .\test\UnitTests\bin\Debug\net6.0\UnitTests.dll --target "dotnet" --targetargs "test --no-build" -f=opencover -o="coverage.xml"
       - name: Sonarcloud end
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
