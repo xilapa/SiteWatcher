@@ -31,7 +31,7 @@ jobs:
       - name: Setup Coverlet
         shell: powershell
         run: |
-          dotnet tool install --global coverlet.console
+          dotnet tool update --global coverlet.console
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
