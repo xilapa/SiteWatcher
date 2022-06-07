@@ -19,15 +19,10 @@ public class UserDapperRepository : DapperRepository<UserViewModel>, IUserDapper
             conn.QuerySingleOrDefaultAsync<UserViewModel>(commandDefinition));
     }
 
-    public async Task<UserViewModel> GetInactiveUserAsync(UserId userId, CancellationToken cancellationToken)
+    public async Task DeleteActiveUserAsync(UserId userId, CancellationToken cancellationToken)
     {
-        var commandDefinition = new CommandDefinition(Queries.GetInactiveUserById, new {userId = userId.Value},
+        var commandDefinition = new CommandDefinition(Queries.DeleteActiveUserById, new {userId = userId.Value},
             cancellationToken: cancellationToken);
-        return await UsingConnectionAsync(conn =>
-            conn.QuerySingleOrDefaultAsync<UserViewModel>(commandDefinition));
+        await UsingConnectionAsync(conn => conn.ExecuteAsync(commandDefinition));
     }
-
-    public async Task DeleteActiveUserAsync(UserId userId) =>
-        await UsingConnectionAsync(conn =>
-            conn.ExecuteAsync(Queries.DeleteActiveUserById, new {userId = userId.Value}));
 }

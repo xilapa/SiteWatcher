@@ -10,14 +10,6 @@ public static class Queries
             WHERE
                 u.""GoogleId"" = @googleId ";
 
-    public const string GetInactiveUserById = @"
-            SELECT 
-                u.""Id"", u.""Active"", u.""Name"", u.""Email"", u.""EmailConfirmed"", u.""Language"", u.""Theme""
-            FROM 
-                ""siteWatcher_webApi"".""Users"" AS u
-            WHERE
-                u.""Id"" = @userId AND u.""Active"" = false";
-
     public const string DeleteActiveUserById = @"
             DELETE 
             FROM 
