@@ -2,7 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SiteWatcher.WebAPI.Settings;
+using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.WebAPI.Filters;
 
@@ -16,7 +16,7 @@ public class ApiKeyAttribute : Attribute, IResourceFilter, IAllowAnonymous
 
     public void OnResourceExecuting(ResourceExecutingContext context)
     {
-        var settings = context.HttpContext.RequestServices.GetService<AppSettings>();
+        var settings = context.HttpContext.RequestServices.GetService<IAppSettings>();
         if(!context.HttpContext.Request.Headers.TryGetValue(settings!.ApiKeyName, out var key))
         {
             context.Result = new ContentResult { StatusCode = (int)HttpStatusCode.Unauthorized };

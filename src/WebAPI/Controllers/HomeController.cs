@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 using SiteWatcher.WebAPI.Filters;
@@ -11,10 +12,10 @@ namespace SiteWatcher.WebAPI.Controllers;
 public class HomeController : ControllerBase
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly AppSettings _settings;
+    private readonly IAppSettings _settings;
     private readonly DatabaseMigrator _migrator;
 
-    public HomeController(ILogger<HomeController> logger, AppSettings settings, DatabaseMigrator migrator)
+    public HomeController(ILogger<HomeController> logger, IAppSettings settings, DatabaseMigrator migrator)
     {
         _logger = logger;
         _settings = settings;
