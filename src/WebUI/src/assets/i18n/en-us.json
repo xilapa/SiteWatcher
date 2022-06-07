@@ -77,7 +77,9 @@
     },
     "externalRoutes": {
       "confirmingEmail": "Confirming your email",
-      "confirmEmailSuccess": "Email confirmed successfully."
+      "confirmEmailSuccess": "Email confirmed successfully.",
+      "reactivatingAccount": "Reactivating your account",
+      "accountReactivated": "Account reactivated successfully."
     }
   }
 }

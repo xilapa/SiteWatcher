@@ -164,5 +164,9 @@ export class UserService {
         this.localStorage.setItem(this.emailConfirmedKey, 'true');
         this.decodeAndNotify();
     }
+
+    reactivateAccount(token: string) : Observable<ApiResponse<any>> {
+        return this.httpClient.put<ApiResponse<any>>(`${environment.baseApiUrl}/${this.baseRoute}/reactivate-account`, {token});
+    }
 }
 
