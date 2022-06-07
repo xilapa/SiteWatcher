@@ -28,10 +28,10 @@ jobs:
           path: .\.sonar\scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
-      - name: Setup Coverlet
+      - name: Setup Dotnet coverage
         shell: powershell
         run: |
-          dotnet tool update --global coverlet.console
+          dotnet tool update --global dotnet-coverage
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
@@ -52,7 +52,7 @@ jobs:
         shell: powershell
         run: |
           dotnet build --no-incremental
-          coverlet .\test\UnitTests\bin\Debug\net6.0\UnitTests.dll --target "dotnet" --targetargs "test --no-build" -f=opencover -o="coverage.xml"
+          dotnet-coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
       - name: Sonarcloud end
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
