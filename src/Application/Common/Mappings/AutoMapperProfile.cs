@@ -1,8 +1,8 @@
 using AutoMapper;
+using Domain.Events;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
 using SiteWatcher.Application.Users.Commands.DeactivateAccount;
-using SiteWatcher.Application.Users.Commands.DeleteUser;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.DTOs.User;
@@ -16,7 +16,7 @@ public class AutoMapperProfile : Profile
         CreateMap<RegisterUserCommand, RegisterUserInput>();
         CreateMap<UpdateUserCommand, UpdateUserInput>();
 
-        CreateMap<ISessao, AccountDeletedNotification>()
+        CreateMap<ISessao, AccountDeletedEvent>()
             .ForMember(opt => opt.Name, opt => opt.MapFrom(src => src.UserName));
 
         CreateMap<ISessao, AccountDeactivatedNotification>()

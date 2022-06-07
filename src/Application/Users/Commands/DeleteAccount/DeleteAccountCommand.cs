@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Events;
 using MediatR;
 using SiteWatcher.Application.Interfaces;
 
@@ -24,8 +25,8 @@ public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
 
     public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
-        await _userRepository.DeleteActiveUserAsync(_sessao.UserId!.Value);
-        await _mediator.Publish(_mapper.Map<AccountDeletedNotification>(_sessao));
+        await _userRepository.DeleteActiveUserAsync(_sessao.UserId!.Value, cancellationToken);
+        await _mediator.Publish(_mapper.Map<AccountDeletedEvent>(_sessao), CancellationToken.None);
         return Unit.Value;
     }
 }

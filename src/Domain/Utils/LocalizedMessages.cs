@@ -43,4 +43,23 @@ public static class LocalizedMessages
             ELanguage.BrazilianPortuguese => $"Ative sua conta clicando no link abaixo: <a href='{link}'>Ativar conta</a>"
         };
     }
+
+    public static string AccountDeletedSubject(ELanguage language)
+    {
+        return language switch
+        {
+            ELanguage.English => "Account deleted",
+            ELanguage.Spanish => "Cuenta eliminada",
+            ELanguage.BrazilianPortuguese => "Conta deletada"
+        };
+    }
+    public static string AccountDeletedBody(ELanguage language)
+    {
+        return language switch
+        {
+            ELanguage.English => "Your account and all of your data on SiteWatcher has been deleted.",
+            ELanguage.Spanish => "Su cuenta y todos sus datos en SiteWatcher han sido eliminados.",
+            ELanguage.BrazilianPortuguese => "Sua conta e todos os seus dados no SiteWatcher foram excluídos."
+        };
+    }
 }

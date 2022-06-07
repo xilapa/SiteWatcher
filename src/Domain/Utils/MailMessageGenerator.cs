@@ -28,4 +28,16 @@ public static class MailMessageGenerator
         };
         return message;
     }
+
+    public static MailMessage AccountDeleted(string userName, string email, ELanguage language)
+    {
+        var message = new MailMessage
+        {
+            Recipients = new []{ new MailRecipient{Email = email, Name = userName} },
+            Subject = LocalizedMessages.AccountDeletedSubject(language),
+            HtmlBody = true,
+            Body = LocalizedMessages.AccountDeletedBody(language)
+        };
+        return message;
+    }
 }
