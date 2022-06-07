@@ -28,6 +28,10 @@ jobs:
           path: .\.sonar\scanner
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Setup Coverlet
+        shell: powershell
+        run: |
+          dotnet tool install --global coverlet.console
       - name: Install SonarCloud scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
@@ -40,15 +44,16 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"site-watcher-back-end" /o:"xilapa" /d:sonar.login="${{ secrets.SONAR_TOKEN_BACK }}" /d:sonar.host.url="https://sonarcloud.io"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"site-watcher-back-end" /o:"xilapa" /d:sonar.login="${{ secrets.SONAR_TOKEN_BACK }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=coverage.xml
           dotnet build
       - name: Test Coverage
         env:
           ASPNETCORE_ENVIRONMENT: Development
         shell: powershell
         run: |
-          dotnet test --settings coverlet.runsettings --logger:trx
-      - name: Sonarqube end
+          dotnet build --no-incremental
+          coverlet .\CovExample.Tests\bin\Debug\net6.0\CovExample.Tests.dll --target "dotnet" --targetargs "test --no-build" -f=opencover -o="coverage.xml"
+      - name: Sonarcloud end
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
         run: |
