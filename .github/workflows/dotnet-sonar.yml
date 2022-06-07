@@ -42,4 +42,14 @@ jobs:
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"site-watcher-back-end" /o:"xilapa" /d:sonar.login="${{ secrets.SONAR_TOKEN_BACK }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
+      - name: Test Coverage
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+        shell: powershell
+        run: |
+          dotnet test --settings coverlet.runsettings --logger:trx
+      - name: Sonarqube end
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACK }}
+        run: |
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN_BACK }}"
