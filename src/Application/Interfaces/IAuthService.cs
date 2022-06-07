@@ -30,5 +30,13 @@ public interface IAuthService
     /// <returns></returns>
     Task<string> SetEmailConfirmationTokenExpiration(string token, UserId userId);
 
-    Task<UserId?> GetUserIdFromEmailConfirmationToken(string token);
+    Task<UserId?> GetUserIdFromConfirmationToken(string token);
+
+    /// <summary>
+    /// The token is saved on redis as key, and the user id is saved as value.
+    /// </summary>
+    /// <param name="token"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task<string> SetAccountActivationTokenExpiration(string token, UserId userId);
 }

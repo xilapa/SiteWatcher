@@ -16,27 +16,16 @@ public static class MailMessageGenerator
         };
         return message;
     }
-}
 
-public static class LocalizedMessages
-{
-    public static string EmailConfirmationSubject(ELanguage language)
+    public static MailMessage AccountActivation(string userName, string email, string confirmationLink, ELanguage language)
     {
-        return language switch
+        var message = new MailMessage
         {
-            ELanguage.English => "Email Confirmation",
-            ELanguage.Spanish => "Confirmación de correo electrónico",
-            ELanguage.BrazilianPortuguese => "Confirmação de e-mail"
+            Recipients = new []{ new MailRecipient{Email = email, Name = userName} },
+            Subject = LocalizedMessages.AccountActivationSubject(language),
+            HtmlBody = true,
+            Body = LocalizedMessages.AccountActivationBody(language, confirmationLink)
         };
-    }
-
-    public static string EmailConfirmationBody(ELanguage language, string link)
-    {
-        return language switch
-        {
-            ELanguage.English => $"Please confirm your email address by clicking on the link below: <a href='{link}'>Confirm Email</a>",
-            ELanguage.Spanish => $"Confirme su dirección de correo electrónico haciendo clic en el siguiente enlace: <a href='{link}'>Confirmar correo electrónico</a>",
-            ELanguage.BrazilianPortuguese => $"Confirme seu endereço de e-mail clicando no link abaixo: <a href='{link}'>Confirmar e-mail</a>"
-        };
+        return message;
     }
 }

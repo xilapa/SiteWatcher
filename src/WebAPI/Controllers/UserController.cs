@@ -6,6 +6,7 @@ using SiteWatcher.Application.Users.Commands.ConfirmEmail;
 using SiteWatcher.Application.Users.Commands.DeactivateAccount;
 using SiteWatcher.Application.Users.Commands.DeleteUser;
 using SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
+using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
@@ -79,6 +80,19 @@ public class UserController : ControllerBase
     [HttpPut("send-reactivate-account-email")]
     public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand emailCommand) =>
         await _mediator.Send(emailCommand);
+
+    [AllowAnonymous]
+    [HttpPut("reactivate-account")]
+    public async Task<IActionResult> ReactivateAccount(ReactivateAccountCommand reactivateAccountCommand)
+    {
+        var appResult = await _mediator.Send(reactivateAccountCommand);
+
+        if (appResult.Success)
+            return Ok();
+
+        var response = new WebApiResponse<object>();
+        return BadRequest(response.AddMessages(appResult.Errors));
+    }
 
     [Authorize]
     [HttpDelete]

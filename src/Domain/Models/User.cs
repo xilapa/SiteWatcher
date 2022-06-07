@@ -62,4 +62,22 @@ public class User : BaseModel<UserId>
 
         return EmailConfirmed;
     }
+
+    public void GenerateUserActivationToken(DateTime currentDate)
+    {
+        SecurityStamp = Utils.Utils.GenerateSafeRandomBase64String();
+        LastUpdatedAt = currentDate;
+        AddDomainEvent(new UserReactivationTokenGeneratedEvent(this));
+    }
+
+    public bool ReactivateAccount(string token, DateTime currentDate)
+    {
+        if (token == SecurityStamp)
+            Active = true;
+
+        SecurityStamp = null;
+        LastUpdatedAt = currentDate;
+
+        return Active;
+    }
 }

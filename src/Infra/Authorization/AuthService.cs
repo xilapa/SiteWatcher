@@ -22,6 +22,7 @@ public class AuthService : IAuthService
     private const int RegisterTokenExpiration = 15 * 60;
     private const int LoginTokenExpiration = 8 * 60 * 60;
     private const int EmailConfirmationTokenExpiration = 24 * 60 * 60;
+    private const int AccountReactivationTokenExpiration = 24 * 60 * 60;
     private const int LoginStateExpiration = 15 * 60 * 60;
 
     public AuthService(IAppSettings appSettings, ICache cache, ISessao sessao)
@@ -180,17 +181,24 @@ public class AuthService : IAuthService
 
     public async Task<string> SetEmailConfirmationTokenExpiration(string token, UserId userId)
     {
-        await _cache.SaveStringAsync(token,userId.Value.ToString(),
+        await _cache.SaveStringAsync(token, userId.Value.ToString(),
             TimeSpan.FromSeconds(EmailConfirmationTokenExpiration));
         return token;
     }
 
-    public async Task<UserId?> GetUserIdFromEmailConfirmationToken(string token)
+    public async Task<UserId?> GetUserIdFromConfirmationToken(string token)
     {
         var userIdString = await _cache.GetAndRemoveStringAsync(token);
         if(string.IsNullOrEmpty(userIdString))
             return null;
         var userId = new UserId(new Guid(userIdString));
         return userId;
+    }
+
+    public async Task<string> SetAccountActivationTokenExpiration(string token, UserId userId)
+    {
+        await _cache.SaveStringAsync(token, userId.Value.ToString(),
+            TimeSpan.FromSeconds(AccountReactivationTokenExpiration));
+        return token;
     }
 }

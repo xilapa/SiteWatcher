@@ -21,7 +21,6 @@ public class UserMapping : BaseModelMapping<User,UserId>
                 .HasColumnType("varchar(30)")
                 .IsRequired();
 
-        //todo: indice único quebra em caso de user desativado
         builder.HasIndex(u => u.GoogleId, "IX_Unique_User_GoogleId")
                 .IsUnique();
 

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
@@ -13,24 +12,22 @@ public class SendReactivateAccountEmailCommand : Validable<SendReactivateAccount
 
 public class SendReactivateAccountEmailCommandHandler : IRequestHandler<SendReactivateAccountEmailCommand>
 {
-    private readonly IUserDapperRepository _userDapperRepository;
-    private readonly IMediator _mediator;
-    private readonly IMapper _mapper;
+    private readonly IUserRepository _userRepository;
+    private readonly ISessao _sessao;
+    private readonly IUnityOfWork _uow;
 
-    public SendReactivateAccountEmailCommandHandler(IUserDapperRepository userDapperRepository, IMediator mediator, IMapper mapper)
+    public SendReactivateAccountEmailCommandHandler(IUserRepository userRepository, ISessao sessao, IUnityOfWork uow)
     {
-        _userDapperRepository = userDapperRepository;
-        _mediator = mediator;
-        _mapper = mapper;
+        _userRepository = userRepository;
+        _sessao = sessao;
+        _uow = uow;
     }
 
     public async Task<Unit> Handle(SendReactivateAccountEmailCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userDapperRepository.GetInactiveUserAsync(request.UserId, cancellationToken);
-        if (Guid.Empty.Equals(user.UserId.Value))
-            return Unit.Value;
-
-        await _mediator.Publish(_mapper.Map<AccountReactivationEmailNotification>(user), cancellationToken);
+        var user = await _userRepository.GetAsync(u => u.Id == request.UserId && !u.Active, cancellationToken);
+        user?.GenerateUserActivationToken(_sessao.Now);
+        await _uow.SaveChangesAsync(CancellationToken.None);
         return Unit.Value;
     }
 }
