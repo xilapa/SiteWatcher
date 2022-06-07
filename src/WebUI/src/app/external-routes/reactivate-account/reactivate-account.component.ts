@@ -8,8 +8,7 @@ import {finalize} from "rxjs";
 
 @Component({
   selector: 'sw-reactivate-account',
-  templateUrl: './reactivate-account.component.html',
-  styleUrls: ['./reactivate-account.component.css']
+  templateUrl: './reactivate-account.component.html'
 })
 export class ReactivateAccountComponent implements OnInit {
 
