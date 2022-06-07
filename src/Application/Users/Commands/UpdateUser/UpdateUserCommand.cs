@@ -22,7 +22,6 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, IComm
     private readonly IUserRepository _userRepository;
     private readonly IUnityOfWork _uow;
     private readonly IAuthService _authService;
-    private readonly IMediator _mediator;
     private readonly IMapper _mapper;
     private readonly ISessao _sessao;
 
@@ -30,14 +29,12 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, IComm
         IUserRepository userRepository,
         IUnityOfWork uow,
         IAuthService authService,
-        IMediator mediator,
         IMapper mapper,
         ISessao sessao)
     {
         _userRepository = userRepository;
         _uow = uow;
         _authService = authService;
-        _mediator = mediator;
         _mapper = mapper;
         _sessao = sessao;
     }
@@ -55,9 +52,6 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, IComm
 
         var newToken = _authService.GenerateLoginToken(user);
         await _authService.WhiteListTokenForCurrentUser(newToken);
-
-        if(!user.EmailConfirmed)
-            await _mediator.Publish(_mapper.Map<UserUpdatedNotification>(user), cancellationToken);
 
         return appResult.WithValue(new UpdateUserResult(newToken, !user.EmailConfirmed));
     }

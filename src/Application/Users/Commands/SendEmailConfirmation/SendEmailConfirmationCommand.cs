@@ -25,7 +25,7 @@ public class SendEmailConfirmationCommandHandler : IRequestHandler<SendEmailConf
         if(user is null)
             return Unit.Value;
 
-        user.GenerateEmailConfirmation(_sessao.Now);
+        user.GenerateEmailConfirmationToken(_sessao.Now);
         await _uow.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }

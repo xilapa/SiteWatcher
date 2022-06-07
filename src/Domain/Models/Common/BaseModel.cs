@@ -8,15 +8,12 @@ public abstract class BaseModel<IdType> : IBaseModel
     {
         Id = id;
         Active = true;
-        // TODO: Tirar esse datetime now cravado aqui
-        CreatedAt = new DateTime(DateTime.UtcNow.Ticks);
-        LastUpdatedAt = new DateTime(DateTime.UtcNow.Ticks);
         _domainEvents = new List<BaseEvent>();
     }
 
     public IdType Id { get; }
     public bool Active { get; protected set; }
-    public DateTime CreatedAt { get; }
+    public DateTime CreatedAt { get; protected set;}
     public DateTime LastUpdatedAt { get; protected set; }
 
     #region Domain Events

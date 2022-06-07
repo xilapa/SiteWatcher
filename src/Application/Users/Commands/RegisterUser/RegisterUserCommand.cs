@@ -3,6 +3,7 @@ using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Exceptions;
 using SiteWatcher.Domain.Models;
@@ -28,17 +29,15 @@ public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICom
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, ICommandResult<RegisterUserResult>>
 {
     private readonly IMapper _mapper;
-    private readonly IMediator _mediator;
     private readonly IUserRepository _userRepository;
     private readonly IUnityOfWork _uow;
     private readonly IAuthService _authService;
     private readonly ISessao _sessao;
 
-    public RegisterUserCommandHandler(IMapper mapper, IMediator mediator, IUserRepository userRepository,
+    public RegisterUserCommandHandler(IMapper mapper, IUserRepository userRepository,
         IUnityOfWork uow, IAuthService authService, ISessao sessao)
     {
         _mapper = mapper;
-        _mediator = mediator;
         _userRepository = userRepository;
         _uow = uow;
         _authService = authService;
@@ -48,7 +47,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, I
     public async Task<ICommandResult<RegisterUserResult>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         request.GetSessionValues(_sessao);
-        var user = _mapper.Map<User>(request);
+        var user = User.FromInputModel(_mapper.Map<RegisterUserInput>(request), _sessao.Now);
         var appResult = new CommandResult<RegisterUserResult>();
 
         try
@@ -63,9 +62,6 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, I
 
         var token = _authService.GenerateLoginToken(user);
         await _authService.InvalidateCurrentRegisterToken();
-
-        if(!user.EmailConfirmed)
-            await _mediator.Publish(_mapper.Map<UserRegisteredNotification>(user), cancellationToken);
 
         return appResult.WithValue(new RegisterUserResult(token, !user.EmailConfirmed));
     }

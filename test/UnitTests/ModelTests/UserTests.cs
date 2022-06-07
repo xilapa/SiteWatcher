@@ -14,12 +14,12 @@ public class UserTests
     {
         // Arrange
         // Act
-        var user = new User("googleId", "name", email, authEmail, ELanguage.English, ETheme.Dark);
-        
+        var user = new User("googleId", "name", email, authEmail, ELanguage.English, ETheme.Dark, DateTime.Now);
+
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
     }
-    
+
     [Theory]
     [InlineData("email", "email", "email", true)] // email == authEmail
     [InlineData("email", "email", "another-email", false)] // email == authEmail
@@ -27,7 +27,7 @@ public class UserTests
     public void UserEmailConfirmedAfterUpdate(string email, string authEmail, string newEmail, bool emailConfirmed)
     {
         // Arrange
-        var user = new User("googleId", "name", email, authEmail, ELanguage.English, ETheme.Dark);
+        var user = new User("googleId", "name", email, authEmail, ELanguage.English, ETheme.Dark, DateTime.Now);
         var userUpdate = new UpdateUserInput()
         {
             Name = "name",
@@ -35,10 +35,10 @@ public class UserTests
             Language = ELanguage.English,
             Theme = ETheme.Dark
         };
-        
+
         // Act
         user.Update(userUpdate, DateTime.Now);
-        
+
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
     }

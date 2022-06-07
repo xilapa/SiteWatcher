@@ -7,24 +7,9 @@ using SiteWatcher.Application.Users.Commands.UpdateUser;
 
 namespace SiteWatcher.Application.Users.EventHandlers;
 
-public class SendEmailConfirmationEventHandler : INotificationHandler<UserRegisteredNotification>,
-    INotificationHandler<UserUpdatedNotification>, INotificationHandler<AccountDeletedNotification>,
+public class SendEmailConfirmationEventHandler :INotificationHandler<AccountDeletedNotification>,
     INotificationHandler<AccountDeactivatedNotification>, INotificationHandler<AccountReactivationEmailNotification>
 {
-    public Task Handle(UserRegisteredNotification notification, CancellationToken cancellationToken)
-    {
-        //TODO: enviar email para a fila utilizando outro escopo
-        return Task.Run(() => Console.WriteLine($"ConfirmationEmail Event Handler: {notification.Name} - " +
-                                                $"{notification.Email} - {notification.Email}"), cancellationToken);
-    }
-
-    public Task Handle(UserUpdatedNotification notification, CancellationToken cancellationToken)
-    {
-        //TODO: enviar email para a fila utilizando outro escopo
-        return Task.Run(() => Console.WriteLine($"ConfirmationEmail Event Handler: {notification.Name} - " +
-                                                $"{notification.Email} - {notification.Email}"), cancellationToken);
-    }
-
     public Task Handle(AccountDeletedNotification notification, CancellationToken cancellationToken)
     {
         //TODO: enviar email para a fila utilizando outro escopo

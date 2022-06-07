@@ -11,7 +11,8 @@ public class User : BaseModel<UserId>
     protected User() : base(new UserId(Guid.NewGuid()))
     { }
 
-    public User(string googleId, string name, string email, string authEmail, ELanguage language, ETheme theme) : this()
+    public User(string googleId, string name, string email, string authEmail, ELanguage language, ETheme theme,
+        DateTime currentDate) : this()
     {
         GoogleId = googleId;
         Name = name;
@@ -19,15 +20,19 @@ public class User : BaseModel<UserId>
         EmailConfirmed = email == authEmail;
         Language = language;
         Theme = theme;
+        CreatedAt = currentDate;
+        LastUpdatedAt = currentDate;
+
+        GenerateEmailConfirmationToken(currentDate);
     }
 
     public string GoogleId { get; } = null!;
     public string Name { get; private set; } = null!;
-    public string Email { get; private set;} = null!;
-    public bool EmailConfirmed { get; private set;}
-    public ELanguage Language { get; private set;}
-    public ETheme Theme { get; private set;}
-    public string? SecurityStamp { get; private set;}
+    public string Email { get; private set; } = null!;
+    public bool EmailConfirmed { get; private set; }
+    public ELanguage Language { get; private set; }
+    public ETheme Theme { get; private set; }
+    public string? SecurityStamp { get; private set; }
 
     public void Update(UpdateUserInput updatedValues, DateTime updateDate)
     {
@@ -37,6 +42,8 @@ public class User : BaseModel<UserId>
         Language = updatedValues.Language;
         Theme = updatedValues.Theme;
         LastUpdatedAt = updateDate;
+
+        GenerateEmailConfirmationToken(updateDate);
     }
 
     public void Deactivate(DateTime deactivateDate)
@@ -45,8 +52,9 @@ public class User : BaseModel<UserId>
         LastUpdatedAt = deactivateDate;
     }
 
-    public void GenerateEmailConfirmation(DateTime currentDate)
+    public void GenerateEmailConfirmationToken(DateTime currentDate)
     {
+        if (EmailConfirmed) return;
         SecurityStamp = Utils.Utils.GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
         AddDomainEvent(new EmailConfirmationTokenGeneratedEvent(this));
@@ -79,5 +87,11 @@ public class User : BaseModel<UserId>
         LastUpdatedAt = currentDate;
 
         return Active;
+    }
+
+    public static User FromInputModel(RegisterUserInput registerInput, DateTime currentDate)
+    {
+        return new User(registerInput.GoogleId, registerInput.Name, registerInput.Email, registerInput.AuthEmail,
+            registerInput.Language, registerInput.Theme, currentDate);
     }
 }
