@@ -13,7 +13,7 @@ public interface ICache
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    Task<string> GetAndRemoveStringAsync(string key);
+    Task<string?> GetAndRemoveStringAsync(string key);
 
     /// <summary>
     /// Get a <see cref="byte"/> array and remove it from cache
@@ -21,7 +21,7 @@ public interface ICache
     /// <param name="key"></param>
     /// <returns></returns>
     Task<byte[]?> GetAndRemoveBytesAsync(string key);
-    Task<string> GetStringAsync(string key);
+    Task<string?> GetStringAsync(string key);
     Task<byte[]?> GetBytesAsync(string key);
     Task SaveAsync(string key, object? value, TimeSpan expiration);
     Task<T?> GetAsync<T>(string key);
