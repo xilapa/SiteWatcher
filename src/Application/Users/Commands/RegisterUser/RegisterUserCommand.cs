@@ -19,10 +19,10 @@ public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICom
     public string? GoogleId { get; set; }
     public string? AuthEmail { get; set; }
 
-    public void GetSessionValues(ISessao sessao)
+    public void GetSessionValues(ISession session)
     {
-        AuthEmail = sessao.Email;
-        GoogleId = sessao.GoogleId;
+        AuthEmail = session.Email;
+        GoogleId = session.GoogleId;
     }
 }
 
@@ -32,22 +32,22 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, I
     private readonly IUserRepository _userRepository;
     private readonly IUnityOfWork _uow;
     private readonly IAuthService _authService;
-    private readonly ISessao _sessao;
+    private readonly ISession _session;
 
     public RegisterUserCommandHandler(IMapper mapper, IUserRepository userRepository,
-        IUnityOfWork uow, IAuthService authService, ISessao sessao)
+        IUnityOfWork uow, IAuthService authService, ISession session)
     {
         _mapper = mapper;
         _userRepository = userRepository;
         _uow = uow;
         _authService = authService;
-        _sessao = sessao;
+        _session = session;
     }
 
     public async Task<ICommandResult<RegisterUserResult>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        request.GetSessionValues(_sessao);
-        var user = User.FromInputModel(_mapper.Map<RegisterUserInput>(request), _sessao.Now);
+        request.GetSessionValues(_session);
+        var user = User.FromInputModel(_mapper.Map<RegisterUserInput>(request), _session.Now);
         var appResult = new CommandResult<RegisterUserResult>();
 
         try

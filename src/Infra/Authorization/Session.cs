@@ -5,12 +5,13 @@ using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Extensions;
+using ISession = SiteWatcher.Application.Interfaces.ISession;
 
 namespace SiteWatcher.Infra.Authorization;
 
-public class Sessao : ISessao
+public class Session : ISession
 {
-    public Sessao(IHttpContextAccessor httpContextAccessor)
+    public Session(IHttpContextAccessor httpContextAccessor)
     {
         var claims = httpContextAccessor.HttpContext.User.Claims;
         var claimsEnumerated = claims as Claim[] ?? claims.ToArray();

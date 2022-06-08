@@ -14,14 +14,14 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, I
 {
     private readonly IAuthService _authservice;
     private readonly IUserRepository _userRepository;
-    private readonly ISessao _sessao;
+    private readonly ISession _session;
     private readonly IUnityOfWork _uow;
 
-    public ConfirmEmailCommandHandler(IAuthService authservice, IUserRepository userRepository, ISessao sessao, IUnityOfWork uow)
+    public ConfirmEmailCommandHandler(IAuthService authservice, IUserRepository userRepository, ISession session, IUnityOfWork uow)
     {
         _authservice = authservice;
         _userRepository = userRepository;
-        _sessao = sessao;
+        _session = session;
         _uow = uow;
     }
 
@@ -36,7 +36,7 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, I
         if(user is null)
             return result.WithError(ApplicationErrors.INVALID_TOKEN);
 
-        var success = user!.ConfirmEmail(request.Token, _sessao.Now);
+        var success = user!.ConfirmEmail(request.Token, _session.Now);
         if(!success)
             result.SetError(ApplicationErrors.INVALID_TOKEN);
 

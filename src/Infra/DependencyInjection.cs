@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Data.Cache;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.Email;
 using SiteWatcher.Infra.FireAndForget;
@@ -53,7 +53,7 @@ public static class DependencyInjection
     public static IServiceCollection AddSessao(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
-        services.AddScoped<ISessao, Sessao>();
+        services.AddScoped<ISession, Session>();
         return services;
     }
 

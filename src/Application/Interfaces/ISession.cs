@@ -3,7 +3,7 @@ using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Application.Interfaces;
 
-public interface ISessao
+public interface ISession
 {
     public DateTime Now { get; }
     public UserId? UserId { get;}

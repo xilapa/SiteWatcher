@@ -13,20 +13,20 @@ public class SendReactivateAccountEmailCommand : Validable<SendReactivateAccount
 public class SendReactivateAccountEmailCommandHandler : IRequestHandler<SendReactivateAccountEmailCommand>
 {
     private readonly IUserRepository _userRepository;
-    private readonly ISessao _sessao;
+    private readonly ISession _session;
     private readonly IUnityOfWork _uow;
 
-    public SendReactivateAccountEmailCommandHandler(IUserRepository userRepository, ISessao sessao, IUnityOfWork uow)
+    public SendReactivateAccountEmailCommandHandler(IUserRepository userRepository, ISession session, IUnityOfWork uow)
     {
         _userRepository = userRepository;
-        _sessao = sessao;
+        _session = session;
         _uow = uow;
     }
 
     public async Task<Unit> Handle(SendReactivateAccountEmailCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetAsync(u => u.Id == request.UserId && !u.Active, cancellationToken);
-        user?.GenerateUserActivationToken(_sessao.Now);
+        user?.GenerateUserActivationToken(_session.Now);
         await _uow.SaveChangesAsync(CancellationToken.None);
         return Unit.Value;
     }

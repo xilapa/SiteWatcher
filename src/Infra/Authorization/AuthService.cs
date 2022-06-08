@@ -17,7 +17,7 @@ public class AuthService : IAuthService
 {
     private readonly IAppSettings _appSettings;
     private readonly ICache _cache;
-    private readonly ISessao _sessao;
+    private readonly ISession _session;
 
     private const int RegisterTokenExpiration = 15 * 60;
     private const int LoginTokenExpiration = 8 * 60 * 60;
@@ -25,11 +25,11 @@ public class AuthService : IAuthService
     private const int AccountReactivationTokenExpiration = 24 * 60 * 60;
     private const int LoginStateExpiration = 15 * 60 * 60;
 
-    public AuthService(IAppSettings appSettings, ICache cache, ISessao sessao)
+    public AuthService(IAppSettings appSettings, ICache cache, ISession session)
     {
         _appSettings = appSettings;
         _cache = cache;
-        _sessao = sessao;
+        _session = session;
     }
 
     public string GenerateLoginToken(UserViewModel userVm)
@@ -115,19 +115,19 @@ public class AuthService : IAuthService
 
     public async Task InvalidateCurrenUser()
     {
-        var key = CacheKeys.InvalidUser(_sessao.UserId!.Value);
+        var key = CacheKeys.InvalidUser(_session.UserId!.Value);
         var whiteListedTokens = await _cache.GetAsync<List<string>>(key) ?? new List<string>();
 
         // Remove the current token from whitelist
         if (whiteListedTokens.Count > 0)
-            whiteListedTokens.Remove(_sessao.AuthTokenPayload);
+            whiteListedTokens.Remove(_session.AuthTokenPayload);
 
         await _cache.SaveAsync(key, whiteListedTokens, TimeSpan.FromSeconds(LoginTokenExpiration));
     }
 
     public async Task<bool> UserCanLogin()
     {
-        var key = CacheKeys.InvalidUser(_sessao.UserId!.Value);
+        var key = CacheKeys.InvalidUser(_session.UserId!.Value);
         var whiteListedTokens = await _cache.GetAsync<List<string>>(key);
 
         // There is no whitelisted tokens, so the user was not invalidated
@@ -136,7 +136,7 @@ public class AuthService : IAuthService
 
         // If there is a whitelisted tokens list, the user was invalidated by logging out of all devices,
         // or by being deleted, or by admin. Then we need to check if the current token payload is whitelisted.
-        var currentTokenWhiteListed = whiteListedTokens.Contains(_sessao.AuthTokenPayload);
+        var currentTokenWhiteListed = whiteListedTokens.Contains(_session.AuthTokenPayload);
         return currentTokenWhiteListed;
     }
 
@@ -155,19 +155,19 @@ public class AuthService : IAuthService
     }
 
     public async Task WhiteListTokenForCurrentUser(string token) =>
-        await WhiteListToken(_sessao.UserId!.Value, token);
+        await WhiteListToken(_session.UserId!.Value, token);
 
     public async Task InvalidateCurrentRegisterToken()
     {
         await _cache.SaveBytesAsync(
-            _sessao.AuthTokenPayload,
+            _session.AuthTokenPayload,
             _appSettings.InvalidToken,
             TimeSpan.FromSeconds(RegisterTokenExpiration));
     }
 
     public async Task<bool> IsRegisterTokenValid()
     {
-        var key = _sessao.AuthTokenPayload;
+        var key = _session.AuthTokenPayload;
         var value = await _cache.GetBytesAsync(key);
         return !_appSettings.InvalidToken.SequenceEqual(value ?? Array.Empty<byte>());
     }

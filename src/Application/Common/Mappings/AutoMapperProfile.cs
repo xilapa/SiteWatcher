@@ -16,10 +16,10 @@ public class AutoMapperProfile : Profile
         CreateMap<RegisterUserCommand, RegisterUserInput>();
         CreateMap<UpdateUserCommand, UpdateUserInput>();
 
-        CreateMap<ISessao, AccountDeletedEvent>()
+        CreateMap<ISession, AccountDeletedEvent>()
             .ForMember(opt => opt.Name, opt => opt.MapFrom(src => src.UserName));
 
-        CreateMap<ISessao, AccountDeactivatedNotification>()
+        CreateMap<ISession, AccountDeactivatedNotification>()
             .ForMember(opt => opt.Name, opt => opt.MapFrom(src => src.UserName));
 
         CreateMap<UserViewModel, AccountReactivationEmailNotification>();

@@ -11,22 +11,22 @@ public class DeleteAccountCommand : IRequest
 public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
 {
     private readonly IUserDapperRepository _userRepository;
-    private readonly ISessao _sessao;
+    private readonly ISession _session;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public DeleteAccountCommandHandler(IUserDapperRepository userRepository, ISessao sessao, IMediator mediator, IMapper mapper)
+    public DeleteAccountCommandHandler(IUserDapperRepository userRepository, ISession session, IMediator mediator, IMapper mapper)
     {
         _userRepository = userRepository;
-        _sessao = sessao;
+        _session = session;
         _mediator = mediator;
         _mapper = mapper;
     }
 
     public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
-        await _userRepository.DeleteActiveUserAsync(_sessao.UserId!.Value, cancellationToken);
-        await _mediator.Publish(_mapper.Map<AccountDeletedEvent>(_sessao), CancellationToken.None);
+        await _userRepository.DeleteActiveUserAsync(_session.UserId!.Value, cancellationToken);
+        await _mediator.Publish(_mapper.Map<AccountDeletedEvent>(_session), CancellationToken.None);
         return Unit.Value;
     }
 }
