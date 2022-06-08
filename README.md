@@ -2,7 +2,19 @@
 
 Get notified when an specific change (or not) occurs at an website.
 
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip) ![Badge](https://img.shields.io/github/license/xilapa/SiteWatcher?color=green) [![Backend Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-back-end&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=site-watcher-back-end) [![Frontend Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip) ![Badge](https://img.shields.io/github/license/xilapa/SiteWatcher?color=green)
+<br>
+Backend:
+[![Backend Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-back-end&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=site-watcher-back-end)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-back-end&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=site-watcher-back-end)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-back-end&metric=coverage)](https://sonarcloud.io/summary/new_code?id=site-watcher-back-end)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-back-end&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=site-watcher-back-end)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-back-end&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=site-watcher-back-end)
+<br>
+Frontend: [![Frontend Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
 
 <p align="center"><a href="#Motivation">Motivation</a> • <a href="#Summary">Summary</a> • <a href="#Tecnologies">Tecnologies</a></p>
 
