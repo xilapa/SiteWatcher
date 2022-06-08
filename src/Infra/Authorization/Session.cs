@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization.Constants;
@@ -13,7 +12,12 @@ public class Session : ISession
 {
     public Session(IHttpContextAccessor httpContextAccessor)
     {
-        var claims = httpContextAccessor.HttpContext.User.Claims;
+        var claims = httpContextAccessor.HttpContext?.User.Claims;
+        if (claims is null)
+        {
+            AuthTokenPayload = string.Empty;
+            return;
+        }
         var claimsEnumerated = claims as Claim[] ?? claims.ToArray();
         var userIdString = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
         Guid.TryParse(userIdString, out var userIdGuid);
@@ -33,7 +37,7 @@ public class Session : ISession
     }
 
     // Get the utc date without timezone
-    public DateTime Now => new(DateTime.UtcNow.Ticks);
+    public virtual DateTime Now => new(DateTime.UtcNow.Ticks);
     public UserId? UserId { get; }
     public string? Email { get; }
     public string? GoogleId { get; }
