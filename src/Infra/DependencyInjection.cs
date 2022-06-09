@@ -19,7 +19,7 @@ public static class DependencyInjection
     {
         // Making explicit that the context is the same for all repositories
         services.AddDbContext<TContext>(ServiceLifetime.Scoped);
-        services.AddScoped<IUnityOfWork, TContext>();
+        services.AddScoped<IUnityOfWork>(_ => _.GetRequiredService<TContext>());
 
         // Add migrator
         services.AddScoped(typeof(DatabaseMigrator));
