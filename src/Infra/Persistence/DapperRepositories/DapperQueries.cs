@@ -1,8 +1,10 @@
-﻿namespace SiteWatcher.Infra.DapperRepositories;
+﻿using SiteWatcher.Application.Interfaces;
 
-public static class Queries
+namespace SiteWatcher.Infra.DapperRepositories;
+
+public class DapperQueries : IDapperQueries
 {
-	public const string GetUserByGoogleId = @"
+	public virtual string GetUserByGoogleId => @"
             SELECT 
                 u.""Id"", u.""Active"", u.""Name"", u.""Email"", u.""EmailConfirmed"", u.""Language"", u.""Theme""
             FROM 
@@ -10,7 +12,7 @@ public static class Queries
             WHERE
                 u.""GoogleId"" = @googleId ";
 
-    public const string DeleteActiveUserById = @"
+    public virtual string DeleteActiveUserById => @"
             DELETE 
             FROM 
                 ""siteWatcher_webApi"".""Users"" AS u

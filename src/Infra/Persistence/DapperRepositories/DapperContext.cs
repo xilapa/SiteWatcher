@@ -1,19 +1,25 @@
 using System.Data;
+using System.Data.Common;
 using Npgsql;
 using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 
-public abstract class DapperRepository<T> : IDapperRepository<T>
+public class DapperContext : IDapperContext
 {
     private readonly string _connectionString;
 
-    protected DapperRepository(IAppSettings appSettings) =>
-        _connectionString = appSettings.ConnectionString;
-
-    public async Task<T> UsingConnectionAsync(Func<IDbConnection, Task<T>> func)
+    public DapperContext(IAppSettings appSettings)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
+        _connectionString = appSettings.ConnectionString;
+    }
+
+    protected virtual DbConnection CreateConnection(string connectionString) =>
+        new NpgsqlConnection(connectionString);
+
+    public async Task<T> UsingConnectionAsync<T>(Func<IDbConnection, Task<T>> func)
+    {
+        await using var connection = CreateConnection(_connectionString);
         if(connection.State == ConnectionState.Closed)
             await connection.OpenAsync();
 
@@ -22,7 +28,8 @@ public abstract class DapperRepository<T> : IDapperRepository<T>
 
     public async Task UsingConnectionAsync(Func<IDbConnection, Task> func)
     {
-        await using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = CreateConnection(_connectionString);
+        connection!.ConnectionString = _connectionString;
         if(connection.State == ConnectionState.Closed)
             await connection.OpenAsync();
 

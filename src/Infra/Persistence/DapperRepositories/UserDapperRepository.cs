@@ -5,24 +5,29 @@ using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 
-public class UserDapperRepository : DapperRepository<UserViewModel>, IUserDapperRepository
+public class UserDapperRepository : IUserDapperRepository
 {
-    public UserDapperRepository(IAppSettings appSettings) : base(appSettings)
+    private readonly IDapperContext _dapperContext;
+    private readonly IDapperQueries _dapperQueries;
+
+    public UserDapperRepository(IDapperContext dapperContext, IDapperQueries dapperQueries)
     {
+        _dapperContext = dapperContext;
+        _dapperQueries = dapperQueries;
     }
 
     public async Task<UserViewModel> GetUserAsync(string googleId, CancellationToken cancellationToken)
     {
-        var commandDefinition = new CommandDefinition(Queries.GetUserByGoogleId, new {googleId},
+        var commandDefinition = new CommandDefinition(_dapperQueries.GetUserByGoogleId, new {googleId},
             cancellationToken: cancellationToken);
-        return await UsingConnectionAsync(conn =>
+        return await _dapperContext.UsingConnectionAsync(conn =>
             conn.QuerySingleOrDefaultAsync<UserViewModel>(commandDefinition));
     }
 
     public async Task DeleteActiveUserAsync(UserId userId, CancellationToken cancellationToken)
     {
-        var commandDefinition = new CommandDefinition(Queries.DeleteActiveUserById, new {userId = userId.Value},
+        var commandDefinition = new CommandDefinition(_dapperQueries.DeleteActiveUserById, new {userId = userId.Value},
             cancellationToken: cancellationToken);
-        await UsingConnectionAsync(conn => conn.ExecuteAsync(commandDefinition));
+        await _dapperContext.UsingConnectionAsync(conn => conn.ExecuteAsync(commandDefinition));
     }
 }

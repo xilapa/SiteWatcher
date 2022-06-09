@@ -19,7 +19,7 @@ public static class DependencyInjection
     {
         // Making explicit that the context is the same for all repositories
         services.AddDbContext<TContext>(ServiceLifetime.Scoped);
-        services.AddScoped<IUnityOfWork>(_ => _.GetRequiredService<TContext>());
+        services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());
 
         // Add migrator
         services.AddScoped(typeof(DatabaseMigrator));
@@ -35,6 +35,8 @@ public static class DependencyInjection
 
     public static IServiceCollection AddDapperRepositories(this IServiceCollection services)
     {
+        services.AddSingleton<IDapperQueries, DapperQueries>();
+        services.AddScoped<IDapperContext, DapperContext>();
         services.AddScoped<IUserDapperRepository, UserDapperRepository>();
         SqlMapper.AddTypeHandler(new UserId.DapperTypeHandler());
         return services;

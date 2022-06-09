@@ -2,8 +2,8 @@ using System.Data;
 
 namespace SiteWatcher.Application.Interfaces;
 
-public interface IDapperRepository<T>
+public interface IDapperContext
 {
-    Task<T> UsingConnectionAsync(Func<IDbConnection, Task<T>> func);
+    Task<T> UsingConnectionAsync<T>(Func<IDbConnection, Task<T>> func);
     Task UsingConnectionAsync(Func<IDbConnection, Task> func);
 }
