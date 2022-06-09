@@ -40,20 +40,20 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
 
         var user = await _userDapperRepository.GetUserAsync(tokenResult.GoogleId, cancellationToken);
 
-        if(user.UserId.Equals(UserId.Empty))
+        if(user.Id.Equals(UserId.Empty))
         {
             var registerToken = _authService.GenerateRegisterToken(tokenResult.Claims, tokenResult.GoogleId);
             appResult.WithValue(new AuthenticationResult(EAuthTask.Register, registerToken, tokenResult.ProfilePicUrl));
         }
-        else if(user.Active && !user.UserId.Equals(UserId.Empty))
+        else if(user.Active && !user.Id.Equals(UserId.Empty))
         {
             var loginToken = _authService.GenerateLoginToken(user);
-            await _authService.WhiteListToken(user.UserId, loginToken);
+            await _authService.WhiteListToken(user.Id, loginToken);
             appResult.WithValue(new AuthenticationResult(EAuthTask.Login, loginToken, tokenResult.ProfilePicUrl));
         }
-        else if (!user.Active && !user.UserId.Equals(UserId.Empty))
+        else if (!user.Active && !user.Id.Equals(UserId.Empty))
         {
-            appResult.WithValue(new AuthenticationResult(EAuthTask.Activate, user.UserId.Value.ToString(), null));
+            appResult.WithValue(new AuthenticationResult(EAuthTask.Activate, user.Id.Value.ToString(), null));
         }
 
         return appResult;

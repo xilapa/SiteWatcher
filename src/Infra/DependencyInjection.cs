@@ -1,6 +1,8 @@
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
@@ -34,6 +36,7 @@ public static class DependencyInjection
     public static IServiceCollection AddDapperRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUserDapperRepository, UserDapperRepository>();
+        SqlMapper.AddTypeHandler(new UserId.DapperTypeHandler());
         return services;
     }
 

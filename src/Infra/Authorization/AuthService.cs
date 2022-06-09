@@ -36,7 +36,7 @@ public class AuthService : IAuthService
     {
         var claims = new Claim[]
         {
-            new(AuthenticationDefaults.ClaimTypes.Id, userVm.UserId.ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Id, userVm.Id.ToString()),
             new(AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
             new(AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
             new(AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),

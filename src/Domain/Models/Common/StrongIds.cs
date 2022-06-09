@@ -4,7 +4,8 @@
     converters: StronglyTypedIdConverter.Default |
                 StronglyTypedIdConverter.TypeConverter |
                 StronglyTypedIdConverter.SystemTextJson |
-                StronglyTypedIdConverter.EfCoreValueConverter,
+                StronglyTypedIdConverter.EfCoreValueConverter |
+                StronglyTypedIdConverter.DapperTypeHandler,
     implementations: StronglyTypedIdImplementations.Default |
                      StronglyTypedIdImplementations.IComparable |
                      StronglyTypedIdImplementations.IEquatable)]

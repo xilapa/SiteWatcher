@@ -5,8 +5,7 @@ namespace SiteWatcher.Domain.DTOs.User;
 
 public struct UserViewModel
 {
-    public Guid Id { get; set; }
-    public UserId UserId => new UserId(Id);
+    public UserId Id { get; set; }
     public bool Active { get; set; }
     public string Name { get; set; }
     public string Email { get; set; }
