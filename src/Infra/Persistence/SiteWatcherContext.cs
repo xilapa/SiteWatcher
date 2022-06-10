@@ -40,7 +40,7 @@ public class SiteWatcherContext : DbContext, IUnityOfWork
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
-    public override async  Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -54,7 +54,7 @@ public class SiteWatcherContext : DbContext, IUnityOfWork
             if ((inner as PostgresException)?.SqlState != PostgresErrorCodes.UniqueViolation)
                 throw;
 
-            var modelNames = string.Join("; " ,  ex.Entries.Select(e => e.Metadata.Name.Split('.').Last()));
+            var modelNames = string.Join("; ", ex.Entries.Select(e => e.Metadata.Name.Split('.').Last()));
             throw new UniqueViolationException(modelNames);
         }
     }
