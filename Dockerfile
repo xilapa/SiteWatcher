@@ -9,6 +9,7 @@ COPY src/Infra ./src/Infra/
 COPY src/WebAPI ./src/WebAPI/
 COPY test/Benchmark ./test/Benchmark
 COPY test/UnitTests ./test/UnitTests
+COPY test/IntegrationTests ./test/IntegrationTests
 COPY *.sln .
 RUN dotnet restore
 
