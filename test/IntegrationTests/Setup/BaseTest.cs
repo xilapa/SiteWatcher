@@ -2,8 +2,6 @@
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
@@ -16,7 +14,9 @@ namespace IntegrationTests.Setup;
 
 public class BaseTest : IAsyncLifetime
 {
-    public Mock<IEmailService> EmailServiceMock;
+    private readonly CustomWebApplicationFactory<Startup> _appFactory;
+    private readonly HttpClient _client;
+    public Mock<IEmailService> EmailServiceMock => _appFactory.EmailServiceMock;
     public FakeCache FakeCache => _appFactory.FakeCache;
     public DateTime CurrentTime
     {
@@ -26,16 +26,9 @@ public class BaseTest : IAsyncLifetime
     public IAppSettings TestSettings => _appFactory.TestSettings;
     public IGoogleSettings TestGoogleSettings => _appFactory.TestGoogleSettings;
 
-    private readonly CustomWebApplicationFactory<Startup> _appFactory;
-    private readonly HttpClient _client;
-    private readonly DateTime _initialTime;
-
-    public BaseTest(DateTime? initialTime = null)
+    public BaseTest(Action<CustomWebApplicationOptions>? options = null)
     {
-        _initialTime = initialTime ?? new DateTime(DateTime.Now.Ticks);
-        _initialTime = DateTime.Now.Subtract(TimeSpan.FromDays(365));
-        EmailServiceMock = new Mock<IEmailService>();
-        _appFactory = new CustomWebApplicationFactory<Startup>(EmailServiceMock);
+        _appFactory = new CustomWebApplicationFactory<Startup>(options);
         _client = _appFactory.CreateClient(new WebApplicationFactoryClientOptions {AllowAutoRedirect = false});
     }
 
@@ -44,19 +37,18 @@ public class BaseTest : IAsyncLifetime
         await WithDbContext(async ctx =>
         {
             await ctx.Database.EnsureCreatedAsync();
-            await Database.SeedDatabase(ctx, _initialTime);
+            await Database.SeedDatabase(ctx, _appFactory.CurrentTime);
         });
     }
 
-    #region HttpClient Helper Methods
-
     public async Task LoginAs(UserViewModel userViewModel)
     {
-        await using var scope = _appFactory.Services.CreateAsyncScope();
-        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+        var authService = await _appFactory.GetAuthService();
         var token = authService.GenerateLoginToken(userViewModel);
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
+
+    #region HttpClient Helper Methods
 
     public async Task<(HttpResponseMessage, string?)> GetAsync(string url)
     {
@@ -135,19 +127,14 @@ public class BaseTest : IAsyncLifetime
     public async Task<T> WithDbContext<T>(Func<SiteWatcherContext, Task<T>> action)
     {
         await using var context = _appFactory.GetContext();
-        return await action(context);
+        var result = await action(context);
+        return result;
     }
 
     public async Task DisposeAsync()
     {
         _client?.CancelPendingRequests();
         _client?.Dispose();
-        await WithDbContext(async ctx =>
-        {
-            await ctx.Database.CloseConnectionAsync();
-            await ctx.Database.EnsureDeletedAsync();
-            await ctx.DisposeAsync();
-        });
-        _appFactory.Dispose();
+        await _appFactory.DisposeAsync();
     }
 }

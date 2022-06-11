@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,25 +8,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
+using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
-using StackExchange.Redis;
 using ISession = SiteWatcher.Application.Interfaces.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup;
 
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
-    private readonly Mock<IEmailService> _emailServiceMock;
-    private readonly SqliteConnection _sqliteConnection;
+    public readonly Mock<IEmailService> EmailServiceMock;
+    private IDictionary<Type, object>? _servicesToReplace;
+    private readonly SqliteConnection? _sqliteConnection;
 
     public DateTime CurrentTime { get; set; }
     public IAppSettings TestSettings { get; }
     public IGoogleSettings TestGoogleSettings { get; }
     public FakeCache FakeCache { get; }
 
-    public CustomWebApplicationFactory(Mock<IEmailService> emailServiceMock)
+    public CustomWebApplicationFactory(Action<CustomWebApplicationOptions>? options = null)
     {
-        _emailServiceMock = emailServiceMock;
+        EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
+        ConfigureTest(options);
         _sqliteConnection = new SqliteConnection($"DataSource={DateTime.Now.Ticks}.db");
         _sqliteConnection.Open();
         TestSettings = new TestAppSettings();
@@ -36,53 +38,37 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         ApplyEnvironmentVariables(TestGoogleSettings);
     }
 
+    private void ConfigureTest(Action<CustomWebApplicationOptions>? options)
+    {
+        if (options is null)
+        {
+            CurrentTime = DateTime.Now;
+            return;
+        }
+
+        var optionsInstance = new CustomWebApplicationOptions();
+        options(optionsInstance);
+        CurrentTime = optionsInstance.InitalDate ?? DateTime.Now;
+        _servicesToReplace = optionsInstance.ReplacementServices;
+    }
+
     private static void ApplyEnvironmentVariables(object testSettings)
     {
         foreach (var prop in testSettings.GetType().GetProperties())
         {
-            var value = prop.PropertyType == typeof(byte[]) ?
-                Convert.ToBase64String((prop.GetValue(testSettings) as byte[])!) :
-                prop.GetValue(testSettings)!.ToString();
+            var value = prop.PropertyType == typeof(byte[])
+                ? Convert.ToBase64String((prop.GetValue(testSettings) as byte[])!)
+                : prop.GetValue(testSettings)!.ToString();
             Environment.SetEnvironmentVariable(prop.Name, value);
         }
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // Services to remove
-        // ConnectionMultiplexer
-
-        // Services to replace
-        // Cache, DbContext, UnitOfWork, Session,
-        // AppSettings, GoogleSettings, DapperContext,
-        // DapperQueries
-
-        // Services to mock
-        // EmailService
-        var servicesToModify = new[]
-        {
-            typeof(IConnectionMultiplexer),
-            typeof(ICache),
-            typeof(SiteWatcherContext),
-            typeof(IUnityOfWork),
-            typeof(IEmailService),
-            typeof(ISession),
-            typeof(IAppSettings),
-            typeof(IGoogleSettings),
-            typeof(IDapperContext)
-        };
-
         builder.ConfigureServices(services =>
         {
-            var servicesDescriptorsToRemove = services
-                .Where(s => servicesToModify.Contains(s.ServiceType))
-                .ToArray();
-
-            foreach (var serviceDescriptor in servicesDescriptorsToRemove)
-                services.Remove(serviceDescriptor);
-
             ReplaceServices(services);
-            MockServices(services);
+            ConfigureOptionsReplacementServices(services);
         });
 
         base.ConfigureWebHost(builder);
@@ -90,13 +76,20 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     private void ReplaceServices(IServiceCollection services)
     {
+        // Mock EmailService
+        services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
+
+        // Services to replace
+        // Cache, DbContext, UnitOfWork, Session,
+        // AppSettings, GoogleSettings, DapperContext,
+        // DapperQueries
         services.AddSingleton<ICache>(FakeCache);
 
         services.AddScoped<SiteWatcherContext>(srvc =>
         {
             var appSettings = srvc.GetRequiredService<IAppSettings>();
             var mediator = srvc.GetRequiredService<IMediator>();
-            return new SqliteContext(appSettings, mediator, _sqliteConnection);
+            return new SqliteContext(appSettings, mediator, _sqliteConnection!);
         });
 
         services.AddScoped<IUnityOfWork>(_ => _.GetRequiredService<SiteWatcherContext>());
@@ -109,33 +102,49 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         services.AddSingleton<IAppSettings>(TestSettings);
         services.AddSingleton<IGoogleSettings>(TestGoogleSettings);
-        services.AddScoped<IDapperContext>( _ => new SqliteDapperContext(TestSettings, _sqliteConnection));
+        services.AddScoped<IDapperContext>(_ => new SqliteDapperContext(TestSettings, _sqliteConnection!));
         services.AddSingleton<IDapperQueries, SqliteDapperQueries>();
+    }
+
+    private void ConfigureOptionsReplacementServices(IServiceCollection services)
+    {
+        if (_servicesToReplace is null || _servicesToReplace.Count == 0)
+            return;
+
+        foreach (var (serviceType, replacementService) in _servicesToReplace)
+        {
+            var descriptor = services.FirstOrDefault(s => s.ServiceType == serviceType);
+            if (descriptor is null)
+                continue;
+            services.Remove(descriptor);
+            var replacementServiceDescriptor =
+                new ServiceDescriptor(serviceType, _ => replacementService, descriptor.Lifetime);
+            services.Add(replacementServiceDescriptor);
+        }
     }
 
     public SiteWatcherContext GetContext()
     {
         var mediatorMock = new Mock<IMediator>();
-        var context = new SqliteContext(TestSettings, mediatorMock.Object, _sqliteConnection);
+        var context = new SqliteContext(TestSettings, mediatorMock.Object, _sqliteConnection!);
         return context;
     }
 
-    private void MockServices(IServiceCollection services)
+    public async Task<IAuthService> GetAuthService()
     {
-        services.AddScoped<IEmailService>(_ => _emailServiceMock.Object);
+        await using var scope = Services.CreateAsyncScope();
+        var session = scope.ServiceProvider.GetRequiredService<ISession>();
+        var authService = new AuthService(TestSettings, FakeCache, session);
+        return authService;
     }
 
-    protected override void Dispose(bool disposing)
+    public override async ValueTask DisposeAsync()
     {
-        if (disposing && _sqliteConnection?.State != ConnectionState.Closed)
-        {
-            using var scope = Services?.CreateScope();
-            var context = scope?.ServiceProvider.GetRequiredService<SiteWatcherContext>();
-            context?.Database.EnsureDeleted();
-            _sqliteConnection?.Close();
-            _sqliteConnection?.Dispose();
-        }
-
-        base.Dispose(disposing);
+        GC.SuppressFinalize(this);
+        await using var context = GetContext();
+        await context.Database.EnsureDeletedAsync();
+        await _sqliteConnection?.CloseAsync()!;
+        await _sqliteConnection.DisposeAsync();
+        await base.DisposeAsync();
     }
 }
