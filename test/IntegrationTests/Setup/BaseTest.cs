@@ -1,104 +1,90 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Infra;
-using SiteWatcher.IntegrationTests.Setup;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
-using SiteWatcher.WebAPI;
 
 namespace IntegrationTests.Setup;
 
-public class BaseTest : IAsyncLifetime
+public abstract class BaseTest
 {
-    private readonly CustomWebApplicationFactory<Startup> _appFactory;
-    private readonly HttpClient _client;
-    public Mock<IEmailService> EmailServiceMock => _appFactory.EmailServiceMock;
-    public FakeCache FakeCache => _appFactory.FakeCache;
-    public DateTime CurrentTime
+    private readonly BaseTestFixture _fixture;
+    public Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
+    protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
+    protected DateTime CurrentTime
     {
-        get => _appFactory.CurrentTime;
-        set => _appFactory.CurrentTime = value;
+        get => _fixture.AppFactory.CurrentTime;
+        set => _fixture.AppFactory.CurrentTime = value;
     }
-    public IAppSettings TestSettings => _appFactory.TestSettings;
-    public IGoogleSettings TestGoogleSettings => _appFactory.TestGoogleSettings;
+    protected IAppSettings TestSettings => _fixture.AppFactory.TestSettings;
+    protected IGoogleSettings TestGoogleSettings => _fixture.AppFactory.TestGoogleSettings;
 
-    public BaseTest(Action<CustomWebApplicationOptions>? options = null)
+    protected BaseTest(BaseTestFixture fixture)
     {
-        _appFactory = new CustomWebApplicationFactory<Startup>(options);
-        _client = _appFactory.CreateClient(new WebApplicationFactoryClientOptions {AllowAutoRedirect = false});
+        _fixture = fixture;
     }
 
-    public async Task InitializeAsync()
+    protected async Task LoginAs(UserViewModel userViewModel)
     {
-        await WithDbContext(async ctx =>
-        {
-            await ctx.Database.EnsureCreatedAsync();
-            await Database.SeedDatabase(ctx, _appFactory.CurrentTime);
-        });
-    }
-
-    public async Task LoginAs(UserViewModel userViewModel)
-    {
-        var authService = await _appFactory.GetAuthService();
+        var authService = await _fixture.AppFactory.GetAuthService();
         var token = authService.GenerateLoginToken(userViewModel);
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
     #region HttpClient Helper Methods
 
-    public async Task<(HttpResponseMessage, string?)> GetAsync(string url)
+    protected async Task<(HttpResponseMessage, string?)> GetAsync(string url)
     {
-        var response = await _client.GetAsync(url);
+        var response = await _fixture.Client.GetAsync(url);
         var content = await response.Content.ReadAsStringAsync();
         return (response, content);
     }
 
-    public async Task<T?> GetAsync<T>(string url)
+    protected async Task<T?> GetAsync<T>(string url)
     {
-        var response = await _client.GetAsync(url);
+        var response = await _fixture.Client.GetAsync(url);
         return await DeserializeAsync<T>(response);
     }
 
-    public async Task<(HttpResponseMessage, string?)> PutAsync(string url)
+    protected async Task<(HttpResponseMessage, string?)> PutAsync(string url)
     {
-        var response = await _client.PutAsync(url, null);
+        var response = await _fixture.Client.PutAsync(url, null);
         var content = await response.Content.ReadAsStringAsync();
         return (response, content);
     }
 
-    public async Task<T?> PutAsync<T>(string url, T data)
+    protected async Task<T?> PutAsync<T>(string url, T data)
     {
-        var response = await _client.PutAsync(url, Serialize(data));
+        var response = await _fixture.Client.PutAsync(url, Serialize(data));
         return await DeserializeAsync<T>(response);
     }
 
-    public async Task<(HttpResponseMessage, string?)> PostAsync(string url)
+    protected async Task<(HttpResponseMessage, string?)> PostAsync(string url)
     {
-        var response = await _client.PostAsync(url, null);
+        var response = await _fixture.Client.PostAsync(url, null);
         var content = await response.Content.ReadAsStringAsync();
         return (response, content);
     }
 
-    public async Task<T?> PostAsync<T>(string url, T data)
+    protected async Task<T?> PostAsync<T>(string url, T data)
     {
-        var response = await _client.PostAsync(url, Serialize(data));
+        var response = await _fixture.Client.PostAsync(url, Serialize(data));
         return await DeserializeAsync<T>(response);
     }
 
-    public async Task<(HttpResponseMessage, string?)> DeleteAsync(string url)
+    protected async Task<(HttpResponseMessage, string?)> DeleteAsync(string url)
     {
-        var response = await _client.DeleteAsync(url);
+        var response = await _fixture.Client.DeleteAsync(url);
         var content = await response.Content.ReadAsStringAsync();
         return (response, content);
     }
 
-    public async Task<T?> DeleteAsync<T>(string url)
+    protected async Task<T?> DeleteAsync<T>(string url)
     {
-        var response = await _client.DeleteAsync(url);
+        var response = await _fixture.Client.DeleteAsync(url);
         return await DeserializeAsync<T>(response);
     }
 
@@ -118,23 +104,16 @@ public class BaseTest : IAsyncLifetime
 
     #endregion
 
-    public async Task WithDbContext(Func<SiteWatcherContext, Task> action)
+    protected async Task WithDbContext(Func<SiteWatcherContext, Task> action)
     {
-        await using var context = _appFactory.GetContext();
+        await using var context = _fixture.AppFactory.GetContext();
         await action(context);
     }
 
-    public async Task<T> WithDbContext<T>(Func<SiteWatcherContext, Task<T>> action)
+    protected async Task<T> WithDbContext<T>(Func<SiteWatcherContext, Task<T>> action)
     {
-        await using var context = _appFactory.GetContext();
+        await using var context = _fixture.AppFactory.GetContext();
         var result = await action(context);
         return result;
-    }
-
-    public async Task DisposeAsync()
-    {
-        _client?.CancelPendingRequests();
-        _client?.Dispose();
-        await _appFactory.DisposeAsync();
     }
 }
