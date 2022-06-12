@@ -142,8 +142,21 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         GC.SuppressFinalize(this);
         await using var context = GetContext();
-        await context.Database.EnsureDeletedAsync();
         await _sqliteConnection?.CloseAsync()!;
+
+        // Connections are pooled by SQLite in order to improve performance.
+        // It means when you call Close method on a connection object,
+        // connection to database may still be alive (in the background)
+        // so that next Open method become faster.
+        // When you known that you don't want a new connection anymore,
+        // calling ClearAllPools closes all the connections
+        // which are alive in the background and file handle(s?)
+        // to the db file get released.Then db file may get removed,
+        // deleted or used by another process.
+        // https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
+        SqliteConnection.ClearAllPools();
+
+        await context.Database.EnsureDeletedAsync();
         await _sqliteConnection.DisposeAsync();
         await base.DisposeAsync();
     }
