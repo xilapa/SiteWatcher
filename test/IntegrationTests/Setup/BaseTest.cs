@@ -117,18 +117,16 @@ public abstract class BaseTest
         return result;
     }
 
-    protected async Task WithService<T>(Func<T, Task> func) where T : notnull
+    protected async Task WithServiceProvider(Func<IServiceProvider, Task> func)
     {
         await using var scope = _fixture.AppFactory.Services.CreateAsyncScope();
-        var service = scope.ServiceProvider.GetRequiredService<T>();
-        await func(service);
+        await func(scope.ServiceProvider);
     }
 
-    protected async Task<TResult> WithService<T, TResult>(Func<T, Task<TResult>> func) where T : notnull
+    protected async Task<T> WithServiceProvider<T>(Func<IServiceProvider, Task<T>> func)
     {
         await using var scope = _fixture.AppFactory.Services.CreateAsyncScope();
-        var service = scope.ServiceProvider.GetRequiredService<T>();
-        var result = await func(service);
+        var result = await func(scope.ServiceProvider);
         return result;
     }
 }
