@@ -1,4 +1,5 @@
-﻿using IntegrationTests.Setup;
+﻿using System.Runtime.CompilerServices;
+using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
@@ -16,10 +18,11 @@ namespace SiteWatcher.IntegrationTests.Setup;
 
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
-    public readonly Mock<IEmailService> EmailServiceMock;
     private IDictionary<Type, object>? _servicesToReplace;
     private readonly SqliteConnection? _sqliteConnection;
 
+    public readonly Mock<IEmailService> EmailServiceMock;
+    public readonly IAuthService AuthServiceForLogin;
     public DateTime CurrentTime { get; set; }
     public IAppSettings TestSettings { get; }
     public IGoogleSettings TestGoogleSettings { get; }
@@ -36,6 +39,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         FakeCache = new FakeCache();
         ApplyEnvironmentVariables(TestSettings);
         ApplyEnvironmentVariables(TestGoogleSettings);
+        AuthServiceForLogin = CreateAuthServiceForLogin();
     }
 
     private void ConfigureTest(Action<CustomWebApplicationOptions>? options)
@@ -130,12 +134,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         return context;
     }
 
-    public async Task<IAuthService> GetAuthService()
+    private IAuthService CreateAuthServiceForLogin()
     {
-        await using var scope = Services.CreateAsyncScope();
-        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-        var authService = new AuthService(TestSettings, FakeCache, session);
-        return authService;
+        var authService = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
+        if (authService is not AuthService authServiceInstance)
+            throw new Exception($"The {typeof(AuthService)} was not created");
+
+        authServiceInstance.AsDynamic()._appSettings = TestSettings;
+        return authServiceInstance;
     }
 
     public override async ValueTask DisposeAsync()

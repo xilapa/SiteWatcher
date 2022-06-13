@@ -27,10 +27,9 @@ public abstract class BaseTest
         _fixture = fixture;
     }
 
-    protected async Task LoginAs(UserViewModel userViewModel)
+    protected void LoginAs(UserViewModel userViewModel)
     {
-        var authService = await _fixture.AppFactory.GetAuthService();
-        var token = authService.GenerateLoginToken(userViewModel);
+        var token = _fixture.AppFactory.AuthServiceForLogin.GenerateLoginToken(userViewModel);
         _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
