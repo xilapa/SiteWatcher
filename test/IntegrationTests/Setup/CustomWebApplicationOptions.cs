@@ -25,4 +25,15 @@ public class CustomWebApplicationOptions
 
     public ReadOnlyDictionary<Type, object> ReplacementServices =>
         new (_servicesToReplace);
+
+    /// <summary>
+    /// Database provider type
+    /// </summary>
+    public DatabaseType DatabaseType { get; set; }
+}
+
+public enum DatabaseType
+{
+    SqliteInMemory,
+    SqliteOnDisk
 }

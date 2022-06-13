@@ -19,8 +19,8 @@ namespace SiteWatcher.IntegrationTests.Setup;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     private IDictionary<Type, object>? _servicesToReplace;
+    private string _connectionString;
     private readonly SqliteConnection? _sqliteConnection;
-
     public readonly Mock<IEmailService> EmailServiceMock;
     public readonly IAuthService AuthServiceForLogin;
     public DateTime CurrentTime { get; set; }
@@ -32,7 +32,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
         ConfigureTest(options);
-        _sqliteConnection = new SqliteConnection($"DataSource={DateTime.Now.Ticks}.db");
+        _sqliteConnection = new SqliteConnection(_connectionString);
         _sqliteConnection.Open();
         TestSettings = new TestAppSettings();
         TestGoogleSettings = new TestGoogleSettings();
@@ -54,6 +54,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         options(optionsInstance);
         CurrentTime = optionsInstance.InitalDate ?? DateTime.Now;
         _servicesToReplace = optionsInstance.ReplacementServices;
+        _connectionString = optionsInstance.DatabaseType switch
+        {
+            DatabaseType.SqliteInMemory => "DataSource=:memory:",
+            DatabaseType.SqliteOnDisk => $"DataSource={DateTime.Now.Ticks}.db",
+            _ => throw new ArgumentOutOfRangeException(nameof(optionsInstance.DatabaseType))
+        };
     }
 
     private static void ApplyEnvironmentVariables(object testSettings)
