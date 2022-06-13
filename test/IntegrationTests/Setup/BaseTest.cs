@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
@@ -113,6 +114,21 @@ public abstract class BaseTest
     {
         await using var context = _fixture.AppFactory.GetContext();
         var result = await action(context);
+        return result;
+    }
+
+    protected async Task WithService<T>(Func<T, Task> func) where T : notnull
+    {
+        await using var scope = _fixture.AppFactory.Services.CreateAsyncScope();
+        var service = scope.ServiceProvider.GetRequiredService<T>();
+        await func(service);
+    }
+
+    protected async Task<TResult> WithService<T, TResult>(Func<T, Task<TResult>> func) where T : notnull
+    {
+        await using var scope = _fixture.AppFactory.Services.CreateAsyncScope();
+        var service = scope.ServiceProvider.GetRequiredService<T>();
+        var result = await func(service);
         return result;
     }
 }
