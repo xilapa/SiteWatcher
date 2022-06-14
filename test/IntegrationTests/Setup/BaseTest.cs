@@ -41,70 +41,42 @@ public abstract class BaseTest
 
     #region HttpClient Helper Methods
 
-    protected async Task<(HttpResponseMessage, string?)> GetAsync(string url)
+    protected async Task<HttpResult> GetAsync(string url)
     {
         var response = await _fixture.Client.GetAsync(url);
         var content = await response.Content.ReadAsStringAsync();
-        return (response, content);
+        var result = new HttpResult(response, content);
+        return result;
     }
 
-    protected async Task<T?> GetAsync<T>(string url)
-    {
-        var response = await _fixture.Client.GetAsync(url);
-        return await DeserializeAsync<T>(response);
-    }
-
-    protected async Task<(HttpResponseMessage, string?)> PutAsync(string url)
-    {
-        var response = await _fixture.Client.PutAsync(url, null);
-        var content = await response.Content.ReadAsStringAsync();
-        return (response, content);
-    }
-
-    protected async Task<T?> PutAsync<T>(string url, T data)
+    protected async Task<HttpResult> PutAsync(string url, object? data = null)
     {
         var response = await _fixture.Client.PutAsync(url, Serialize(data));
-        return await DeserializeAsync<T>(response);
-    }
-
-    protected async Task<(HttpResponseMessage, string?)> PostAsync(string url)
-    {
-        var response = await _fixture.Client.PostAsync(url, null);
         var content = await response.Content.ReadAsStringAsync();
-        return (response, content);
+        var result = new HttpResult(response, content);
+        return result;
     }
 
-    protected async Task<T?> PostAsync<T>(string url, T data)
+    protected async Task<HttpResult> PostAsync(string url, object? data = null)
     {
         var response = await _fixture.Client.PostAsync(url, Serialize(data));
-        return await DeserializeAsync<T>(response);
+        var content = await response.Content.ReadAsStringAsync();
+        var result = new HttpResult(response, content);
+        return result;
     }
 
-    protected async Task<(HttpResponseMessage, string?)> DeleteAsync(string url)
+    protected async Task<HttpResult> DeleteAsync(string url)
     {
         var response = await _fixture.Client.DeleteAsync(url);
         var content = await response.Content.ReadAsStringAsync();
-        return (response, content);
-    }
-
-    protected async Task<T?> DeleteAsync<T>(string url)
-    {
-        var response = await _fixture.Client.DeleteAsync(url);
-        return await DeserializeAsync<T>(response);
+        var result = new HttpResult(response, content);
+        return result;
     }
 
     private static StringContent Serialize(object? data)
     {
         var jsonData = data is null ? string.Empty : JsonSerializer.Serialize(data);
         return new StringContent(jsonData, Encoding.UTF8, "application/json");
-    }
-
-    private static async Task<T?> DeserializeAsync<T>(HttpResponseMessage? response)
-    {
-        if (response is null)
-            return default;
-        var jsonResponse = await response.Content.ReadAsStringAsync();
-        return string.IsNullOrEmpty(jsonResponse) ? default : JsonSerializer.Deserialize<T>(jsonResponse);
     }
 
     #endregion
