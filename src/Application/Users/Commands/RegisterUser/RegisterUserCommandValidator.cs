@@ -31,5 +31,12 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
                 .WithMessage(ApplicationErrors.LANGUAGE_IS_INVALID)
             .NotEqual(default(ELanguage))
                 .WithMessage(ApplicationErrors.LANGUAGE_IS_INVALID);
+
+        RuleFor(cmmd => cmmd.Theme)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.THEME_IS_INVALID)
+            .NotEqual(default(ETheme))
+            .WithMessage(ApplicationErrors.THEME_IS_INVALID);
     }
 }
