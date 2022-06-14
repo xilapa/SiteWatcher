@@ -34,6 +34,11 @@ public abstract class BaseTest
         _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
+    protected void RemoveLoginToken()
+    {
+        _fixture.Client.DefaultRequestHeaders.Authorization = null;
+    }
+
     #region HttpClient Helper Methods
 
     protected async Task<(HttpResponseMessage, string?)> GetAsync(string url)
