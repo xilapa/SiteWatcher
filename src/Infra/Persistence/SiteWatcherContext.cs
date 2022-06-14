@@ -54,9 +54,14 @@ public class SiteWatcherContext : DbContext, IUnityOfWork
             if ((inner as PostgresException)?.SqlState != PostgresErrorCodes.UniqueViolation)
                 throw;
 
-            var modelNames = string.Join("; ", ex.Entries.Select(e => e.Metadata.Name.Split('.').Last()));
-            throw new UniqueViolationException(modelNames);
+            throw GenerateUniqueViolationException(ex);
         }
+    }
+
+    protected UniqueViolationException GenerateUniqueViolationException(DbUpdateException exception)
+    {
+        var modelNames = string.Join("; ", exception.Entries.Select(e => e.Metadata.Name.Split('.').Last()));
+        return new UniqueViolationException(modelNames);
     }
 
     public DbSet<User> Users { get; set; }

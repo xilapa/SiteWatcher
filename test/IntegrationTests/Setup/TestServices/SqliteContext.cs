@@ -38,4 +38,23 @@ public class SqliteContext : SiteWatcherContext
         foreach (var uuid in uuids)
             uuid.SetColumnType("BLOB");
     }
+
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+        CancellationToken cancellationToken = new CancellationToken())
+    {
+        try
+        {
+            return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+        catch (DbUpdateException ex)
+        {
+            var inner = ex.InnerException;
+
+            // https://www.sqlite.org/rescode.html#constraint_unique
+            if ((inner as SqliteException)?.SqliteExtendedErrorCode != 2067)
+                throw;
+
+            throw GenerateUniqueViolationException(ex);
+        }
+    }
 }
