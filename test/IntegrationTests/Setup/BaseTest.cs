@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Infra;
+using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 
 namespace IntegrationTests.Setup;
@@ -30,7 +32,19 @@ public abstract class BaseTest
 
     protected void LoginAs(UserViewModel userViewModel)
     {
-        var token = _fixture.AppFactory.AuthServiceForLogin.GenerateLoginToken(userViewModel);
+        var token = _fixture.AppFactory.AuthServiceForTokens.GenerateLoginToken(userViewModel);
+        _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    protected void SetRegisterToken(UserViewModel userViewModel)
+    {
+        var claims = new Claim[]
+        {
+            new(AuthenticationDefaults.ClaimTypes.Name, userViewModel.Name),
+            new(AuthenticationDefaults.ClaimTypes.Email, userViewModel.Email),
+            new(AuthenticationDefaults.ClaimTypes.Locale, "en-US"),
+        };
+        var token = _fixture.AppFactory.AuthServiceForTokens.GenerateRegisterToken(claims, "googleId");
         _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 

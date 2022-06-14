@@ -22,7 +22,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private string _connectionString;
     private readonly SqliteConnection? _sqliteConnection;
     public readonly Mock<IEmailService> EmailServiceMock;
-    public readonly IAuthService AuthServiceForLogin;
+    public readonly IAuthService AuthServiceForTokens;
     public DateTime CurrentTime { get; set; }
     public IAppSettings TestSettings { get; }
     public IGoogleSettings TestGoogleSettings { get; }
@@ -39,7 +39,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         FakeCache = new FakeCache();
         ApplyEnvironmentVariables(TestSettings);
         ApplyEnvironmentVariables(TestGoogleSettings);
-        AuthServiceForLogin = CreateAuthServiceForLogin();
+        AuthServiceForTokens = CreateAuthServiceForLogin();
     }
 
     private void ConfigureTest(Action<CustomWebApplicationOptions>? options)
