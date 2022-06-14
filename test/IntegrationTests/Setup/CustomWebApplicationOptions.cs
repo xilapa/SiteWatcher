@@ -8,6 +8,7 @@ public class CustomWebApplicationOptions
     {
         InitalDate = null;
         _servicesToReplace = new Dictionary<Type, object>();
+        DatabaseType = DatabaseType.SqliteInMemory;
     }
 
     /// <summary>
@@ -27,7 +28,7 @@ public class CustomWebApplicationOptions
         new (_servicesToReplace);
 
     /// <summary>
-    /// Database provider type
+    /// Database provider type. Defaults to Sqlite in memory.
     /// </summary>
     public DatabaseType DatabaseType { get; set; }
 }

@@ -58,7 +58,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         {
             DatabaseType.SqliteInMemory => "DataSource=:memory:",
             DatabaseType.SqliteOnDisk => $"DataSource={DateTime.Now.Ticks}.db",
-            _ => throw new ArgumentOutOfRangeException(nameof(optionsInstance.DatabaseType))
+            _ => "DataSource=:memory:"
         };
     }
 
