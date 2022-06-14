@@ -9,6 +9,8 @@ using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
+using SiteWatcher.IntegrationTests.Utils;
+using DomainUtils = SiteWatcher.Domain.Utils.Utils;
 
 namespace IntegrationTests.Setup;
 
@@ -36,7 +38,7 @@ public abstract class BaseTest
         _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
-    protected void SetRegisterToken(UserViewModel userViewModel)
+    protected string SetRegisterToken(UserViewModel userViewModel)
     {
         var claims = new Claim[]
         {
@@ -44,8 +46,9 @@ public abstract class BaseTest
             new(AuthenticationDefaults.ClaimTypes.Email, userViewModel.Email),
             new(AuthenticationDefaults.ClaimTypes.Locale, "en-US"),
         };
-        var token = _fixture.AppFactory.AuthServiceForTokens.GenerateRegisterToken(claims, "googleId");
+        var token = _fixture.AppFactory.AuthServiceForTokens.GenerateRegisterToken(claims, userViewModel.GetGoogleId());
         _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return DomainUtils.GetTokenPayload(token);
     }
 
     protected void RemoveLoginToken()
