@@ -10,15 +10,9 @@ using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.UserTests;
 
-public class UserRegisterTestsBase : BaseTestFixture
+public class UserRegisterTests : BaseTest, IClassFixture<BaseTestFixture>
 {
-    public override Action<CustomWebApplicationOptions>? Options => opts =>
-        opts.DatabaseType = DatabaseType.SqliteOnDisk;
-}
-
-public class UserRegisterTests : BaseTest, IClassFixture<UserRegisterTestsBase>
-{
-    public UserRegisterTests(UserRegisterTestsBase fixture) : base(fixture)
+    public UserRegisterTests(BaseTestFixture fixture) : base(fixture)
     { }
 
     [Fact]
