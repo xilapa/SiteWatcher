@@ -8,6 +8,7 @@ namespace SiteWatcher.Infra.Authorization.Middleware;
 public class MultipleJwtsMiddleware
 {
     private readonly RequestDelegate _next;
+    private static readonly object SchemesLock = new();
     private static readonly Dictionary<string, string> Schemes = new();
 
     public MultipleJwtsMiddleware(RequestDelegate next)
@@ -81,6 +82,11 @@ public class MultipleJwtsMiddleware
         return true;
     }
 
-    public static void RegisterIssuer(string issuer, string scheme) =>
-        Schemes.TryAdd(issuer, scheme);
+    public static void RegisterIssuer(string issuer, string scheme)
+    {
+        lock (SchemesLock)
+        {
+            Schemes.TryAdd(issuer, scheme);
+        }
+    }
 }
