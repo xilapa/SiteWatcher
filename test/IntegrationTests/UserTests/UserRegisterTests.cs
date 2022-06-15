@@ -81,8 +81,8 @@ public class UserRegisterTests : BaseTest, IClassFixture<BaseTestFixture>
 
         // Checking if register token was invalidated on cache
         FakeCache.Cache[registerTokenSet]
-            .Should()
-            .Be(TestSettings.InvalidToken);
+            .Value
+            .Should().Be(TestSettings.InvalidToken);
 
         // Checking on database
         var userCreated = await WithDbContext(ctx =>
