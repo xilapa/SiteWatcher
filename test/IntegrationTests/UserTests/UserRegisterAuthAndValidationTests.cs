@@ -47,9 +47,7 @@ public class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRe
             Email = "email@email.com",
             Language = ELanguage.English,
             Name = "Xilapilson",
-            Theme = ETheme.Dark,
-            AuthEmail = "authEmail@email.com",
-            GoogleId = "googleId"
+            Theme = ETheme.Dark
         };
     }
 
