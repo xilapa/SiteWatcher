@@ -1,18 +1,25 @@
 ﻿using System.Net;
+using System.Reflection;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Email;
+using SiteWatcher.Domain.Utils;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
+using System.Runtime.CompilerServices;
+using SiteWatcher.Infra.Authorization;
 
 namespace IntegrationTests.UserTests;
 
 public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetime
 {
     private User _userXilapaWithoutChanges = null!;
+    private int _emailConfirmationTokenExpiration;
 
     public UserTests(BaseTestFixture fixture) : base(fixture)
     { }
@@ -21,6 +28,13 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
     {
         _userXilapaWithoutChanges = await WithDbContext(ctx
             => ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
+
+        var authServiceInstance = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
+
+        _emailConfirmationTokenExpiration = (int) typeof(AuthService)
+            .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
+            .Single(f => f.Name == "EmailConfirmationTokenExpiration")
+            .GetValue(authServiceInstance)!;
     }
 
     public Task DisposeAsync() =>
@@ -102,6 +116,63 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.Should().BeEquivalentTo(_userXilapaWithoutChanges);
+    }
+
+    [Fact]
+    public async Task EmailConfirmationIsSentWhenUserChangesEmail()
+    {
+        // Arrange
+        LoginAs(Users.Xilapa);
+        EmailServiceMock.Invocations.Clear();
+
+        var updateUserCommand = new UpdateUserCommand
+        {
+            Email = "newemail@email.com",
+            Language = ELanguage.Spanish,
+            Name = "XilapaNewName",
+            Theme = ETheme.Light
+        };
+
+        // Act
+        var result = await PutAsync("user", updateUserCommand);
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        result.HttpResponse!.Content
+            .Should()
+            .NotBeNull();
+
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
+
+        // Verifing on cache
+        FakeCache.Cache[userFromDb.SecurityStamp!]
+            .Value
+            .Should().Be(userFromDb.Id.ToString());
+
+        FakeCache.Cache[userFromDb.SecurityStamp!]
+            .Expiration.TotalSeconds
+            .Should().Be(_emailConfirmationTokenExpiration);
+
+        // Verifying that email was sent only once
+        EmailServiceMock.Verify(e =>
+            e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        // Verifing that the correct message was sent
+        var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
+        var message =
+            MailMessageGenerator.EmailConfirmation(updateUserCommand.Name, updateUserCommand.Email, link,
+                updateUserCommand.Language);
+
+        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
+            .Should().BeEquivalentTo(message);
+
+        // Finalize
+        await ResetTestData();
     }
 
     private async Task ResetTestData()
