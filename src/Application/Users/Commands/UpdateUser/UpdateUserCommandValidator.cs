@@ -10,7 +10,7 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     public UpdateUserCommandValidator()
     {
         RuleFor(cmmd => cmmd.Name)
-            .Cascade(CascadeMode.Continue)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.NAME_NOT_BE_NULL_OR_EMPTY)
             .MinimumLength(3)
