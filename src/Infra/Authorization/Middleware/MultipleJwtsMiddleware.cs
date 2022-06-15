@@ -82,5 +82,5 @@ public class MultipleJwtsMiddleware
     }
 
     public static void RegisterIssuer(string issuer, string scheme) =>
-        Schemes.Add(issuer, scheme);
+        Schemes.TryAdd(issuer, scheme);
 }
