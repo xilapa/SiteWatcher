@@ -4,17 +4,18 @@ using Moq;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
+using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Common;
 
 namespace UnitTests.Commands;
 
-public class ConfirmEmailCommandTests
+public class ReactivateAccountCommandTests
 {
     private readonly IAuthService _authService;
 
-    public ConfirmEmailCommandTests()
+    public ReactivateAccountCommandTests()
     {
         var authService = new Mock<IAuthService>();
         authService
@@ -24,7 +25,7 @@ public class ConfirmEmailCommandTests
     }
 
     [Fact]
-    public async Task CantConfirmEmailIfUserDoesNotExists()
+    public async Task CantReactiveAccountIfUserDoesNotExists()
     {
         // Arrange
         var userRepository = new Mock<IUserRepository>();
@@ -32,10 +33,11 @@ public class ConfirmEmailCommandTests
             .Setup(u => u.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<User?>(default));
 
-        var commandHandler = new ConfirmEmailCommandHandler(_authService, userRepository.Object, null!, null!);
+        var commandHandler = new ReactivateAccountCommandHandler(_authService, userRepository.Object, null!, null!);
 
         // Act
-        var result = await commandHandler.Handle(new ConfirmEmailCommand(), CancellationToken.None);
+        var result =
+            await commandHandler.Handle(new ReactivateAccountCommand {Token = "token"}, CancellationToken.None);
 
         // Assert
         result.Success
@@ -54,6 +56,7 @@ public class ConfirmEmailCommandTests
         // Arrange
         var user = new User("googleId", "name", "email", "authEmail",
             ELanguage.BrazilianPortuguese, ETheme.Light, DateTime.Now);
+        user.Deactivate(DateTime.Now);
 
         var userRepository = new Mock<IUserRepository>();
         userRepository
@@ -62,10 +65,11 @@ public class ConfirmEmailCommandTests
 
         var session = new Mock<ISession>().Object;
         var uow = new Mock<IUnitOfWork>().Object;
-        var commandHandler = new ConfirmEmailCommandHandler(_authService, userRepository.Object, session, uow);
+        var commandHandler = new ReactivateAccountCommandHandler(_authService, userRepository.Object, session, uow);
 
         // Act
-        var result = await commandHandler.Handle(new ConfirmEmailCommand { Token = "INVALID_TOKEN"}, CancellationToken.None);
+        var result =
+            await commandHandler.Handle(new ReactivateAccountCommand {Token = "INVALID_TOKEN"}, CancellationToken.None);
 
         // Assert
         result.Success
@@ -77,7 +81,7 @@ public class ConfirmEmailCommandTests
         result.Errors.First()
             .Should().Be(ApplicationErrors.INVALID_TOKEN);
 
-        user.EmailConfirmed.Should().BeFalse();
+        user.Active.Should().BeFalse();
         user.SecurityStamp.Should().BeNull();
     }
 }

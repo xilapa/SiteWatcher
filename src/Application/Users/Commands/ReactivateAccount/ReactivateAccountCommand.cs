@@ -17,7 +17,8 @@ public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccount
     private readonly ISession _session;
     private readonly IUnitOfWork _uow;
 
-    public ReactivateAccountCommandHandler(IAuthService authservice, IUserRepository userRepository, ISession session, IUnitOfWork uow)
+    public ReactivateAccountCommandHandler(IAuthService authservice, IUserRepository userRepository, ISession session,
+        IUnitOfWork uow)
     {
         _authservice = authservice;
         _userRepository = userRepository;
@@ -36,7 +37,7 @@ public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccount
         if(user is null)
             return result.WithError(ApplicationErrors.INVALID_TOKEN);
 
-        var success = user!.ReactivateAccount(request.Token, _session.Now);
+        var success = user.ReactivateAccount(request.Token, _session.Now);
         if(!success)
             result.SetError(ApplicationErrors.INVALID_TOKEN);
 

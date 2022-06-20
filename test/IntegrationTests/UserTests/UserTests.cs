@@ -15,6 +15,7 @@ using System.Runtime.CompilerServices;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
+using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Infra.Authorization;
@@ -327,14 +328,14 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .Be(HttpStatusCode.BadRequest);
 
-        // Checking that the user email is confirmed
+        // Checking that the user email is not confirmed
         var updatedUser = await WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
 
         updatedUser.EmailConfirmed
             .Should().BeFalse();
 
-        // Verifying on cache that the token was removed
+        // Verifying on cache that the token was not removed
         FakeCache.Cache[fakeToken]
             .Should().Be(fakeTokenEntry);
     }
@@ -427,7 +428,6 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
     public async Task ReactivateAccountEmailIsSentCorrectly()
     {
         // Arrange
-        LoginAs(Users.Xilapa);
         EmailServiceMock.Invocations.Clear();
 
         // Ensuring that the user is deactivated
@@ -487,7 +487,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         // Arrange
         LoginAs(Users.Xilapa);
 
-        // Ensuring that the user email is active
+        // Ensuring that the user is active
         await WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET Active = 1,
@@ -507,6 +507,91 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         userFromDb.Active.Should().BeFalse();
         userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
+
+        // Finalize
+        await ResetTestData();
+    }
+
+    [Fact]
+    public async Task AccountIsReactivatedWithValidToken()
+    {
+        // Arrange
+        FakeCache.Cache.Clear();
+        const string fakeToken = "TEST_TOKEN_USER_REACTIVATION";
+
+        // Ensuring that the user is deactivated
+        await WithDbContext(ctx =>
+            ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+                                                SET Active = 0,
+                                                SecurityStamp = '{fakeToken}'
+                                                WHERE Id = '{Users.Xilapa.Id}'"));
+
+        // Setting a fake token on cache
+        FakeCache.Cache[fakeToken] = new FakeCacheEntry(Users.Xilapa.Id, TimeSpan.Zero);
+        var reactivateAccountCommand = new ReactivateAccountCommand {Token = fakeToken};
+
+        // Act
+        var result = await PutAsync("user/reactivate-account", reactivateAccountCommand);
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        // Checking that the user was reactivated
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
+
+        userFromDb.Active.Should().BeTrue();
+        userFromDb.SecurityStamp.Should().BeNull();
+        userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
+
+        // Verifying on cache that the token was removed
+        FakeCache.Cache.Should().BeEmpty();
+
+        // Finalize
+        await ResetTestData();
+    }
+
+    [Fact]
+    public async Task AccountIsNotReactivatedWithInvalidValidToken()
+    {
+        // Arrange
+        const string fakeToken = "TEST_TOKEN_USER_REACTIVATION";
+
+        // Ensuring that the user is deactivated
+        await WithDbContext(ctx =>
+            ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+                                                SET Active = 0,
+                                                SecurityStamp = '{fakeToken}'
+                                                WHERE Id = '{Users.Xilapa.Id}'"));
+
+        // Setting a fake token on cache
+        var fakeTokenEntry = new FakeCacheEntry(Users.Xilapa.Id, TimeSpan.Zero);
+        FakeCache.Cache[fakeToken] = fakeTokenEntry;
+        var reactivateAccountCommand = new ReactivateAccountCommand {Token = "INVALID_TOKEN"};
+
+        // Act
+        var result = await PutAsync("user/reactivate-account", reactivateAccountCommand);
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        var typedResult = result.GetTyped<WebApiResponse<object>>();
+        typedResult!.Messages.Count.Should().Be(1);
+        typedResult.Messages[0].Should().Be(ApplicationErrors.INVALID_TOKEN);
+
+        // Checking that the user was reactivated
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
+
+        userFromDb.Active.Should().BeFalse();
+
+        // Verifying on cache that the token was not removed
+        FakeCache.Cache[fakeToken]
+            .Should().Be(fakeTokenEntry);
 
         // Finalize
         await ResetTestData();
