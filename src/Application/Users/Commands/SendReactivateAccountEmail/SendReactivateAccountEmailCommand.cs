@@ -26,7 +26,10 @@ public class SendReactivateAccountEmailCommandHandler : IRequestHandler<SendReac
     public async Task<Unit> Handle(SendReactivateAccountEmailCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetAsync(u => u.Id == request.UserId && !u.Active, cancellationToken);
-        user?.GenerateUserActivationToken(_session.Now);
+        if(user is null)
+            return Unit.Value;
+
+        user.GenerateUserActivationToken(_session.Now);
         await _uow.SaveChangesAsync(CancellationToken.None);
         return Unit.Value;
     }

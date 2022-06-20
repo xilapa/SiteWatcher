@@ -13,6 +13,7 @@ using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 using System.Runtime.CompilerServices;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Users.Commands.ActivateAccount;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.DTOs.User;
@@ -26,6 +27,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
     private User _userXilapaWithoutChanges = null!;
     private int _emailConfirmationTokenExpiration;
     private int _loginTokenExpiration;
+    private int _accountReactivationTokenExpiration;
 
     public UserTests(BaseTestFixture fixture) : base(fixture)
     { }
@@ -45,6 +47,11 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         _loginTokenExpiration = (int) typeof(AuthService)
             .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
             .Single(f => f.Name == "LoginTokenExpiration")
+            .GetValue(authServiceInstance)!;
+
+        _accountReactivationTokenExpiration = (int) typeof(AuthService)
+            .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
+            .Single(f => f.Name == "AccountReactivationTokenExpiration")
             .GetValue(authServiceInstance)!;
     }
 
@@ -377,7 +384,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
     {
         // Arrange
         FakeCache.Cache.Clear();
-        var token = LoginAs(Users.Xilapa);
+        LoginAs(Users.Xilapa);
         var cachekey = CacheKeys.InvalidUser(Users.Xilapa.Id);
 
         // Act
@@ -403,6 +410,63 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         newResult.HttpResponse!.StatusCode
             .Should()
             .Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task ReactivateAccountEmailIsSentCorrectly()
+    {
+        // Arrange
+        LoginAs(Users.Xilapa);
+        EmailServiceMock.Invocations.Clear();
+
+        // Ensuring that the user email is not confirmed
+        await WithDbContext(ctx =>
+            ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+                                                SET Active = 0,
+                                                    SecurityStamp = NULL
+                                                WHERE Id = '{Users.Xilapa.Id}'"));
+
+        var command = new SendReactivateAccountEmailCommand {UserId = Users.Xilapa.Id};
+
+        // Act
+        var result = await PutAsync("user/send-reactivate-account-email", command);
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
+
+        userFromDb.SecurityStamp.Should().NotBeNull();
+        userFromDb.Active.Should().BeFalse();
+
+        // Verifying on cache
+        FakeCache.Cache[userFromDb.SecurityStamp!]
+            .Value
+            .Should().Be(userFromDb.Id.ToString());
+
+        FakeCache.Cache[userFromDb.SecurityStamp!]
+            .Expiration.TotalSeconds
+            .Should().Be(_accountReactivationTokenExpiration);
+
+        // Verifying that email was sent only once
+        EmailServiceMock.Verify(e =>
+                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        // Verifying that the correct message was sent
+        var link = $"{TestSettings.FrontEndUrl}/#/security/reactivate-account?t={userFromDb.SecurityStamp}";
+        var message =
+            MailMessageGenerator.AccountActivation(userFromDb.Name, userFromDb.Email, link,
+                userFromDb.Language);
+
+        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
+            .Should().BeEquivalentTo(message);
+
+        // Finalize
+        await ResetTestData();
     }
 
     private async Task ResetTestData()
