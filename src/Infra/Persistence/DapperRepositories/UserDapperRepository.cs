@@ -24,10 +24,12 @@ public class UserDapperRepository : IUserDapperRepository
             conn.QuerySingleOrDefaultAsync<UserViewModel>(commandDefinition));
     }
 
-    public async Task DeleteActiveUserAsync(UserId userId, CancellationToken cancellationToken)
+    public async Task<bool> DeleteActiveUserAsync(UserId userId, CancellationToken cancellationToken)
     {
         var commandDefinition = new CommandDefinition(_dapperQueries.DeleteActiveUserById, new {userId = userId.Value},
             cancellationToken: cancellationToken);
-        await _dapperContext.UsingConnectionAsync(conn => conn.ExecuteAsync(commandDefinition));
+        var affectedRows = await _dapperContext
+            .UsingConnectionAsync(conn => conn.ExecuteAsync(commandDefinition));
+        return affectedRows > 0;
     }
 }

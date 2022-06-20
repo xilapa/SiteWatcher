@@ -25,8 +25,9 @@ public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
 
     public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
-        await _userRepository.DeleteActiveUserAsync(_session.UserId!.Value, cancellationToken);
-        await _mediator.Publish(_mapper.Map<AccountDeletedEvent>(_session), CancellationToken.None);
+        var userDeleted = await _userRepository.DeleteActiveUserAsync(_session.UserId!.Value, cancellationToken);
+        if(userDeleted)
+            await _mediator.Publish(_mapper.Map<AccountDeletedEvent>(_session), CancellationToken.None);
         return Unit.Value;
     }
 }

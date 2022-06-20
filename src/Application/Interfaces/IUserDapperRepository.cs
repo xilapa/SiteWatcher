@@ -6,5 +6,5 @@ namespace SiteWatcher.Application.Interfaces;
 public interface IUserDapperRepository
 {
     Task<UserViewModel> GetUserAsync(string googleId, CancellationToken cancellationToken);
-    Task DeleteActiveUserAsync(UserId userId, CancellationToken cancellationToken);
+    Task<bool> DeleteActiveUserAsync(UserId userId, CancellationToken cancellationToken);
 }
