@@ -10,13 +10,13 @@ public class DeactivateAccountCommand : IRequest
 public class DeactivateAccountCommandHandler : IRequestHandler<DeactivateAccountCommand>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IUnityOfWork _uow;
+    private readonly IUnitOfWork _uow;
     private readonly ISession _session;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
     public DeactivateAccountCommandHandler(IUserRepository userRepository,
-        IUnityOfWork uow, ISession session, IMediator mediator, IMapper mapper)
+        IUnitOfWork uow, ISession session, IMediator mediator, IMapper mapper)
     {
         _userRepository = userRepository;
         _uow = uow;

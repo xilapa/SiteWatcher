@@ -20,14 +20,14 @@ public class UpdateUserCommand : Validable<UpdateUserCommand>, IRequest<ICommand
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ICommandResult<UpdateUserResult>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly IUnityOfWork _uow;
+    private readonly IUnitOfWork _uow;
     private readonly IAuthService _authService;
     private readonly IMapper _mapper;
     private readonly ISession _session;
 
     public UpdateUserCommandHandler(
         IUserRepository userRepository,
-        IUnityOfWork uow,
+        IUnitOfWork uow,
         IAuthService authService,
         IMapper mapper,
         ISession session)

@@ -15,11 +15,11 @@ namespace SiteWatcher.Infra;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services) where TContext : DbContext, IUnityOfWork
+    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services) where TContext : DbContext, IUnitOfWork
     {
         // Making explicit that the context is the same for all repositories
         services.AddDbContext<TContext>(ServiceLifetime.Scoped);
-        services.AddScoped<IUnityOfWork>(s => s.GetRequiredService<TContext>());
+        services.AddScoped<IUnitOfWork>(s => s.GetRequiredService<TContext>());
 
         // Add migrator
         services.AddScoped(typeof(DatabaseMigrator));

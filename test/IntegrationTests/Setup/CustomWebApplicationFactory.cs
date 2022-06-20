@@ -102,7 +102,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             return new SqliteContext(appSettings, mediator, _sqliteConnection!);
         });
 
-        services.AddScoped<IUnityOfWork>(_ => _.GetRequiredService<SiteWatcherContext>());
+        services.AddScoped<IUnitOfWork>(_ => _.GetRequiredService<SiteWatcherContext>());
 
         services.AddScoped<ISession>(srvc =>
         {

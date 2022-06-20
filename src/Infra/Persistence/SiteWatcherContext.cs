@@ -9,7 +9,7 @@ using SiteWatcher.Infra.Extensions;
 
 namespace SiteWatcher.Infra;
 
-public class SiteWatcherContext : DbContext, IUnityOfWork
+public class SiteWatcherContext : DbContext, IUnitOfWork
 {
     private readonly IAppSettings _appSettings;
     private readonly IMediator _mediator;

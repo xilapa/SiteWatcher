@@ -19,7 +19,7 @@ public class UpdateUserCommandTests
         userRepositoryMock
             .Setup(u => u.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<User?>(default));
-        var uow = new Mock<IUnityOfWork>().Object;
+        var uow = new Mock<IUnitOfWork>().Object;
         var authService = new Mock<IAuthService>().Object;
         var mapper = new Mock<IMapper>().Object;
         var session = new Mock<ISession>().Object;

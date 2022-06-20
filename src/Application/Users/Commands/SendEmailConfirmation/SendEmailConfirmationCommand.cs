@@ -10,9 +10,9 @@ public class SendEmailConfirmationCommandHandler : IRequestHandler<SendEmailConf
 {
     private readonly ISession _session;
     private readonly IUserRepository _userRepository;
-    private readonly IUnityOfWork _uow;
+    private readonly IUnitOfWork _uow;
 
-    public SendEmailConfirmationCommandHandler(ISession session, IUserRepository userRepository, IUnityOfWork uow)
+    public SendEmailConfirmationCommandHandler(ISession session, IUserRepository userRepository, IUnitOfWork uow)
     {
         _session = session;
         _userRepository = userRepository;

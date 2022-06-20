@@ -60,7 +60,7 @@ public class ConfirmEmailCommandTests
             .ReturnsAsync(user);
 
         var session = new Mock<ISession>().Object;
-        var uow = new Mock<IUnityOfWork>().Object;
+        var uow = new Mock<IUnitOfWork>().Object;
         var commandHandler = new ConfirmEmailCommandHandler(_authService, userRepository.Object, session, uow);
 
         // Act

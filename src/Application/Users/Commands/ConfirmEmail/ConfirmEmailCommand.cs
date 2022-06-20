@@ -15,9 +15,9 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, I
     private readonly IAuthService _authservice;
     private readonly IUserRepository _userRepository;
     private readonly ISession _session;
-    private readonly IUnityOfWork _uow;
+    private readonly IUnitOfWork _uow;
 
-    public ConfirmEmailCommandHandler(IAuthService authservice, IUserRepository userRepository, ISession session, IUnityOfWork uow)
+    public ConfirmEmailCommandHandler(IAuthService authservice, IUserRepository userRepository, ISession session, IUnitOfWork uow)
     {
         _authservice = authservice;
         _userRepository = userRepository;

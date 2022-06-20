@@ -1,6 +1,6 @@
 namespace SiteWatcher.Application.Interfaces;
 
-public interface IUnityOfWork : IDisposable
+public interface IUnitOfWork : IDisposable
 {
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

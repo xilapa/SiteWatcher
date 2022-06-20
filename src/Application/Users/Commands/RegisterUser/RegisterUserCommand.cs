@@ -30,12 +30,12 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, I
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
-    private readonly IUnityOfWork _uow;
+    private readonly IUnitOfWork _uow;
     private readonly IAuthService _authService;
     private readonly ISession _session;
 
     public RegisterUserCommandHandler(IMapper mapper, IUserRepository userRepository,
-        IUnityOfWork uow, IAuthService authService, ISession session)
+        IUnitOfWork uow, IAuthService authService, ISession session)
     {
         _mapper = mapper;
         _userRepository = userRepository;

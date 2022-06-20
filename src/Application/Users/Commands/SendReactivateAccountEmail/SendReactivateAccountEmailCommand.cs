@@ -14,9 +14,9 @@ public class SendReactivateAccountEmailCommandHandler : IRequestHandler<SendReac
 {
     private readonly IUserRepository _userRepository;
     private readonly ISession _session;
-    private readonly IUnityOfWork _uow;
+    private readonly IUnitOfWork _uow;
 
-    public SendReactivateAccountEmailCommandHandler(IUserRepository userRepository, ISession session, IUnityOfWork uow)
+    public SendReactivateAccountEmailCommandHandler(IUserRepository userRepository, ISession session, IUnitOfWork uow)
     {
         _userRepository = userRepository;
         _session = session;
