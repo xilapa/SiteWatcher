@@ -21,9 +21,11 @@ public class FakeCache : ICache
 
     public Task<string?> GetAndRemoveStringAsync(string key)
     {
-        var result = Cache.TryGetValue(key, out var value) ? value.ToString() : null;
+        Cache.TryGetValue(key, out var cacheEntry);
+        if (cacheEntry.Value is null)
+            return Task.FromResult<string?>(default);
         Cache.Remove(key);
-        return Task.FromResult(result);
+        return Task.FromResult(cacheEntry.Value.ToString());
     }
 
     public Task<byte[]?> GetAndRemoveBytesAsync(string key)
@@ -35,8 +37,9 @@ public class FakeCache : ICache
 
     public Task<string?> GetStringAsync(string key)
     {
-        var result = Cache.TryGetValue(key, out var value) ? value.ToString() : null;
-        return Task.FromResult(result);
+        Cache.TryGetValue(key, out var cacheEntry);
+        return cacheEntry.Value is null ? Task.FromResult<string?>(default)
+            : Task.FromResult(cacheEntry.Value.ToString());
     }
 
     public Task<byte[]?> GetBytesAsync(string key)
@@ -55,7 +58,8 @@ public class FakeCache : ICache
 
     public Task<T?> GetAsync<T>(string key)
     {
-        var objectJson = Cache.TryGetValue(key, out var value) ? value.ToString() : null;
+        var objectJson = Cache.TryGetValue(key, out var fakeCacheEntry) ?
+            fakeCacheEntry.Value.ToString() : null;
         if (string.IsNullOrEmpty(objectJson)) return Task.FromResult<T?>(default);
         var @object = JsonSerializer.Deserialize<T>(objectJson);
         return Task.FromResult(@object);
