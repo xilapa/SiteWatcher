@@ -32,11 +32,15 @@ public abstract class BaseTest
         _fixture = fixture;
     }
 
-    protected void LoginAs(UserViewModel userViewModel)
+    protected string LoginAs(UserViewModel userViewModel)
     {
         var token = _fixture.AppFactory.AuthServiceForTokens.GenerateLoginToken(userViewModel);
-        _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        LoginWithToken(token);
+        return token;
     }
+
+    protected void LoginWithToken(string token) =>
+        _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
     protected string SetRegisterToken(UserViewModel userViewModel)
     {
