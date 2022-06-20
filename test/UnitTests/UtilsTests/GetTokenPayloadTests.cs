@@ -14,10 +14,10 @@ public class GetTokenPayloadTests
     public void CorretPayloadIsReturned()
     {
         // Arrange
-        
+
         // Act
         var payload = Utils.GetTokenPayload(Token);
-        
+
         // Assert
         Assert.Equal(Payload, payload);
     }
