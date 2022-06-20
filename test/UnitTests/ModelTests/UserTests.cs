@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using Domain.Events;
+using FluentAssertions;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models;
@@ -18,6 +19,12 @@ public class UserTests
 
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
+
+        // Check email confirmation event
+        if (!emailConfirmed)
+            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedEvent);
+        else
+            user.DomainEvents.Should().BeEmpty();
     }
 
     [Theory]
@@ -28,7 +35,8 @@ public class UserTests
     {
         // Arrange
         var user = new User("googleId", "name", email, authEmail, ELanguage.English, ETheme.Dark, DateTime.Now);
-        var userUpdate = new UpdateUserInput()
+        user.ClearDomainEvents();
+        var userUpdate = new UpdateUserInput
         {
             Name = "name",
             Email = newEmail,
@@ -41,5 +49,11 @@ public class UserTests
 
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
+
+        // Check email confirmation event
+        if (!emailConfirmed)
+            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedEvent);
+        else
+            user.DomainEvents.Should().BeEmpty();
     }
 }

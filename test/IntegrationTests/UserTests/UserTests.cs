@@ -12,7 +12,12 @@ using SiteWatcher.Domain.Utils;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 using System.Runtime.CompilerServices;
+using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Users.Commands.ConfirmEmail;
+using SiteWatcher.Application.Users.Commands.RegisterUser;
+using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.IntegrationTests.Setup.TestServices;
 
 namespace IntegrationTests.UserTests;
 
@@ -148,7 +153,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         var userFromDb = await WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
-        // Verifing on cache
+        userFromDb.EmailConfirmed.Should().BeFalse();
+
+        // Verifying on cache
         FakeCache.Cache[userFromDb.SecurityStamp!]
             .Value
             .Should().Be(userFromDb.Id.ToString());
@@ -162,7 +169,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
             Times.Once);
 
-        // Verifing that the correct message was sent
+        // Verifying that the correct message was sent
         var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
         var message =
             MailMessageGenerator.EmailConfirmation(updateUserCommand.Name, updateUserCommand.Email, link,
@@ -173,6 +180,148 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         // Finalize
         await ResetTestData();
+    }
+
+    [Fact]
+    public async Task EmailConfirmationIsSentAfterUserCreation()
+    {
+        // Arrange
+        EmailServiceMock.Invocations.Clear();
+        var userViewModel = new UserViewModel
+        {
+            Name = "TestUser",
+            Email = "email-test-user@newemail.com"
+        };
+        SetRegisterToken(userViewModel);
+
+        var registerUserCommand = new RegisterUserCommand
+        {
+            Email = $"new-{userViewModel.Email}",
+            Language = ELanguage.BrazilianPortuguese,
+            Name = userViewModel.Name,
+            Theme = ETheme.Light
+        };
+
+        // Act
+        var result = await PostAsync("user/register", registerUserCommand);
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.Created);
+
+        result.HttpResponse!.Content
+            .Should()
+            .NotBeNull();
+
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.GoogleId == userViewModel.GetGoogleId()));
+
+        userFromDb.EmailConfirmed.Should().BeFalse();
+
+        // Verifying on cache
+        FakeCache.Cache[userFromDb.SecurityStamp!]
+            .Value
+            .Should().Be(userFromDb.Id.ToString());
+
+        FakeCache.Cache[userFromDb.SecurityStamp!]
+            .Expiration.TotalSeconds
+            .Should().Be(_emailConfirmationTokenExpiration);
+
+        // Verifying that email was sent only once
+        EmailServiceMock.Verify(e =>
+                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        // Verifying that the correct message was sent
+        var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
+        var message =
+            MailMessageGenerator.EmailConfirmation(registerUserCommand.Name, registerUserCommand.Email, link,
+                registerUserCommand.Language);
+
+        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
+            .Should().BeEquivalentTo(message);
+    }
+
+    [Fact]
+    public async Task EmailIsConfirmedWithValidToken()
+    {
+        // Arrange
+        FakeCache.Cache.Clear();
+        LoginAs(Users.Xulipa);
+        const string fakeToken = "TEST_TOKEN_EMAIL_CONFIRMATION";
+
+        // Ensuring that the user email is not confirmed
+        await WithDbContext(ctx =>
+                ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+                                                SET EmailConfirmed = 0,
+                                                SecurityStamp = '{fakeToken}'
+                                                WHERE Id = '{Users.Xulipa.Id}'"));
+
+        // Setting a fake token on cache
+        FakeCache.Cache[fakeToken] = new FakeCacheEntry(Users.Xulipa.Id, TimeSpan.Zero);
+        var confirmEmailCommand = new ConfirmEmailCommand {Token = fakeToken};
+
+        // Act
+        var result = await PutAsync("user/confirm-email", confirmEmailCommand);
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        // Checking that the user email is confirmed
+        var updatedUser = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
+
+        updatedUser.EmailConfirmed.Should().BeTrue();
+
+        // Verifying on cache that the token was removed
+        FakeCache.Cache.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task EmailIsNotConfirmedWithInvalidToken()
+    {
+        // Arrange
+        FakeCache.Cache.Clear();
+        LoginAs(Users.Xulipa);
+        const string fakeToken = "TEST_TOKEN_EMAIL_CONFIRMATION";
+
+        // Ensuring that the user email is not confirmed
+        await WithDbContext(ctx =>
+            ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+                                                SET EmailConfirmed = 0,
+                                                SecurityStamp = '{fakeToken}'
+                                                WHERE Id = '{Users.Xulipa.Id}'"));
+
+        // Setting a fake token on cache
+        var fakeTokenEntry = new FakeCacheEntry(Users.Xulipa.Id, TimeSpan.Zero);
+        FakeCache.Cache[fakeToken] = fakeTokenEntry;
+        var confirmEmailCommand = new ConfirmEmailCommand {Token = "INVALID_TOKEN"};
+
+        // Act
+        var result = await PutAsync("user/confirm-email", confirmEmailCommand);
+
+        result.GetTyped<WebApiResponse<object>>()!
+            .Messages[0]
+            .Should().Be(ApplicationErrors.INVALID_TOKEN);
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.BadRequest);
+
+        // Checking that the user email is confirmed
+        var updatedUser = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
+
+        updatedUser.EmailConfirmed
+            .Should().BeFalse();
+
+        // Verifying on cache that the token was removed
+        FakeCache.Cache[fakeToken]
+            .Should().Be(fakeTokenEntry);
     }
 
     private async Task ResetTestData()
