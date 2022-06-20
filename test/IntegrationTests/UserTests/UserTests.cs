@@ -25,6 +25,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 {
     private User _userXilapaWithoutChanges = null!;
     private int _emailConfirmationTokenExpiration;
+    private int _loginTokenExpiration;
 
     public UserTests(BaseTestFixture fixture) : base(fixture)
     { }
@@ -39,6 +40,11 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         _emailConfirmationTokenExpiration = (int) typeof(AuthService)
             .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
             .Single(f => f.Name == "EmailConfirmationTokenExpiration")
+            .GetValue(authServiceInstance)!;
+
+        _loginTokenExpiration = (int) typeof(AuthService)
+            .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
+            .Single(f => f.Name == "LoginTokenExpiration")
             .GetValue(authServiceInstance)!;
     }
 
@@ -322,6 +328,81 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         // Verifying on cache that the token was removed
         FakeCache.Cache[fakeToken]
             .Should().Be(fakeTokenEntry);
+    }
+
+    [Fact]
+    public async Task ManualEmailConfirmationIsSent()
+    {
+        // Arrange
+        EmailServiceMock.Invocations.Clear();
+        FakeCache.Cache.Clear();
+        LoginAs(Users.Xulipa);
+        // Ensuring that the user email is not confirmed
+        await WithDbContext(ctx =>
+            ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+                                                SET EmailConfirmed = 0
+                                                WHERE Id = '{Users.Xulipa.Id}'"));
+
+        // Act
+        var result = await PutAsync("user/resend-confirmation-email");
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        // Verifying that the cache entry was created
+        FakeCache.Cache
+            .Values.Count.Should().Be(1);
+
+        // Verifying that email was sent only once
+        EmailServiceMock.Verify(e =>
+                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        // Verifying that the correct message was sent
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
+        var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
+        var message =
+            MailMessageGenerator.EmailConfirmation(Users.Xulipa.Name, Users.Xulipa.Email, link,
+                Users.Xulipa.Language);
+
+        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
+            .Should().BeEquivalentTo(message);
+    }
+
+    [Fact]
+    public async Task UserNeedsToLoginAgainAfterLogoutFromAllDevices()
+    {
+        // Arrange
+        FakeCache.Cache.Clear();
+        var token = LoginAs(Users.Xilapa);
+        var cachekey = CacheKeys.InvalidUser(Users.Xilapa.Id);
+
+        // Act
+        var result = await PostAsync("user/logout-all-devices");
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        // Verifying on cache that there is no whitelisted token
+        var cacheEntry = await FakeCache.GetAsync<string[]>(cachekey);
+        cacheEntry.Should().BeEmpty();
+
+        // Verifying that the correct expiration was set on cache
+        FakeCache.Cache[cachekey]
+            .Expiration.TotalSeconds
+            .Should().Be(_loginTokenExpiration);
+
+        // Verifying that the token does not work anymore
+        var newResult = await PostAsync("user/logout-all-devices");
+
+        newResult.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.Forbidden);
     }
 
     private async Task ResetTestData()

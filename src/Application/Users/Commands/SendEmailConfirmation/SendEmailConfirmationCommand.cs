@@ -21,7 +21,8 @@ public class SendEmailConfirmationCommandHandler : IRequestHandler<SendEmailConf
 
     public async Task<Unit> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetAsync(u => u.Id == _session.UserId && u.Active, cancellationToken);
+        var user = await _userRepository
+            .GetAsync(u => u.Id == _session.UserId && u.Active && !u.EmailConfirmed, cancellationToken);
         if(user is null)
             return Unit.Value;
 
