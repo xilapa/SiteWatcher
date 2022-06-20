@@ -167,6 +167,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.EmailConfirmed.Should().BeFalse();
+        userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
 
         // Verifying on cache
         FakeCache.Cache[userFromDb.SecurityStamp!]
@@ -179,7 +180,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         // Verifying that email was sent only once
         EmailServiceMock.Verify(e =>
-            e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
+                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
             Times.Once);
 
         // Verifying that the correct message was sent
@@ -200,6 +201,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
     {
         // Arrange
         EmailServiceMock.Invocations.Clear();
+        FakeCache.Cache.Clear();
         var userViewModel = new UserViewModel
         {
             Name = "TestUser",
@@ -266,7 +268,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         // Ensuring that the user email is not confirmed
         await WithDbContext(ctx =>
-                ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+            ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET EmailConfirmed = 0,
                                                 SecurityStamp = '{fakeToken}'
                                                 WHERE Id = '{Users.Xulipa.Id}'"));
@@ -358,9 +360,20 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .Be(HttpStatusCode.OK);
 
+        // Verifying that the user was updated on database
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
+
+        userFromDb.SecurityStamp.Should().NotBeNull();
+        userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
+
         // Verifying that the cache entry was created
         FakeCache.Cache
             .Values.Count.Should().Be(1);
+
+        FakeCache.Cache[userFromDb.SecurityStamp!]
+            .Value
+            .Should().Be(userFromDb.Id.ToString());
 
         // Verifying that email was sent only once
         EmailServiceMock.Verify(e =>
@@ -368,8 +381,6 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             Times.Once);
 
         // Verifying that the correct message was sent
-        var userFromDb = await WithDbContext(ctx =>
-            ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
         var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
         var message =
             MailMessageGenerator.EmailConfirmation(Users.Xulipa.Name, Users.Xulipa.Email, link,
@@ -419,7 +430,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         LoginAs(Users.Xilapa);
         EmailServiceMock.Invocations.Clear();
 
-        // Ensuring that the user email is not confirmed
+        // Ensuring that the user is deactivated
         await WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET Active = 0,
@@ -441,6 +452,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         userFromDb.SecurityStamp.Should().NotBeNull();
         userFromDb.Active.Should().BeFalse();
+        userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
 
         // Verifying on cache
         FakeCache.Cache[userFromDb.SecurityStamp!]
@@ -464,6 +476,37 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
             .Should().BeEquivalentTo(message);
+
+        // Finalize
+        await ResetTestData();
+    }
+
+    [Fact]
+    public async Task AccountIsDeactivated()
+    {
+        // Arrange
+        LoginAs(Users.Xilapa);
+
+        // Ensuring that the user email is active
+        await WithDbContext(ctx =>
+            ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
+                                                SET Active = 1,
+                                                    SecurityStamp = NULL
+                                                WHERE Id = '{Users.Xilapa.Id}'"));
+
+        // Act
+        var result = await PutAsync("user/deactivate");
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        var userFromDb = await WithDbContext(ctx =>
+            ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
+
+        userFromDb.Active.Should().BeFalse();
+        userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
 
         // Finalize
         await ResetTestData();
