@@ -46,11 +46,11 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options => {
     options.AddPolicy(name: appSettings.CorsPolicy,
-        builder =>
+        policyBuilder =>
         {
-            builder.WithOrigins(appSettings.FrontEndUrl);
-            builder.AllowAnyHeader();
-            builder.WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE");
+            policyBuilder.WithOrigins(appSettings.FrontEndUrl);
+            policyBuilder.AllowAnyHeader();
+            policyBuilder.WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE");
         });
 });
 
@@ -98,6 +98,4 @@ app.Run();
 // To make Program visible to integration tests
 // Official documentation recomendation
 // https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0#basic-tests-with-the-default-webapplicationfactory
-#pragma warning disable CA1050
 public partial class Program { }
-#pragma warning restore CA1050
