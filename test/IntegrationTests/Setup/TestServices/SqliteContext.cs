@@ -20,9 +20,7 @@ public class SqliteContext : SiteWatcherContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder
-            .UseSqlite(_connection)
-            .EnableSensitiveDataLogging()
-            .LogTo(Console.WriteLine);
+            .UseSqlite(_connection);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
