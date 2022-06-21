@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using SiteWatcher.IntegrationTests.Setup;
-using SiteWatcher.WebAPI;
 
 namespace IntegrationTests.Setup;
 
 public class BaseTestFixture : IAsyncLifetime
 {
-    public CustomWebApplicationFactory<Startup> AppFactory = null!;
+    public CustomWebApplicationFactory<Program> AppFactory = null!;
     public HttpClient Client = null!;
 
     /// <summary>
@@ -16,7 +15,7 @@ public class BaseTestFixture : IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        AppFactory = new CustomWebApplicationFactory<Startup>(Options);
+        AppFactory = new CustomWebApplicationFactory<Program>(Options);
         Client = AppFactory.CreateClient(new WebApplicationFactoryClientOptions {AllowAutoRedirect = false});
         await using var context = AppFactory.GetContext();
         await context.Database.EnsureCreatedAsync();
