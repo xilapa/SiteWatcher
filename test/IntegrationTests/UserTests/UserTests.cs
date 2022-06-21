@@ -155,6 +155,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         // Act
         var result = await PutAsync("user", updateUserCommand);
 
+        // Await fire and forget to execute
+        await Task.Delay(300);
+
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
@@ -220,6 +223,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         // Act
         var result = await PostAsync("user/register", registerUserCommand);
+
+        // Await fire and forget to execute
+        await Task.Delay(300);
 
         // Assert
         result.HttpResponse!.StatusCode
@@ -356,6 +362,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         // Act
         var result = await PutAsync("user/resend-confirmation-email");
 
+        // Await fire and forget to execute
+        await Task.Delay(300);
+
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
@@ -441,6 +450,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         // Act
         var result = await PutAsync("user/send-reactivate-account-email", command);
+
+        // Await fire and forget to execute
+        await Task.Delay(300);
 
         // Assert
         result.HttpResponse!.StatusCode

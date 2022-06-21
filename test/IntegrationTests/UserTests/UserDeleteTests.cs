@@ -47,6 +47,9 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
         // Act
         var result = await DeleteAsync("user");
 
+        // Await fire and forget to execute
+        await Task.Delay(300);
+
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
