@@ -5,13 +5,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
+using StackExchange.Redis;
 using ISession = SiteWatcher.Application.Interfaces.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup;
@@ -20,6 +23,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 {
     private IDictionary<Type, object>? _servicesToReplace;
     private string _connectionString;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly SqliteConnection? _sqliteConnection;
     public readonly Mock<IEmailService> EmailServiceMock;
     public readonly IAuthService AuthServiceForTokens;
@@ -30,6 +34,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     public CustomWebApplicationFactory(Action<CustomWebApplicationOptions>? options = null)
     {
+        var loggerFactoryMock = new Mock<ILoggerFactory>();
+        loggerFactoryMock.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(new Mock<ILogger>().Object);
+        _loggerFactory = loggerFactoryMock.Object;
+
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
         ConfigureTest(options);
         _sqliteConnection = new SqliteConnection(_connectionString);
@@ -86,8 +95,33 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     private void ReplaceServices(IServiceCollection services)
     {
-        // Mock EmailService
+        // Services to remove
+        var servicesToRemove = new[]
+        {
+            typeof(IConnectionMultiplexer),
+            typeof(ICache),
+            typeof(DbContext),
+            typeof(IUnitOfWork),
+            typeof(ISession),
+            typeof(IAppSettings),
+            typeof(IGoogleSettings),
+            typeof(IEmailSettings),
+            typeof(IEmailService),
+            typeof(IDapperContext),
+            typeof(IDapperQueries),
+            typeof(ILoggerFactory)
+        };
+
+        var descriptorsToRemove = services
+            .Where(desc => servicesToRemove.Contains(desc.ServiceType))
+            .ToArray();
+
+        foreach (var serviceDescriptor in descriptorsToRemove)
+            services.Remove(serviceDescriptor);
+
+        // Mock EmailService and LoggerFactory
         services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
+        services.AddTransient<ILoggerFactory>(_ => _loggerFactory);
 
         // Services to replace
         // Cache, DbContext, UnitOfWork, Session,
