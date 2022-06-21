@@ -96,4 +96,8 @@ app.MapControllers();
 app.Run();
 
 // To make Program visible to integration tests
+// Official documentation recomendation
+// https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0#basic-tests-with-the-default-webapplicationfactory
+#pragma warning disable CA1050
 public partial class Program { }
+#pragma warning restore CA1050
