@@ -41,11 +41,19 @@ This project is currently using:
 - EF Core 6;
 - Swagger;
 - PostgreSQL;
+- Dapper;
 - FluentValidation;
 - MediatR;
 - Redis;
 - BenchmarkDotNet;
 - Roslynator;
 - StronglyTypedId;
+- AutoMapper;
+- MailKit;
+- xUnit;
+- Polly;
+- FluentAssertions;
+- Moq;
+- ReflectionMagic;
 
 To know more about internal decisions see the [/docs](https://github.com/xilapa/SiteWatcher/tree/main/docs "/docs") folder.
