@@ -4,6 +4,7 @@ public static class AuthenticationDefaults
 {
     public const string Roles = "roles";
     public const string State = "state";
+    public const string GoogleAuthClient = nameof(GoogleAuthClient);
 
     public static class ClaimTypes
     {
@@ -34,5 +35,4 @@ public static class AuthenticationDefaults
         public const string Login = "login-auth";
         public const string Register = "register-auth";
     }
-    
 }

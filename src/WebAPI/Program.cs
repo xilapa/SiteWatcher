@@ -42,7 +42,7 @@ builder.Services.AddSessao()
 
 builder.Services.ConfigureAuth(appSettings);
 
-builder.Services.AddHttpClient();
+builder.Services.AddHttpHandler();
 
 builder.Services.AddCors(options => {
     options.AddPolicy(name: appSettings.CorsPolicy,

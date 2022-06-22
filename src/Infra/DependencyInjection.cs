@@ -1,9 +1,11 @@
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.Email;
@@ -77,7 +79,9 @@ public static class DependencyInjection
 
     public static IServiceCollection AddHttpHandler(this IServiceCollection services)
     {
-        services.AddScoped<IHttpHandler, HttpHandler>();
+        services.AddHttpClient(AuthenticationDefaults.GoogleAuthClient)
+            .AddPolicyHandler(HttpRetryPolicies.TransientErrorsRetryPolicy)
+            .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(5)));
         return services;
     }
 }
