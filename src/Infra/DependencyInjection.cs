@@ -1,16 +1,13 @@
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Polly;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization;
-using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.Email;
 using SiteWatcher.Infra.FireAndForget;
-using SiteWatcher.Infra.Http;
 using SiteWatcher.Infra.Repositories;
 using StackExchange.Redis;
 
@@ -74,14 +71,6 @@ public static class DependencyInjection
     public static IServiceCollection AddFireAndForgetService(this IServiceCollection services)
     {
         services.AddScoped<IFireAndForgetService, FireAndForgetService>();
-        return services;
-    }
-
-    public static IServiceCollection AddHttpHandler(this IServiceCollection services)
-    {
-        services.AddHttpClient(AuthenticationDefaults.GoogleAuthClient)
-            .AddPolicyHandler(HttpRetryPolicies.TransientErrorsRetryPolicy)
-            .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(5)));
         return services;
     }
 }

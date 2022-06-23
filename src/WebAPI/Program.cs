@@ -42,7 +42,7 @@ builder.Services.AddSessao()
 
 builder.Services.ConfigureAuth(appSettings);
 
-builder.Services.AddHttpHandler();
+builder.Services.AddHttpClient();
 
 builder.Services.AddCors(options => {
     options.AddPolicy(name: appSettings.CorsPolicy,
@@ -96,6 +96,6 @@ app.MapControllers();
 app.Run();
 
 // To make Program visible to integration tests
-// Official documentation recomendation
+// Official documentation recommendation
 // https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0#basic-tests-with-the-default-webapplicationfactory
 public partial class Program { }

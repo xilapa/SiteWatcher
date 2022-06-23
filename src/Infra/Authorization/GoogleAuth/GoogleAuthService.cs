@@ -1,8 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra.Authorization.Constants;
-using static SiteWatcher.Infra.Http.HttpClientExtensions;
+using SiteWatcher.Infra.Http;
+using static SiteWatcher.Infra.Http.HttpRetryPolicies;
 
 namespace SiteWatcher.Infra.Authorization.GoogleAuth;
 
@@ -10,11 +12,14 @@ public class GoogleAuthService : IGoogleAuthService
 {
     private readonly HttpClient _httpClient;
     private readonly IGoogleSettings _googleSettings;
+    private readonly ILogger<GoogleAuthService> _logger;
 
-    public GoogleAuthService(IHttpClientFactory httpClientFactory, IGoogleSettings googleSettings)
+    public GoogleAuthService(IHttpClientFactory httpClientFactory, IGoogleSettings googleSettings,
+        ILogger<GoogleAuthService> logger)
     {
         _httpClient = httpClientFactory.CreateClient(AuthenticationDefaults.GoogleAuthClient);
         _googleSettings = googleSettings;
+        _logger = logger;
     }
 
     public async Task<GoogleTokenResult> ExchangeCode(string code, CancellationToken cancellationToken)
@@ -29,7 +34,8 @@ public class GoogleAuthService : IGoogleAuthService
         };
 
         var response = await _httpClient
-            .PostAsync<GoogleTokenMetadata>(_googleSettings.TokenEndpoint, requestBody, cancellationToken);
+            .PostAsync<GoogleTokenMetadata>(_googleSettings.TokenEndpoint, requestBody, _logger,
+                TransientErrorsRetryWithTimeout, cancellationToken);
         if (response is null)
             return new GoogleTokenResult(false);
         var token = new JwtSecurityTokenHandler().ReadJwtToken(response.IdToken);
