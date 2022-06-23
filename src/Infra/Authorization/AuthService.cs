@@ -66,8 +66,8 @@ public class AuthService : IAuthService
     {
         var tokenClaimsEnumerated = tokenClaims as Claim[] ?? tokenClaims.ToArray();
         var locale = tokenClaimsEnumerated
-            .DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, string.Empty))
-            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale)!.Value
+            .DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-US"))
+            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale)?.Value
             .Split("-").First();
 
         var claims = new[]

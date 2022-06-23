@@ -20,12 +20,14 @@ public class GoogleAuthenticationCommandValidator : AbstractValidator<GoogleAuth
         RuleFor(cmmd => cmmd.Scope)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
+            .WithMessage(ApplicationErrors.GOOGLE_AUTH_ERROR)
             .Must(scope => !IsMissingScope(googleSettings.Scopes, scope))
             .WithMessage(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
         RuleFor(cmmd => cmmd.State)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
+            .WithMessage(ApplicationErrors.GOOGLE_AUTH_ERROR)
             .MustAsync((state, cancellationToken) => StateMatch(state))
             .WithMessage(ApplicationErrors.GOOGLE_AUTH_ERROR);
 

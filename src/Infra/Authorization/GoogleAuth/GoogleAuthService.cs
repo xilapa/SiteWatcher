@@ -32,7 +32,7 @@ public class GoogleAuthService : IGoogleAuthService
             .PostAsync<GoogleTokenMetadata>(_googleSettings.TokenEndpoint, requestBody, cancellationToken);
         if (response is null)
             return new GoogleTokenResult(false);
-        var token = new JwtSecurityTokenHandler().ReadJwtToken(response!.IdToken);
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(response.IdToken);
         var googleId = token.Claims.First(c => c.Type == AuthenticationDefaults.Google.Id).Value;
         var profilePic = token.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.Google.Picture)?.Value;
         return new GoogleTokenResult(googleId, profilePic, token.Claims);

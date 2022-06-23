@@ -9,8 +9,8 @@ public class TestGoogleSettings : IGoogleSettings
         ClientId  = "GoogleClientId";
         ClientSecret = "GoogleClientSecret";
         AuthEndpoint = "GoogleAuthEndpoint";
-        TokenEndpoint = "GoogleTokenEndpoint";
-        Scopes = "GoogleScopes";
+        TokenEndpoint = "https://faketoken.endpoint.com";
+        Scopes = "Google Scopes";
         RedirectUri = "GoogleRedirectUri";
 
         StateValue = new byte[128];

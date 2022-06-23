@@ -4,16 +4,6 @@ namespace SiteWatcher.Infra.Authorization.GoogleAuth;
 
 public class GoogleTokenMetadata
 {
-    public GoogleTokenMetadata()
-    {
-        this.Success = true;
-    }
-
-    public GoogleTokenMetadata(bool success)
-    {
-        this.Success = success;
-    }
-
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; }
 
