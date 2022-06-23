@@ -18,6 +18,7 @@ public abstract class BaseTest
 {
     private readonly BaseTestFixture _fixture;
     public Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
+    public Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
     protected DateTime CurrentTime
     {

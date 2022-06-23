@@ -26,6 +26,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private readonly ILoggerFactory _loggerFactory;
     private readonly SqliteConnection? _sqliteConnection;
     public readonly Mock<IEmailService> EmailServiceMock;
+    public readonly Mock<IHttpClientFactory> HttpClientFactoryMock;
     public readonly IAuthService AuthServiceForTokens;
     public DateTime CurrentTime { get; set; }
     public IAppSettings TestSettings { get; }
@@ -40,6 +41,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         _loggerFactory = loggerFactoryMock.Object;
 
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
+        HttpClientFactoryMock = new Mock<IHttpClientFactory>();
         ConfigureTest(options);
         _sqliteConnection = new SqliteConnection(_connectionString);
         _sqliteConnection.Open();
@@ -109,7 +111,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IEmailService),
             typeof(IDapperContext),
             typeof(IDapperQueries),
-            typeof(ILoggerFactory)
+            typeof(ILoggerFactory),
+            typeof(IHttpClientFactory)
         };
 
         var descriptorsToRemove = services
@@ -119,9 +122,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         foreach (var serviceDescriptor in descriptorsToRemove)
             services.Remove(serviceDescriptor);
 
-        // Mock EmailService and LoggerFactory
+        // Mock EmailService, LoggerFactory and HttpClientFactory
         services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
         services.AddTransient<ILoggerFactory>(_ => _loggerFactory);
+        services.AddSingleton<IHttpClientFactory>(HttpClientFactoryMock.Object);
 
         // Services to replace
         // Cache, DbContext, UnitOfWork, Session,
