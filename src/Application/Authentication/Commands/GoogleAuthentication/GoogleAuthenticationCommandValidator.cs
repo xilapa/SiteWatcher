@@ -44,8 +44,6 @@ public class GoogleAuthenticationCommandValidator : AbstractValidator<GoogleAuth
         var crrIdx = 0;
         var sepIdx = 0;
         var sepDist = scopeSpan.IndexOf(' ');
-        if (sepDist == -1)
-            return false;
 
         while (true)
         {
