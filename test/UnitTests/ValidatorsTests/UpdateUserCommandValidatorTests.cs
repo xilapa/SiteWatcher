@@ -52,7 +52,7 @@ public class UpdateUserCommandValidatorTests
 
     [Theory]
     [MemberData(nameof(UpdateUserData))]
-    public async Task Teste(UpdateUserCommand command, string[] messages)
+    public async Task Test(UpdateUserCommand command, string[] messages)
     {
         // Arrange
         var validator = new UpdateUserCommandValidator();

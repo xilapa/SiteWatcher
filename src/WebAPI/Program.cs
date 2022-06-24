@@ -8,6 +8,7 @@ using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Authorization.Middleware;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
+using DependencyInjection = SiteWatcher.Infra.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +37,7 @@ builder.Services.AddApplication();
 
 builder.Services.AddRedisCache(appSettings);
 
-builder.Services.AddSessao()
+DependencyInjection.AddSession(builder.Services)
     .AddEmailService()
     .AddFireAndForgetService();
 

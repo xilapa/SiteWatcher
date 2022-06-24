@@ -55,7 +55,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddSessao(this IServiceCollection services)
+    public static IServiceCollection AddSession(this IServiceCollection services)
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ISession, Session>();
