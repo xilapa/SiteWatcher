@@ -4,11 +4,18 @@ namespace SiteWatcher.Domain.Models.Common;
 
 public abstract class BaseModel<IdType> : IBaseModel
 {
-    protected BaseModel(IdType id)
+    // ctor for EF
+    protected BaseModel()
+    {
+        _domainEvents = new List<BaseEvent>();
+    }
+
+    protected BaseModel(IdType id, DateTime currentDate) : this()
     {
         Id = id;
         Active = true;
-        _domainEvents = new List<BaseEvent>();
+        CreatedAt = currentDate;
+        LastUpdatedAt = currentDate;
     }
 
     public IdType Id { get; }
