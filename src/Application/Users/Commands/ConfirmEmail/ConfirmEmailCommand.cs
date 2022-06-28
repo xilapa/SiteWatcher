@@ -30,15 +30,15 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, I
         var result = new CommandResult<object>();
         var userId = await _authservice.GetUserIdFromConfirmationToken(request.Token);
         if(userId is null)
-            return result.WithError(ApplicationErrors.INVALID_TOKEN);
+            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         var user = await _userRepository.GetAsync(u => u.Id == userId && u.Active && !u.EmailConfirmed, cancellationToken);
         if(user is null)
-            return result.WithError(ApplicationErrors.INVALID_TOKEN);
+            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         var success = user!.ConfirmEmail(request.Token, _session.Now);
         if(!success)
-            result.SetError(ApplicationErrors.INVALID_TOKEN);
+            result.SetError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         await _uow.SaveChangesAsync(CancellationToken.None);
         return result;

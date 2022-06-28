@@ -45,7 +45,7 @@ public class ConfirmEmailCommandTests
             .Count().Should().Be(1);
 
         result.Errors.First()
-            .Should().Be(ApplicationErrors.INVALID_TOKEN);
+            .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class ConfirmEmailCommandTests
             .Count().Should().Be(1);
 
         result.Errors.First()
-            .Should().Be(ApplicationErrors.INVALID_TOKEN);
+            .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         user.EmailConfirmed.Should().BeFalse();
         user.SecurityStamp.Should().BeNull();

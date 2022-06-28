@@ -47,7 +47,7 @@ public class ReactivateAccountCommandTests
             .Count().Should().Be(1);
 
         result.Errors.First()
-            .Should().Be(ApplicationErrors.INVALID_TOKEN);
+            .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ReactivateAccountCommandTests
             .Count().Should().Be(1);
 
         result.Errors.First()
-            .Should().Be(ApplicationErrors.INVALID_TOKEN);
+            .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 
         user.Active.Should().BeFalse();
         user.SecurityStamp.Should().BeNull();

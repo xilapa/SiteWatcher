@@ -31,15 +31,15 @@ public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccount
         var result = new CommandResult<object>();
         var userId = await _authservice.GetUserIdFromConfirmationToken(request.Token);
         if(userId is null)
-            return result.WithError(ApplicationErrors.INVALID_TOKEN);
+            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 
         var user = await _userRepository.GetAsync(u => u.Id == userId && !u.Active, cancellationToken);
         if(user is null)
-            return result.WithError(ApplicationErrors.INVALID_TOKEN);
+            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 
         var success = user.ReactivateAccount(request.Token, _session.Now);
         if(!success)
-            result.SetError(ApplicationErrors.INVALID_TOKEN);
+            result.SetError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 
         await _uow.SaveChangesAsync(CancellationToken.None);
         return result;

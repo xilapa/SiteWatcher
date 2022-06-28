@@ -327,7 +327,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         result.GetTyped<WebApiResponse<object>>()!
             .Messages[0]
-            .Should().Be(ApplicationErrors.INVALID_TOKEN);
+            .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         // Assert
         result.HttpResponse!.StatusCode
@@ -593,7 +593,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         var typedResult = result.GetTyped<WebApiResponse<object>>();
         typedResult!.Messages.Count.Should().Be(1);
-        typedResult.Messages[0].Should().Be(ApplicationErrors.INVALID_TOKEN);
+        typedResult.Messages[0].Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         // Checking that the user was reactivated
         var userFromDb = await WithDbContext(ctx =>
