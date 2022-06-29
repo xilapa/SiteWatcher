@@ -55,14 +55,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     private void ConfigureTest(Action<CustomWebApplicationOptions>? options)
     {
-        if (options is null)
-        {
-            CurrentTime = DateTime.Now;
-            return;
-        }
-
         var optionsInstance = new CustomWebApplicationOptions();
-        options(optionsInstance);
+        options?.Invoke(optionsInstance);
         CurrentTime = optionsInstance.InitalDate ?? DateTime.Now;
         _servicesToReplace = optionsInstance.ReplacementServices;
         _connectionString = optionsInstance.DatabaseType switch
