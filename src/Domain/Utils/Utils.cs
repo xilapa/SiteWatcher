@@ -1,6 +1,8 @@
 ﻿using System.Buffers.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Models.Alerts.WatchModes;
 
 namespace SiteWatcher.Domain.Utils;
 
@@ -13,6 +15,11 @@ public static class Utils
     private const byte SlashByte = (byte) '/';
     private const byte DefaultByte = default!;
     private const char HyphenChar = '-';
+    private static readonly Dictionary<Type, EWatchMode> WatchModes = new()
+    {
+        {typeof(AnyChangesWatch), EWatchMode.AnyChanges},
+        {typeof(TermWatch), EWatchMode.Term}
+    };
 
     public static string GenerateSafeRandomBase64String()
     {
@@ -66,4 +73,7 @@ public static class Utils
 
         return token[firstDotIdx .. (firstDotIdx + secondDotIdx)];
     }
+
+    public static EWatchMode? GetWatchModeEnumByType(WatchMode watchMode) =>
+        WatchModes[watchMode.GetType()];
 }

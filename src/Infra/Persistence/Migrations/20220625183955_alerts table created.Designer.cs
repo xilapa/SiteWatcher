@@ -2,18 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SiteWatcher.Infra;
 
 #nullable disable
 
-namespace SiteWatcher.Infra.Migrations
+namespace Infra.Persistence.Migrations
 {
     [DbContext(typeof(SiteWatcherContext))]
-    partial class SiteWatcherContextModelSnapshot : ModelSnapshot
+    [Migration("20220625183955_alerts table created")]
+    partial class alertstablecreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,42 +60,6 @@ namespace SiteWatcher.Infra.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Alerts", "siteWatcher_webApi");
-                });
-
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("AlertId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp");
-
-                    b.Property<bool>("FirstWatchDone")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("LastUpdatedAt")
-                        .HasColumnType("timestamp");
-
-                    b.Property<char>("WatchMode")
-                        .HasColumnType("char");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AlertId")
-                        .IsUnique();
-
-                    b.ToTable("WatchModes", "siteWatcher_webApi");
-
-                    b.HasDiscriminator<char>("WatchMode");
                 });
 
             modelBuilder.Entity("SiteWatcher.Domain.Models.User", b =>
@@ -144,27 +110,6 @@ namespace SiteWatcher.Infra.Migrations
                     b.ToTable("Users", "siteWatcher_webApi");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.AnyChangesWatch", b =>
-                {
-                    b.HasBaseType("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode");
-
-                    b.Property<string>("HtmlText")
-                        .HasColumnType("text");
-
-                    b.HasDiscriminator().HasValue('A');
-                });
-
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.TermWatch", b =>
-                {
-                    b.HasBaseType("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode");
-
-                    b.Property<string>("Term")
-                        .IsRequired()
-                        .HasColumnType("varchar(64)");
-
-                    b.HasDiscriminator().HasValue('T');
-                });
-
             modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Alert", b =>
                 {
                     b.HasOne("SiteWatcher.Domain.Models.User", null)
@@ -195,49 +140,6 @@ namespace SiteWatcher.Infra.Migrations
                         });
 
                     b.Navigation("Site")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode", b =>
-                {
-                    b.HasOne("SiteWatcher.Domain.Models.Alerts.Alert", null)
-                        .WithOne("WatchMode")
-                        .HasForeignKey("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode", "AlertId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.TermWatch", b =>
-                {
-                    b.OwnsMany("SiteWatcher.Domain.Models.Alerts.WatchModes.TermOccurrence", "Occurrences", b1 =>
-                        {
-                            b1.Property<int>("TermWatchId")
-                                .HasColumnType("integer");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("Context")
-                                .IsRequired()
-                                .HasColumnType("varchar(512)");
-
-                            b1.HasKey("TermWatchId", "Id");
-
-                            b1.ToTable("TermOccurrences", "siteWatcher_webApi");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TermWatchId");
-                        });
-
-                    b.Navigation("Occurrences");
-                });
-
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Alert", b =>
-                {
-                    b.Navigation("WatchMode")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

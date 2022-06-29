@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Infra.Configuration;
@@ -50,5 +51,10 @@ public class UserMapping : BaseModelMapping<User,UserId>
 
         builder.HasIndex(u => u.SecurityStamp, "IX_User_SecurityStamp")
                 .IsUnique(false);
+
+        builder.HasMany<Alert>()
+                .WithOne()
+                .IsRequired()
+                .HasForeignKey(a => a.UserId);
     }
 }

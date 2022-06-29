@@ -20,8 +20,10 @@ public class UpdateUserCommandValidatorTests
             },
             new []
             {
-                ApplicationErrors.NAME_NOT_BE_NULL_OR_EMPTY, ApplicationErrors.EMAIL_NOT_BE_NULL_OR_EMPTY,
-                ApplicationErrors.LANGUAGE_IS_INVALID, ApplicationErrors.THEME_IS_INVALID
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateUserCommand.Name)),
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateUserCommand.Email)),
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)),
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme))
             }
         };
 
@@ -34,7 +36,11 @@ public class UpdateUserCommandValidatorTests
                 Name = "Xi",
                 Theme = ETheme.Dark
             },
-            new [] {ApplicationErrors.NAME_MINIMUM_LENGTH, ApplicationErrors.EMAIL_IS_INVALID}
+            new []
+            {
+                ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateUserCommand.Name)),
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Email))
+            }
         };
 
         yield return new object[]

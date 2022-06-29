@@ -5,6 +5,7 @@ using Npgsql;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Exceptions;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Infra.Extensions;
 
 namespace SiteWatcher.Infra;
@@ -65,4 +66,5 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Alert> Alerts { get; set; }
 }

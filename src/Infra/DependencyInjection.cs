@@ -30,6 +30,7 @@ public static class DependencyInjection
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAlertRepository, AlertRepository>();
         return services;
     }
 
@@ -71,6 +72,12 @@ public static class DependencyInjection
     public static IServiceCollection AddFireAndForgetService(this IServiceCollection services)
     {
         services.AddScoped<IFireAndForgetService, FireAndForgetService>();
+        return services;
+    }
+
+    public static IServiceCollection AddIdHasher(this IServiceCollection services)
+    {
+        services.AddSingleton<IIdHasher, IdHasher.IdHasher>();
         return services;
     }
 }

@@ -39,7 +39,8 @@ builder.Services.AddRedisCache(appSettings);
 
 DependencyInjection.AddSession(builder.Services)
     .AddEmailService()
-    .AddFireAndForgetService();
+    .AddFireAndForgetService()
+    .AddIdHasher();
 
 builder.Services.ConfigureAuth(appSettings);
 

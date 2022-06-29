@@ -8,11 +8,11 @@ namespace SiteWatcher.Domain.Models;
 public class User : BaseModel<UserId>
 {
     // ctor for EF
-    protected User() : base(new UserId(Guid.NewGuid()))
+    protected User() : base()
     { }
 
     public User(string googleId, string name, string email, string authEmail, ELanguage language, ETheme theme,
-        DateTime currentDate) : this()
+        DateTime currentDate) : base(new UserId(), currentDate)
     {
         GoogleId = googleId;
         Name = name;
@@ -20,8 +20,6 @@ public class User : BaseModel<UserId>
         EmailConfirmed = email == authEmail;
         Language = language;
         Theme = theme;
-        CreatedAt = currentDate;
-        LastUpdatedAt = currentDate;
 
         GenerateEmailConfirmationToken(currentDate);
     }

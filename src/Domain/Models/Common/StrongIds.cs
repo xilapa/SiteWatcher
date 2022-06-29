@@ -13,3 +13,9 @@ namespace SiteWatcher.Domain.Models.Common;
 
 [StronglyTypedId(backingType: StronglyTypedIdBackingType.Guid)]
 public partial struct UserId {}
+
+[StronglyTypedId(backingType: StronglyTypedIdBackingType.Int)]
+public partial struct AlertId {}
+
+[StronglyTypedId(backingType: StronglyTypedIdBackingType.Int)]
+public partial struct WatchModeId {}

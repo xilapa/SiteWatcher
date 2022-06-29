@@ -4,6 +4,9 @@ namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 
 public class TestAppSettings : IAppSettings
 {
+    public const string TestHashIdSalt = "SuperSecretHashSalt";
+    public const int TestHashedIdLength = 3;
+
     public TestAppSettings()
     {
         RegisterKey = new byte[128];
@@ -23,6 +26,8 @@ public class TestAppSettings : IAppSettings
         IsDevelopment = true;
         ConnectionString = "TestConnectionString";
         RedisConnectionString = "RedisConnectionString";
+        IdHasherSalt = TestHashIdSalt;
+        MinimumHashedIdLength = TestHashedIdLength;
     }
 
     public bool IsDevelopment { get; }
@@ -35,4 +40,6 @@ public class TestAppSettings : IAppSettings
     public byte[] InvalidToken { get; set; }
     public string ApiKeyName { get; set; }
     public string ApiKey { get; set; }
+    public string IdHasherSalt { get; set; }
+    public int MinimumHashedIdLength { get; set; }
 }

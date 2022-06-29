@@ -102,8 +102,10 @@ public class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRe
             },
             new []
             {
-                ApplicationErrors.NAME_NOT_BE_NULL_OR_EMPTY, ApplicationErrors.EMAIL_NOT_BE_NULL_OR_EMPTY,
-                ApplicationErrors.LANGUAGE_IS_INVALID, ApplicationErrors.THEME_IS_INVALID
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(RegisterUserCommand.Name)),
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(RegisterUserCommand.Email)),
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)),
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme))
             }
         };
 
@@ -116,7 +118,11 @@ public class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRe
                 Name = "Xi",
                 Theme = ETheme.Dark
             },
-            new [] {ApplicationErrors.NAME_MINIMUM_LENGTH, ApplicationErrors.EMAIL_IS_INVALID}
+            new []
+            {
+                ApplicationErrors.ValueBellowMinimumLength(nameof(RegisterUserCommand.Name)),
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Email))
+            }
         };
 
         yield return new object[]

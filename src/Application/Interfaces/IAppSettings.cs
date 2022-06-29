@@ -12,4 +12,6 @@ public interface IAppSettings
     byte[] InvalidToken { get; set; }
     string ApiKeyName { get; set; }
     string ApiKey { get; set; }
+    string IdHasherSalt { get; set; }
+    int MinimumHashedIdLength { get; set; }
 }
