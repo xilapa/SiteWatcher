@@ -74,4 +74,10 @@ public static class DependencyInjection
         services.AddScoped<IFireAndForgetService, FireAndForgetService>();
         return services;
     }
+
+    public static IServiceCollection AddIdHasher(this IServiceCollection services)
+    {
+        services.AddSingleton<IIdHasher, IdHasher.IdHasher>();
+        return services;
+    }
 }

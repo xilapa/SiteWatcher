@@ -33,6 +33,8 @@ public class AppSettings : IAppSettings
     public byte[] InvalidToken { get; set; } = null!;
     public string ApiKeyName { get; set; } = null!;
     public string ApiKey { get; set; } = null!;
+    public string IdHasherSalt { get; set; } = null!;
+    public int MinimumHashedIdLength { get; set; }
 
     private static string ParseHerokuConnectionString(string connectionString)
     {
