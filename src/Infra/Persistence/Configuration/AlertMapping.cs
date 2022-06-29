@@ -18,6 +18,7 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
             .HasConversion<AlertId.EfCoreValueConverter>()
             .HasValueGenerator<AlertIdGenerator>()
             .HasColumnType("integer")
+            .ValueGeneratedOnAdd()
             .UseIdentityColumn();
 
         builder.Property(a => a.UserId)

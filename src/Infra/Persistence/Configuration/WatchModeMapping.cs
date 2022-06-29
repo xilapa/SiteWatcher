@@ -19,6 +19,7 @@ public class WatchModeMapping : BaseModelMapping<WatchMode, WatchModeId>
             .HasConversion<WatchModeId.EfCoreValueConverter>()
             .HasValueGenerator<WatchModeIdGenerator>()
             .HasColumnType("integer")
+            .ValueGeneratedOnAdd()
             .UseIdentityColumn();
 
         builder.Property(w => w.FirstWatchDone)
