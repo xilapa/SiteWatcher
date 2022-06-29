@@ -55,5 +55,6 @@ This project is currently using:
 - FluentAssertions;
 - Moq;
 - ReflectionMagic;
+- HashIds;
 
 To know more about internal decisions see the [/docs](https://github.com/xilapa/SiteWatcher/tree/main/docs "/docs") folder.
