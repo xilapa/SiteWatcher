@@ -7,7 +7,7 @@ using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
-[AllowAnonymous]
+[Authorize]
 [ApiController]
 [Route("alert")]
 public class AlertController : ControllerBase
@@ -19,7 +19,7 @@ public class AlertController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost("")]
+    [HttpPost]
     public async Task<IActionResult> CreateAlert(CreateAlertCommand commandBase)
     {
         var appResult = await _mediator.Send(commandBase);
