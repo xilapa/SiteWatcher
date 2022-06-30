@@ -5,20 +5,27 @@ import {DashboardComponent} from './dashboard.component';
 
 
 const dashRoutes: Routes = [
-  {
-    path: '',
-    component: DashboardComponent,
-    canActivate: [AuthGuard],
-    children:
-      [
-        {path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)}
-      ]
-  },
+    {
+        path: '',
+        component: DashboardComponent,
+        canActivate: [AuthGuard],
+        children:
+            [
+                {
+                    path: 'settings',
+                    loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
+                },
+                {
+                    path: 'alert/create',
+                    loadChildren: () => import('../alerts/create-update-alert/create-update-alert.module').then(m => m.CreateUpdateAlertModule)
+                }
+            ]
+    },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(dashRoutes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(dashRoutes)],
+    exports: [RouterModule]
 })
 export class DashboardRoutingModule {
 }
