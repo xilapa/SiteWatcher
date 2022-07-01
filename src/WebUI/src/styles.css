@@ -50,6 +50,11 @@ table {
 }
 /*#endregion css reset*/
 
+html {
+    overflow-y: auto;
+    overflow-x: clip;
+}
+
 :root {
     /*colors*/
     --sw-light-0: #ffffff;
