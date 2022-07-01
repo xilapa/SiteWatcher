@@ -7,6 +7,11 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {TranslocoModule} from "@ngneat/transloco";
 import {DropdownModule} from "primeng/dropdown";
 import {InputTextModule} from "primeng/inputtext";
+import {
+    PageTitleWithBackButtonModule
+} from "../../common/page-title-with-back-button/page-title-with-back-button.module";
+import {ButtonModule} from "primeng/button";
+import {BasePageLayoutModule} from "../../common/base-page-layout/base-page-layout.module";
 
 @NgModule({
     declarations: [
@@ -19,7 +24,10 @@ import {InputTextModule} from "primeng/inputtext";
         ReactiveFormsModule,
         TranslocoModule,
         DropdownModule,
-        InputTextModule
+        InputTextModule,
+        PageTitleWithBackButtonModule,
+        ButtonModule,
+        BasePageLayoutModule
     ]
 })
 export class CreateUpdateAlertModule {
