@@ -36,8 +36,7 @@ public class Session : ISession
         AuthTokenPayload = authenticated ? httpContextAccessor.HttpContext.GetAuthTokenPayload() : string.Empty;
     }
 
-    // Get the utc date without timezone
-    public virtual DateTime Now => new(DateTime.UtcNow.Ticks);
+    public virtual DateTime Now => DateTime.UtcNow;
     public UserId? UserId { get; }
     public string? Email { get; }
     public string? GoogleId { get; }

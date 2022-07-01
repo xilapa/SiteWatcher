@@ -37,7 +37,7 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
             .IsRequired();
 
         builder.Property(a => a.LastVerification)
-            .HasColumnType("timestamp")
+            .HasColumnType("timestamptz")
             .IsRequired(false);
 
         builder.OwnsOne(a => a.Site,

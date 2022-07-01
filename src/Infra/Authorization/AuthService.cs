@@ -101,7 +101,7 @@ public class AuthService : IAuthService
         {
             Issuer = issuer,
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddSeconds(expiration),
+            Expires = _session.Now.AddSeconds(expiration),
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };

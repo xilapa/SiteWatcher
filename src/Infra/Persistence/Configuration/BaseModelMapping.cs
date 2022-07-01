@@ -15,11 +15,11 @@ public abstract class BaseModelMapping<TModel,IdType> : IEntityTypeConfiguration
                 .IsRequired();
 
         builder.Property(m => m.CreatedAt)
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
 
         builder.Property(m => m.LastUpdatedAt)
-                .HasColumnType("timestamp")
+                .HasColumnType("timestamptz")
                 .IsRequired();
 
         builder.Ignore(m => m.DomainEvents);
