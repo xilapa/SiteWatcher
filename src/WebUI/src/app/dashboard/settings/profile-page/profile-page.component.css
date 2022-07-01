@@ -139,7 +139,7 @@ button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
     height: var(--sw-input-form-height);
-    min-width: 200px;
+    min-width: 250px;
     background: var(--sw-surface-2);
     color: var(--sw-foreground-2);
     border: var(--sw-default-border-size) solid var(--sw-border-2);
