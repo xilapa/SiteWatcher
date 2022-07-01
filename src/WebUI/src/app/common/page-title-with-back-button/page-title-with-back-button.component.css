@@ -1,0 +1,28 @@
+.common-page-title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100vw;
+    max-width:740px;
+}
+
+.back-button {
+    padding: 12px;
+    user-select: none;
+    cursor: pointer;
+}
+
+.back-icon {
+    font-size: 22px;
+}
+
+.common-page-title {
+    font-size: 24px;
+    user-select: none;
+}
+
+.flex-fix {
+    opacity: 0;
+    padding: 12px;
+    width: 46px;
+}

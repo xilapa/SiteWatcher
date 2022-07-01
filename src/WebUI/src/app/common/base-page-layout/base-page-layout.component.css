@@ -1,0 +1,21 @@
+.base-page-layout-wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: 6px;
+    padding: 0 16px 0 16px;
+    width: 100vw;
+    color: var(--sw-foreground-0);
+    align-items: center;
+}
+
+.base-page-layout-content-wrapper {
+    display: flex;
+    margin-top: 20px;
+    width: 100vw;
+}
+
+@media screen and (min-width: 600px) {
+    .base-page-layout-content-wrapper {
+        justify-content: center;
+    }
+}

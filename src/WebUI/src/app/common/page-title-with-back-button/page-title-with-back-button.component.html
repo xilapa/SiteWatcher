@@ -1,0 +1,13 @@
+<ng-container *transloco="let t">
+    <div class="common-page-title-wrapper">
+        <div class="back-button" [routerLink]="backRoute">
+            <i class="pi pi-chevron-left back-icon"></i>
+        </div>
+        <div class="common-page-title">
+            {{t(translationKey)}}
+        </div>
+        <div class="flex-fix" aria-hidden="true">
+            .
+        </div>
+    </div>
+</ng-container>
