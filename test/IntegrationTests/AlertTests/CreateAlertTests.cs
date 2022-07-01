@@ -98,6 +98,8 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
     {
         // Arrange
         LoginAs(Users.Xilapa);
+        if(expectedResult.Result != null)
+            expectedResult.Result.CreatedAt = CurrentTime;
 
         // Act
         var result = await PostAsync("alert", command);
