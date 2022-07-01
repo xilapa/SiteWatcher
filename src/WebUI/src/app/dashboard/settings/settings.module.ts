@@ -11,6 +11,10 @@ import {TranslocoModule} from "@ngneat/transloco";
 import {DropdownModule} from "primeng/dropdown";
 import {ButtonModule} from "primeng/button";
 import {InputSwitchModule} from "primeng/inputswitch";
+import {
+    PageTitleWithBackButtonModule
+} from "../../common/page-title-with-back-button/page-title-with-back-button.module";
+import {BasePageLayoutModule} from "../../common/base-page-layout/base-page-layout.module";
 
 
 @NgModule({
@@ -19,17 +23,19 @@ import {InputSwitchModule} from "primeng/inputswitch";
         ProfilePageComponent,
         SecurityPageComponent
     ],
-  imports: [
-    CommonModule,
-    SettingsRoutingModule,
-    InputTextModule,
-    ReactiveFormsModule,
-    InlineInputErrorMsgModule,
-    TranslocoModule,
-    DropdownModule,
-    ButtonModule,
-    InputSwitchModule
-  ]
+    imports: [
+        CommonModule,
+        SettingsRoutingModule,
+        InputTextModule,
+        ReactiveFormsModule,
+        InlineInputErrorMsgModule,
+        TranslocoModule,
+        DropdownModule,
+        ButtonModule,
+        InputSwitchModule,
+        PageTitleWithBackButtonModule,
+        BasePageLayoutModule
+    ]
 })
 export class SettingsModule {
 }

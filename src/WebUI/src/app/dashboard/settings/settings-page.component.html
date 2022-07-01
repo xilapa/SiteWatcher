@@ -1,32 +1,21 @@
 <ng-container *transloco="let t">
-    <div class="settings-page-wrapper">
-        <div class="settings-page-title-wrapper">
-            <div class="back-button" routerLink='/dash'>
-                <i class="pi pi-chevron-left back-icon"></i>
+    <sw-base-page-layout pageTitletranslationKey="settings.main.title">
+
+        <div class="side-options-wrapper">
+            <div #profile class="option" (click)="goTo('profile')">
+                <i class="pi pi-user option-icon"></i>
+                <div class="text" *ngIf="!(mobileScreen$ | async) as boolean">{{t('settings.profile.title')}}</div>
             </div>
-            <div class="page-title">
-                {{t('settings.main.title')}}
-            </div>
-            <div class="flex-fix" aria-hidden="true">
-                .
+            <div #security class="option" (click)="goTo('security')">
+                <i class="pi pi-shield option-icon"></i>
+                <div class="text" *ngIf="!(mobileScreen$ | async) as boolean">{{t('settings.security.title')}}</div>
             </div>
         </div>
 
-        <div class="settings-page-content-wrapper">
-            <div class="side-options-wrapper">
-                <div #profile class="option" (click)="goTo('profile')">
-                    <i class="pi pi-user option-icon"></i>
-                    <div class="text" *ngIf="!(mobileScreen$ | async) as boolean">{{t('settings.profile.title')}}</div>
-                </div>
-                <div #security class="option" (click)="goTo('security')">
-                    <i class="pi pi-shield option-icon"></i>
-                    <div class="text" *ngIf="!(mobileScreen$ | async) as boolean">{{t('settings.security.title')}}</div>
-                </div>
-            </div>
-            <div class="page-content">
-                <router-outlet></router-outlet>
-            </div>
+        <div class="page-content">
+            <router-outlet></router-outlet>
         </div>
-    </div>
+
+    </sw-base-page-layout>
 </ng-container>
 

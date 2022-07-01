@@ -1,47 +1,3 @@
-.settings-page-wrapper {
-    display: flex;
-    flex-direction: column;
-    margin-top: 6px;
-    padding: 0 16px 0 16px;
-    width: 100vw;
-    color: var(--sw-foreground-0);
-    align-items: center;
-}
-
-.settings-page-title-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width:740px;
-}
-
-.flex-fix {
-    opacity: 0;
-    padding: 12px;
-    width: 46px;
-}
-
-.back-button {
-    padding: 12px;
-    user-select: none;
-    cursor: pointer;
-}
-
-.back-icon {
-    font-size: 22px;
-}
-
-.page-title {
-    font-size: 24px;
-    user-select: none;
-}
-
-.settings-page-content-wrapper {
-    display: flex;
-    margin-top: 20px;
-}
-
 .side-options-wrapper {
     display: flex;
     flex-direction: column;
@@ -65,7 +21,7 @@
     font-size: 24px;
 }
 
-.settings-page-content-wrapper .page-content {
+.page-content {
     width: 100%;
     max-width: 550px;
     display: flex;
@@ -84,13 +40,13 @@
     margin-left: 1rem;
 }
 
-@media screen and (min-width: 600px) {
-    .settings-page-content-wrapper .page-content {
-        display: flex;
-    }
+.side-options-wrapper{
+    padding-left: 12px;
+}
 
-    .settings-page-content-wrapper {
-        justify-content: center;
+@media screen and (min-width: 600px) {
+    .page-content {
+        display: flex;
     }
 
     .side-options-wrapper, .option {
