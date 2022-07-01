@@ -30,7 +30,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="StackExchange.Redis" Version="2.6.45" />
+		<PackageReference Include="StackExchange.Redis" Version="2.6.48" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.20.0" />
 	</ItemGroup>
 	<ItemGroup>
