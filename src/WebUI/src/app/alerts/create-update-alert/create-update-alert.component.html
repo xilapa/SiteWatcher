@@ -34,12 +34,12 @@
 
             <!--site name-->
             <div class="form-group input-after-dropdown-padding">
-                <label for="site-name" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.siteName') }}</label>
+                <label for="siteName" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.siteName') }}</label>
                 <div class="form-input">
                     <input
                             class="sw-input-color"
-                            id="site-name" type="text" pInputText
-                            [placeholder]="t('alert.createUpdate.siteNamePlaceHolder')" formControlName="site-name"
+                            id="siteName" type="text" pInputText
+                            [placeholder]="t('alert.createUpdate.siteNamePlaceHolder')" formControlName="siteName"
                             [class.invalid-input]="inputFormSiteName?.touched
                                 && inputFormSiteName?.dirty && inputFormSiteName?.invalid">
                 </div>
@@ -51,12 +51,12 @@
 
             <!-- site uri-- precisa começar com https://.... -->
             <div class="form-group">
-                <label for="site-uri" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.siteUri') }}</label>
+                <label for="siteUri" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.siteUri') }}</label>
                 <div class="form-input">
                     <input
                             class="sw-input-color"
-                            id="site-uri" type="text" pInputText
-                            [placeholder]="t('alert.createUpdate.siteUriPlaceHolder')" formControlName="site-uri"
+                            id="siteUri" type="text" pInputText
+                            [placeholder]="t('alert.createUpdate.siteUriPlaceHolder')" formControlName="siteUri"
                             [class.invalid-input]="inputFormSiteUri?.touched &&
                                 inputFormSiteUri?.dirty && inputFormSiteUri?.invalid">
                 </div>
@@ -68,14 +68,14 @@
 
             <!--watch mode-->
             <div class="form-group">
-                <label for="watch-mode"
+                <label for="watchMode"
                        class="sw-g-text-foreground-1">{{ t('alert.createUpdate.watchMode') }}</label>
                 <div class="form-input">
-                    <p-dropdown id="watch-mode"
+                    <p-dropdown id="watchMode"
                                 [options]="watchModeOptions"
                                 optionLabel="Display"
                                 optionValue="Value"
-                                formControlName="watch-mode">
+                                formControlName="watchMode">
                     </p-dropdown>
                 </div>
             </div>
