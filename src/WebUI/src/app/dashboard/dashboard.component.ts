@@ -37,6 +37,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.themeService.loadUserTheme();
         this.userSub = this.userService.getUser()
             .subscribe(user => {
+                if(!user) return;
                 this.translocoService
                     .setActiveLang(LangUtils.getLangFileName(user?.language as ELanguage));
             })
