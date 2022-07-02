@@ -4,7 +4,8 @@
     "error": "Error",
     "unexpectedError": "Error inesperado",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "invalidStringLength": "The value must have between three or sixty four characters"
   },
   "home": {
     "auth": {
@@ -79,7 +80,37 @@
       "confirmingEmail": "Confirmando tu correo electrónico",
       "confirmEmailSuccess": "Correo electrónico confirmado con éxito.",
       "reactivatingAccount": "Reactivando tu cuenta",
-      "accountReactivated": "Cuenta reactivada con éxito.",
+      "accountReactivated": "Cuenta reactivada con éxito."
+    }
+  },
+  "alert": {
+    "frequency": {
+      "twoHours": "Cada dos horas",
+      "fourHours": "Cada cuatro horas",
+      "eightHours": "Cada ocho horas",
+      "twelveHours": "Cada doce horas",
+      "twentyFourHours": "Cada veinticuatro horas"
+    },
+    "watchMode": {
+      "anyChanges": "Algún cambio",
+      "term": "Término"
+    },
+    "createUpdate": {
+      "created": "Alerta creada.",
+      "createTitle": "Crear una nueva alerta",
+      "updateTitle": "Actualizar alerta",
+      "name": "Nombre",
+      "namePlaceHolder": "Escriba un nombre descriptivo para la alerta",
+      "frequency": "Frecuencia de monitoreo",
+      "siteName": "Nombre del sitio",
+      "siteNamePlaceHolder": "Escriba el nombre del sitio",
+      "siteUri": "Sitio URL",
+      "siteUriPlaceHolder": "Escriba la URL del sitio que comienza con http...",
+      "invalidSiteUri": "La URL del sitio no es válida",
+      "watchMode": "Tipo de monitoreo",
+      "term": "Plazo a monitorear",
+      "termPlaceholder": "Escriba un término para disparar la alerta",
+      "save": "Guardar"
     }
   }
 }

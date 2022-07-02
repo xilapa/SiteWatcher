@@ -4,7 +4,8 @@
     "error": "Error",
     "unexpectedError": "Unexpected error",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "invalidStringLength": "The value must have between three or sixty four characters"
   },
   "home": {
     "auth": {
@@ -80,6 +81,36 @@
       "confirmEmailSuccess": "Email confirmed successfully.",
       "reactivatingAccount": "Reactivating your account",
       "accountReactivated": "Account reactivated successfully."
+    }
+  },
+  "alert": {
+    "frequency": {
+      "twoHours": "Every two hours",
+      "fourHours": "Every four hours",
+      "eightHours": "Every eight hours",
+      "twelveHours": "Every twelve hours",
+      "twentyFourHours": "Every twenty four hours"
+    },
+    "watchMode": {
+      "anyChanges": "Any changes",
+      "term": "Term"
+    },
+    "createUpdate": {
+      "created": "Alert created.",
+      "createTitle": "Create a new alert",
+      "updateTitle": "Update alert",
+      "name": "Name",
+      "namePlaceHolder": "Type a friendly name for alert",
+      "frequency": "Monitoring frequency",
+      "siteName": "Site name",
+      "siteNamePlaceHolder": "Type the site name",
+      "siteUri": "Site URL",
+      "siteUriPlaceHolder": "Type the site URL starting with http...",
+      "invalidSiteUri": "The site url is invalid",
+      "watchMode": "Monitoring type",
+      "term": "Term to be monitored",
+      "termPlaceholder": "Type a term to fire the alert",
+      "save": "Save"
     }
   }
 }

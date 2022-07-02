@@ -87,7 +87,7 @@
                     <input
                             class="sw-input-color"
                             id="term" type="text" pInputText
-                            placeholder="Name" formControlName="term"
+                            [placeholder]="t('alert.createUpdate.termPlaceholder')" formControlName="term"
                             [class.invalid-input]="inputFormWatchModeTerm?.touched
                                 && inputFormWatchModeTerm?.dirty
                                 && inputFormWatchModeTerm?.invalid">
