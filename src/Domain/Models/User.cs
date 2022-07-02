@@ -12,7 +12,7 @@ public class User : BaseModel<UserId>
     { }
 
     public User(string googleId, string name, string email, string authEmail, ELanguage language, ETheme theme,
-        DateTime currentDate) : base(new UserId(), currentDate)
+        DateTime currentDate) : base(new UserId(Guid.NewGuid()), currentDate)
     {
         GoogleId = googleId;
         Name = name;

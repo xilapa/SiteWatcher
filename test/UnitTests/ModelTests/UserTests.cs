@@ -56,4 +56,19 @@ public class UserTests
         else
             user.DomainEvents.Should().BeEmpty();
     }
+
+    [Fact]
+    public void UserShouldNotHaveEmptyGuidWhenCreated()
+    {
+        // Arrange
+
+        // Act
+        var user = new User("googleId", "name", "email", "email",
+            ELanguage.English, ETheme.Dark, DateTime.UtcNow);
+
+        // Assert
+        Guid.Empty
+            .Equals(user.Id.Value)
+            .Should().BeFalse();
+    }
 }
