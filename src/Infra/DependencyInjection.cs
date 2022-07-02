@@ -39,6 +39,7 @@ public static class DependencyInjection
         services.AddSingleton<IDapperQueries, DapperQueries>();
         services.AddScoped<IDapperContext, DapperContext>();
         services.AddScoped<IUserDapperRepository, UserDapperRepository>();
+        services.AddScoped<IAlertDapperRepository, AlertDapperRepository>();
         SqlMapper.AddTypeHandler(new UserId.DapperTypeHandler());
         return services;
     }
