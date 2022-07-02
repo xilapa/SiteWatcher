@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var appSettings = builder.Services.AddSettings(builder.Configuration, builder.Environment);
 
-builder.Services.AddControllers(opts => opts.Filters.Add(typeof(CommandValidationFilter)))
+builder.Services.AddControllers()
     .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null)
     .AddFluentValidation(opts =>
     {

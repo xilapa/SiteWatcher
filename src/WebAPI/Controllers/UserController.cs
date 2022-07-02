@@ -12,6 +12,7 @@ using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
+using SiteWatcher.WebAPI.Filters;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -27,6 +28,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
+    [CommandValidationFilter]
     [Route("register")]
     [Authorize(Policy = Policies.ValidRegisterData)]
     public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
@@ -60,6 +62,7 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpPut]
+    [CommandValidationFilter]
     public async Task<IActionResult> UpdateUser(UpdateUserCommand updateUserCommand)
     {
         var response = new WebApiResponse<UpdateUserResult>();
@@ -77,6 +80,7 @@ public class UserController : ControllerBase
         await _mediator.Send(new DeactivateAccountCommand());
 
     [AllowAnonymous]
+    [CommandValidationFilter]
     [HttpPut("send-reactivate-account-email")]
     public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand emailCommand) =>
         await _mediator.Send(emailCommand);

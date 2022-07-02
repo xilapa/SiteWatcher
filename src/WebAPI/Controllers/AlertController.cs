@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
+using SiteWatcher.WebAPI.Filters;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -21,6 +22,7 @@ public class AlertController : ControllerBase
     }
 
     [HttpPost]
+    [CommandValidationFilter]
     public async Task<IActionResult> CreateAlert(CreateAlertCommand commandBase)
     {
         var appResult = await _mediator.Send(commandBase);

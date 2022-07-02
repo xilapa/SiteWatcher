@@ -8,9 +8,12 @@ using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Filters;
 
-public class CommandValidationFilter : IAsyncActionFilter
+/// <summary>
+/// Command must implement <see cref="IValidable"/> to be validated.
+/// </summary>
+public class CommandValidationFilter : ActionFilterAttribute
 {
-    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var errs = await ValidateInputAsync(context);
         if (errs.Length == 0)
