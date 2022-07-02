@@ -1,0 +1,17 @@
+.create-alert-button-wrapper {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 40px;
+    right: 40px;
+    background-color: var(--sw-primary-color);
+    color: var(--sw-alert-button-background);
+    border-radius: 50px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.create-alert-button {
+    margin-top: 16px;
+    font-size: 28px;
+}

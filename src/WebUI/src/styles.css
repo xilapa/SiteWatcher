@@ -93,6 +93,8 @@ html {
     --sw-primary-color-border: #271938;
     --sw-primary-color-hover: #6a40b2;
 
+    --sw-alert-button-background: #f2f3f3;
+
     --sw-box-shadow-1: rgb(108 117 125 / 50%);
 
     --sw-input-invalid-color: #c91e2a;
@@ -141,6 +143,8 @@ html {
         --sw-primary-color-border: #34244f;
         --sw-primary-color-hover: #65519b;
 
+        --sw-alert-button-background: var(--sw-light-3);
+
         --sw-box-shadow-1: rgb(108 117 125 / 50%);
 
         --sw-input-invalid-color: #d24646;
@@ -188,6 +192,8 @@ html {
     --sw-primary-color: #533E85;
     --sw-primary-color-border: #34244f;
     --sw-primary-color-hover: #65519b;
+
+    --sw-alert-button-background: var(--sw-light-3);
 
     --sw-box-shadow-1: rgb(108 117 125 / 50%);
 
