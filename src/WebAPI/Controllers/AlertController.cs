@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
+using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -24,5 +25,12 @@ public class AlertController : ControllerBase
     {
         var appResult = await _mediator.Send(commandBase);
         return Ok(new WebApiResponse<DetailedAlertView>().SetResult(appResult.Value!));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUserAlerts([FromQuery] GetUserAlertsCommand command, CancellationToken cancellationToken)
+    {
+        var appResult = await _mediator.Send(command, cancellationToken);
+        return Ok(new WebApiResponse<IEnumerable<SimpleAlertView>>().SetResult(appResult.Value!));
     }
 }
