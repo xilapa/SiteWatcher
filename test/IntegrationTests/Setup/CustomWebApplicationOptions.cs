@@ -12,7 +12,7 @@ public class CustomWebApplicationOptions
     }
 
     /// <summary>
-    /// Date used on database seed
+    /// Date used on database seed. Must be in UTC.
     /// </summary>
     public DateTime? InitalDate { get; set; }
 

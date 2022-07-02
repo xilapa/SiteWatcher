@@ -50,14 +50,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         FakeCache = new FakeCache();
         ApplyEnvironmentVariables(TestSettings);
         ApplyEnvironmentVariables(TestGoogleSettings);
-        AuthServiceForTokens = CreateAuthServiceForLogin();
+        AuthServiceForTokens = CreateAuthServiceForTokens();
     }
 
     private void ConfigureTest(Action<CustomWebApplicationOptions>? options)
     {
         var optionsInstance = new CustomWebApplicationOptions();
         options?.Invoke(optionsInstance);
-        CurrentTime = optionsInstance.InitalDate ?? DateTime.Now;
+        CurrentTime = optionsInstance.InitalDate ?? DateTime.UtcNow;
         _servicesToReplace = optionsInstance.ReplacementServices;
         _connectionString = optionsInstance.DatabaseType switch
         {
@@ -172,13 +172,21 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         return context;
     }
 
-    private IAuthService CreateAuthServiceForLogin()
+    private IAuthService CreateAuthServiceForTokens()
     {
         var authService = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
         if (authService is not AuthService authServiceInstance)
             throw new Exception($"The {typeof(AuthService)} was not created");
 
         authServiceInstance.AsDynamic()._appSettings = TestSettings;
+
+        var testSession = RuntimeHelpers.GetUninitializedObject(typeof(TestSession));
+        if (testSession is not TestSession testSessionInstace)
+            throw new Exception($"The {typeof(AuthService)} was not created");
+
+        testSessionInstace.AsDynamic()._currentTime = CurrentTime;
+
+        authServiceInstance.AsDynamic()._session = testSessionInstace;
         return authServiceInstance;
     }
 

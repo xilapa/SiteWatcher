@@ -11,5 +11,5 @@ public class TestSession : Session
     }
 
     private readonly DateTime _currentTime;
-    public override DateTime Now => new DateTime(_currentTime.Ticks);
+    public override DateTime Now => _currentTime;
 }
