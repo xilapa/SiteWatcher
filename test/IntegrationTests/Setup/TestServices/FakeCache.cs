@@ -64,6 +64,31 @@ public class FakeCache : ICache
         var @object = JsonSerializer.Deserialize<T>(objectJson);
         return Task.FromResult(@object);
     }
+
+    public Task SaveHashAsync(string key, string fieldName, object fieldValue, TimeSpan expiration)
+    {
+        var objectJson = JsonSerializer.Serialize(fieldValue);
+        var fakeEntry = new FakeCacheEntry(objectJson, expiration);
+        var joinedkey = $"{key}:{fieldName};";
+        Cache.TryAdd(joinedkey, fakeEntry);
+        return  Task.CompletedTask;
+    }
+
+    public Task<string?> GetHashFieldAsStringAsync(string key, string fieldName)
+    {
+        var joinedkey = $"{key}:{fieldName};";
+        Cache.TryGetValue(joinedkey, out var result);
+        return Task.FromResult(result.Value as string);
+    }
+
+    public Task DeleteKeyAsync(string key)
+    {
+        var keyToRemove = Cache.Keys.FirstOrDefault(k => k.StartsWith(key));
+        if(keyToRemove is null)
+            return Task.CompletedTask;
+        Cache.Remove(keyToRemove);
+        return Task.CompletedTask;
+    }
 }
 
 public struct FakeCacheEntry
