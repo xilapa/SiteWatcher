@@ -2,13 +2,13 @@
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization.Constants;
+using SiteWatcher.IntegrationTests.Setup;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 using DomainUtils = SiteWatcher.Domain.Utils.Utils;
 
@@ -17,7 +17,7 @@ namespace IntegrationTests.Setup;
 public abstract class BaseTest
 {
     private readonly BaseTestFixture _fixture;
-    public Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
+    protected Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
     public Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
     protected DateTime CurrentTime
@@ -27,6 +27,7 @@ public abstract class BaseTest
     }
     protected IAppSettings TestSettings => _fixture.AppFactory.TestSettings;
     protected IGoogleSettings TestGoogleSettings => _fixture.AppFactory.TestGoogleSettings;
+    protected ICustomWebApplicationFactory AppFactory => _fixture.AppFactory;
 
     protected BaseTest(BaseTestFixture fixture)
     {
@@ -102,30 +103,4 @@ public abstract class BaseTest
     }
 
     #endregion
-
-    protected async Task WithDbContext(Func<SiteWatcherContext, Task> action)
-    {
-        await using var context = _fixture.AppFactory.GetContext();
-        await action(context);
-    }
-
-    protected async Task<T> WithDbContext<T>(Func<SiteWatcherContext, Task<T>> action)
-    {
-        await using var context = _fixture.AppFactory.GetContext();
-        var result = await action(context);
-        return result;
-    }
-
-    protected async Task WithServiceProvider(Func<IServiceProvider, Task> func)
-    {
-        await using var scope = _fixture.AppFactory.Services.CreateAsyncScope();
-        await func(scope.ServiceProvider);
-    }
-
-    protected async Task<T> WithServiceProvider<T>(Func<IServiceProvider, Task<T>> func)
-    {
-        await using var scope = _fixture.AppFactory.Services.CreateAsyncScope();
-        var result = await func(scope.ServiceProvider);
-        return result;
-    }
 }

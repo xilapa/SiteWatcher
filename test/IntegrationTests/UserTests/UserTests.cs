@@ -20,6 +20,7 @@ using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
 namespace IntegrationTests.UserTests;
 
@@ -35,7 +36,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
     public async Task InitializeAsync()
     {
-        _userXilapaWithoutChanges = await WithDbContext(ctx
+        _userXilapaWithoutChanges = await AppFactory.WithDbContext(ctx
             => ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         var authServiceInstance = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
@@ -89,7 +90,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Result!.Token
             .Should().NotBeNullOrEmpty();
 
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.Email.Should().Be(updateUserCommand.Email);
@@ -131,7 +132,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Result
             .Should().BeNull();
 
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.Should().BeEquivalentTo(_userXilapaWithoutChanges);
@@ -167,7 +168,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .NotBeNull();
 
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.EmailConfirmed.Should().BeFalse();
@@ -236,7 +237,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .NotBeNull();
 
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.GoogleId == userViewModel.GetGoogleId()));
 
         userFromDb.EmailConfirmed.Should().BeFalse();
@@ -274,7 +275,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         const string fakeToken = "TEST_TOKEN_EMAIL_CONFIRMATION";
 
         // Ensuring that the user email is not confirmed
-        await WithDbContext(ctx =>
+        await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET EmailConfirmed = 0,
                                                 SecurityStamp = '{fakeToken}'
@@ -293,7 +294,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Be(HttpStatusCode.OK);
 
         // Checking that the user email is confirmed
-        var updatedUser = await WithDbContext(ctx =>
+        var updatedUser = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
 
         updatedUser.EmailConfirmed.Should().BeTrue();
@@ -311,7 +312,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         const string fakeToken = "TEST_TOKEN_EMAIL_CONFIRMATION";
 
         // Ensuring that the user email is not confirmed
-        await WithDbContext(ctx =>
+        await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET EmailConfirmed = 0,
                                                 SecurityStamp = '{fakeToken}'
@@ -335,7 +336,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Be(HttpStatusCode.BadRequest);
 
         // Checking that the user email is not confirmed
-        var updatedUser = await WithDbContext(ctx =>
+        var updatedUser = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
 
         updatedUser.EmailConfirmed
@@ -354,7 +355,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         FakeCache.Cache.Clear();
         LoginAs(Users.Xulipa);
         // Ensuring that the user email is not confirmed
-        await WithDbContext(ctx =>
+        await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET EmailConfirmed = 0
                                                 WHERE Id = '{Users.Xulipa.Id}'"));
@@ -371,7 +372,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Be(HttpStatusCode.OK);
 
         // Verifying that the user was updated on database
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xulipa.Id));
 
         userFromDb.SecurityStamp.Should().NotBeNull();
@@ -440,7 +441,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         EmailServiceMock.Invocations.Clear();
 
         // Ensuring that the user is deactivated
-        await WithDbContext(ctx =>
+        await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET Active = 0,
                                                     SecurityStamp = NULL
@@ -459,7 +460,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .Be(HttpStatusCode.OK);
 
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.SecurityStamp.Should().NotBeNull();
@@ -500,7 +501,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         LoginAs(Users.Xilapa);
 
         // Ensuring that the user is active
-        await WithDbContext(ctx =>
+        await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET Active = 1,
                                                     SecurityStamp = NULL
@@ -514,7 +515,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .Be(HttpStatusCode.OK);
 
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.Active.Should().BeFalse();
@@ -532,7 +533,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         const string fakeToken = "TEST_TOKEN_USER_REACTIVATION";
 
         // Ensuring that the user is deactivated
-        await WithDbContext(ctx =>
+        await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET Active = 0,
                                                 SecurityStamp = '{fakeToken}'
@@ -551,7 +552,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Be(HttpStatusCode.OK);
 
         // Checking that the user was reactivated
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.Active.Should().BeTrue();
@@ -572,7 +573,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         const string fakeToken = "TEST_TOKEN_USER_REACTIVATION";
 
         // Ensuring that the user is deactivated
-        await WithDbContext(ctx =>
+        await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
                                                 SET Active = 0,
                                                 SecurityStamp = '{fakeToken}'
@@ -596,7 +597,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         typedResult.Messages[0].Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         // Checking that the user was reactivated
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userFromDb.Active.Should().BeFalse();
@@ -611,7 +612,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
     private async Task ResetTestData()
     {
-        await WithDbContext(async ctx =>
+        await AppFactory.WithDbContext(async ctx =>
         {
             var user = await ctx.Users.SingleOrDefaultAsync(u => u.Id == Users.Xilapa.Id);
             if (user is not null)
@@ -620,7 +621,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             await ctx.SaveChangesAsync();
         });
 
-        var userReseted = await WithDbContext(ctx =>
+        var userReseted = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userReseted.Should().BeEquivalentTo(_userXilapaWithoutChanges);

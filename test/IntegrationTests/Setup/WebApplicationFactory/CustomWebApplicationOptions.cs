@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace IntegrationTests.Setup;
+namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
 public class CustomWebApplicationOptions
 {

@@ -8,6 +8,7 @@ using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.GoogleAuth;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 

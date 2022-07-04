@@ -7,6 +7,7 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 

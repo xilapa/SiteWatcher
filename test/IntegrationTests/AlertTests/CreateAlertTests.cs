@@ -10,6 +10,7 @@ using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
@@ -115,14 +116,14 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
         if (!HttpStatusCode.OK.Equals(expectedStatusCode))
             return;
 
-        var alertFromDatabase = await WithDbContext(ctx =>
+        var alertFromDatabase = await AppFactory.WithDbContext(ctx =>
         {
             return ctx.Alerts
                 .Include(a => a.WatchMode)
                 .FirstOrDefaultAsync(a => a.Name == command.Name);
         });
 
-        var alertFromDbMapped = await WithServiceProvider(prv =>
+        var alertFromDbMapped = await AppFactory.WithServiceProvider(prv =>
         {
             var mapper = prv.GetRequiredService<IMapper>();
             var alertView = mapper.Map<DetailedAlertView>(alertFromDatabase);
