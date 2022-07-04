@@ -2,14 +2,13 @@ using System.Net;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Filters;
 
 /// <summary>
-/// Command must implement <see cref="IValidable"/> to be validated.
+/// Command must implement <see cref="IValidable"/> to be validated and it's name must be "command".
 /// </summary>
 public class CommandValidationFilter : ActionFilterAttribute
 {
@@ -31,19 +30,11 @@ public class CommandValidationFilter : ActionFilterAttribute
 
     private static async Task<string[]> ValidateInputAsync(ActionExecutingContext context)
     {
-        var requestParam = context.ActionDescriptor.Parameters
-            .SingleOrDefault(p => p.BindingInfo?.BindingSource == BindingSource.Body);
+        var validableCommand = context.ActionArguments["command"] as IValidable;
+        var validatorType = typeof(IValidator<>).MakeGenericType(validableCommand!.GetType());
+        var validator = context.HttpContext.RequestServices.GetRequiredService(validatorType) as IValidator;
 
-        if (requestParam is null || context.ActionArguments[requestParam.Name] is not IValidable command)
-            return Array.Empty<string>();
-
-        var serviceProvider = context.HttpContext.RequestServices;
-        var validatorType = typeof(IValidator<>).MakeGenericType(command.GetType());
-        var obtainedValidator = serviceProvider.GetRequiredService(validatorType);
-        if (obtainedValidator is not IValidator validator)
-            throw new Exception($"The validator is not an {nameof(IValidator)}");
-
-        var errs = await command.ValidateAsyncWith(validator);
+        var errs = await validableCommand.ValidateAsyncWith(validator!);
 
         return errs.Length == 0 ? Array.Empty<string>() : errs;
     }

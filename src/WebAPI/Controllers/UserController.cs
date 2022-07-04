@@ -31,10 +31,10 @@ public class UserController : ControllerBase
     [CommandValidationFilter]
     [Route("register")]
     [Authorize(Policy = Policies.ValidRegisterData)]
-    public async Task<IActionResult> Register(RegisterUserCommand registerUserCommand)
+    public async Task<IActionResult> Register(RegisterUserCommand command)
     {
         var response = new WebApiResponse<RegisterUserResult>();
-        var appResult = await _mediator.Send(registerUserCommand);
+        var appResult = await _mediator.Send(command);
 
         if (!appResult.Success)
             return Conflict(response.AddMessages(appResult.Errors));
@@ -63,10 +63,10 @@ public class UserController : ControllerBase
     [Authorize]
     [HttpPut]
     [CommandValidationFilter]
-    public async Task<IActionResult> UpdateUser(UpdateUserCommand updateUserCommand)
+    public async Task<IActionResult> UpdateUser(UpdateUserCommand command)
     {
         var response = new WebApiResponse<UpdateUserResult>();
-        var appResult = await _mediator.Send(updateUserCommand);
+        var appResult = await _mediator.Send(command);
 
         if (!appResult.Success)
             return BadRequest(response.AddMessages(appResult.Errors));
@@ -82,8 +82,8 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     [CommandValidationFilter]
     [HttpPut("send-reactivate-account-email")]
-    public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand emailCommand) =>
-        await _mediator.Send(emailCommand);
+    public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand command) =>
+        await _mediator.Send(command);
 
     [AllowAnonymous]
     [HttpPut("reactivate-account")]
