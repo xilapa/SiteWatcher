@@ -38,5 +38,12 @@ public class AutoMapperProfile : Profile
             .ForMember(opt => opt.WatchMode, opt =>
                 opt.MapFrom(src => Utils.GetWatchModeEnumByTableDiscriminator(src.WatchMode)))
             .AfterMap<HashIdMapping>();
+
+        CreateMap<Alert, SimpleAlertView>()
+            .ForMember(opt => opt.SiteName, opt =>
+                opt.MapFrom(src => src.Site.Name))
+            .ForMember(opt => opt.WatchMode, opt =>
+                opt.MapFrom(src => Utils.GetWatchModeEnumByType(src.WatchMode)))
+            .AfterMap<HashIdMapping>();
     }
 }

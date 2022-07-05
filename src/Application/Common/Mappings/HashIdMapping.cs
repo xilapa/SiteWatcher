@@ -10,7 +10,8 @@ namespace SiteWatcher.Application.Common.Mappings;
 public class HashIdMapping :
     IMappingAction<Alert, DetailedAlertView>,
     IMappingAction<WatchMode, DetailedWatchModeView>,
-    IMappingAction<SimpleAlertViewDto, SimpleAlertView>
+    IMappingAction<SimpleAlertViewDto, SimpleAlertView>,
+    IMappingAction<Alert, SimpleAlertView>
 {
     private readonly IIdHasher _idHasher;
 
@@ -32,5 +33,10 @@ public class HashIdMapping :
     public void Process(SimpleAlertViewDto source, SimpleAlertView destination, ResolutionContext context)
     {
         destination.Id = _idHasher.HashId(source.Id);
+    }
+
+    public void Process(Alert source, SimpleAlertView destination, ResolutionContext context)
+    {
+        destination.Id = _idHasher.HashId(source.Id.Value);
     }
 }
