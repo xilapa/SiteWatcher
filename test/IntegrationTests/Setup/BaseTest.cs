@@ -64,8 +64,26 @@ public abstract class BaseTest
 
     #region HttpClient Helper Methods
 
-    protected async Task<HttpResult> GetAsync(string url)
+    protected async Task<HttpResult> GetAsync(string url, object? queryParams = null)
     {
+        if (queryParams != null)
+        {
+            var urlStringBuilder = new StringBuilder(url);
+            urlStringBuilder.Append('?');
+
+            var propertiesArray = queryParams.GetType().GetProperties();
+            for (int i = 0; i < propertiesArray.Length; i++)
+            {
+                urlStringBuilder.Append(propertiesArray[i].Name);
+                urlStringBuilder.Append('=');
+                urlStringBuilder.Append(propertiesArray[i].GetValue(queryParams) ?? string.Empty);
+                if (i != propertiesArray.Length - 1)
+                    urlStringBuilder.Append('&');
+            }
+
+            url = urlStringBuilder.ToString();
+        }
+
         var response = await _fixture.Client.GetAsync(url);
         var content = await response.Content.ReadAsStringAsync();
         var result = new HttpResult(response, content);
