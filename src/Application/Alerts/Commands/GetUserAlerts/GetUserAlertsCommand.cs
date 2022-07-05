@@ -43,7 +43,7 @@ public class GetUserAlertsCommandHandler :
         if (request.Take == 0)
             return new CommandResult<IEnumerable<SimpleAlertView>>(Array.Empty<SimpleAlertView>());
 
-        var take = request.Take > 50 ? 10 : request.Take;
+        var take = request.Take > 50 ? 50 : request.Take;
         var lastAlertId = string.IsNullOrEmpty(request.LastAlertId) ? 0 : _idHasher.DecodeId(request.LastAlertId);
 
         var alertsDto = await _alertDapperRepository
