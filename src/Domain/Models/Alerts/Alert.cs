@@ -1,4 +1,5 @@
-﻿using SiteWatcher.Domain.Enums;
+﻿using Domain.Events.Alerts;
+using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
 using SiteWatcher.Domain.Models.Common;
 
@@ -18,6 +19,7 @@ public class Alert : BaseModel<AlertId>
         Frequency = frequency;
         Site = site;
         WatchMode = watchMode;
+        AddDomainEvent(new AlertCreatedOrUpdatedEvent(UserId));
     }
 
     public UserId UserId { get; }

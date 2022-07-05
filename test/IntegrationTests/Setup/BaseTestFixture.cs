@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using SiteWatcher.IntegrationTests.Setup;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
 namespace IntegrationTests.Setup;
 

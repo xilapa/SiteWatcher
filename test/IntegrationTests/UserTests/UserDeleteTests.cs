@@ -6,6 +6,7 @@ using Moq;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Email;
 using SiteWatcher.Domain.Utils;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 
 namespace IntegrationTests.UserTests;
@@ -25,7 +26,7 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
 
     public async Task InitializeAsync()
     {
-        _userXilapaWithoutChanges = await WithDbContext(ctx
+        _userXilapaWithoutChanges = await AppFactory.WithDbContext(ctx
             => ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
     }
 
@@ -40,7 +41,7 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
         EmailServiceMock.Invocations.Clear();
 
         // Verifying that the user exists
-        var userFromDb = await WithDbContext(ctx =>
+        var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
         userFromDb.Should().NotBeNull();
 
@@ -56,7 +57,7 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
             .Be(HttpStatusCode.OK);
 
         // Verifying that the user was deleted
-        (await WithDbContext(ctx =>
+        (await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleOrDefaultAsync(u => u.Id == Users.Xilapa.Id)))
             .Should().BeNull();
 
@@ -84,7 +85,7 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
         EmailServiceMock.Invocations.Clear();
 
         // Ensuring that user does not exists
-        await WithDbContext(async ctx =>
+        await AppFactory.WithDbContext(async ctx =>
         {
             var user = await ctx.Users.SingleOrDefaultAsync(u => u.Id == Users.Xilapa.Id);
             if (user is not null)
@@ -111,7 +112,7 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
 
     private async Task ResetTestData()
     {
-        await WithDbContext(async ctx =>
+        await AppFactory.WithDbContext(async ctx =>
         {
             var user = await ctx.Users.SingleOrDefaultAsync(u => u.Id == Users.Xilapa.Id);
             if (user is not null)
@@ -120,7 +121,7 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
             await ctx.SaveChangesAsync();
         });
 
-        var userReseted = await WithDbContext(ctx =>
+        var userReseted = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
 
         userReseted.Should().BeEquivalentTo(_userXilapaWithoutChanges);

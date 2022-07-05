@@ -6,6 +6,7 @@ using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
+using SiteWatcher.WebAPI.Filters;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -39,6 +40,7 @@ public class GoogleAuthController : ControllerBase
         return Redirect(authUrl);
     }
 
+    [CommandValidationFilter]
     [HttpPost("authenticate")]
     public async Task<IActionResult> Authenticate(GoogleAuthenticationCommand command, CancellationToken cancellationToken)
     {

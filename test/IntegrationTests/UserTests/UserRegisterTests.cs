@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
@@ -42,7 +43,7 @@ public class UserRegisterTests : BaseTest, IClassFixture<BaseTestFixture>
 
         // Checking on database
         var exception = await Record.ExceptionAsync(async () =>
-            await WithDbContext(ctx =>
+            await AppFactory.WithDbContext(ctx =>
                 ctx.Users.SingleOrDefaultAsync(u => u.GoogleId == Users.Xilapa.GetGoogleId()))
         );
 
@@ -85,7 +86,7 @@ public class UserRegisterTests : BaseTest, IClassFixture<BaseTestFixture>
             .Should().Be(TestSettings.InvalidToken);
 
         // Checking on database
-        var userCreated = await WithDbContext(ctx =>
+        var userCreated = await AppFactory.WithDbContext(ctx =>
             ctx.Users.Where(u => u.GoogleId == userToRegisterViewModel.GetGoogleId()).ToListAsync());
 
         userCreated.Count.Should().Be(1);

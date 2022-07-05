@@ -7,13 +7,7 @@ public abstract class Validable<T> : IValidable where T : class
 {
     public async Task<string[]> ValidateAsyncWith(IValidator validator)
     {
-        if (validator is not AbstractValidator<T> abstractValidator)
-            throw new ArgumentException($"The {nameof(validator)} is not an AbstractValidator");
-
-        if (this is not T instance)
-            throw new Exception("Something wrong is not right");
-
-        var result = await abstractValidator.ValidateAsync(instance);
+        var result = await (validator as AbstractValidator<T>)!.ValidateAsync((this as T)!);
         if (result.IsValid)
             return Array.Empty<string>();
 

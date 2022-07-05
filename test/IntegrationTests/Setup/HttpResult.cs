@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace IntegrationTests.Setup;
+namespace SiteWatcher.IntegrationTests.Setup;
 
 public class HttpResult
 {

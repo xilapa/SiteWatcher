@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,9 +16,9 @@ using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
 using ISession = SiteWatcher.Application.Interfaces.ISession;
 
-namespace SiteWatcher.IntegrationTests.Setup;
+namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, ICustomWebApplicationFactory where TStartup : class
 {
     private IDictionary<Type, object>? _servicesToReplace;
     private string _connectionString;

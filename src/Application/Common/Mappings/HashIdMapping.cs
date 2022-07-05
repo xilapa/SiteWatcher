@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.DTOs.Alert;
+using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
@@ -8,7 +9,9 @@ namespace SiteWatcher.Application.Common.Mappings;
 
 public class HashIdMapping :
     IMappingAction<Alert, DetailedAlertView>,
-    IMappingAction<WatchMode, DetailedWatchModeView>
+    IMappingAction<WatchMode, DetailedWatchModeView>,
+    IMappingAction<SimpleAlertViewDto, SimpleAlertView>,
+    IMappingAction<Alert, SimpleAlertView>
 {
     private readonly IIdHasher _idHasher;
 
@@ -23,6 +26,16 @@ public class HashIdMapping :
     }
 
     public void Process(Alert source, DetailedAlertView destination, ResolutionContext context)
+    {
+        destination.Id = _idHasher.HashId(source.Id.Value);
+    }
+
+    public void Process(SimpleAlertViewDto source, SimpleAlertView destination, ResolutionContext context)
+    {
+        destination.Id = _idHasher.HashId(source.Id);
+    }
+
+    public void Process(Alert source, SimpleAlertView destination, ResolutionContext context)
     {
         destination.Id = _idHasher.HashId(source.Id.Value);
     }

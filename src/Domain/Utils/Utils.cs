@@ -15,10 +15,15 @@ public static class Utils
     private const byte SlashByte = (byte) '/';
     private const byte DefaultByte = default!;
     private const char HyphenChar = '-';
-    private static readonly Dictionary<Type, EWatchMode> WatchModes = new()
+    private static readonly Dictionary<Type, EWatchMode> WatchModesTypeDictionary = new()
     {
         {typeof(AnyChangesWatch), EWatchMode.AnyChanges},
         {typeof(TermWatch), EWatchMode.Term}
+    };
+    private static readonly Dictionary<char, EWatchMode> WatchModesDiscriminatorDictionary = new()
+    {
+        {'A', EWatchMode.AnyChanges},
+        {'T', EWatchMode.Term}
     };
 
     public static string GenerateSafeRandomBase64String()
@@ -75,5 +80,8 @@ public static class Utils
     }
 
     public static EWatchMode? GetWatchModeEnumByType(WatchMode watchMode) =>
-        WatchModes[watchMode.GetType()];
+        WatchModesTypeDictionary[watchMode.GetType()];
+
+    public static EWatchMode? GetWatchModeEnumByTableDiscriminator(char discriminator) =>
+        WatchModesDiscriminatorDictionary[discriminator];
 }

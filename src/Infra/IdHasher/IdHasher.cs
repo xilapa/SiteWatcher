@@ -14,4 +14,10 @@ public class IdHasher : IIdHasher
 
     public string HashId(int id) =>
         _hashids.Encode(id);
+
+    public int DecodeId(string hashedId)
+    {
+        _hashids.TryDecodeSingle(hashedId, out var id);
+        return id;
+    }
 }
