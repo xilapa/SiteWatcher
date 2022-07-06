@@ -21,6 +21,13 @@ public class DapperQueries : IDapperQueries
 
     public virtual string GetSimpleAlertViewListByUserId => @"
             SELECT 
+                COUNT(a.""Id"") 
+            FROM 
+                ""siteWatcher_webApi"".""Alerts"" a
+            WHERE
+                a.""UserId"" = @userId;
+
+            SELECT 
                 a.""Id"",
 	            a.""Name"",
 	            a.""CreatedAt"",

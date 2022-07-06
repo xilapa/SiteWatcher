@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using MediatR;
@@ -16,7 +17,7 @@ namespace IntegrationTests.AlertTests;
 
 public class GetAlertCacheTestsBase : BaseTestFixture
 {
-    public Mock<IRequestHandler<GetUserAlertsCommand, ICommandResult<IEnumerable<SimpleAlertView>>>> CommandHandlerMock
+    public Mock<IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>> CommandHandlerMock
     {
         get;
         set;
@@ -58,14 +59,14 @@ public class GetAlertCacheTestsBase : BaseTestFixture
         };
 
         CommandHandlerMock =
-            new Mock<IRequestHandler<GetUserAlertsCommand, ICommandResult<IEnumerable<SimpleAlertView>>>>();
+            new Mock<IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>>();
 
         CommandHandlerMock
             .Setup(h =>
                 h.Handle(It.IsAny<GetUserAlertsCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new CommandResult<IEnumerable<SimpleAlertView>>(AlertsView));
+            .ReturnsAsync(new CommandResult<PaginatedList<SimpleAlertView>>(new PaginatedList<SimpleAlertView>(AlertsView)));
 
-        opt.ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, ICommandResult<IEnumerable<SimpleAlertView>>>),
+        opt.ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>),
             CommandHandlerMock.Object);
     };
 }
@@ -94,9 +95,9 @@ public class GetAlertCacheTests : BaseTest, IClassFixture<GetAlertCacheTestsBase
         await GetAsync("alert");
         FakeCache.Cache.Count.Should().Be(1);
         var cachedResult = JsonSerializer
-            .Deserialize<WebApiResponse<IEnumerable<SimpleAlertView>>>((FakeCache.Cache.Values.First().Value as string)!);
+            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>((FakeCache.Cache.Values.First().Value as string)!);
 
-        cachedResult!.Result.Should().BeEquivalentTo(_fixture.AlertsView);
+        cachedResult!.Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
 
         _fixture.CommandHandlerMock
             .Verify(c =>
@@ -105,8 +106,8 @@ public class GetAlertCacheTests : BaseTest, IClassFixture<GetAlertCacheTestsBase
 
         // second call
         var result = await GetAsync("alert");
-        result.GetTyped<WebApiResponse<IEnumerable<SimpleAlertView>>>()!. // result must be the same
-            Result.Should().BeEquivalentTo(_fixture.AlertsView);
+        result.GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()! // result must be the same
+            .Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
         FakeCache.Cache.Count.Should().Be(1); // fake cache must have the same entry
         _fixture.CommandHandlerMock // handler should not be called
             .Verify(c =>
@@ -134,9 +135,9 @@ public class GetAlertCacheTests : BaseTest, IClassFixture<GetAlertCacheTestsBase
         await GetAsync("alert");
         FakeCache.Cache.Count.Should().Be(1);
         var cachedResult = JsonSerializer
-            .Deserialize<WebApiResponse<IEnumerable<SimpleAlertView>>>((FakeCache.Cache.Values.First().Value as string)!);
+            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>((FakeCache.Cache.Values.First().Value as string)!);
 
-        cachedResult!.Result.Should().BeEquivalentTo(_fixture.AlertsView);
+        cachedResult!.Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
 
         // create alert
         var result = await PostAsync("alert", createAlertCommand);

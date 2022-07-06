@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Domain.DTOs.Common;
 using FluentAssertions;
 using HashidsNet;
 using IntegrationTests.Setup;
@@ -63,8 +64,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        result.GetTyped<WebApiResponse<IEnumerable<SimpleAlertView>>>()!
-            .Result.Should()
+        result.GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()!
+            .Result!.Results.Should()
             .BeEquivalentTo(GetAlertsTestsBase.XilapaAlerts.Take(10),
                 opt => opt.WithoutStrictOrdering());
     }
@@ -136,8 +137,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .ToArray();
 
         var typedResult = result
-            .GetTyped<WebApiResponse<IEnumerable<SimpleAlertView>>>()!
-            .Result!.ToArray();
+            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()!
+            .Result!.Results.ToArray();
 
         typedResult.Length.Should().Be(count);
         if (count != 0)
@@ -199,7 +200,7 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .Should().Be(HttpStatusCode.OK);
 
         result
-            .GetTyped<WebApiResponse<IEnumerable<SimpleAlertView>>>()!
-            .Result!.Count().Should().Be(count);
+            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()!
+            .Result!.Results.Count().Should().Be(count);
     }
 }

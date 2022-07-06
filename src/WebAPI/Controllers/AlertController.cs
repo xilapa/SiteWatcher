@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs.Alert;
+using Domain.DTOs.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +36,6 @@ public class AlertController : ControllerBase
     public async Task<IActionResult> GetUserAlerts([FromQuery] GetUserAlertsCommand command, CancellationToken cancellationToken)
     {
         var appResult = await _mediator.Send(command, cancellationToken);
-        return Ok(new WebApiResponse<IEnumerable<SimpleAlertView>>().SetResult(appResult.Value!));
+        return Ok(new WebApiResponse<PaginatedList<SimpleAlertView>>().SetResult(appResult.Value!));
     }
 }

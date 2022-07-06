@@ -29,7 +29,6 @@ public class DapperContext : IDapperContext
     public async Task UsingConnectionAsync(Func<IDbConnection, Task> func)
     {
         await using var connection = CreateConnection(_connectionString);
-        connection!.ConnectionString = _connectionString;
         if(connection.State == ConnectionState.Closed)
             await connection.OpenAsync();
 

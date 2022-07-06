@@ -20,7 +20,7 @@ public class GetUserAlertsCommandTests
         var result = await handler.Handle(command, default);
 
         // Assert
-        result.Value.Should().BeEmpty();
+        result.Value!.Results.Should().BeEmpty();
         alertDapperRepoMock
             .Verify(r =>
                 r.GetUserAlerts(It.IsAny<UserId>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),

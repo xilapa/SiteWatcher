@@ -1,5 +1,6 @@
 using AutoMapper;
 using Domain.DTOs.Alert;
+using Domain.DTOs.Common;
 using Domain.Events;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
@@ -45,5 +46,7 @@ public class AutoMapperProfile : Profile
             .ForMember(opt => opt.WatchMode, opt =>
                 opt.MapFrom(src => Utils.GetWatchModeEnumByType(src.WatchMode)))
             .AfterMap<HashIdMapping>();
+
+        CreateMap(typeof(PaginatedList<>), typeof(PaginatedList<>));
     }
 }
