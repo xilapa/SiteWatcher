@@ -111,6 +111,19 @@
       "term": "Plazo a monitorear",
       "termPlaceholder": "Escriba un término para disparar la alerta",
       "save": "Guardar"
+    },
+    "list": {
+      "site": "Sitio",
+      "neverRan": "Nunca"
+    },
+    "common": {
+      "createdAt": "Creado en",
+      "notificationsSent": "Notificaciones enviadas",
+      "notificationsSentMobile": "Notificaciones",
+      "frequencyMobile": "Frecuencia",
+      "watchModeMobile": "Tipo",
+      "lastVerification": "Última verificación"
     }
   }
+
 }
