@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {ApiResponse} from "../../core/interfaces";
+import {ApiResponse, PaginatedList} from "../../core/interfaces";
 import {
+    AlertUtils,
     CreateAlertModel, DetailedAlertView,
     DetailedAlertViewApi, SimpleAlertViewApi
 } from "../common/alert";
-import {map, Observable, of, switchMap} from "rxjs";
+import {map, Observable, of, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {Data} from "../../core/shared-data/shared-data";
@@ -15,40 +16,76 @@ import {Data} from "../../core/shared-data/shared-data";
 export class AlertService {
     private readonly baseRoute = "alert";
     private readonly userAlertsKey = "userAlerts";
+    private allUserAlertsLoaded = false;
 
     constructor(private readonly httpClient: HttpClient) {
     }
 
-    public createAlert(createModel: CreateAlertModel): Observable<ApiResponse<DetailedAlertViewApi>>{
+    public createAlert(createModel: CreateAlertModel): Observable<ApiResponse<DetailedAlertViewApi>> {
         return this.httpClient
-            .post<ApiResponse<DetailedAlertViewApi>>(`${environment.baseApiUrl}/${this.baseRoute}`, createModel);
+            .post<ApiResponse<DetailedAlertViewApi>>(`${environment.baseApiUrl}/${this.baseRoute}`, createModel)
+            .pipe(tap(res => {
+                // adding the created alert to memory if all alerts are loaded
+                if (this.allUserAlertsLoaded) {
+                    const newAlert = AlertUtils.DetailedAlertViewApiToInternal(res.Result);
+                    const alertsAlreadyLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
+                    const updatedAlertList = alertsAlreadyLoaded ?
+                        alertsAlreadyLoaded.concat(newAlert) : [newAlert];
+                    Data.Share(this.userAlertsKey, updatedAlertList);
+                }
+            }));
     }
 
-    public getUserAlerts() : Observable<DetailedAlertView[]> {
+    // load the initial list of alerts
+    public getUserAlerts(isMobile: boolean): Observable<DetailedAlertView[]> {
         const alerts = Data.Get(this.userAlertsKey) as DetailedAlertView[];
 
-        // if there was alerts stored, doesnt call the server
-        if(alerts && alerts.length != 0)
+        // if there was alerts stored doesnt call the server
+        if (alerts && alerts.length != 0)
             return of(alerts);
 
-        return this.httpClient.get<ApiResponse<SimpleAlertViewApi[]>>(`${environment.baseApiUrl}/${this.baseRoute}`)
-            .pipe(map(apiResponse => {
-                const detailedAlerts = apiResponse.Result.map(simpleAlert => {
-                    const detailedAlert: DetailedAlertView = {
-                        Id: simpleAlert.Id,
-                        Name: simpleAlert.Name,
-                        CreatedAt: new Date(simpleAlert.CreatedAt),
-                        Frequency: simpleAlert.Frequency,
-                        LastVerification: simpleAlert.LastVerification ? new Date(simpleAlert.LastVerification) : null,
-                        NotificationsSent: simpleAlert.NotificationsSent,
-                        Site: {Name: simpleAlert.SiteName},
-                        WatchMode: {WatchMode: simpleAlert.WatchMode}
-                    }
-                    return detailedAlert;
-                });
-                Data.Share(this.userAlertsKey, detailedAlerts);
-                return detailedAlerts;
-            }))
+        return this.loadUserAlertsFromServer(isMobile)
+            .pipe(map(res => {
+                Data.Share(this.userAlertsKey, res.Results);
+                this.allUserAlertsLoaded = res.Results.length == res.Total;
+                return res.Results;
+            }));
     }
 
+    // load more user alerts when user scrolls and add it to the app memory
+    public getMoreUserAlerts(isMobile: boolean): Observable<DetailedAlertView[]> {
+        const alertsAlreadyLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
+        if (this.allUserAlertsLoaded)
+            return of(alertsAlreadyLoaded);
+
+        const lastId = alertsAlreadyLoaded[alertsAlreadyLoaded.length - 1].Id;
+
+        return this.loadUserAlertsFromServer(isMobile, lastId)
+            .pipe(map(newAlerts => {
+                const allAlerts = alertsAlreadyLoaded.concat(newAlerts.Results);
+                Data.Share(this.userAlertsKey, allAlerts);
+                this.allUserAlertsLoaded = allAlerts.length == newAlerts.Total;
+                return allAlerts;
+            }));
+    }
+
+    private loadUserAlertsFromServer(isMobile: boolean, lastId?: string | undefined): Observable<PaginatedList<DetailedAlertView>> {
+        const query = `?Take=${isMobile ? 5 : 7}${lastId ? '&LastAlertId=' + lastId : ''}`;
+
+        return this.httpClient
+            .get<ApiResponse<PaginatedList<SimpleAlertViewApi>>>(`${environment.baseApiUrl}/${this.baseRoute}${query}`)
+            .pipe(map(apiResponse => {
+
+                // map simple alert to detailed alerts
+                const detailedAlerts = apiResponse.Result.Results
+                    .map(simpleAlert => AlertUtils.SimpleAlertViewApiToInternal(simpleAlert));
+
+                // map to paginated list of detailed alerts
+                const paginatedDetailedAlerts: PaginatedList<DetailedAlertView> = {
+                    Total: apiResponse.Result.Total,
+                    Results: detailedAlerts
+                }
+                return paginatedDetailedAlerts;
+            }))
+    }
 }
