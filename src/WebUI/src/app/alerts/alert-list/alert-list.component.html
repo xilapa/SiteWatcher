@@ -1,5 +1,7 @@
 <div class="alert-list-wrapper">
-    <div class="alert-list">
+    <div class="alert-list"
+         infiniteScroll [infiniteScrollDistance]="2"
+         [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
         <ng-container *ngFor="let alert of alerts">
             <sw-alert-item [alert]="alert"></sw-alert-item>
         </ng-container>

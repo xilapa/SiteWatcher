@@ -4,6 +4,7 @@ import {AlertItemComponent} from './alert-item/alert-item.component';
 import {AlertListComponent} from "./alert-list.component";
 import {AlertListRoutingModule} from "./alert-list.routing.module";
 import {TranslocoModule} from "@ngneat/transloco";
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
 
 @NgModule({
     declarations: [
@@ -13,7 +14,8 @@ import {TranslocoModule} from "@ngneat/transloco";
     imports: [
         CommonModule,
         AlertListRoutingModule,
-        TranslocoModule
+        TranslocoModule,
+        InfiniteScrollModule
     ]
 })
 export class AlertListModule {
