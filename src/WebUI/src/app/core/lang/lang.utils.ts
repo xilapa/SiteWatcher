@@ -39,4 +39,9 @@ export class LangUtils {
         });
         return fileName;
     }
+
+    public static getCurrentLocale(window: Window): string {
+        const langs = window.navigator.languages;
+        return langs?.length > 0 ? langs[0] : 'en-US';
+    }
 }
