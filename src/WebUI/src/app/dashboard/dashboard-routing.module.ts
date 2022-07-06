@@ -12,6 +12,10 @@ const dashRoutes: Routes = [
         children:
             [
                 {
+                    path: '',
+                    loadChildren: () => import('../alerts/alert-list/alert-list.module').then(m => m.AlertListModule)
+                },
+                {
                     path: 'settings',
                     loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
                 },
