@@ -1,0 +1,56 @@
+<ng-container *transloco="let t">
+    <div class="alert-item-wrapper">
+        <div class="alert-item-row">
+            <div class="alert-item-title">{{alert.Name}}</div>
+        </div>
+        <div class="alert-item-row">
+            <div class="alert-item-row-item">
+                <div class="alert-item-field-name">
+                    <i class="pi pi-calendar-minus"></i>
+                    {{t('alert.common.createdAt')}}
+                </div>
+                {{alert.CreatedAt.toLocaleDateString() + ' ' + alert.CreatedAt.toLocaleTimeString()}}
+            </div>
+            <div class="alert-item-row-item item-wrap">
+                <div class="alert-item-field-name">
+                    <i class="pi pi-globe"></i>
+                    {{t('alert.list.site')}}
+                </div>
+                {{alert.Site.Name}}
+            </div>
+        </div>
+        <div class="alert-item-row">
+            <div class="alert-item-row-item">
+                <div class="alert-item-field-name">
+                    <i class="pi pi-bolt"></i>
+                    {{isMobile ? t('alert.common.watchModeMobile') : t('alert.createUpdate.watchMode')}}
+                </div>
+                {{t(watchModeTranslationKey)}}
+            </div>
+            <div class="alert-item-row-item">
+                <div class="alert-item-field-name">
+                    <i class="pi pi-send"></i>
+                    {{isMobile ? t('alert.common.notificationsSentMobile') : t('alert.common.notificationsSent')}}
+                </div>
+                {{alert.NotificationsSent}}
+            </div>
+        </div>
+        <div class="alert-item-row">
+            <div class="alert-item-row-item">
+                <div class="alert-item-field-name">
+                    <i class="pi pi-sync"></i>
+                    {{isMobile ? t('alert.common.frequencyMobile') : t('alert.createUpdate.frequency')}}
+                </div>
+                {{t(frequencyTranslationKey)}}
+            </div>
+            <div class="alert-item-row-item">
+                <div class="alert-item-field-name">
+                    <i class="pi pi-history"></i>
+                    {{t('alert.common.lastVerification')}}
+                </div>
+                {{alert.LastVerification ?? t('alert.list.neverRan')}}
+            </div>
+        </div>
+    </div>
+</ng-container>
+
