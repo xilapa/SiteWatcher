@@ -7,7 +7,7 @@ export interface CreateAlertModel {
     siteName: string,
     siteUri: string,
     watchMode: EWatchMode,
-    term: string | null
+    term: string | undefined
 }
 
 // Api response
@@ -16,7 +16,7 @@ export interface DetailedAlertViewApi {
     Name: string,
     CreatedAt: Date,
     Frequency: AlertFrequency,
-    LastVerification : Date | null,
+    LastVerification: Date | undefined,
     NotificationsSent: number,
     Site: SiteViewApi,
     WatchMode: DetailedWatchModeViewApi
@@ -30,15 +30,15 @@ export interface SiteViewApi {
 export interface DetailedWatchModeViewApi {
     Id: string,
     WatchMode: EWatchMode,
-    Term: string | null
+    Term: string | undefined
 }
 
 export interface SimpleAlertViewApi {
     Id: string,
     Name: string,
     CreatedAt: Date,
-    Frequency : AlertFrequency,
-    LastVerification : Date | null,
+    Frequency: AlertFrequency,
+    LastVerification: Date | undefined,
     NotificationsSent: number,
     SiteName: string,
     WatchMode: EWatchMode
@@ -51,10 +51,11 @@ export interface DetailedAlertView {
     Name: string,
     CreatedAt: Date,
     Frequency: AlertFrequency,
-    LastVerification : Date | null,
+    LastVerification: Date | undefined,
     NotificationsSent: number,
     Site: SiteView,
-    WatchMode: DetailedWatchModeView
+    WatchMode: DetailedWatchModeView,
+    FullyLoaded: boolean
 }
 
 export interface SiteView {
@@ -66,6 +67,41 @@ export interface DetailedWatchModeView {
     Id?: string | undefined,
     WatchMode: EWatchMode,
     Term?: string | undefined
+}
+
+
+export class AlertUtils {
+
+    public static DetailedAlertViewApiToInternal(apiView: DetailedAlertViewApi): DetailedAlertView {
+        const internalView : DetailedAlertView = {
+            Id: apiView.Id,
+            Name: apiView.Name,
+            CreatedAt: new Date(apiView.CreatedAt),
+            Frequency: apiView.Frequency,
+            LastVerification: apiView.LastVerification ? new Date(apiView.LastVerification) : undefined,
+            NotificationsSent: apiView.NotificationsSent,
+            Site: apiView.Site,
+            WatchMode: apiView.WatchMode,
+            FullyLoaded: true
+        }
+        return internalView;
+    }
+
+    public static SimpleAlertViewApiToInternal(simpleApiView : SimpleAlertViewApi): DetailedAlertView{
+        const detailedAlert: DetailedAlertView = {
+            Id: simpleApiView.Id,
+            Name: simpleApiView.Name,
+            CreatedAt: new Date(simpleApiView.CreatedAt),
+            Frequency: simpleApiView.Frequency,
+            LastVerification: simpleApiView.LastVerification ? new Date(simpleApiView.LastVerification) : undefined,
+            NotificationsSent: simpleApiView.NotificationsSent,
+            Site: {Name: simpleApiView.SiteName},
+            WatchMode: {WatchMode: simpleApiView.WatchMode},
+            FullyLoaded: false
+        }
+        return detailedAlert;
+    }
+
 }
 
 
