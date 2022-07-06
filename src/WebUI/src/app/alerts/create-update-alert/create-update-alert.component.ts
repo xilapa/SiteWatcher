@@ -5,7 +5,7 @@ import {DropdownOption} from "../../core/interfaces/dropdown-option";
 import {AlertFrequency} from "../common/alert-frequency";
 import {TranslocoService} from "@ngneat/transloco";
 import { EWatchMode } from '../common/e-watch-mode';
-import {Subscription} from "rxjs";
+import {finalize, Subscription} from "rxjs";
 import {uriValidator} from "../../common/validators/uri.validator";
 import {watchModeTermValidator} from "../../common/validators/watch-mode-term.validator";
 import {CreateAlertModel} from "../common/alert";
@@ -29,6 +29,7 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
     watchModeOptions: DropdownOption<number>[];
     termWatchModeSelected = false;
     pageTitleTranslationKey: string;
+    doingRequest: boolean;
     private activePage: string;
     private watchModeSub : Subscription | undefined;
 
@@ -91,6 +92,7 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
     }
 
     public send(): void {
+        this.doingRequest = true;
         if(this.activePage == 'create')
             this.createAlert();
         // TODO: condition to update method
@@ -99,12 +101,11 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
     private createAlert(): void {
         const alertData = this.createUpdateAlertForm.getRawValue() as CreateAlertModel;
         this.alertService.createAlert(alertData)
+            .pipe(finalize(() => this.doingRequest = false))
             .subscribe({
                 next: (response) => {
                     utils.toastSuccess(this.messageService, this.transloco,
                         this.transloco.translate('alert.createUpdate.created'));
-                    // TODO: Add to local list of alters
-
                 },
                 error: (errorResponse) => {
                     utils.toastError(errorResponse, this.messageService,

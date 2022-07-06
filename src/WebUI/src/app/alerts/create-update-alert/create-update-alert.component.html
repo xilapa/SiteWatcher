@@ -100,7 +100,7 @@
 
             <!-- submit button -->
             <button type="submit" pButton [label]="t('alert.createUpdate.save')"
-                    [disabled]="createUpdateAlertForm.invalid"></button>
+                    [disabled]="createUpdateAlertForm.invalid || doingRequest"></button>
         </form>
     </sw-base-page-layout>
 </ng-container>

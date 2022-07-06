@@ -9,7 +9,7 @@ import {LanguageOptions} from "../../../home/register/language-options";
 import {LangUtils} from "../../../core/lang/lang.utils";
 import {ELanguage} from "../../../core/lang/language";
 import {TranslocoService} from "@ngneat/transloco";
-import {Observable, Subscription} from "rxjs";
+import {finalize, Observable, Subscription} from "rxjs";
 import {ThemeService} from "../../../core/theme/theme.service";
 import {ETheme} from "../../../core/theme/theme";
 import {MessageService} from "primeng/api";
@@ -33,6 +33,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     mobileScreen$: Observable<boolean>;
     dataChanged = false;
     darkThemeEnabledInitial: boolean;
+    doingRequest: boolean;
     private userSub: Subscription | undefined;
     private langSub: Subscription | undefined;
     private themeSub: Subscription | undefined;
@@ -106,12 +107,14 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     }
 
     update(): void {
+        this.doingRequest = true;
         const updateData = this.updateForm.getRawValue() as UpdateUser;
         updateData.name = updateData.name.trim();
         updateData.email = updateData.email.trim();
         updateData.theme = this.darkThemeEnabled ? ETheme.dark : ETheme.light;
 
         this.userService.update(updateData)
+            .pipe(finalize(() => this.doingRequest = false))
             .subscribe({
                 next: (resp) => {
                     this.userService.setToken(resp.Result.Token);

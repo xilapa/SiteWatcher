@@ -63,7 +63,7 @@
             </div>
 
             <!-- submit button -->
-            <button type="submit" pButton [label]="t('settings.profile.update')" [disabled]="updateForm.invalid || !dataChanged"></button>
+            <button type="submit" pButton [label]="t('settings.profile.update')" [disabled]="updateForm.invalid || !dataChanged || doingRequest"></button>
 
         </form>
     </div>
