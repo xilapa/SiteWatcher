@@ -1,0 +1,122 @@
+.alert-details-wrapper {
+    margin-left: 30px;
+}
+
+.alert-detail-group-row-name {
+    color: var(--sw-text-muted-1);
+}
+
+.alert-detail-group-row-content {
+    color: var(--sw-foreground-0);
+}
+
+.alert-item-title {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.alert-detail-group {
+    margin-bottom: 20px;
+}
+
+.alert-detail-group:last-child {
+    margin-bottom: 10px;
+}
+
+.alert-detail-group-row-name {
+    margin-bottom: 8px;
+}
+
+.alert-detail-group-row-content {
+    margin-bottom: 8px;
+}
+
+.alert-detail-group-row-content:last-child {
+    margin-bottom: 10px;
+}
+
+.alert-detail-group-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-button {
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.close-button .pi {
+    font-size: 20px;
+}
+
+.details-buttons-wrapper {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
+    margin-right: 20px;
+}
+
+.details-button {
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.details-button .pi {
+    font-size: 20px;
+}
+
+.alert-detail-group-wrapper {
+    margin-bottom: 20px;
+}
+
+.alert-details-body-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.alert-details-body {
+    width: 500px;
+}
+
+@media screen and (min-width: 440px) {
+    .alert-details-wrapper {
+        margin-left: 0;
+    }
+
+    .alert-detail-group-wrapper {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .alert-detail-group-wrapper .alert-detail-group {
+        margin-bottom: 0;
+        width: 50%;
+    }
+
+    .alert-detail-group-wrapper .alert-detail-group:last-child {
+        margin-left: 20px;
+    }
+
+    .alert-detail-group-wrapper .alert-detail-group-row-content {
+        margin-bottom: 0;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .alert-details-wrapper {
+        margin-left: 20px;
+    }
+
+    .details-buttons-wrapper {
+        margin-right: 20px;
+    }
+}

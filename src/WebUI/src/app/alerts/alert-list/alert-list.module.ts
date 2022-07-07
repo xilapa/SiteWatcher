@@ -5,6 +5,9 @@ import {AlertListComponent} from "./alert-list.component";
 import {AlertListRoutingModule} from "./alert-list.routing.module";
 import {TranslocoModule} from "@ngneat/transloco";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
+import {DynamicDialogModule} from "primeng/dynamicdialog";
+import {AlertDetailsModule} from "../alert-details/alert-details.module";
+import {AlertDetailsComponent} from "../alert-details/alert-details.component";
 
 @NgModule({
     declarations: [
@@ -15,7 +18,12 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
         CommonModule,
         AlertListRoutingModule,
         TranslocoModule,
-        InfiniteScrollModule
+        InfiniteScrollModule,
+        DynamicDialogModule,
+        AlertDetailsModule
+    ],
+    entryComponents:[
+        AlertDetailsComponent
     ]
 })
 export class AlertListModule {

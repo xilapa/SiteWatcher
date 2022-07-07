@@ -1,0 +1,105 @@
+<ng-container *transloco="let t">
+    <div class="alert-details-wrapper">
+
+        <!-- alert name-->
+        <div class="alert-detail-group alert-detail-group-title">
+            <div class="alert-item-title">
+                {{alert.Name}}
+            </div>
+            <div class="close-button" (click)="close()">
+                <i class="pi pi-times"></i>
+            </div>
+        </div>
+
+        <div class="alert-details-body-wrapper">
+            <div class="alert-details-body">
+                <!-- site group-->
+                <div class="alert-detail-group">
+                    <div class="alert-detail-group-row-name">
+                        <i class="pi pi-globe"></i>
+                        {{t('alert.list.site')}}
+                    </div>
+                    <div class="alert-detail-group-row-content">
+                        {{alert.Site.Name}}
+                    </div>
+                    <div class="alert-detail-group-row-content">
+                        {{alert?.Site?.Uri ?? 'not loaded'}}
+                    </div>
+                </div>
+
+                <div class="alert-detail-group-wrapper">
+                    <!-- basic info group-->
+                    <div class="alert-detail-group">
+                        <div class="alert-detail-group-row-name">
+                            <i class="pi pi-calendar-minus"></i>
+                            {{t('alert.common.createdAt')}}
+                        </div>
+                        <div class="alert-detail-group-row-content">
+                            {{alert.LocalizedDateString}}
+                        </div>
+                    </div>
+
+                    <!-- frequency group-->
+                    <div class="alert-detail-group">
+                        <div class="alert-detail-group-row-name">
+                            <i class="pi pi-sync"></i>
+                            {{t('alert.createUpdate.frequency')}}
+                        </div>
+                        <div class="alert-detail-group-row-content">
+                            {{t(alert.FrequencyTranslationKey ?? '')}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert-detail-group-wrapper">
+                    <!-- notifications group-->
+                    <div class="alert-detail-group">
+                        <div class="alert-detail-group-row-name">
+                            <i class="pi pi-send"></i>
+                            {{t('alert.common.notificationsSentMobile')}}
+                        </div>
+                        <div class="alert-detail-group-row-content">
+                            {{alert.NotificationsSent + ' ' + t('alert.common.sent')}}
+                        </div>
+                    </div>
+
+                    <!-- last-verification group-->
+                    <div class="alert-detail-group">
+                        <div class="alert-detail-group-row-name">
+                            <i class="pi pi-history"></i>
+                            {{t('alert.common.lastVerification')}}
+                        </div>
+                        <div class="alert-detail-group-row-content">
+                            {{alert.LastVerification ?? t('alert.list.neverRan')}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- watch mode group-->
+                <div class="alert-detail-group">
+                    <div class="alert-detail-group-row-name">
+                        <i class="pi pi-bolt"></i>
+                        {{t('alert.createUpdate.watchMode')}}
+                    </div>
+                    <div class="alert-detail-group-row-content">
+                        {{t(alert.WatchModeTranslationKey ?? '')}}
+                    </div>
+                    <div class="alert-detail-group-row-content" *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Term">
+                        {{'"' + (alert.WatchMode.Term ?? 'not loaded') + '"'}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="details-buttons-wrapper">
+            <div class="details-button" (click)="deleteAlert()">
+                <i class="pi pi-trash"></i>
+            </div>
+            <div class="details-button" (click)="goToEditPage()">
+                <i class="pi pi-pencil"></i>
+            </div>
+        </div>
+    </div>
+</ng-container>
+

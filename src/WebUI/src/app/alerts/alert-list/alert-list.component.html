@@ -3,7 +3,7 @@
          infiniteScroll [infiniteScrollDistance]="2"
          [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
         <ng-container *ngFor="let alert of alerts">
-            <sw-alert-item [alert]="alert"></sw-alert-item>
+            <sw-alert-item [alert]="alert" (click)="seeDetails(alert)"></sw-alert-item>
         </ng-container>
     </div>
 </div>
