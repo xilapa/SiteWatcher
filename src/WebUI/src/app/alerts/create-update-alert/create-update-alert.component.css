@@ -2,6 +2,7 @@ form {
     display: flex;
     flex-direction: column;
     width: 70vw;
+    max-width: 550px;
 }
 
 label {
@@ -46,6 +47,12 @@ button {
     align-self: center;
     width: 120px;
     margin: 15px 0 50px 0;
+}
+
+@media screen and (max-width: 600px) {
+    form {
+        width: 90vw;
+    }
 }
 
 /*#region ng prime input text adjustments */

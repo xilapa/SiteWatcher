@@ -15,7 +15,14 @@
 }
 
 @media screen and (min-width: 600px) {
-    .base-page-layout-content-wrapper {
+    .base-page-layout-content-wrapper{
         justify-content: center;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .base-page-layout-content-wrapper{
+        justify-content: center;
+        width: initial;
     }
 }
