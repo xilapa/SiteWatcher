@@ -9,7 +9,7 @@
                     <i class="pi pi-calendar-minus"></i>
                     {{t('alert.common.createdAt')}}
                 </div>
-                {{dateStringLocalized}}
+                {{alert.LocalizedDateString}}
             </div>
             <div class="alert-item-row-item item-wrap">
                 <div class="alert-item-field-name">
@@ -25,7 +25,7 @@
                     <i class="pi pi-bolt"></i>
                     {{isMobile ? t('alert.common.watchModeMobile') : t('alert.createUpdate.watchMode')}}
                 </div>
-                {{t(watchModeTranslationKey)}}
+                {{t(alert.WatchModeTranslationKey ?? '')}}
             </div>
             <div class="alert-item-row-item">
                 <div class="alert-item-field-name">
@@ -41,7 +41,7 @@
                     <i class="pi pi-sync"></i>
                     {{isMobile ? t('alert.common.frequencyMobile') : t('alert.createUpdate.frequency')}}
                 </div>
-                {{t(frequencyTranslationKey)}}
+                {{t(alert.FrequencyTranslationKey ?? '')}}
             </div>
             <div class="alert-item-row-item">
                 <div class="alert-item-field-name">

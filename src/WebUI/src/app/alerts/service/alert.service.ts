@@ -9,6 +9,7 @@ import {map, Observable, of, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {Data} from "../../core/shared-data/shared-data";
+import {LangUtils} from "../../core/lang/lang.utils";
 
 @Injectable({
     providedIn: 'root'
@@ -17,8 +18,10 @@ export class AlertService {
     private readonly baseRoute = "alert";
     private readonly userAlertsKey = "userAlerts";
     private allUserAlertsLoaded = false;
+    private readonly currentLocale: string;
 
-    constructor(private readonly httpClient: HttpClient) {
+    constructor(private readonly httpClient: HttpClient, window: Window) {
+        this.currentLocale = LangUtils.getCurrentLocale(window);
     }
 
     public createAlert(createModel: CreateAlertModel): Observable<ApiResponse<DetailedAlertViewApi>> {
@@ -27,7 +30,8 @@ export class AlertService {
             .pipe(tap(res => {
                 // adding the created alert to memory if all alerts are loaded
                 if (this.allUserAlertsLoaded) {
-                    const newAlert = AlertUtils.DetailedAlertViewApiToInternal(res.Result);
+                    const newAlert = AlertUtils
+                        .DetailedAlertViewApiToInternal(res.Result, this.currentLocale);
                     const alertsAlreadyLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
                     const updatedAlertList = alertsAlreadyLoaded ?
                         alertsAlreadyLoaded.concat(newAlert) : [newAlert];
@@ -78,7 +82,8 @@ export class AlertService {
 
                 // map simple alert to detailed alerts
                 const detailedAlerts = apiResponse.Result.Results
-                    .map(simpleAlert => AlertUtils.SimpleAlertViewApiToInternal(simpleAlert));
+                    .map(simpleAlert => AlertUtils
+                        .SimpleAlertViewApiToInternal(simpleAlert, this.currentLocale));
 
                 // map to paginated list of detailed alerts
                 const paginatedDetailedAlerts: PaginatedList<DetailedAlertView> = {

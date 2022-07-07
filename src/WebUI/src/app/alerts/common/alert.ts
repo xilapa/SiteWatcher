@@ -1,5 +1,5 @@
-﻿import {AlertFrequency} from "./alert-frequency";
-import {EWatchMode} from "./e-watch-mode";
+﻿import {AlertFrequency, AlertFrequencyUtils} from "./alert-frequency";
+import {EWatchMode, WatchModeUtils} from "./e-watch-mode";
 
 export interface CreateAlertModel {
     name: string,
@@ -55,7 +55,10 @@ export interface DetailedAlertView {
     NotificationsSent: number,
     Site: SiteView,
     WatchMode: DetailedWatchModeView,
-    FullyLoaded: boolean
+    FullyLoaded: boolean,
+    FrequencyTranslationKey? : string,
+    WatchModeTranslationKey? : string,
+    LocalizedDateString? : string
 }
 
 export interface SiteView {
@@ -72,36 +75,43 @@ export interface DetailedWatchModeView {
 
 export class AlertUtils {
 
-    public static DetailedAlertViewApiToInternal(apiView: DetailedAlertViewApi): DetailedAlertView {
-        const internalView : DetailedAlertView = {
+    public static DetailedAlertViewApiToInternal(apiView: DetailedAlertViewApi, currentLocale: string): DetailedAlertView {
+        const createdAt = new Date(apiView.CreatedAt);
+        return {
             Id: apiView.Id,
             Name: apiView.Name,
-            CreatedAt: new Date(apiView.CreatedAt),
+            CreatedAt: createdAt,
             Frequency: apiView.Frequency,
             LastVerification: apiView.LastVerification ? new Date(apiView.LastVerification) : undefined,
             NotificationsSent: apiView.NotificationsSent,
             Site: apiView.Site,
             WatchMode: apiView.WatchMode,
-            FullyLoaded: true
+            FullyLoaded: true,
+            FrequencyTranslationKey: AlertFrequencyUtils.getFrequencyTranslationKey(apiView.Frequency),
+            WatchModeTranslationKey: WatchModeUtils.getWatchModeTranslationKey(apiView.WatchMode.WatchMode),
+            LocalizedDateString: createdAt.toLocaleDateString(currentLocale) + ' '
+                + createdAt.toLocaleTimeString(currentLocale)
         }
-        return internalView;
     }
 
-    public static SimpleAlertViewApiToInternal(simpleApiView : SimpleAlertViewApi): DetailedAlertView{
-        const detailedAlert: DetailedAlertView = {
+    public static SimpleAlertViewApiToInternal(simpleApiView : SimpleAlertViewApi, currentLocale: string): DetailedAlertView{
+        const createdAt = new Date(simpleApiView.CreatedAt);
+        return {
             Id: simpleApiView.Id,
             Name: simpleApiView.Name,
-            CreatedAt: new Date(simpleApiView.CreatedAt),
+            CreatedAt: createdAt,
             Frequency: simpleApiView.Frequency,
             LastVerification: simpleApiView.LastVerification ? new Date(simpleApiView.LastVerification) : undefined,
             NotificationsSent: simpleApiView.NotificationsSent,
             Site: {Name: simpleApiView.SiteName},
             WatchMode: {WatchMode: simpleApiView.WatchMode},
-            FullyLoaded: false
+            FullyLoaded: false,
+            FrequencyTranslationKey: AlertFrequencyUtils.getFrequencyTranslationKey(simpleApiView.Frequency),
+            WatchModeTranslationKey: WatchModeUtils.getWatchModeTranslationKey(simpleApiView.WatchMode),
+            LocalizedDateString: createdAt.toLocaleDateString(currentLocale) + ' '
+                + createdAt.toLocaleTimeString(currentLocale)
         }
-        return detailedAlert;
     }
-
 }
 
 

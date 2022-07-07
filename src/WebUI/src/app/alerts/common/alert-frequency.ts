@@ -7,7 +7,7 @@
     TwentyFourHours = 24
 }
 
-export class AlertUtils{
+export class AlertFrequencyUtils{
     public static getFrequencyTranslationKey(frequency: AlertFrequency): string{
         switch (frequency) {
             case AlertFrequency.TwoHours:
