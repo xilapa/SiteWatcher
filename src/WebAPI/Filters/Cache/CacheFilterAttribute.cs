@@ -9,6 +9,7 @@ namespace SiteWatcher.WebAPI.Filters.Cache;
 /// <summary>
 /// To cache the result, the method must have an parameter implementing <see cref="ICacheable"/>
 /// and it's name must be "command".
+/// Also a cache header will be set on response to be cache the result on client for 30s.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class CacheFilterAttribute : Attribute, IAsyncActionFilter, IAsyncResultFilter
@@ -59,6 +60,9 @@ public class CacheFilterAttribute : Attribute, IAsyncActionFilter, IAsyncResultF
                 .SaveHashAsync(cacheInfo!.Key, cacheInfo.HashFieldName,
                     (context.Result as ObjectResult)!.Value!, cacheInfo.Expiration);
         }
+
+        // 30s cache on client, based on official ResponseCacheFilterExecutor
+        context.HttpContext.Response.Headers.CacheControl = "private,max-age=30";
         await next();
     }
 }
