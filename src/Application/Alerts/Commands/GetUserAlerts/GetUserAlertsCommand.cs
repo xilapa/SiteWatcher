@@ -13,10 +13,10 @@ public class GetUserAlertsCommand : IRequest<ICommandResult<PaginatedList<Simple
     public int Take { get; set; } = 10;
 
     public string GetKey(ISession session) =>
-        CacheKeys.GetAlerts(session.UserId!.Value);
+        CacheKeys.UserAlerts(session.UserId!.Value);
 
     public string HashFieldName =>
-        $"{Take}-{LastAlertId}";
+        $"Take:{Take}-LastId:{LastAlertId}";
 
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
 }
