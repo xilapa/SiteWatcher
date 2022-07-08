@@ -8,4 +8,6 @@ public interface IAlertDapperRepository
 {
     Task<PaginatedList<SimpleAlertViewDto>> GetUserAlerts(UserId userId, int take, int lastAlertId,
         CancellationToken cancellationToken);
+
+    Task<AlertDetailsDto?> GetAlertDetails(int alertId, UserId userId, CancellationToken cancellationToken);
 }

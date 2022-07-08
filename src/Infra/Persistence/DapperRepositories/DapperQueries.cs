@@ -45,4 +45,18 @@ public class DapperQueries : IDapperQueries
             ORDER BY 
                 a.""Id""
             LIMIT @take";
+
+    public virtual string GetAlertDetails => @"
+            SELECT
+                a.""Id"",
+                a.""Site_Uri"" SiteUri,
+                wm.""Id"" WatchModeId,
+                wm.""Term""
+            FROM 
+            ""siteWatcher_webApi"".""Alerts"" a
+                INNER JOIN ""siteWatcher_webApi"".""WatchModes"" wm 
+                ON a.""Id"" = wm.""AlertId""
+            WHERE
+                a.""Id"" = @alertId
+                AND a.""UserId"" = @userId";
 }

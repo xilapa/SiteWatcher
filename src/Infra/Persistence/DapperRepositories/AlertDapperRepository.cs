@@ -32,4 +32,12 @@ public class AlertDapperRepository : IAlertDapperRepository
         });
         return result;
     }
+
+    public async Task<AlertDetailsDto?> GetAlertDetails(int alertId, UserId userId, CancellationToken cancellationToken)
+    {
+        var commandDefinition = new CommandDefinition(_dapperQueries.GetAlertDetails, new {alertId, userId},
+            cancellationToken: cancellationToken);
+        return await _dapperContext.UsingConnectionAsync(conn =>
+            conn.QueryFirstOrDefaultAsync<AlertDetailsDto>(commandDefinition));
+    }
 }

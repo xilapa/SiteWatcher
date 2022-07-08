@@ -3,6 +3,7 @@ using Domain.DTOs.Alert;
 using Domain.DTOs.Common;
 using Domain.Events;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
+using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
@@ -48,5 +49,8 @@ public class AutoMapperProfile : Profile
             .AfterMap<HashIdMapping>();
 
         CreateMap(typeof(PaginatedList<>), typeof(PaginatedList<>));
+
+        CreateMap<AlertDetailsDto, AlertDetails>()
+            .AfterMap<HashIdMapping>();
     }
 }
