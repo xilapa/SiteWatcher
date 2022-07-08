@@ -22,8 +22,11 @@
                     <div class="alert-detail-group-row-content">
                         {{alert.Site.Name}}
                     </div>
-                    <div class="alert-detail-group-row-content">
-                        {{alert?.Site?.Uri ?? 'not loaded'}}
+                    <div class="alert-detail-group-row-content" *ngIf="alert.FullyLoaded">
+                        {{alert?.Site?.Uri ?? ''}}
+                    </div>
+                    <div class="alert-detail-group-row-content loading-text" *ngIf="!alert.FullyLoaded">
+                         {{t('common.loading')}}
                     </div>
                 </div>
 
@@ -84,8 +87,13 @@
                     <div class="alert-detail-group-row-content">
                         {{t(alert.WatchModeTranslationKey ?? '')}}
                     </div>
-                    <div class="alert-detail-group-row-content" *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Term">
-                        {{'"' + (alert.WatchMode.Term ?? 'not loaded') + '"'}}
+                    <div class="alert-detail-group-row-content"
+                         *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Term && alert.FullyLoaded">
+                        {{'"' + (alert.WatchMode.Term ?? '') + '"'}}
+                    </div>
+                    <div class="alert-detail-group-row-content loading-text"
+                         *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Term && !alert.FullyLoaded">
+                        {{t('common.loading')}}
                     </div>
                 </div>
             </div>

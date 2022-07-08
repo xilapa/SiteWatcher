@@ -87,6 +87,10 @@
     width: 500px;
 }
 
+.loading-text {
+    font-style: italic;
+}
+
 @media screen and (min-width: 440px) {
     .alert-details-wrapper {
         margin-left: 0;

@@ -44,6 +44,13 @@ export interface SimpleAlertViewApi {
     WatchMode: EWatchMode
 }
 
+export interface AlertDetailsApi {
+    Id: string,
+    SiteUri: string,
+    WatchModeId: string,
+    Term?: string
+}
+
 
 // front end interface
 export interface DetailedAlertView {
@@ -56,9 +63,9 @@ export interface DetailedAlertView {
     Site: SiteView,
     WatchMode: DetailedWatchModeView,
     FullyLoaded: boolean,
-    FrequencyTranslationKey? : string,
-    WatchModeTranslationKey? : string,
-    LocalizedDateString? : string
+    FrequencyTranslationKey?: string,
+    WatchModeTranslationKey?: string,
+    LocalizedDateString?: string
 }
 
 export interface SiteView {
@@ -94,7 +101,7 @@ export class AlertUtils {
         }
     }
 
-    public static SimpleAlertViewApiToInternal(simpleApiView : SimpleAlertViewApi, currentLocale: string): DetailedAlertView{
+    public static SimpleAlertViewApiToInternal(simpleApiView: SimpleAlertViewApi, currentLocale: string): DetailedAlertView {
         const createdAt = new Date(simpleApiView.CreatedAt);
         return {
             Id: simpleApiView.Id,
@@ -111,6 +118,14 @@ export class AlertUtils {
             LocalizedDateString: createdAt.toLocaleDateString(currentLocale) + ' '
                 + createdAt.toLocaleTimeString(currentLocale)
         }
+    }
+
+    public static PopulateAlertDetails(apiDetails: AlertDetailsApi, detailedAlert: DetailedAlertView) : DetailedAlertView{
+        detailedAlert.Site.Uri = apiDetails.SiteUri;
+        detailedAlert.WatchMode.Id = apiDetails.WatchModeId;
+        detailedAlert.WatchMode.Term = apiDetails.Term;
+        detailedAlert.FullyLoaded = true;
+        return detailedAlert;
     }
 }
 

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiResponse, PaginatedList} from "../../core/interfaces";
 import {
+    AlertDetailsApi,
     AlertUtils,
     CreateAlertModel, DetailedAlertView,
     DetailedAlertViewApi, SimpleAlertViewApi
@@ -92,5 +93,20 @@ export class AlertService {
                 }
                 return paginatedDetailedAlerts;
             }))
+    }
+
+    public getAlertDetails(alert: DetailedAlertView): Observable<DetailedAlertView> {
+        return this.httpClient.get<ApiResponse<AlertDetailsApi>>(`${environment.baseApiUrl}/${this.baseRoute}/${alert.Id}/details`)
+            .pipe(map(apiResponse => {
+                const populatedAlert =
+                    AlertUtils.PopulateAlertDetails(apiResponse.Result, alert);
+
+                // update the internal list
+                let alertsLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
+                const index = alertsLoaded.findIndex(a => a.Id == populatedAlert.Id);
+                alertsLoaded[index] = populatedAlert;
+
+                return populatedAlert;
+            }));
     }
 }
