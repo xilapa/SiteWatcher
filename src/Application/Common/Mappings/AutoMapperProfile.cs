@@ -52,5 +52,11 @@ public class AutoMapperProfile : Profile
 
         CreateMap<AlertDetailsDto, AlertDetails>()
             .AfterMap<HashIdMapping>();
+
+        CreateMap<Alert, AlertDetails>()
+            .ForMember(a => a.SiteUri,
+                opt => opt.MapFrom(src => src.Site.Uri))
+            .AfterMap<HashIdMapping>()
+            .AfterMap((alert, alertDetails) => alertDetails.Term = (alert.WatchMode as TermWatch)?.Term);
     }
 }

@@ -1,10 +1,15 @@
 ﻿using System.Net;
+using AutoMapper;
 using Domain.DTOs.Common;
 using FluentAssertions;
 using HashidsNet;
 using IntegrationTests.Setup;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -15,6 +20,7 @@ namespace IntegrationTests.AlertTests;
 public class GetAlertsTestsBase : BaseTestFixture
 {
     public static SimpleAlertView[] XilapaAlerts { get; set; } = null!;
+    public static SimpleAlertView[] XulipaAlerts { get; set; } = null!;
     public static DateTime StartingTime { get; } = new(2020, 1, 1, 0, 0, 0);
 
     public override Action<CustomWebApplicationOptions> Options =>
@@ -25,6 +31,7 @@ public class GetAlertsTestsBase : BaseTestFixture
         await base.InitializeAsync();
 
         XilapaAlerts = new SimpleAlertView[20];
+        XulipaAlerts = new SimpleAlertView[20];
         AppFactory.CurrentTime = StartingTime;
         for (var i = 0; i < 20; i++)
         {
@@ -37,8 +44,9 @@ public class GetAlertsTestsBase : BaseTestFixture
             XilapaAlerts[i] = alertXilapa;
 
             // xulipa'll have even alert ids
-            await AppFactory
+            var alertXulipa = await AppFactory
                 .CreateAlert<SimpleAlertView>($"alert{2 * (i + 1)}", watchMode, Users.Xulipa.Id, AppFactory.CurrentTime);
+            XulipaAlerts[i] = alertXilapa;
         }
     }
 }
@@ -91,7 +99,7 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             {
                 Take = 10,
                 LastAlertId = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength)
-                    .Encode((2 * 10) - 1),
+                    .Encode((2 * 10) - 1)
             },
             GetAlertsTestsBase.StartingTime.AddMinutes(10 * 5), // The creation date of the tenth xilapa's alert
             (2 * 11) - 1, // The id of the eleventh xilapa's alert
@@ -202,5 +210,71 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
         result
             .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()!
             .Result!.Results.Count().Should().Be(count);
+    }
+
+    public static IEnumerable<object[]> AlertDetailsData()
+    {
+        yield return new object[]
+        {
+            new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength)
+                .Encode(2 * (0 + 1)), // first xulipa alert
+            2
+        };
+
+        yield return new object[]
+        {
+            new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength)
+                .Encode(2 * (2 + 1)), // third xulipa alert
+            6
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(AlertDetailsData))]
+    public async Task GetAlertDetails(string hashedAlertId, int alertId)
+    {
+        // Arrange
+        LoginAs(Users.Xulipa);
+
+        var alertToMap = await AppFactory.WithDbContext(ctx =>
+            ctx.Alerts
+                .Include(a => a.WatchMode)
+                .FirstAsync(a => a.Id == new AlertId(alertId)));
+
+        var expected = await AppFactory.WithServiceProvider(provider =>
+        {
+            var mapper = provider.GetRequiredService<IMapper>();
+            var alertDetails = mapper.Map<AlertDetails>(alertToMap);
+            return Task.FromResult(alertDetails);
+        });
+
+        // Act
+        var result = await GetAsync($"alert/{hashedAlertId}/details");
+
+        // Assert
+        result.HttpResponse!
+            .StatusCode.Should().Be(HttpStatusCode.OK);
+
+        result.GetTyped<WebApiResponse<AlertDetails>>()!
+            .Result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task CannotGetDetailsFromAnotherUserAlert()
+    {
+        // Arrange
+        LoginAs(Users.Xulipa);
+
+        var xilapaAlertId = GetAlertsTestsBase.XilapaAlerts[0].Id;
+
+        // Act
+        var result = await GetAsync($"alert/{xilapaAlertId}/details");
+
+        // Assert
+        result.HttpResponse!
+            .StatusCode.Should().Be(HttpStatusCode.OK);
+
+        result.GetTyped<WebApiResponse<AlertDetails>>()!
+            .Result.Should().BeNull();
     }
 }

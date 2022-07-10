@@ -13,7 +13,8 @@ public class HashIdMapping :
     IMappingAction<WatchMode, DetailedWatchModeView>,
     IMappingAction<SimpleAlertViewDto, SimpleAlertView>,
     IMappingAction<Alert, SimpleAlertView>,
-    IMappingAction<AlertDetailsDto, AlertDetails>
+    IMappingAction<AlertDetailsDto, AlertDetails>,
+    IMappingAction<Alert, AlertDetails>
 {
     private readonly IIdHasher _idHasher;
 
@@ -46,5 +47,11 @@ public class HashIdMapping :
     {
         destination.Id = _idHasher.HashId(source.Id);
         destination.WatchModeId = _idHasher.HashId(source.WatchModeId);
+    }
+
+    public void Process(Alert source, AlertDetails destination, ResolutionContext context)
+    {
+        destination.Id = _idHasher.HashId(source.Id.Value);
+        destination.WatchModeId = _idHasher.HashId(source.WatchMode.Id.Value);
     }
 }
