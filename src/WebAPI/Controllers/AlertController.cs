@@ -43,7 +43,7 @@ public class AlertController : ControllerBase
 
     [HttpGet("{AlertId}/details")]
     [CacheFilter]
-    public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlerDetailsCommand command,
+    public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlertDetailsCommand command,
         CancellationToken cancellationToken)
     {
         var appResult = await _mediator.Send(command, cancellationToken);

@@ -2,12 +2,11 @@
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 
-public class GetAlerDetailsCommand : IRequest<ICommandResult<AlertDetails>>, ICacheable
+public class GetAlertDetailsCommand : IRequest<ICommandResult<AlertDetails>>, ICacheable
 {
     public string AlertId { get; set; }
 
@@ -21,7 +20,7 @@ public class GetAlerDetailsCommand : IRequest<ICommandResult<AlertDetails>>, ICa
         CacheKeys.UserAlerts(session.UserId!.Value);
 }
 
-public class GetAlerDetailsCommandHandler : IRequestHandler<GetAlerDetailsCommand, ICommandResult<AlertDetails>>
+public class GetAlerDetailsCommandHandler : IRequestHandler<GetAlertDetailsCommand, ICommandResult<AlertDetails>>
 {
     private readonly ISession _session;
     private readonly IAlertDapperRepository _alertDapperRepository;
@@ -37,12 +36,9 @@ public class GetAlerDetailsCommandHandler : IRequestHandler<GetAlerDetailsComman
         _mapper = mapper;
     }
 
-    public async Task<ICommandResult<AlertDetails>> Handle(GetAlerDetailsCommand request,
+    public async Task<ICommandResult<AlertDetails>> Handle(GetAlertDetailsCommand request,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(request.AlertId))
-            return new CommandResult<AlertDetails>();
-
         var alertId = _idHasher.DecodeId(request.AlertId);
         if (alertId == 0)
             return new CommandResult<AlertDetails>();
