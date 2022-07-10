@@ -32,7 +32,7 @@
                     <i class="pi pi-send"></i>
                     {{isMobile ? t('alert.common.notificationsSentMobile') : t('alert.common.notificationsSent')}}
                 </div>
-                {{alert.NotificationsSent}}
+                {{ isMobile ? alert.NotificationsSent + ' ' + t('alert.common.sent') : alert.NotificationsSent}}
             </div>
         </div>
         <div class="alert-item-row">
