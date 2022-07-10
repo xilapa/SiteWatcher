@@ -1,5 +1,6 @@
 {
   "common": {
+    "loading": "loading...",
     "success": "Success",
     "error": "Error",
     "unexpectedError": "Unexpected error",
@@ -122,7 +123,8 @@
       "notificationsSentMobile": "Notifications",
       "frequencyMobile": "Frequency",
       "watchModeMobile": "Type",
-      "lastVerification": "Last verification"
+      "lastVerification": "Last verification",
+      "sent": "sent"
     }
   }
 }
