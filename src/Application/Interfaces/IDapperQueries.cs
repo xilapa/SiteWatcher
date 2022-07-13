@@ -6,4 +6,5 @@ public interface IDapperQueries
     public string DeleteActiveUserById { get; }
     public string GetSimpleAlertViewListByUserId { get; }
     public string GetAlertDetails { get; }
+    public string DeleteUserAlert { get; }
 }

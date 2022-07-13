@@ -59,4 +59,12 @@ public class DapperQueries : IDapperQueries
             WHERE
                 a.""Id"" = @alertId
                 AND a.""UserId"" = @userId";
+
+    public virtual string DeleteUserAlert => @"
+            DELETE 
+            FROM 
+	            ""siteWatcher_webApi"".""Alerts""
+                WHERE	
+                ""Id"" = @alertId
+                AND ""UserId"" =  @userId";
 }

@@ -40,4 +40,13 @@ public class AlertDapperRepository : IAlertDapperRepository
         return await _dapperContext.UsingConnectionAsync(conn =>
             conn.QueryFirstOrDefaultAsync<AlertDetailsDto>(commandDefinition));
     }
+
+    public async Task<bool> DeleteUserAlert(int alertId, UserId userId, CancellationToken cancellationToken)
+    {
+        var commandDefinition = new CommandDefinition(_dapperQueries.DeleteUserAlert, new {alertId, userId},
+            cancellationToken: cancellationToken);
+        var affectedRows = await _dapperContext.UsingConnectionAsync(conn =>
+            conn.ExecuteAsync(commandDefinition));
+        return affectedRows > 0;
+    }
 }

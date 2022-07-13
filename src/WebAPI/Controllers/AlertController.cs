@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
+using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
@@ -48,5 +49,13 @@ public class AlertController : ControllerBase
     {
         var appResult = await _mediator.Send(command, cancellationToken);
         return Ok(new WebApiResponse<AlertDetails>().SetResult(appResult.Value!));
+    }
+
+    [HttpDelete("{AlertId}")]
+    public async Task<IActionResult> DeleteAlert([FromRoute] DeleteAlertCommand command,
+        CancellationToken cancellationToken)
+    {
+        var appResult = await _mediator.Send(command, cancellationToken);
+        return appResult.Success ? Ok(new WebApiResponse<object>()) : BadRequest(new WebApiResponse<object>());
     }
 }
