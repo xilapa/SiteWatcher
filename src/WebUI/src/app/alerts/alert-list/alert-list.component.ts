@@ -50,6 +50,14 @@ export class AlertListComponent implements OnInit, OnDestroy {
             style: {"max-width": "590px", "padding": 0},
             // contentStyle: {"max-width": "590px", "display": "flex", "justify-content": "center"}
         });
+
+        ref.onClose.subscribe((deleted: boolean) => {
+            if (deleted) {
+                this.alertService
+                    .getUserAlerts(this.isMobile)
+                    .subscribe(alerts => this.alerts = alerts);
+            }
+        });
     }
 
 }

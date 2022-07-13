@@ -46,7 +46,7 @@ export class AlertService {
         const alerts = Data.Get(this.userAlertsKey) as DetailedAlertView[];
 
         // if there was alerts stored doesnt call the server
-        if (alerts && alerts.length != 0)
+        if (alerts)
             return of(alerts);
 
         return this.loadUserAlertsFromServer(isMobile)
@@ -108,5 +108,14 @@ export class AlertService {
 
                 return populatedAlert;
             }));
+    }
+
+    public deleteAlert(alertId: string) : Observable<ApiResponse<any>> {
+        return this.httpClient.delete<ApiResponse<any>>(`${environment.baseApiUrl}/${this.baseRoute}/${alertId}`)
+            .pipe(tap(res => {
+                let alertsLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
+                alertsLoaded = alertsLoaded.filter(a => a.Id != alertId);
+                Data.Share(this.userAlertsKey, alertsLoaded);
+            }))
     }
 }

@@ -3,6 +3,9 @@ import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {DetailedAlertView} from "../common/alert";
 import {EWatchMode} from "../common/e-watch-mode";
 import {AlertService} from "../service/alert.service";
+import {utils} from "../../core/utils/utils";
+import {MessageService} from "primeng/api";
+import {TranslocoService} from "@ngneat/transloco";
 
 @Component({
     selector: 'sw-alert-details',
@@ -16,7 +19,9 @@ export class AlertDetailsComponent implements OnInit {
 
     constructor(private readonly dialogConfig: DynamicDialogConfig,
                 private readonly dialogRef: DynamicDialogRef,
-                private readonly alertService: AlertService) {
+                private readonly alertService: AlertService,
+                private readonly messageService: MessageService,
+                private readonly transloco: TranslocoService) {
     }
 
     ngOnInit(): void {
@@ -27,12 +32,22 @@ export class AlertDetailsComponent implements OnInit {
     }
 
     close(): void {
-        this.dialogRef.close();
+        this.dialogRef.close(false);
     }
 
     deleteAlert() : void {
-        console.log("delete");
-        // todo
+        this.alertService.deleteAlert(this.alert.Id)
+            .subscribe({
+                next: (response) => {
+                    this.dialogRef.close(true);
+                    utils.toastSuccess(this.messageService, this.transloco,
+                        this.transloco.translate('alert.createUpdate.created'));
+                },
+                error: (errorResponse) => {
+                    utils.toastError(errorResponse, this.messageService,
+                        this.transloco)
+                }
+            })
     }
 
     goToEditPage() : void {
