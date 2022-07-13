@@ -19,7 +19,7 @@ public class Alert : BaseModel<AlertId>
         Frequency = frequency;
         Site = site;
         WatchMode = watchMode;
-        AddDomainEvent(new AlertCreatedOrUpdatedEvent(UserId));
+        AddDomainEvent(new AlertsChangedEvent(UserId));
     }
 
     public UserId UserId { get; }

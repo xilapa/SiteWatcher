@@ -5,16 +5,16 @@ using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Application.Alerts.EventHandlers;
 
-public class AlertCreatedOrUpdatedEventHandler : INotificationHandler<AlertCreatedOrUpdatedEvent>
+public class AlertsChangedEventHandler : INotificationHandler<AlertsChangedEvent>
 {
     private readonly IFireAndForgetService _fireAndForgetService;
 
-    public AlertCreatedOrUpdatedEventHandler(IFireAndForgetService fireAndForgetService)
+    public AlertsChangedEventHandler(IFireAndForgetService fireAndForgetService)
     {
         _fireAndForgetService = fireAndForgetService;
     }
 
-    public Task Handle(AlertCreatedOrUpdatedEvent notification, CancellationToken cancellationToken)
+    public Task Handle(AlertsChangedEvent notification, CancellationToken cancellationToken)
     {
         _fireAndForgetService.ExecuteWith<ICache>(cache =>
             cache.DeleteKeyAsync(CacheKeys.UserAlerts(notification.UserId)));

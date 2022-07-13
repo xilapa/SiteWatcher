@@ -2,9 +2,9 @@
 
 namespace Domain.Events.Alerts;
 
-public class AlertCreatedOrUpdatedEvent : BaseEvent
+public class AlertsChangedEvent : BaseEvent
 {
-    public AlertCreatedOrUpdatedEvent(UserId userId)
+    public AlertsChangedEvent(UserId userId)
     {
         UserId = userId;
     }
