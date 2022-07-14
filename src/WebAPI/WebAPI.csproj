@@ -6,7 +6,7 @@
 		<UserSecretsId>0d9fea6b-08af-480a-9317-a52518f3f7d7</UserSecretsId>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="FluentValidation.AspNetCore" Version="11.1.0" />
+		<PackageReference Include="FluentValidation.AspNetCore" Version="11.1.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
 		  <PrivateAssets>all</PrivateAssets>
@@ -16,7 +16,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.2" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
