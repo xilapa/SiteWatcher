@@ -39,7 +39,7 @@ public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, ICo
             .DeleteUserAlert(alertId, _session.UserId!.Value, cancellationToken);
 
         if (deleted)
-            await _mediator.Publish(new AlertsChangedEvent(_session.UserId.Value));
+            await _mediator.Publish(new AlertsChangedEvent(_session.UserId.Value), CancellationToken.None);
 
         return deleted
             ? new CommandResult<object>()

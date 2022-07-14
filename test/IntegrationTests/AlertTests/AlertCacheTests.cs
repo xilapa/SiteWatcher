@@ -8,14 +8,16 @@ using Moq;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.AlertTests;
 
-public class GetAlertCacheTestsBase : BaseTestFixture
+public class AlertCacheTestsBase : BaseTestFixture
 {
     public Mock<IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>> CommandHandlerMock
     {
@@ -68,14 +70,29 @@ public class GetAlertCacheTestsBase : BaseTestFixture
 
         opt.ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>),
             CommandHandlerMock.Object);
+
+        // Replace services to delete alert test
+        var idHasherMock = new Mock<IIdHasher>();
+        idHasherMock
+            .Setup(i => i.DecodeId(It.IsAny<string>()))
+            .Returns(1);
+
+        var alertDapperRepoMock = new Mock<IAlertDapperRepository>();
+        alertDapperRepoMock
+            .Setup(a =>
+                a.DeleteUserAlert(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        opt.ReplaceService(typeof(IIdHasher), idHasherMock.Object);
+        opt.ReplaceService(typeof(IAlertDapperRepository), alertDapperRepoMock.Object);
     };
 }
 
-public class GetAlertCacheTests : BaseTest, IClassFixture<GetAlertCacheTestsBase>
+public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
 {
-    private readonly GetAlertCacheTestsBase _fixture;
+    private readonly AlertCacheTestsBase _fixture;
 
-    public GetAlertCacheTests(GetAlertCacheTestsBase fixture) : base(fixture)
+    public AlertCacheTests(AlertCacheTestsBase fixture) : base(fixture)
     {
         _fixture = fixture;
         _fixture.CommandHandlerMock.Invocations.Clear();
@@ -149,5 +166,28 @@ public class GetAlertCacheTests : BaseTest, IClassFixture<GetAlertCacheTestsBase
         await Task.Delay(300);
 
         FakeCache.Cache.Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task CacheIsRemovedWhenAlertIsDeleted()
+    {
+        // Arrange
+        LoginAs(Users.Xilapa);
+        FakeCache.Cache.Should().BeEmpty();
+
+        // create cache
+        await GetAsync("alert");
+        FakeCache.Cache.Should().NotBeEmpty();
+
+        // Act
+        var res = await DeleteAsync("alert/mocked");
+        res.HttpResponse!
+            .StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Await fire and forget to execute
+        await Task.Delay(300);
+
+        // Assert
+        FakeCache.Cache.Should().BeEmpty();
     }
 }
