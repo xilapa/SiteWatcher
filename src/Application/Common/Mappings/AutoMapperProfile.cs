@@ -5,6 +5,7 @@ using Domain.Events;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
@@ -31,8 +32,7 @@ public class AutoMapperProfile : Profile
             .AfterMap<HashIdMapping>();
 
         CreateMap<WatchMode, DetailedWatchModeView>()
-            .ConstructUsing(src => DetailedWatchModeView.FromModel(src))
-            .AfterMap<HashIdMapping>();
+            .ConstructUsing(src => DetailedWatchModeView.FromModel(src));
 
         CreateMap<Site, SiteView>();
 
@@ -58,5 +58,9 @@ public class AutoMapperProfile : Profile
                 opt => opt.MapFrom(src => src.Site.Uri))
             .AfterMap<HashIdMapping>()
             .AfterMap((alert, alertDetails) => alertDetails.Term = (alert.WatchMode as TermWatch)?.Term);
+
+        CreateMap<UpdateAlertCommmand, UpdateAlertInput>()
+            .ForMember(m => m.AlertId, opt => opt.Ignore())
+            .AfterMap<HashIdMapping>();
     }
 }
