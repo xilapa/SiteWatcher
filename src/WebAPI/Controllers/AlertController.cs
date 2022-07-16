@@ -7,6 +7,7 @@ using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.WebAPI.Filters.Cache;
@@ -57,5 +58,14 @@ public class AlertController : ControllerBase
     {
         var appResult = await _mediator.Send(command, cancellationToken);
         return appResult.Success ? Ok(new WebApiResponse<object>()) : BadRequest(new WebApiResponse<object>());
+    }
+
+    [HttpPut]
+    [CommandValidationFilter]
+    public async Task<IActionResult> UpdateAlert([FromBody] UpdateAlertCommmand command, CancellationToken cancellationToken)
+    {
+        var appResult = await _mediator.Send(command, cancellationToken);
+        return appResult.Success ? Ok(new WebApiResponse<object>(appResult.Value!)) :
+            BadRequest(new WebApiResponse<UpdateAlertCommmand>(null!, appResult.Errors));
     }
 }
