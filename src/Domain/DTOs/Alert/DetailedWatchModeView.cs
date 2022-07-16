@@ -6,7 +6,6 @@ namespace Domain.DTOs.Alert;
 
 public class DetailedWatchModeView
 {
-    public string Id { get; set; }
     public EWatchMode? WatchMode { get; set; }
     public string? Term { get; set; }
 
