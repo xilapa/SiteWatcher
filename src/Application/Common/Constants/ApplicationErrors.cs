@@ -7,6 +7,8 @@ public static class ApplicationErrors
     public static readonly string NAME_MUST_HAVE_ONLY_LETTERS = "Username must only have letters.";
     public static readonly string USER_DO_NOT_EXIST = "User does not exist.";
     public static readonly string GOOGLE_AUTH_ERROR = "An error has ocurred during Google Authorization";
+    public static readonly string ALERT_DO_NOT_EXIST = "Alert does not exist.";
+    public static readonly string UPDATE_DATA_IS_NULL = "The update data is null";
 
     public static string ValueIsNullOrEmpty(string valueName) =>
         $"{valueName} not be null or empty.";
