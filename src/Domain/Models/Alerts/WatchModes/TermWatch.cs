@@ -1,4 +1,6 @@
-﻿namespace SiteWatcher.Domain.Models.Alerts.WatchModes;
+﻿using Domain.DTOs.Alert;
+
+namespace SiteWatcher.Domain.Models.Alerts.WatchModes;
 
 public class TermWatch : WatchMode
 {
@@ -12,6 +14,11 @@ public class TermWatch : WatchMode
     {
         Term = term;
         _occurrences = new List<TermOccurrence>();
+    }
+
+    public void Update(UpdateAlertInput updateAlertInput)
+    {
+        Term = updateAlertInput.Term.NewValue!;
     }
 
     public string Term { get; private set; }

@@ -18,7 +18,7 @@ public abstract class BaseModel<IdType> : IBaseModel
         LastUpdatedAt = currentDate;
     }
 
-    public IdType Id { get; }
+    public IdType Id { get; protected set; }
     public bool Active { get; protected set; }
     public DateTime CreatedAt { get; protected set;}
     public DateTime LastUpdatedAt { get; protected set; }

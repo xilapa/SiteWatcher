@@ -11,6 +11,13 @@ public record Site
         Uri = new Uri(uri);
         Name = name;
     }
+
+    public Site(Uri uri, string name)
+    {
+        Uri = uri;
+        Name = name;
+    }
+
     public Uri Uri { get; }
     public string Name { get; }
 }

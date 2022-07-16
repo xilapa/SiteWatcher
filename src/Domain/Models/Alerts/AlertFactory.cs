@@ -24,4 +24,14 @@ public static class AlertFactory
             _ => throw new ArgumentOutOfRangeException(nameof(inputModel.WatchMode))
         };
     }
+
+    public static WatchMode CreateWatchMode(UpdateAlertInput updateInput, DateTime currentDate)
+    {
+        return updateInput.WatchMode.NewValue! switch
+        {
+            EWatchMode.AnyChanges => new AnyChangesWatch(currentDate),
+            EWatchMode.Term => new TermWatch(updateInput.Term.NewValue!, currentDate),
+            _ => throw new ArgumentOutOfRangeException(nameof(updateInput.WatchMode))
+        };
+    }
 }
