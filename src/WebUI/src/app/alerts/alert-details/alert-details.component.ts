@@ -6,6 +6,7 @@ import {AlertService} from "../service/alert.service";
 import {utils} from "../../core/utils/utils";
 import {MessageService} from "primeng/api";
 import {TranslocoService} from "@ngneat/transloco";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'sw-alert-details',
@@ -21,7 +22,8 @@ export class AlertDetailsComponent implements OnInit {
                 private readonly dialogRef: DynamicDialogRef,
                 private readonly alertService: AlertService,
                 private readonly messageService: MessageService,
-                private readonly transloco: TranslocoService) {
+                private readonly transloco: TranslocoService,
+                private readonly router: Router) {
     }
 
     ngOnInit(): void {
@@ -36,7 +38,7 @@ export class AlertDetailsComponent implements OnInit {
     }
 
     deleteAlert() : void {
-        this.alertService.deleteAlert(this.alert.Id)
+        this.alertService.deleteAlert(this.alert.Id as string)
             .subscribe({
                 next: (response) => {
                     this.dialogRef.close(true);
@@ -51,8 +53,10 @@ export class AlertDetailsComponent implements OnInit {
     }
 
     goToEditPage() : void {
-        console.log("go to edit");
-        // todo
+        if(!this.alert.FullyLoaded)
+            return;
+        this.router.navigate(['dash/alert/update', this.alert.Id]);
+        this.dialogRef.close(false);
     }
 
 }

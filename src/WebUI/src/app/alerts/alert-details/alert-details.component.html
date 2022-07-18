@@ -104,7 +104,8 @@
             <div class="details-button" (click)="deleteAlert()">
                 <i class="pi pi-trash"></i>
             </div>
-            <div class="details-button" (click)="goToEditPage()">
+            <div class="details-button" (click)="goToEditPage()"
+                 [ngStyle]="{'opacity': alert?.FullyLoaded ? '1' : '20%'}">
                 <i class="pi pi-pencil"></i>
             </div>
         </div>
