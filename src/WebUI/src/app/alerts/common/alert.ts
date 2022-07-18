@@ -1,9 +1,9 @@
-﻿import {AlertFrequency, AlertFrequencyUtils} from "./alert-frequency";
+﻿import {EAlertFrequency, AlertFrequencyUtils} from "./e-alert-frequency";
 import {EWatchMode, WatchModeUtils} from "./e-watch-mode";
 
-export interface CreateAlertModel {
+export interface CreateUpdateAlertModel {
     name: string,
-    frequency: AlertFrequency,
+    frequency: EAlertFrequency,
     siteName: string,
     siteUri: string,
     watchMode: EWatchMode,
@@ -15,7 +15,7 @@ export interface DetailedAlertViewApi {
     Id: string,
     Name: string,
     CreatedAt: Date,
-    Frequency: AlertFrequency,
+    Frequency: EAlertFrequency,
     LastVerification: Date | undefined,
     NotificationsSent: number,
     Site: SiteViewApi,
@@ -28,7 +28,6 @@ export interface SiteViewApi {
 }
 
 export interface DetailedWatchModeViewApi {
-    Id: string,
     WatchMode: EWatchMode,
     Term: string | undefined
 }
@@ -37,7 +36,7 @@ export interface SimpleAlertViewApi {
     Id: string,
     Name: string,
     CreatedAt: Date,
-    Frequency: AlertFrequency,
+    Frequency: EAlertFrequency,
     LastVerification: Date | undefined,
     NotificationsSent: number,
     SiteName: string,
@@ -51,18 +50,33 @@ export interface AlertDetailsApi {
     Term?: string
 }
 
+// Api input
+export interface UpdateInfo<T>{
+    NewValue? : T
+}
+
+export interface UpdateAlertData {
+    AlertId: string,
+    Name?: UpdateInfo<string>,
+    Frequency? : UpdateInfo<EAlertFrequency>,
+    SiteName? : UpdateInfo<string>,
+    SiteUri? : UpdateInfo<string>,
+    WatchMode? : UpdateInfo<EWatchMode>,
+    Term? : UpdateInfo<string>
+}
+
 
 // front end interface
 export interface DetailedAlertView {
-    Id: string,
+    Id?: string,
     Name: string,
-    CreatedAt: Date,
-    Frequency: AlertFrequency,
-    LastVerification: Date | undefined,
-    NotificationsSent: number,
+    CreatedAt?: Date,
+    Frequency?: EAlertFrequency,
+    LastVerification?: Date,
+    NotificationsSent?: number,
     Site: SiteView,
     WatchMode: DetailedWatchModeView,
-    FullyLoaded: boolean,
+    FullyLoaded?: boolean,
     FrequencyTranslationKey?: string,
     WatchModeTranslationKey?: string,
     LocalizedDateString?: string
@@ -126,6 +140,30 @@ export class AlertUtils {
         detailedAlert.WatchMode.Term = apiDetails.Term;
         detailedAlert.FullyLoaded = true;
         return detailedAlert;
+    }
+
+    public static GetUpdateAlertData(rawValues: CreateUpdateAlertModel, initialValues: DetailedAlertView) : UpdateAlertData {
+        let updateAlertData: UpdateAlertData = { AlertId: initialValues.Id as string };
+
+        if(rawValues.name != initialValues.Name)
+            updateAlertData.Name = { NewValue: rawValues.name}
+
+        if(rawValues.frequency != initialValues.Frequency)
+            updateAlertData.Frequency = { NewValue: rawValues.frequency}
+
+        if(rawValues.siteName != initialValues.Site.Name)
+            updateAlertData.SiteName = { NewValue: rawValues.siteName}
+
+        if(rawValues.siteUri != initialValues.Site.Uri)
+            updateAlertData.SiteUri = { NewValue: rawValues.siteUri}
+
+        if(rawValues.watchMode != initialValues.WatchMode.WatchMode)
+            updateAlertData.WatchMode = { NewValue: rawValues.watchMode}
+
+        if(rawValues.term != initialValues.WatchMode.Term)
+            updateAlertData.Term = { NewValue: rawValues.term}
+
+        return updateAlertData;
     }
 }
 

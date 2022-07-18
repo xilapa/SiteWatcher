@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {ApiResponse, PaginatedList} from "../../core/interfaces";
 import {
     AlertDetailsApi,
-    AlertUtils,
-    CreateAlertModel, DetailedAlertView,
-    DetailedAlertViewApi, SimpleAlertViewApi
+    AlertUtils, CreateUpdateAlertModel,
+    DetailedAlertView,
+    DetailedAlertViewApi, SimpleAlertViewApi, UpdateAlertData
 } from "../common/alert";
 import {map, Observable, of, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
@@ -25,7 +25,7 @@ export class AlertService {
         this.currentLocale = LangUtils.getCurrentLocale(window);
     }
 
-    public createAlert(createModel: CreateAlertModel): Observable<ApiResponse<DetailedAlertViewApi>> {
+    public createAlert(createModel: CreateUpdateAlertModel): Observable<ApiResponse<DetailedAlertViewApi>> {
         return this.httpClient
             .post<ApiResponse<DetailedAlertViewApi>>(`${environment.baseApiUrl}/${this.baseRoute}`, createModel)
             .pipe(tap(res => {
@@ -117,5 +117,32 @@ export class AlertService {
                 alertsLoaded = alertsLoaded.filter(a => a.Id != alertId);
                 Data.Share(this.userAlertsKey, alertsLoaded);
             }))
+    }
+
+    public getLoadedAlert(alertId: string) : DetailedAlertView | undefined{
+        const alertsInMemory = Data.Get(this.userAlertsKey) as DetailedAlertView[];
+        return alertsInMemory.find(a => a.Id == alertId);
+    }
+
+    public updateAlert(updateData: UpdateAlertData): Observable<ApiResponse<DetailedAlertViewApi>> {
+        return this.httpClient
+            .put<ApiResponse<DetailedAlertViewApi>>(`${environment.baseApiUrl}/${this.baseRoute}`, updateData)
+            .pipe(tap(res => {
+                // updating the in memory alert if all alerts are loaded
+                if (this.allUserAlertsLoaded) {
+                    const updatedAlert = AlertUtils
+                        .DetailedAlertViewApiToInternal(res.Result, this.currentLocale);
+                    const alertsAlreadyLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
+
+                    if(!alertsAlreadyLoaded){
+                        Data.Share(this.userAlertsKey, [updatedAlert]);
+                        return;
+                    }
+
+                    const alertIndex =  alertsAlreadyLoaded.findIndex(a => a.Id == updatedAlert.Id);
+                    alertsAlreadyLoaded[alertIndex] = updatedAlert;
+                    Data.Share(this.userAlertsKey, alertsAlreadyLoaded);
+                }
+            }));
     }
 }

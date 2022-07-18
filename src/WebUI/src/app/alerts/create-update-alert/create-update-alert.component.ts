@@ -1,14 +1,14 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewChecked, Component, OnDestroy, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {DropdownOption} from "../../core/interfaces/dropdown-option";
-import {AlertFrequency} from "../common/alert-frequency";
+import {EAlertFrequency} from "../common/e-alert-frequency";
 import {TranslocoService} from "@ngneat/transloco";
-import { EWatchMode } from '../common/e-watch-mode';
+import {EWatchMode} from '../common/e-watch-mode';
 import {finalize, Subscription} from "rxjs";
 import {uriValidator} from "../../common/validators/uri.validator";
 import {watchModeTermValidator} from "../../common/validators/watch-mode-term.validator";
-import {CreateAlertModel} from "../common/alert";
+import {AlertUtils, CreateUpdateAlertModel, DetailedAlertView} from "../common/alert";
 import {AlertService} from "../service/alert.service";
 import {utils} from "../../core/utils/utils";
 import {MessageService} from "primeng/api";
@@ -18,7 +18,7 @@ import {MessageService} from "primeng/api";
     templateUrl: './create-update-alert.component.html',
     styleUrls: ['./create-update-alert.component.css']
 })
-export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
+export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     createUpdateAlertForm: FormGroup;
     inputFormName: AbstractControl | null;
@@ -31,25 +31,23 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
     pageTitleTranslationKey: string;
     doingRequest: boolean;
     private activePage: string;
-    private watchModeSub : Subscription | undefined;
+    private watchModeSub: Subscription | undefined;
+
+    // update
+    alertInitialValues: DetailedAlertView | undefined;
+    alertCurrentValues: DetailedAlertView | undefined;
 
     constructor(private readonly router: Router,
+                private readonly route: ActivatedRoute,
                 private readonly formBuilder: FormBuilder,
                 private readonly transloco: TranslocoService,
                 private readonly alertService: AlertService,
                 private readonly messageService: MessageService) {
-        this.frequencyOptions = [
-            {Display: transloco.translate("alert.frequency.twoHours"), Value: AlertFrequency.TwoHours},
-            {Display: transloco.translate("alert.frequency.fourHours"), Value: AlertFrequency.FourHours},
-            {Display: transloco.translate("alert.frequency.eightHours"), Value: AlertFrequency.EightHours},
-            {Display: transloco.translate("alert.frequency.twelveHours"), Value: AlertFrequency.TwelveHours},
-            {Display: transloco.translate("alert.frequency.twentyFourHours"), Value: AlertFrequency.TwentyFourHours},
-        ];
+        this.loadDropdownTranslations();
+    }
 
-        this.watchModeOptions = [
-            {Display: transloco.translate("alert.watchMode.anyChanges"), Value: EWatchMode.AnyChanges},
-            {Display: transloco.translate("alert.watchMode.term"), Value: EWatchMode.Term}
-        ]
+    ngAfterViewChecked(): void {
+        this.loadDropdownTranslations();
     }
 
     ngOnDestroy(): void {
@@ -57,19 +55,37 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const slashIndex = this.router.url.lastIndexOf('/');
-        this.activePage = this.router.url.substring(slashIndex + 1);
-        this.pageTitleTranslationKey = CreateUpdateAlertComponent.getTranslationKey(this.activePage);
+        this.pageTitleTranslationKey = this.getTranslationKey(this.router.url);
 
-        // TODO: define initial values when updating
+        if(this.activePage == 'update'){
+            const alertId = this.route.snapshot.paramMap.get('alertId') as string;
+            if(!alertId) this.router.navigateByUrl('/dash');
+
+            this.alertInitialValues = this.alertService.getLoadedAlert(alertId);
+            if(!this.alertInitialValues) this.router.navigateByUrl('/dash');
+            if(this.alertInitialValues?.WatchMode.WatchMode == EWatchMode.Term)
+                this.termWatchModeSelected = true;
+        }
+
+        if(this.activePage == 'create'){
+            this.alertInitialValues = {
+                Name: '',
+                Frequency: 1,
+                Site: {Name: '', Uri : ''},
+                WatchMode: {WatchMode: 1}
+            }
+        }
+
+        this.alertCurrentValues = this.alertInitialValues;
+
         this.createUpdateAlertForm = this.formBuilder.group(
             {
-                name: [, [Validators.required, Validators.minLength(3), Validators.maxLength(64)]],
-                frequency: [AlertFrequency.TwoHours, [Validators.required]],
-                siteName: [, [Validators.required, Validators.minLength(3), Validators.maxLength(64)]],
-                siteUri: [, [Validators.required, uriValidator]],
-                watchMode: [EWatchMode.AnyChanges, [Validators.required]],
-                term: [, watchModeTermValidator]
+                name: [this.alertCurrentValues?.Name, [Validators.required, Validators.minLength(3), Validators.maxLength(64)]],
+                frequency: [this.alertCurrentValues?.Frequency ?? EAlertFrequency.TwoHours, [Validators.required]],
+                siteName: [this.alertCurrentValues?.Site.Name, [Validators.required, Validators.minLength(3), Validators.maxLength(64)]],
+                siteUri: [this.alertCurrentValues?.Site.Uri, [Validators.required, uriValidator]],
+                watchMode: [this.alertCurrentValues?.WatchMode.WatchMode ?? EWatchMode.AnyChanges, [Validators.required]],
+                term: [this.alertCurrentValues?.WatchMode.Term, watchModeTermValidator]
             }
         );
 
@@ -80,26 +96,23 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
 
         this.watchModeSub = this.createUpdateAlertForm.get('watchMode')?.valueChanges
             .subscribe((watchMode: EWatchMode) => {
-                    this.termWatchModeSelected = EWatchMode.Term == watchMode;
-                    if (!this.termWatchModeSelected)
-                        this.inputFormWatchModeTerm?.reset();
+                this.termWatchModeSelected = EWatchMode.Term == watchMode;
+                if (!this.termWatchModeSelected)
+                    this.inputFormWatchModeTerm?.reset();
             });
 
     }
 
-    private static getTranslationKey(pageName: string): string {
-        return `alert.createUpdate.${pageName}Title`
-    }
-
     public send(): void {
         this.doingRequest = true;
-        if(this.activePage == 'create')
+        if (this.activePage == 'create')
             this.createAlert();
-        // TODO: condition to update method
+        if(this.activePage == 'update')
+            this.updateAlert();
     }
 
     private createAlert(): void {
-        const alertData = this.createUpdateAlertForm.getRawValue() as CreateAlertModel;
+        const alertData = this.createUpdateAlertForm.getRawValue() as CreateUpdateAlertModel;
         this.alertService.createAlert(alertData)
             .pipe(finalize(() => this.doingRequest = false))
             .subscribe({
@@ -112,5 +125,46 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy {
                         this.transloco)
                 }
             })
+    }
+
+    private updateAlert() : void {
+        const updatedAlertRawData = this.createUpdateAlertForm.getRawValue() as CreateUpdateAlertModel;
+        const updateData = AlertUtils
+            .GetUpdateAlertData(updatedAlertRawData, this.alertInitialValues as DetailedAlertView);
+        this.alertService.updateAlert(updateData)
+            .pipe(finalize(() => this.doingRequest = false))
+            .subscribe({
+                next: (response) => {
+                    utils.toastSuccess(this.messageService, this.transloco,
+                        this.transloco.translate('alert.createUpdate.updated'));
+                },
+                error: (errorResponse) => {
+                    utils.toastError(errorResponse, this.messageService,
+                        this.transloco)
+                }
+            })
+    }
+
+    private getTranslationKey(url: string): string {
+        this.activePage = url.indexOf('create') > -1 ? 'create' : 'update';
+        return `alert.createUpdate.${this.activePage}Title`
+    }
+
+    private loadDropdownTranslations(): void {
+        this.frequencyOptions = [
+            {Display: this.transloco.translate("alert.frequency.twoHours"), Value: EAlertFrequency.TwoHours},
+            {Display: this.transloco.translate("alert.frequency.fourHours"), Value: EAlertFrequency.FourHours},
+            {Display: this.transloco.translate("alert.frequency.eightHours"), Value: EAlertFrequency.EightHours},
+            {Display: this.transloco.translate("alert.frequency.twelveHours"), Value: EAlertFrequency.TwelveHours},
+            {
+                Display: this.transloco.translate("alert.frequency.twentyFourHours"),
+                Value: EAlertFrequency.TwentyFourHours
+            },
+        ];
+
+        this.watchModeOptions = [
+            {Display: this.transloco.translate("alert.watchMode.anyChanges"), Value: EWatchMode.AnyChanges},
+            {Display: this.transloco.translate("alert.watchMode.term"), Value: EWatchMode.Term}
+        ]
     }
 }

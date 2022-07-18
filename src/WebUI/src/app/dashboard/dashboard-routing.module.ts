@@ -20,7 +20,7 @@ const dashRoutes: Routes = [
                     loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule)
                 },
                 {
-                    path: 'alert/create',
+                    path: 'alert',
                     loadChildren: () => import('../alerts/create-update-alert/create-update-alert.module').then(m => m.CreateUpdateAlertModule)
                 }
             ]

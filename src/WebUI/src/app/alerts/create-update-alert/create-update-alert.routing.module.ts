@@ -5,7 +5,12 @@ import {AuthGuard} from "../../core/guards/auth.guard";
 
 const alertRoute: Routes = [
     {
-        path: '',
+        path: 'create',
+        component: CreateUpdateAlertComponent,
+        canActivate: [AuthGuard],
+    },
+    {
+        path: 'update/:alertId',
         component: CreateUpdateAlertComponent,
         canActivate: [AuthGuard],
     }
