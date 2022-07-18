@@ -30,10 +30,10 @@ public class GetAlertsTestsBase : BaseTestFixture
     {
         await base.InitializeAsync();
 
-        XilapaAlerts = new SimpleAlertView[20];
-        XulipaAlerts = new SimpleAlertView[20];
+        XilapaAlerts = new SimpleAlertView[60];
+        XulipaAlerts = new SimpleAlertView[60];
         AppFactory.CurrentTime = StartingTime;
-        for (var i = 0; i < 20; i++)
+        for (var i = 0; i < 60; i++)
         {
             var watchMode = i > 9 ? EWatchMode.Term : EWatchMode.AnyChanges;
             AppFactory.CurrentTime = AppFactory.CurrentTime.AddMinutes(5);
@@ -46,7 +46,7 @@ public class GetAlertsTestsBase : BaseTestFixture
             // xulipa'll have even alert ids
             var alertXulipa = await AppFactory
                 .CreateAlert<SimpleAlertView>($"alert{2 * (i + 1)}", watchMode, Users.Xulipa.Id, AppFactory.CurrentTime);
-            XulipaAlerts[i] = alertXilapa;
+            XulipaAlerts[i] = alertXulipa;
         }
     }
 }
@@ -113,18 +113,18 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             {
                 Take = 10,
                 LastAlertId = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength)
-                    .Encode((2 * 20) - 1),
+                    .Encode((2 * 60) - 1) // The id of the last xilapa's alert
             },
-            GetAlertsTestsBase.StartingTime.AddMinutes(20 * 5), // The creation date of the twentieth xilapa's alert
-            (2 * 11) - 1, // The id of the eleventh xilapa's alert
-            (2 * 20) - 1, // The id of the twenty-first xilapa's alert
+            GetAlertsTestsBase.StartingTime.AddMinutes(60 * 5), // The creation date of the last xilapa's alert
+            null,
+            null,
             0
         };
     }
 
     [Theory]
     [MemberData(nameof(PaginationData))]
-    public async Task PaginationTests(GetUserAlertsCommand command, DateTime dateToFilter, int firstid, int lastId, int count)
+    public async Task PaginationTests(GetUserAlertsCommand command, DateTime dateToFilter, int? firstid, int? lastId, int count)
     {
         // Arrange
         LoginAs(Users.Xilapa);
@@ -145,17 +145,19 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .ToArray();
 
         var typedResult = result
-            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()!
-            .Result!.Results.ToArray();
+            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>();
 
-        typedResult.Length.Should().Be(count);
+        var resultList = typedResult!.Result!.Results.ToArray();
+        typedResult.Result.Total.Should().Be(GetAlertsTestsBase.XilapaAlerts.Length);
+
+        resultList.Length.Should().Be(count);
         if (count != 0)
         {
-            typedResult[0].Name.Should().Contain(firstid.ToString());
-            typedResult[command.Take-1].Name.Should().Contain(lastId.ToString());
+            resultList[0].Name.Should().Contain(firstid.ToString());
+            resultList[command.Take-1].Name.Should().Contain(lastId.ToString());
         }
 
-        typedResult.Should().BeEquivalentTo(expected,
+        resultList.Should().BeEquivalentTo(expected,
             opt => opt.WithStrictOrdering());
     }
 
@@ -168,7 +170,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
                 Take = 15,
                 LastAlertId = null
             },
-            15
+            15,
+            GetAlertsTestsBase.XilapaAlerts?.Length!
         };
 
         yield return new object[]
@@ -178,7 +181,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
                 Take = 50,
                 LastAlertId = null
             },
-            GetAlertsTestsBase.XilapaAlerts.Length
+            50,
+            GetAlertsTestsBase.XilapaAlerts?.Length!
         };
 
         yield return new object[]
@@ -188,13 +192,14 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
                 Take = 51,
                 LastAlertId = null
             },
-            GetAlertsTestsBase.XilapaAlerts.Length
+            50,
+            GetAlertsTestsBase.XilapaAlerts?.Length!
         };
     }
 
     [Theory]
     [MemberData(nameof(TakeData))]
-    public async Task CantTakeMoreThan50Results(GetUserAlertsCommand command, int count)
+    public async Task CantTakeMoreThan50Results(GetUserAlertsCommand command, int count, int total)
     {
         // Arrange
         LoginAs(Users.Xilapa);
@@ -207,9 +212,11 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        result
-            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()!
-            .Result!.Results.Count().Should().Be(count);
+        var typedResult = result
+            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>();
+
+        typedResult!.Result!.Total.Should().Be(total);
+        typedResult.Result.Results.Count().Should().Be(count);
     }
 
     public static IEnumerable<object[]> AlertDetailsData()
