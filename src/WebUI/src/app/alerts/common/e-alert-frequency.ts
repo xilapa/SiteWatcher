@@ -1,4 +1,4 @@
-﻿export enum AlertFrequency
+﻿export enum EAlertFrequency
 {
     TwoHours = 2,
     FourHours = 4,
@@ -8,17 +8,17 @@
 }
 
 export class AlertFrequencyUtils{
-    public static getFrequencyTranslationKey(frequency: AlertFrequency): string{
+    public static getFrequencyTranslationKey(frequency: EAlertFrequency): string{
         switch (frequency) {
-            case AlertFrequency.TwoHours:
+            case EAlertFrequency.TwoHours:
                 return "alert.frequency.twoHours";
-            case AlertFrequency.FourHours:
+            case EAlertFrequency.FourHours:
                 return "alert.frequency.fourHours";
-            case AlertFrequency.EightHours:
+            case EAlertFrequency.EightHours:
                 return "alert.frequency.eightHours";
-            case AlertFrequency.TwelveHours:
+            case EAlertFrequency.TwelveHours:
                 return "alert.frequency.twelveHours";
-            case AlertFrequency.TwentyFourHours:
+            case EAlertFrequency.TwentyFourHours:
                 return "alert.frequency.twentyFourHours";
         }
     }
