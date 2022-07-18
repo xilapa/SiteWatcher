@@ -13,7 +13,9 @@ public class WatchModeMapping : BaseModelMapping<WatchMode, WatchModeId>
 
         builder.ToTable("WatchModes");
 
-        builder.HasIndex(w => w.AlertId);
+        builder.Property<AlertId>(nameof(AlertId));
+
+        builder.HasIndex(nameof(AlertId));
 
         builder.Property(a => a.Id)
             .HasConversion<WatchModeId.EfCoreValueConverter>()

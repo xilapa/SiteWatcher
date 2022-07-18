@@ -57,7 +57,6 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                     Site = new SiteView {Name="store site", Uri="https://store.site.io/"},
                     WatchMode = new DetailedWatchModeView
                     {
-                        Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(1),
                         WatchMode = EWatchMode.AnyChanges
                     }
                 })
@@ -84,7 +83,6 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                     Site = new SiteView {Name="store site", Uri="https://store.site.io/"},
                     WatchMode = new DetailedWatchModeView
                     {
-                        Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(2),
                         WatchMode = EWatchMode.Term,
                         Term = "lookup term"
                     }

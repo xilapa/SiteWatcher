@@ -57,6 +57,6 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
 
         builder.HasOne(a => a.WatchMode)
             .WithOne()
-            .HasForeignKey(nameof(WatchMode),nameof(WatchMode.AlertId));
+            .HasForeignKey(nameof(WatchMode),nameof(AlertId));
     }
 }

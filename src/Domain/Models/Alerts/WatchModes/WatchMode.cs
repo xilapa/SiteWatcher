@@ -13,6 +13,5 @@ public abstract class WatchMode : BaseModel<WatchModeId>
         FirstWatchDone = false;
     }
 
-    public AlertId AlertId { get; set; }
     public bool FirstWatchDone { get; protected set; }
 }
