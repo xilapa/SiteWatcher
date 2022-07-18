@@ -1,7 +1,6 @@
-﻿using System.Reflection;
+﻿using ReflectionMagic;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.IntegrationTests.Utils;
 
@@ -13,16 +12,7 @@ public static class UserViewModelExtensions
             userViewModel.Email, userViewModel.EmailConfirmed ? userViewModel.Email : "anotherEmail",
             userViewModel.Language, userViewModel.Theme, currentDate);
 
-        var idProp = user.GetType()
-            .BaseType!
-            .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-            .SingleOrDefault(f =>
-                f.Attributes.HasFlag(FieldAttributes.InitOnly) &&
-                f.Name.Contains(nameof(User.Id)) &&
-                f.FieldType == typeof(UserId)
-            );
-        idProp!.SetValue(user, userViewModel.Id);
-
+        user.AsDynamic().Id = userViewModel.Id;
         return user;
     }
 
