@@ -59,7 +59,7 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
         }
     }
 
-    protected UniqueViolationException GenerateUniqueViolationException(DbUpdateException exception)
+    protected static UniqueViolationException GenerateUniqueViolationException(DbUpdateException exception)
     {
         var modelNames = string.Join("; ", exception.Entries.Select(e => e.Metadata.Name.Split('.').Last()));
         return new UniqueViolationException(modelNames);

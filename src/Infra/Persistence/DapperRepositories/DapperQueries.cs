@@ -64,7 +64,7 @@ public class DapperQueries : IDapperQueries
             DELETE 
             FROM 
 	            ""siteWatcher_webApi"".""Alerts""
-                WHERE	
+            WHERE	
                 ""Id"" = @alertId
                 AND ""UserId"" =  @userId";
 }
