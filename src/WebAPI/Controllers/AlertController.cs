@@ -65,7 +65,7 @@ public class AlertController : ControllerBase
     public async Task<IActionResult> UpdateAlert([FromBody] UpdateAlertCommmand command, CancellationToken cancellationToken)
     {
         var appResult = await _mediator.Send(command, cancellationToken);
-        return appResult.Success ? Ok(new WebApiResponse<object>(appResult.Value!)) :
-            BadRequest(new WebApiResponse<UpdateAlertCommmand>(null!, appResult.Errors));
+        return appResult.Success ? Ok(new WebApiResponse<DetailedAlertView>(appResult.Value!)) :
+            BadRequest(new WebApiResponse<DetailedAlertView>(null!, appResult.Errors));
     }
 }
