@@ -18,56 +18,67 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
                             cmmd.Term is null))
             .WithMessage(ApplicationErrors.UPDATE_DATA_IS_NULL);
 
+        RuleFor(cmmd => cmmd.AlertId)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.AlertId)));
+
         RuleFor(cmmd => cmmd.Name!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.Name)))
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Name)))
             .MinimumLength(3)
-            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(CreateAlertCommand.Name)))
+            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateAlertCommmand.Name)))
             .MaximumLength(64)
-            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.Name)))
+            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(UpdateAlertCommmand.Name)))
             .When(cmmd => cmmd.Name is not null);
 
         RuleFor(cmmd => cmmd.Frequency!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)))
             .NotEqual(default(EFrequency))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)))
             .When(cmmd => cmmd.Frequency is not null);
 
         RuleFor(cmmd => cmmd.SiteName!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.SiteName)))
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.SiteName)))
             .MinimumLength(3)
-            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(CreateAlertCommand.SiteName)))
+            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateAlertCommmand.SiteName)))
             .MaximumLength(64)
-            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.SiteName)))
+            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(UpdateAlertCommmand.SiteName)))
             .When(cmmd => cmmd.SiteName is not null);
 
         RuleFor(cmmd => cmmd.SiteUri!.NewValue)
             .Must(uri => Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.SiteUri)))
             .When(cmmd => cmmd.SiteUri is not null);
 
         RuleFor(cmmd => cmmd.WatchMode!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
             .NotEqual(default(EWatchMode))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
             .When(cmmd => cmmd.WatchMode is not null);
 
         // Term watch validation
+        RuleFor(cmmd => cmmd.Term)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
+            .When(cmmd => cmmd.WatchMode is not null && EWatchMode.Term.Equals(cmmd.WatchMode.NewValue));
+
         RuleFor(cmmd => cmmd.Term!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.Term)))
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
             .MinimumLength(3)
-            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(CreateAlertCommand.Term)))
+            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateAlertCommmand.Term)))
             .MaximumLength(64)
-            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.Term)))
-            .When(cmmd => cmmd.Term is not null);
+            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(UpdateAlertCommmand.Term)))
+            .When(cmmd => cmmd.WatchMode is not null
+                          && EWatchMode.Term.Equals(cmmd.WatchMode.NewValue)
+                          && cmmd.Term is not null);
     }
 }
