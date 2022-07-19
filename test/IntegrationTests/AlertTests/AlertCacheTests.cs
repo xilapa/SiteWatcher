@@ -14,6 +14,8 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Infra.IdHasher;
+using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
@@ -29,7 +31,7 @@ public class AlertCacheTestsBase : BaseTestFixture
     }
 
     public SimpleAlertView[] AlertsView { get; set; }
-    public string AlertToUpdateId { get; set; }
+    public AlertId AlertToUpdateId { get; set; }
 
     public override Action<CustomWebApplicationOptions> Options => opt =>
     {
@@ -95,7 +97,7 @@ public class AlertCacheTestsBase : BaseTestFixture
     {
         await base.InitializeAsync();
         var alertToUpdate = await AppFactory
-            .CreateAlert<DetailedAlertView>("alert", EWatchMode.Term, Users.Xilapa.Id, AppFactory.CurrentTime);
+            .CreateAlert<Alert>("alert", EWatchMode.Term, Users.Xilapa.Id, AppFactory.CurrentTime);
         AlertToUpdateId = alertToUpdate.Id;
     }
 }
@@ -212,7 +214,10 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         LoginAs(Users.Xilapa);
         FakeCache.Cache.Should().BeEmpty();
         var updateCommand = new UpdateAlertCommmand
-            {AlertId = _fixture.AlertToUpdateId, Name = new UpdateInfo<string> {NewValue = "new name"}};
+        {
+            AlertId = new IdHasher(new TestAppSettings()).HashId(_fixture.AlertToUpdateId.Value),
+            Name = new UpdateInfo<string> {NewValue = "new name"}
+        };
 
         // create cache
         await GetAsync("alert");
