@@ -22,7 +22,7 @@ public class UpdateAlertCommandValidatorTests
 
         yield return new object[]
         {
-            new UpdateAlertCommmand { AlertId = "alertId"},
+            new UpdateAlertCommmand {AlertId = "alertId"},
             new[]
             {
                 ApplicationErrors.UPDATE_DATA_IS_NULL

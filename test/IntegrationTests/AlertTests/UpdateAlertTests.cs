@@ -4,7 +4,6 @@ using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
-using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
@@ -22,7 +21,7 @@ public class UpdateAlertTestsBase : BaseTestFixture
     public DetailedAlertView XilapaAlert;
     public Alert XulipaAlert;
 
-    public override Action<CustomWebApplicationOptions>? Options =>
+    public override Action<CustomWebApplicationOptions> Options =>
         opt => opt.InitalDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     public override async Task InitializeAsync()
@@ -69,8 +68,9 @@ public class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsBase>
                 Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert2"},
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name2"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated2.com"},
-                Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwoHours},
-                WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.AnyChanges}
+                Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwentyFourHours},
+                WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.Term},
+                Term = new UpdateInfo<string?> {NewValue = "new term2"}
             }
         };
 
@@ -82,9 +82,22 @@ public class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsBase>
                 Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert3"},
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name3"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated3.com"},
+                Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwoHours},
+                WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.AnyChanges}
+            }
+        };
+
+        yield return new object[]
+        {
+            new UpdateAlertCommmand
+            {
+                AlertId = new IdHasher(new TestAppSettings()).HashId(1),
+                Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert4"},
+                SiteName = new UpdateInfo<string> {NewValue = "Updated site name4"},
+                SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated4.com"},
                 Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.FourHours},
                 WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.AnyChanges},
-                Term = new UpdateInfo<string?> {NewValue = "new term3"}
+                Term = new UpdateInfo<string?> {NewValue = "new term4"}
             }
         };
     }
