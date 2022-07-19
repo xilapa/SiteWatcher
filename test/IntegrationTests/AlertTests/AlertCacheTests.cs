@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Domain.DTOs.Alert;
 using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
@@ -7,9 +8,11 @@ using MediatR;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -26,6 +29,7 @@ public class AlertCacheTestsBase : BaseTestFixture
     }
 
     public SimpleAlertView[] AlertsView { get; set; }
+    public string AlertToUpdateId { get; set; }
 
     public override Action<CustomWebApplicationOptions> Options => opt =>
     {
@@ -86,6 +90,14 @@ public class AlertCacheTestsBase : BaseTestFixture
         opt.ReplaceService(typeof(IIdHasher), idHasherMock.Object);
         opt.ReplaceService(typeof(IAlertDapperRepository), alertDapperRepoMock.Object);
     };
+
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+        var alertToUpdate = await AppFactory
+            .CreateAlert<DetailedAlertView>("alert", EWatchMode.Term, Users.Xilapa.Id, AppFactory.CurrentTime);
+        AlertToUpdateId = alertToUpdate.Id;
+    }
 }
 
 public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
@@ -112,7 +124,8 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         await GetAsync("alert");
         FakeCache.Cache.Count.Should().Be(1);
         var cachedResult = JsonSerializer
-            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>((FakeCache.Cache.Values.First().Value as string)!);
+            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>(
+                (FakeCache.Cache.Values.First().Value as string)!);
 
         cachedResult!.Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
 
@@ -137,7 +150,7 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         // Arrange
         LoginAs(Users.Xilapa);
         FakeCache.Cache.Count.Should().Be(0);
-        var createAlertCommand = new CreateAlertCommand()
+        var createAlertCommand = new CreateAlertCommand
         {
             Frequency = EFrequency.EightHours,
             Name = "name",
@@ -152,7 +165,8 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         await GetAsync("alert");
         FakeCache.Cache.Count.Should().Be(1);
         var cachedResult = JsonSerializer
-            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>((FakeCache.Cache.Values.First().Value as string)!);
+            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>(
+                (FakeCache.Cache.Values.First().Value as string)!);
 
         cachedResult!.Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
 
@@ -165,7 +179,7 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         // Await fire and forget to execute
         await Task.Delay(300);
 
-        FakeCache.Cache.Count.Should().Be(0);
+        FakeCache.Cache.Should().BeEmpty();
     }
 
     [Fact]
@@ -181,6 +195,31 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
 
         // Act
         var res = await DeleteAsync("alert/mocked");
+        res.HttpResponse!
+            .StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Await fire and forget to execute
+        await Task.Delay(300);
+
+        // Assert
+        FakeCache.Cache.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task CacheIsRemovedWhenAlertIsUpdated()
+    {
+        // Arrange
+        LoginAs(Users.Xilapa);
+        FakeCache.Cache.Should().BeEmpty();
+        var updateCommand = new UpdateAlertCommmand
+            {AlertId = _fixture.AlertToUpdateId, Name = new UpdateInfo<string> {NewValue = "new name"}};
+
+        // create cache
+        await GetAsync("alert");
+        FakeCache.Cache.Should().NotBeEmpty();
+
+        // Act
+        var res = await PutAsync("alert", updateCommand);
         res.HttpResponse!
             .StatusCode.Should().Be(HttpStatusCode.OK);
 
