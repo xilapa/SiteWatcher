@@ -80,7 +80,8 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
                     continue;
 
                 entry.Property(AlertMapping.SiteNameSearch).CurrentValue = alert.Site.Name.ToLowerCaseWithoutDiacritics();
-                entry.Property(AlertMapping.SiteUriSearch).CurrentValue = alert.Site.Uri.AbsoluteUri.ToLowerCaseWithoutDiacritics();
+                var doubleBarIndex = alert.Site.Uri.AbsoluteUri.IndexOf("//", StringComparison.Ordinal) + 2;
+                entry.Property(AlertMapping.SiteUriSearch).CurrentValue = alert.Site.Uri.AbsoluteUri[doubleBarIndex..].ToLowerCaseWithoutDiacritics();
             }
         }
     }
