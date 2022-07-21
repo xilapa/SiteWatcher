@@ -16,8 +16,11 @@ public class AlertsChangedEventHandler : INotificationHandler<AlertsChangedEvent
 
     public Task Handle(AlertsChangedEvent notification, CancellationToken cancellationToken)
     {
-        _fireAndForgetService.ExecuteWith<ICache>(cache =>
-            cache.DeleteKeyAsync(CacheKeys.UserAlerts(notification.UserId)));
+        _fireAndForgetService.ExecuteWith<ICache>(async cache =>
+        {
+            await cache.DeleteKeyAsync(CacheKeys.UserAlerts(notification.UserId));
+            await cache.DeleteKeyAsync(CacheKeys.UserAlertSearch(notification.UserId));
+        });
         return Task.CompletedTask;
     }
 }

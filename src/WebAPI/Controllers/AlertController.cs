@@ -7,6 +7,7 @@ using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 using SiteWatcher.WebAPI.Filters;
@@ -67,5 +68,15 @@ public class AlertController : ControllerBase
         var appResult = await _mediator.Send(command, cancellationToken);
         return appResult.Success ? Ok(new WebApiResponse<DetailedAlertView>(appResult.Value!)) :
             BadRequest(new WebApiResponse<DetailedAlertView>(null!, appResult.Errors));
+    }
+
+    [HttpGet("search")]
+    [CacheFilter]
+    [CommandValidationFilter]
+    public async Task<IActionResult> SearchAlerts([FromQuery] SearchAlertCommand command,
+        CancellationToken cancellationToken)
+    {
+        var appResult = await _mediator.Send(command, cancellationToken);
+        return Ok(new WebApiResponse<IEnumerable<SimpleAlertView>>().SetResult(appResult.Value!));
     }
 }
