@@ -2,18 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SiteWatcher.Infra;
 
 #nullable disable
 
-namespace SiteWatcher.Infra.Migrations
+namespace Infra.Persistence.Migrations
 {
     [DbContext(typeof(SiteWatcherContext))]
-    partial class SiteWatcherContextModelSnapshot : ModelSnapshot
+    [Migration("20220720232144_search column added to alert")]
+    partial class searchcolumnaddedtoalert
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,24 +56,12 @@ namespace SiteWatcher.Infra.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(64)");
 
-                    b.Property<string>("Site_NameSearch")
-                        .IsRequired()
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<string>("Site_UriSearch")
-                        .IsRequired()
-                        .HasColumnType("varchar(512)");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NameSearch");
-
-                    b.HasIndex("Site_NameSearch");
-
-                    b.HasIndex("Site_UriSearch");
 
                     b.HasIndex("UserId");
 
