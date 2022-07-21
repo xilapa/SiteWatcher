@@ -49,4 +49,15 @@ public class AlertDapperRepository : IAlertDapperRepository
             conn.ExecuteAsync(commandDefinition));
         return affectedRows > 0;
     }
+
+    public async Task<List<SimpleAlertViewDto>> SearchSimpleAlerts(string searchTerm, UserId userId, int take,
+        CancellationToken cancellationToken)
+    {
+        searchTerm = $"%{searchTerm}%";
+        var commandDefinition = new CommandDefinition(_dapperQueries.SearchSimpleAlerts,
+            new {searchTerm, userId, take}, cancellationToken: cancellationToken);
+        var result = await _dapperContext.UsingConnectionAsync(conn =>
+            conn.QueryAsync<SimpleAlertViewDto>(commandDefinition));
+        return result.AsList();
+    }
 }

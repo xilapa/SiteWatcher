@@ -11,4 +11,7 @@ public interface IAlertDapperRepository
 
     Task<AlertDetailsDto?> GetAlertDetails(int alertId, UserId userId, CancellationToken cancellationToken);
     Task<bool> DeleteUserAlert(int alertId, UserId userId, CancellationToken cancellationToken);
+
+    Task<List<SimpleAlertViewDto>> SearchSimpleAlerts(string searchTerm, UserId userId, int take,
+        CancellationToken cancellationToken);
 }

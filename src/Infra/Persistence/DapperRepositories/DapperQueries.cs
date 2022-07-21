@@ -67,4 +67,28 @@ public class DapperQueries : IDapperQueries
             WHERE	
                 ""Id"" = @alertId
                 AND ""UserId"" =  @userId";
+
+    public virtual string SearchSimpleAlerts => @"
+            SELECT 
+                a.""Id"",
+	            a.""Name"",
+	            a.""CreatedAt"",
+                a.""Frequency"",
+                a.""LastVerification"",
+                a.""Site_Name"" SiteName,
+                wm.""WatchMode""
+            FROM 
+                ""siteWatcher_webApi"".""Alerts"" a
+                    INNER JOIN ""siteWatcher_webApi"".""WatchModes"" wm 
+                        ON a.""Id"" = wm.""AlertId""
+            WHERE
+                a.""UserId"" = @userId
+                AND (
+                    a.""NameSearch"" LIKE @searchTerm OR
+                    a.""Site_NameSearch"" LIKE @searchTerm OR
+                    a.""Site_UriSearch"" LIKE @searchTerm
+                )
+            ORDER BY 
+                a.""Id""
+            LIMIT @take";
 }

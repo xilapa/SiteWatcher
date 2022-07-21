@@ -7,4 +7,5 @@ public interface IDapperQueries
     public string GetSimpleAlertViewListByUserId { get; }
     public string GetAlertDetails { get; }
     public string DeleteUserAlert { get; }
+    public string SearchSimpleAlerts { get; }
 }
