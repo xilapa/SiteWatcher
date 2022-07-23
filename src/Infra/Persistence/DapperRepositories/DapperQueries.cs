@@ -1,4 +1,5 @@
 ﻿using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 
@@ -68,7 +69,22 @@ public class DapperQueries : IDapperQueries
                 ""Id"" = @alertId
                 AND ""UserId"" =  @userId";
 
-    public virtual string SearchSimpleAlerts => @"
+    public virtual string SearchSimpleAlerts(int searchTermCount)
+    {
+        var stringBuilder = StringBuilderCache.Acquire();
+        foreach (var termIndex in Enumerable.Range(0, searchTermCount))
+        {
+            stringBuilder.Append(@"(
+                    f_unaccent(a.""Name"") ILIKE @searchTerm").Append(termIndex).Append(@" OR
+                    f_unaccent(a.""Site_Name"") ILIKE @searchTerm").Append(termIndex).Append(@" OR
+                    f_unaccent(a.""Site_Uri"") ILIKE @searchTerm").Append(termIndex).Append(@"
+                     )");
+
+            if (termIndex != searchTermCount - 1)
+                stringBuilder.Append(" OR ");
+        }
+
+        var baseQuery = $@"
             SELECT 
                 a.""Id"",
 	            a.""Name"",
@@ -83,12 +99,10 @@ public class DapperQueries : IDapperQueries
                         ON a.""Id"" = wm.""AlertId""
             WHERE
                 a.""UserId"" = @userId
-                AND (
-                    a.""NameSearch"" LIKE @searchTerm OR
-                    a.""Site_NameSearch"" LIKE @searchTerm OR
-                    a.""Site_UriSearch"" LIKE @searchTerm
-                )
+                AND ( {StringBuilderCache.GetStringAndRelease(stringBuilder)} )
             ORDER BY 
                 a.""Id""
             LIMIT @take";
+        return baseQuery;
+    }
 }

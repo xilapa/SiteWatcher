@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Dynamic;
+using Dapper;
 using Domain.DTOs.Alert;
 using Domain.DTOs.Common;
 using SiteWatcher.Application.Interfaces;
@@ -50,12 +51,18 @@ public class AlertDapperRepository : IAlertDapperRepository
         return affectedRows > 0;
     }
 
-    public async Task<List<SimpleAlertViewDto>> SearchSimpleAlerts(string searchTerm, UserId userId, int take,
+    public async Task<List<SimpleAlertViewDto>> SearchSimpleAlerts(string[] searchTerms, UserId userId, int take,
         CancellationToken cancellationToken)
     {
-        searchTerm = $"%{searchTerm}%";
-        var commandDefinition = new CommandDefinition(_dapperQueries.SearchSimpleAlerts,
-            new {searchTerm, userId, take}, cancellationToken: cancellationToken);
+        var parameters = new ExpandoObject() as IDictionary<string, object>;
+        parameters[nameof(userId)] = userId;
+        parameters[nameof(take)] = take;
+
+        for (var i = 0; i < searchTerms.Length; i++)
+            parameters.Add($"searchTerm{i}", $"%{searchTerms[i]}%");
+
+        var commandDefinition = new CommandDefinition(_dapperQueries.SearchSimpleAlerts(searchTerms.Length),
+            parameters, cancellationToken: cancellationToken);
         var result = await _dapperContext.UsingConnectionAsync(conn =>
             conn.QueryAsync<SimpleAlertViewDto>(commandDefinition));
         return result.AsList();

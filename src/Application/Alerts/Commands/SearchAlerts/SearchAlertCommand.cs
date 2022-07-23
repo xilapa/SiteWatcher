@@ -34,9 +34,13 @@ public class
     public async Task<ICommandResult<IEnumerable<SimpleAlertView>>> Handle(SearchAlertCommand request,
         CancellationToken cancellationToken)
     {
-        var searchTerm = request.Term.ToLowerCaseWithoutDiacritics();
+        var searchTerms = request
+            .Term.Split(' ')
+            .Where(t => !string.IsNullOrEmpty(t))
+            .Select(t => t.ToLowerCaseWithoutDiacritics()).ToArray();
+
         var alerts = await _alertDapperRepository
-            .SearchSimpleAlerts(searchTerm, _session.UserId!.Value, 10, cancellationToken);
+            .SearchSimpleAlerts(searchTerms, _session.UserId!.Value, 10, cancellationToken);
         if (alerts.Count == 0)
             return new CommandResult<IEnumerable<SimpleAlertView>>(Array.Empty<SimpleAlertView>());
         var alertsMapped = _mapper.Map<IEnumerable<SimpleAlertView>>(alerts);

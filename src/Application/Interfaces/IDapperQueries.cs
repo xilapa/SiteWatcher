@@ -2,10 +2,10 @@
 
 public interface IDapperQueries
 {
-    public string GetUserByGoogleId { get; }
-    public string DeleteActiveUserById { get; }
-    public string GetSimpleAlertViewListByUserId { get; }
-    public string GetAlertDetails { get; }
-    public string DeleteUserAlert { get; }
-    public string SearchSimpleAlerts { get; }
+    string GetUserByGoogleId { get; }
+    string DeleteActiveUserById { get; }
+    string GetSimpleAlertViewListByUserId { get; }
+    string GetAlertDetails { get; }
+    string DeleteUserAlert { get; }
+    string SearchSimpleAlerts(int searchTermCount);
 }
