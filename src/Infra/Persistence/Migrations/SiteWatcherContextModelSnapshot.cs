@@ -50,28 +50,10 @@ namespace SiteWatcher.Infra.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(64)");
 
-                    b.Property<string>("NameSearch")
-                        .IsRequired()
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<string>("Site_NameSearch")
-                        .IsRequired()
-                        .HasColumnType("varchar(64)");
-
-                    b.Property<string>("Site_UriSearch")
-                        .IsRequired()
-                        .HasColumnType("varchar(512)");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("NameSearch");
-
-                    b.HasIndex("Site_NameSearch");
-
-                    b.HasIndex("Site_UriSearch");
 
                     b.HasIndex("UserId");
 

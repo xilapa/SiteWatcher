@@ -8,10 +8,6 @@ namespace SiteWatcher.Infra.Configuration;
 
 public class AlertMapping : BaseModelMapping<Alert, AlertId>
 {
-    internal const string AlertNameSearch = "NameSearch";
-    internal const string SiteNameSearch = "Site_NameSearch";
-    internal const string SiteUriSearch = "Site_UriSearch";
-
     public override void Configure(EntityTypeBuilder<Alert> builder)
     {
         base.Configure(builder);
@@ -62,27 +58,5 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
         builder.HasOne(a => a.WatchMode)
             .WithOne()
             .HasForeignKey(nameof(WatchMode),nameof(AlertId));
-
-        // Properties for search
-        builder.Property<string>(AlertNameSearch)
-            .HasColumnType("varchar(64)")
-            .IsRequired();
-
-        builder.Property<string>(SiteNameSearch)
-            .HasColumnType("varchar(64)")
-            .IsRequired();
-
-        builder.Property<string>(SiteUriSearch)
-            .HasColumnType("varchar(512)")
-            .IsRequired();
-
-        builder.HasIndex(AlertNameSearch)
-            .IsUnique(false);
-
-        builder.HasIndex(SiteNameSearch)
-            .IsUnique(false);
-
-        builder.HasIndex(SiteUriSearch)
-            .IsUnique(false);
     }
 }
