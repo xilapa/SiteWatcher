@@ -1,11 +1,10 @@
 ﻿using MediatR;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Application.Users.Commands.ActivateAccount;
 
-public class SendReactivateAccountEmailCommand : Validable<SendReactivateAccountEmailCommand>, IRequest
+public class SendReactivateAccountEmailCommand : IRequest
 {
     public UserId UserId { get; set; }
 }

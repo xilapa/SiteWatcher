@@ -2,12 +2,11 @@
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 
-public class DeleteAlertCommand : Validable<DeleteAlertCommand>, IRequest<ICommandResult<object>>
+public class DeleteAlertCommand : IRequest<ICommandResult<object>>
 {
     public string AlertId { get; set; }
 }

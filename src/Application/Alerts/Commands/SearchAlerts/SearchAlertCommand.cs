@@ -2,14 +2,13 @@
 using MediatR;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Extensions;
 using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 
-public class SearchAlertCommand : Validable<SearchAlertCommand>, IRequest<ICommandResult<IEnumerable<SimpleAlertView>>>, ICacheable
+public class SearchAlertCommand : IRequest<ICommandResult<IEnumerable<SimpleAlertView>>>, ICacheable
 {
     public string Term { get; set; }
     public TimeSpan Expiration => TimeSpan.FromMinutes(2);

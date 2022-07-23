@@ -4,14 +4,13 @@ using Domain.DTOs.Common;
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 
-public class UpdateAlertCommmand : Validable<UpdateAlertCommmand>, IRequest<ICommandResult<DetailedAlertView>>
+public class UpdateAlertCommmand : IRequest<ICommandResult<DetailedAlertView>>
 {
     public string AlertId { get; set; }
     public UpdateInfo<string>? Name { get; set; }

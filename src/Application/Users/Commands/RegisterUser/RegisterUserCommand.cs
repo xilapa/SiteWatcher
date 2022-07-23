@@ -1,7 +1,6 @@
 using AutoMapper;
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
@@ -10,7 +9,7 @@ using SiteWatcher.Domain.Models;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommand : Validable<RegisterUserCommand>, IRequest<ICommandResult<RegisterUserResult>>
+public class RegisterUserCommand : IRequest<ICommandResult<RegisterUserResult>>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }

@@ -2,14 +2,13 @@
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.UpdateUser;
 
-public class UpdateUserCommand : Validable<UpdateUserCommand>, IRequest<ICommandResult<UpdateUserResult>>
+public class UpdateUserCommand : IRequest<ICommandResult<UpdateUserResult>>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }

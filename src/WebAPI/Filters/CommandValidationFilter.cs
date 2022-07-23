@@ -2,13 +2,12 @@ using System.Net;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Filters;
 
 /// <summary>
-/// Command must implement <see cref="IValidable"/> to be validated and it's name must be "command".
+/// Command must be named "command" and have an <see cref="AbstractValidor"/> implementation to be validated.
 /// </summary>
 public class CommandValidationFilter : ActionFilterAttribute
 {
@@ -30,12 +29,12 @@ public class CommandValidationFilter : ActionFilterAttribute
 
     private static async Task<string[]> ValidateInputAsync(ActionExecutingContext context)
     {
-        var validableCommand = context.ActionArguments["command"] as IValidable;
-        var validatorType = typeof(IValidator<>).MakeGenericType(validableCommand!.GetType());
+        var command = context.ActionArguments["command"];
+        var validatorType = typeof(IValidator<>).MakeGenericType(command!.GetType());
+
         var validator = context.HttpContext.RequestServices.GetRequiredService(validatorType) as IValidator;
+        var result = await validator!.ValidateAsync(new ValidationContext<dynamic>(command));
 
-        var errs = await validableCommand.ValidateAsyncWith(validator!);
-
-        return errs.Length == 0 ? Array.Empty<string>() : errs;
+        return result.IsValid ? Array.Empty<string>(): result.Errors.Select(err => err.ErrorMessage).ToArray();
     }
 }

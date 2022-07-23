@@ -9,7 +9,7 @@ using SiteWatcher.Domain.Models.Alerts;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
-public class CreateAlertCommand : Validable<CreateAlertCommand>, IRequest<ICommandResult<DetailedAlertView>>
+public class CreateAlertCommand : IRequest<ICommandResult<DetailedAlertView>>
 {
     public string Name { get; set; }
     public EFrequency Frequency { get; set; }
