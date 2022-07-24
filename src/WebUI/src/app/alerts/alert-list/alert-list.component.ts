@@ -17,6 +17,7 @@ export class AlertListComponent implements OnInit, OnDestroy {
     @Input() alerts : DetailedAlertView[];
     private isMobile: boolean;
     private deviceSub: Subscription;
+    isSearchResult = false;
 
     constructor(private readonly alertService: AlertService,
                 private readonly dialogService: DialogService,
@@ -25,10 +26,21 @@ export class AlertListComponent implements OnInit, OnDestroy {
         this.deviceSub = deviceService.isMobileScreen().subscribe(mobile => this.isMobile = mobile);
     }
 
+    // TODO: unsubscribe observables on destroy
     ngOnInit(): void {
         this.alertService
             .getUserAlerts(this.isMobile)
-            .subscribe(alerts => this.alerts = alerts);
+            .subscribe(alerts => {
+                this.alerts = alerts;
+                this.isSearchResult = false;
+            });
+
+        this.alertService
+            .searchResults()
+            .subscribe(alerts => {
+                this.alerts = alerts;
+                this.isSearchResult = true;
+            });
     }
 
     ngOnDestroy(): void {
@@ -58,6 +70,15 @@ export class AlertListComponent implements OnInit, OnDestroy {
                     .subscribe(alerts => this.alerts = alerts);
             }
         });
+    }
+
+    clear(){
+        this.alertService
+            .loadTimelineAlerts(this.isMobile)
+            .subscribe(alerts => {
+                this.alerts = alerts;
+                this.isSearchResult = false;
+            });
     }
 
 }

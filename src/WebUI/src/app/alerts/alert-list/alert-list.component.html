@@ -2,6 +2,7 @@
     <div class="alert-list"
          infiniteScroll [infiniteScrollDistance]="2"
          [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
+        <button *ngIf=isSearchResult (click)="clear()">Clear Search Results</button>
         <ng-container *ngFor="let alert of alerts">
             <sw-alert-item [alert]="alert" (click)="seeDetails(alert)"></sw-alert-item>
         </ng-container>

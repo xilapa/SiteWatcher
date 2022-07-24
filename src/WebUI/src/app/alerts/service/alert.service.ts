@@ -6,7 +6,7 @@ import {
     DetailedAlertView,
     DetailedAlertViewApi, SimpleAlertViewApi, UpdateAlertData
 } from "../common/alert";
-import {map, Observable, of, tap} from "rxjs";
+import {map, Observable, of, Subject, tap} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {Data} from "../../core/shared-data/shared-data";
@@ -20,6 +20,8 @@ export class AlertService {
     private readonly userAlertsKey = "userAlerts";
     private allUserAlertsLoaded = false;
     private readonly currentLocale: string;
+    private readonly _searchResults = new Subject<DetailedAlertView[]>();
+    private readonly _searchResultsHidden = new Subject();
 
     constructor(private readonly httpClient: HttpClient, window: Window) {
         this.currentLocale = LangUtils.getCurrentLocale(window);
@@ -144,5 +146,30 @@ export class AlertService {
                     Data.Share(this.userAlertsKey, alertsAlreadyLoaded);
                 }
             }));
+    }
+
+    public searchAlerts(searchText: string) : Observable<any>{
+        const query =`?Term=${searchText}`;
+        return this.httpClient
+            .get<ApiResponse<SimpleAlertViewApi[]>>(`${environment.baseApiUrl}/${this.baseRoute}/search${query}`)
+            .pipe(tap(apiResponse => {
+                // map simple alert to detailed alerts
+                const detailedAlerts = apiResponse.Result
+                    .map(simpleAlert => AlertUtils.SimpleAlertViewApiToInternal(simpleAlert, this.currentLocale));
+
+                this._searchResults.next(detailedAlerts);
+            }))
+    }
+
+    public searchResults() : Observable<DetailedAlertView[]>{
+        return this._searchResults.asObservable();
+    }
+
+    public loadTimelineAlerts(isMobile: boolean): Observable<DetailedAlertView[]> {
+        return this.getUserAlerts(isMobile).pipe(tap(_ => this._searchResultsHidden.next("")));
+    }
+
+    public searchResultsHidden() : Observable<any> {
+        return this._searchResultsHidden.asObservable();
     }
 }
