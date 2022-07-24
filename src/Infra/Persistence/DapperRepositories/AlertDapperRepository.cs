@@ -59,7 +59,10 @@ public class AlertDapperRepository : IAlertDapperRepository
         parameters[nameof(take)] = take;
 
         for (var i = 0; i < searchTerms.Length; i++)
-            parameters.Add($"searchTerm{i}", $"%{searchTerms[i]}%");
+        {
+            parameters.Add($"searchTermWildCards{i}", $"%{searchTerms[i]}%");
+            parameters.Add($"searchTerm{i}",searchTerms[i]);
+        }
 
         var commandDefinition = new CommandDefinition(_dapperQueries.SearchSimpleAlerts(searchTerms.Length),
             parameters, cancellationToken: cancellationToken);

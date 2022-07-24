@@ -71,17 +71,16 @@ public class DapperQueries : IDapperQueries
 
     public virtual string SearchSimpleAlerts(int searchTermCount)
     {
-        var stringBuilder = StringBuilderCache.Acquire();
+        var whereQueryBuilder = StringBuilderCache.Acquire();
+        var orderByQueryBuilder = StringBuilderCache.Acquire();
         foreach (var termIndex in Enumerable.Range(0, searchTermCount))
         {
-            stringBuilder.Append(@"(
-                    f_unaccent(a.""Name"") ILIKE @searchTerm").Append(termIndex).Append(@" OR
-                    f_unaccent(a.""Site_Name"") ILIKE @searchTerm").Append(termIndex).Append(@" OR
-                    f_unaccent(a.""Site_Uri"") ILIKE @searchTerm").Append(termIndex).Append(@"
-                     )");
+            whereQueryBuilder.Append(@"(""SearchField"" LIKE @searchTermWildCards").Append(termIndex).Append(')');
+            orderByQueryBuilder.Append(@"""siteWatcher_webApi"".""similarity""(""SearchField"", @searchTerm").Append(termIndex).Append(')');
 
-            if (termIndex != searchTermCount - 1)
-                stringBuilder.Append(" OR ");
+            if (termIndex == searchTermCount - 1) continue;
+            whereQueryBuilder.Append(" OR ");
+            orderByQueryBuilder.Append(',');
         }
 
         var baseQuery = $@"
@@ -99,9 +98,10 @@ public class DapperQueries : IDapperQueries
                         ON a.""Id"" = wm.""AlertId""
             WHERE
                 a.""UserId"" = @userId
-                AND ( {StringBuilderCache.GetStringAndRelease(stringBuilder)} )
+                AND ( {StringBuilderCache.GetStringAndRelease(whereQueryBuilder)} )
             ORDER BY 
-                a.""Id""
+                {StringBuilderCache.GetStringAndRelease(orderByQueryBuilder)}
+            DESC
             LIMIT @take";
         return baseQuery;
     }
