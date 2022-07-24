@@ -73,15 +73,17 @@ public class DapperQueries : IDapperQueries
     {
         var whereQueryBuilder = StringBuilderCache.Acquire();
         var orderByQueryBuilder = StringBuilderCache.Acquire();
+        orderByQueryBuilder.Append('(');
         foreach (var termIndex in Enumerable.Range(0, searchTermCount))
         {
             whereQueryBuilder.Append(@"(""SearchField"" LIKE @searchTermWildCards").Append(termIndex).Append(')');
-            orderByQueryBuilder.Append(@"""similarity""(""SearchField"", @searchTerm").Append(termIndex).Append(')');
+            orderByQueryBuilder.Append(@" ""similarity""(""SearchField"", @searchTerm").Append(termIndex).Append(") ");
 
             if (termIndex == searchTermCount - 1) continue;
             whereQueryBuilder.Append(" OR ");
-            orderByQueryBuilder.Append(',');
+            orderByQueryBuilder.Append('+');
         }
+        orderByQueryBuilder.Append(')');
 
         var baseQuery = $@"
             SELECT 
