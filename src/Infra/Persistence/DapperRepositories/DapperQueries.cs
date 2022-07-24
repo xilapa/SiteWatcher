@@ -71,8 +71,8 @@ public class DapperQueries : IDapperQueries
 
     public virtual string SearchSimpleAlerts(int searchTermCount)
     {
-        var whereQueryBuilder = StringBuilderCache.Acquire();
-        var orderByQueryBuilder = StringBuilderCache.Acquire();
+        var whereQueryBuilder = StringBuilderCache.Acquire(200);
+        var orderByQueryBuilder = StringBuilderCache.Acquire(200);
         orderByQueryBuilder.Append('(');
         foreach (var termIndex in Enumerable.Range(0, searchTermCount))
         {

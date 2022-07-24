@@ -134,7 +134,7 @@ public class Alert : BaseModel<AlertId>
 
         // Ignoring duplicated terms
         var searchParts = nameParts.Union(siteNameParts).Union(siteUriParts).Distinct().ToArray();
-        var stringBuilder = StringBuilderCache.Acquire();
+        var stringBuilder = StringBuilderCache.Acquire(200);
 
         // building the search field
         for (var i = 0; i < searchParts.Length; i++)
