@@ -1,8 +1,11 @@
-﻿using Domain.DTOs.Alert;
+﻿using System.Text.RegularExpressions;
+using Domain.DTOs.Alert;
 using Domain.Events.Alerts;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Extensions;
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
 using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Domain.Models.Alerts;
 
@@ -20,6 +23,7 @@ public class Alert : BaseModel<AlertId>
         Frequency = frequency;
         Site = site;
         WatchMode = watchMode;
+        GenerateSearchField();
         AddDomainEvent(new AlertsChangedEvent(UserId));
     }
 
@@ -28,8 +32,8 @@ public class Alert : BaseModel<AlertId>
     public EFrequency Frequency { get; private set; }
     public DateTime? LastVerification { get; private set; }
     public Site Site { get; private set; }
-
     public WatchMode WatchMode { get; private set; }
+    public string SearchField { get; private set; }
 
     public static Alert GetModelForUpdate(UpdateAlertDto updateAlertDto) =>
         new()
@@ -44,17 +48,27 @@ public class Alert : BaseModel<AlertId>
 
     public void Update(UpdateAlertInput updateInput, DateTime updateDate)
     {
+        var regenerateSearchField = false;
+
         if (updateInput.Name is not null)
+        {
             Name = updateInput.Name.NewValue!;
+            regenerateSearchField = true;
+        }
 
         if (updateInput.Frequency is not null)
             Frequency = updateInput.Frequency.NewValue;
 
         if (updateInput.SiteName is not null || updateInput.SiteUri is not null)
+        {
             UpdateSite(updateInput);
+            regenerateSearchField = true;
+        }
 
         if (updateInput.WatchMode is not null || updateInput.Term is not null)
             UpdateWatchMode(updateInput, updateDate);
+
+        if(regenerateSearchField) GenerateSearchField();
 
         LastUpdatedAt = updateDate;
 
@@ -93,5 +107,43 @@ public class Alert : BaseModel<AlertId>
             (WatchMode as TermWatch)!.Update(updateInput);
 
         // any changes doesn't have field to update, so just ignore it
+    }
+
+    private void GenerateSearchField()
+    {
+        // Separating name parts ignoring non-alphanumerics characters, diacritics and case
+        var nameParts = Regex.Split(Name, "\\W")
+            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p))
+            .Select(p => p.ToLowerCaseWithoutDiacritics())
+            .ToArray();
+
+        // Separating site name parts ignoring white spaces, diacritics and case
+        var siteNameParts = Regex.Split(Site.Name, "\\W")
+            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p))
+            .Select(p => p.ToLowerCaseWithoutDiacritics())
+            .ToArray();
+
+        // Separating site uri parts ignoring non-alphanumerics characters, diacritics, case, "http://" and "https://"
+        var doubleBarIndex = Site.Uri.AbsoluteUri.IndexOf("//", StringComparison.Ordinal) + 2;
+        var siteUri = Site.Uri.AbsoluteUri[doubleBarIndex..].ToLowerCaseWithoutDiacritics();
+
+        var siteUriParts = Regex.Split(siteUri, "\\W")
+            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p))
+            .Select(p => p.ToLowerCaseWithoutDiacritics())
+            .ToArray();
+
+        // Ignoring duplicated terms
+        var searchParts = nameParts.Union(siteNameParts).Union(siteUriParts).Distinct().ToArray();
+        var stringBuilder = StringBuilderCache.Acquire();
+
+        // building the search field
+        for (var i = 0; i < searchParts.Length; i++)
+        {
+            stringBuilder.Append(searchParts[i]);
+            if (i != searchParts.Length - 1)
+                stringBuilder.Append('|');
+        }
+
+        SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
     }
 }

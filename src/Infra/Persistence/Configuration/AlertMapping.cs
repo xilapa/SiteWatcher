@@ -58,5 +58,9 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
         builder.HasOne(a => a.WatchMode)
             .WithOne()
             .HasForeignKey(nameof(WatchMode),nameof(AlertId));
+
+        builder.Property(a => a.SearchField)
+            .HasColumnType("varchar(640)")
+            .IsRequired();
     }
 }
