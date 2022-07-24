@@ -76,7 +76,7 @@ public class DapperQueries : IDapperQueries
         foreach (var termIndex in Enumerable.Range(0, searchTermCount))
         {
             whereQueryBuilder.Append(@"(""SearchField"" LIKE @searchTermWildCards").Append(termIndex).Append(')');
-            orderByQueryBuilder.Append(@"""siteWatcher_webApi"".""similarity""(""SearchField"", @searchTerm").Append(termIndex).Append(')');
+            orderByQueryBuilder.Append(@"""similarity""(""SearchField"", @searchTerm").Append(termIndex).Append(')');
 
             if (termIndex == searchTermCount - 1) continue;
             whereQueryBuilder.Append(" OR ");

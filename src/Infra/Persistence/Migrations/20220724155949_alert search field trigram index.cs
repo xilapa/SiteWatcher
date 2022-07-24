@@ -10,7 +10,7 @@ namespace Infra.Persistence.Migrations
         {
             migrationBuilder.Sql(@"
                 -- https://www.postgresql.org/docs/current/pgtrgm.html
-                CREATE EXTENSION pg_trgm WITH SCHEMA ""siteWatcher_webApi"";
+                CREATE EXTENSION pg_trgm;
                 -- More about indexes for like queries https://niallburkley.com/blog/index-columns-for-like-in-postgres/
                 CREATE INDEX IX_Alert_SearchField_TRIGRAM ON ""siteWatcher_webApi"".""Alerts"" USING gin(""SearchField"" gin_trgm_ops);
             ");
@@ -19,7 +19,7 @@ namespace Infra.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                DROP INDEX IX_Alert_SearchField_TRIGRAM;
+                 DROP INDEX ""siteWatcher_webApi"".IX_Alert_SearchField_TRIGRAM;
                 DROP EXTENSION pg_trgm;
             ");
         }
