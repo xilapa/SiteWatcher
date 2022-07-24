@@ -17,6 +17,11 @@ export class AlertListComponent implements OnInit, OnDestroy {
     @Input() alerts : DetailedAlertView[];
     private isMobile: boolean;
     private deviceSub: Subscription;
+    private initialAlertsSub: Subscription;
+    private scrollAlertsSub: Subscription;
+    private searchResultsSub: Subscription;
+    private clearSearchResultsSub: Subscription;
+    private detailsCloseSub: Subscription;
     isSearchResult = false;
 
     constructor(private readonly alertService: AlertService,
@@ -26,16 +31,15 @@ export class AlertListComponent implements OnInit, OnDestroy {
         this.deviceSub = deviceService.isMobileScreen().subscribe(mobile => this.isMobile = mobile);
     }
 
-    // TODO: unsubscribe observables on destroy
     ngOnInit(): void {
-        this.alertService
+        this.initialAlertsSub = this.alertService
             .getUserAlerts(this.isMobile)
             .subscribe(alerts => {
                 this.alerts = alerts;
                 this.isSearchResult = false;
             });
 
-        this.alertService
+        this.searchResultsSub = this.alertService
             .searchResults()
             .subscribe(alerts => {
                 this.alerts = alerts;
@@ -45,10 +49,15 @@ export class AlertListComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.deviceSub?.unsubscribe();
+        this.initialAlertsSub?.unsubscribe();
+        this.searchResultsSub?.unsubscribe();
+        this.scrollAlertsSub?.unsubscribe();
+        this.clearSearchResultsSub?.unsubscribe();
+        this.detailsCloseSub?.unsubscribe();
     }
 
     onScroll(): void {
-        this.alertService
+        this.scrollAlertsSub = this.alertService
             .getMoreUserAlerts(this.isMobile)
             .subscribe(alerts => this.alerts = alerts);
     }
@@ -60,10 +69,9 @@ export class AlertListComponent implements OnInit, OnDestroy {
             width: '90%',
             dismissableMask: true,
             style: {"max-width": "590px", "padding": 0},
-            // contentStyle: {"max-width": "590px", "display": "flex", "justify-content": "center"}
         });
 
-        ref.onClose.subscribe((deleted: boolean) => {
+        this.detailsCloseSub = ref.onClose.subscribe((deleted: boolean) => {
             if (deleted) {
                 this.alertService
                     .getUserAlerts(this.isMobile)
@@ -73,7 +81,7 @@ export class AlertListComponent implements OnInit, OnDestroy {
     }
 
     clear(){
-        this.alertService
+        this.clearSearchResultsSub = this.alertService
             .loadTimelineAlerts(this.isMobile)
             .subscribe(alerts => {
                 this.alerts = alerts;
