@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewChecked, Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from "@angular/router";
 import {DropdownOption} from "../../core/interfaces/dropdown-option";
@@ -12,6 +12,7 @@ import {AlertUtils, CreateUpdateAlertModel, DetailedAlertView} from "../common/a
 import {AlertService} from "../service/alert.service";
 import {utils} from "../../core/utils/utils";
 import {MessageService} from "primeng/api";
+import {DOCUMENT} from "@angular/common";
 
 @Component({
     selector: 'sw-create-update-alert',
@@ -42,16 +43,23 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
                 private readonly formBuilder: FormBuilder,
                 private readonly transloco: TranslocoService,
                 private readonly alertService: AlertService,
-                private readonly messageService: MessageService) {
+                private readonly messageService: MessageService,
+                @Inject(DOCUMENT) private readonly doc: Document) {
         this.loadDropdownTranslations();
     }
 
     ngAfterViewChecked(): void {
         this.loadDropdownTranslations();
+        this.removeBuggyPrimeNgHiddenElement();
     }
 
     ngOnDestroy(): void {
         this.watchModeSub?.unsubscribe();
+    }
+
+    private removeBuggyPrimeNgHiddenElement(){
+        const hiddenElement = this.doc.querySelector(".p-hidden-accessible");
+        hiddenElement?.remove()
     }
 
     ngOnInit(): void {
@@ -70,13 +78,14 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
         if(this.activePage == 'create'){
             this.alertInitialValues = {
                 Name: '',
-                Frequency: 1,
+                Frequency: EAlertFrequency.TwoHours,
                 Site: {Name: '', Uri : ''},
-                WatchMode: {WatchMode: 1}
+                WatchMode: {WatchMode: EWatchMode.AnyChanges}
             }
         }
 
         this.alertCurrentValues = this.alertInitialValues;
+        console.log(this.alertCurrentValues)
 
         this.createUpdateAlertForm = this.formBuilder.group(
             {
