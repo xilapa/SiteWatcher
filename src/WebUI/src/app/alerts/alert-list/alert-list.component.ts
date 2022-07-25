@@ -1,20 +1,19 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AlertService} from "../service/alert.service";
 import {DetailedAlertView} from "../common/alert";
 import {DeviceService} from "../../core/device/device.service";
-import {Subscription} from "rxjs";
+import {first, Subscription} from "rxjs";
 import {DialogService} from "primeng/dynamicdialog";
 import {AlertDetailsComponent} from "../alert-details/alert-details.component";
 
 @Component({
-    selector: 'sw-alert-list',
     templateUrl: './alert-list.component.html',
     styleUrls: ['./alert-list.component.css'],
     providers: [DialogService]
 })
 export class AlertListComponent implements OnInit, OnDestroy {
 
-    @Input() alerts : DetailedAlertView[];
+    alerts : DetailedAlertView[];
     private isMobile: boolean;
     private deviceSub: Subscription;
     private initialAlertsSub: Subscription;
@@ -22,7 +21,7 @@ export class AlertListComponent implements OnInit, OnDestroy {
     private searchResultsSub: Subscription;
     private clearSearchResultsSub: Subscription;
     private detailsCloseSub: Subscription;
-    isSearchResult = false;
+    private searchStartedSub: Subscription;
 
     constructor(private readonly alertService: AlertService,
                 private readonly dialogService: DialogService,
@@ -34,16 +33,22 @@ export class AlertListComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.initialAlertsSub = this.alertService
             .getUserAlerts(this.isMobile)
-            .subscribe(alerts => {
-                this.alerts = alerts;
-                this.isSearchResult = false;
-            });
+            .subscribe(alerts => this.alerts = alerts);
 
-        this.searchResultsSub = this.alertService
+        this.searchStartedSub = this.alertService
+            .searchStarted()
+            .subscribe(_ => this.alerts = [])
+
+        this.alertService
             .searchResults()
             .subscribe(alerts => {
-                this.alerts = alerts;
-                this.isSearchResult = true;
+                if(alerts)
+                    this.alerts = alerts;
+                else
+                    this.alertService
+                        .getUserAlerts(this.isMobile)
+                        .pipe(first())
+                        .subscribe(alerts => this.alerts = alerts)
             });
     }
 
@@ -54,6 +59,7 @@ export class AlertListComponent implements OnInit, OnDestroy {
         this.scrollAlertsSub?.unsubscribe();
         this.clearSearchResultsSub?.unsubscribe();
         this.detailsCloseSub?.unsubscribe();
+        this.searchStartedSub?.unsubscribe();
     }
 
     onScroll(): void {
@@ -79,14 +85,4 @@ export class AlertListComponent implements OnInit, OnDestroy {
             }
         });
     }
-
-    clear(){
-        this.clearSearchResultsSub = this.alertService
-            .loadTimelineAlerts(this.isMobile)
-            .subscribe(alerts => {
-                this.alerts = alerts;
-                this.isSearchResult = false;
-            });
-    }
-
 }

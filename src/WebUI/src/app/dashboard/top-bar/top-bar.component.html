@@ -17,7 +17,7 @@
 
         <div class="search-box-wrapper">
             <div class="p-input-icon-right search-box">
-                <i *ngIf="!searching; else loading" class="pi pi-search search-icon" (click)="search()"></i>
+                <i *ngIf="!_searching; else loading" class="pi pi-search search-icon" (click)="search()"></i>
                 <ng-template #loading>
                     <i class="pi pi-spin pi-spinner"></i>
                 </ng-template>

@@ -15,3 +15,16 @@
     margin-top: 16px;
     font-size: 28px;
 }
+
+.dashboard-searching-title{
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    font-size: 24px;
+}
+
+.clear-search-results-button-wrapper{
+    display: flex;
+    justify-content: center;
+    margin: 30px 0 10px 0;
+}

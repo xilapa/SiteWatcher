@@ -1,15 +1,22 @@
-<sw-top-bar></sw-top-bar>
+<ng-container *transloco="let t; read: 'dashboard.main'">
+    <sw-top-bar (searching)="onSearch($event)"></sw-top-bar>
 
-<!-- tags side bar -->
+    <!-- TODO: tags side bar -->
 
-<!-- alerts list -->
-<router-outlet></router-outlet>
+    <!-- clear search results button -->
+    <div class="clear-search-results-button-wrapper" *ngIf="isSearchResult">
+        <button pButton [label]="t('clearSearch')" (click)="clearSearchResults()"></button>
+    </div>
 
-<!-- create alert button -->
-<div *ngIf="showCreateAlertButton" class="create-alert-button-wrapper" routerLink="alert/create">
-    <i class="pi pi-plus create-alert-button"></i>
-</div>
+    <!-- alerts list -->
+    <div class="dashboard-searching-title" *ngIf="searching">{{t('searching')}}</div>
+    <router-outlet></router-outlet>
 
-<!-- settings side bar -->
+    <!-- create alert button -->
+    <div *ngIf="showCreateAlertButton" class="create-alert-button-wrapper" routerLink="alert/create">
+        <i class="pi pi-plus create-alert-button"></i>
+    </div>
+
+</ng-container>
 
 

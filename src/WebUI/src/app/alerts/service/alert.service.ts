@@ -20,8 +20,8 @@ export class AlertService {
     private readonly userAlertsKey = "userAlerts";
     private allUserAlertsLoaded = false;
     private readonly currentLocale: string;
-    private readonly _searchResults = new Subject<DetailedAlertView[]>();
-    private readonly _searchResultsHidden = new Subject();
+    private readonly _searchResults = new Subject<DetailedAlertView[] | null>();
+    private readonly _searchStarted = new Subject<any>();
 
     constructor(private readonly httpClient: HttpClient, window: Window) {
         this.currentLocale = LangUtils.getCurrentLocale(window);
@@ -148,6 +148,11 @@ export class AlertService {
             }));
     }
 
+    //  clear current alert list before loading the new ones
+    public prepareForSearch(){
+        this._searchStarted.next("");
+    }
+
     public searchAlerts(searchText: string) : Observable<any>{
         const query =`?Term=${searchText}`;
         return this.httpClient
@@ -156,20 +161,20 @@ export class AlertService {
                 // map simple alert to detailed alerts
                 const detailedAlerts = apiResponse.Result
                     .map(simpleAlert => AlertUtils.SimpleAlertViewApiToInternal(simpleAlert, this.currentLocale));
-
                 this._searchResults.next(detailedAlerts);
             }))
     }
 
-    public searchResults() : Observable<DetailedAlertView[]>{
+    public searchStarted() : Observable<any>{
+        return this._searchStarted.asObservable();
+    }
+
+    public searchResults() : Observable<DetailedAlertView[] | null>{
         return this._searchResults.asObservable();
     }
 
-    public loadTimelineAlerts(isMobile: boolean): Observable<DetailedAlertView[]> {
-        return this.getUserAlerts(isMobile).pipe(tap(_ => this._searchResultsHidden.next("")));
-    }
-
-    public searchResultsHidden() : Observable<any> {
-        return this._searchResultsHidden.asObservable();
+    // return the timeline alerts
+    public clearSearchResults(): void {
+        this._searchResults.next(null);
     }
 }

@@ -3,9 +3,10 @@ import {LangUtils} from "../core/lang/lang.utils";
 import {UserService} from "../core/user/user.service";
 import {TranslocoService} from "@ngneat/transloco";
 import {ELanguage} from "../core/lang/language";
-import {Subscription} from "rxjs";
+import {first, Subscription} from "rxjs";
 import {ThemeService} from "../core/theme/theme.service";
 import {NavigationEnd, Router} from "@angular/router";
+import {AlertService} from "../alerts/service/alert.service";
 
 @Component({
     selector: 'sw-dashboard',
@@ -16,21 +17,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private userSub: Subscription;
     private routeEventSub: Subscription;
+    private searchResultsSub: Subscription;
     showCreateAlertButton = true;
+    searching = false;
+    isSearchResult = false;
 
     constructor(private readonly userService: UserService,
                 private readonly themeService: ThemeService,
                 private readonly translocoService: TranslocoService,
-                private readonly router: Router) {
+                private readonly router: Router,
+                private readonly alertService: AlertService) {
     }
 
     ngOnInit(): void {
+        this.searchResultsSub = this.alertService
+            .searchResults()
+            .subscribe(alerts => this.isSearchResult = !!alerts);
 
         this.routeEventSub = this.router.events.subscribe(event => {
             if(event instanceof NavigationEnd){
                 const slashIndex = event?.urlAfterRedirects.lastIndexOf('/');
                 const activePage = this.router.url.substring(slashIndex + 1);
                 this.showCreateAlertButton = activePage == 'dash';
+                if(activePage != 'dash'){
+                    this.clearSearchResults();
+                }
             }
         })
 
@@ -46,5 +57,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.userSub?.unsubscribe();
         this.routeEventSub?.unsubscribe();
+        this.searchResultsSub?.unsubscribe();
+    }
+
+    onSearch(isSearching : boolean){
+        this.searching = isSearching;
+    }
+
+    clearSearchResults(){
+        this.alertService
+            .clearSearchResults();
     }
 }

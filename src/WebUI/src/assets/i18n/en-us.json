@@ -40,6 +40,10 @@
       "logout": "Logout",
       "logoutAll": "Logout from all devices",
       "about": "About"
+    },
+    "main": {
+      "clearSearch": "Clear search results",
+      "searching": "Searching..."
     }
   },
   "settings": {

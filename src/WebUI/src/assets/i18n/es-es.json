@@ -40,6 +40,10 @@
       "logout": "Salir",
       "logoutAll": "Salir en todos los dispositivos",
       "about": "Acerca de"
+    },
+    "main": {
+      "clearSearch": "Borrar resultados de búsqueda",
+      "searching": "Buscando..."
     }
   },
   "settings": {

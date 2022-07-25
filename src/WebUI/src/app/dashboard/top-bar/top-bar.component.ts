@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {DeviceService} from "../../core/device/device.service";
 import {Observable} from "rxjs";
 import {UserService} from "../../core/user/user.service";
@@ -19,9 +19,10 @@ export class TopBarComponent implements OnInit {
     showTags = false;
     mobileScreen$: Observable<boolean>;
     searchText: string;
-    searching = false;
+    _searching = false;
     user$: Observable<User | null>
     profilePicError = false;
+    @Output() searching = new EventEmitter<boolean>();
 
     constructor(private readonly deviceService: DeviceService,
                 private readonly userService: UserService,
@@ -34,9 +35,10 @@ export class TopBarComponent implements OnInit {
     ngOnInit(): void {
         this.mobileScreen$ = this.deviceService.isMobileScreen();
         this.user$ = this.userService.getUser();
-        this.alertService.searchResultsHidden().subscribe(_ => {
-            this.searchText ='';
-        })
+        this.alertService.searchResults().subscribe(alerts => {
+            if(!alerts)
+                this.searchText ='';
+        });
     }
 
     showTagsToggle(): void {
@@ -45,11 +47,15 @@ export class TopBarComponent implements OnInit {
     }
 
     search(): void {
-        this.searching = true;
+        this.alertService.prepareForSearch();
+        this.router.navigateByUrl("/dash");
+        this._searching = true;
+        this.searching.next(this._searching);
         this.alertService.searchAlerts(this.searchText)
             .subscribe({
-                next: (response) => {
-                    this.searching = false;
+                next: _ => {
+                    this._searching = false;
+                    this.searching.next(this._searching);
                 },
                 error: (errorResponse) => {
                     utils.toastError(errorResponse, this.messageService,
