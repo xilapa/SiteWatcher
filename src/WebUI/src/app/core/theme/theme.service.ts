@@ -3,7 +3,6 @@ import {LocalStorageService} from "../local-storage/local-storage.service";
 import {DOCUMENT} from "@angular/common";
 import {ETheme} from "./theme";
 import {UserService} from '../user/user.service';
-import {first} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
