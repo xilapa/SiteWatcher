@@ -9,7 +9,7 @@ namespace SiteWatcher.WebAPI.Filters.Cache;
 /// <summary>
 /// To cache the result, the method must have an parameter implementing <see cref="ICacheable"/>
 /// and it's name must be "command".
-/// Also a cache header will be set on response to be cache the result on client for 30s.
+/// Also a cache header will be set on response, to cache the result on client for 30s.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class CacheFilterAttribute : Attribute, IAsyncActionFilter, IAsyncResultFilter
