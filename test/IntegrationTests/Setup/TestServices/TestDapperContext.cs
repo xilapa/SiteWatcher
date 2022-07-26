@@ -1,15 +1,14 @@
 ﻿using System.Data.Common;
-using Microsoft.Data.Sqlite;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra.DapperRepositories;
 
 namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 
-public class SqliteDapperContext : DapperContext
+public class TestDapperContext : DapperContext
 {
-    private readonly SqliteConnection _sqliteConnection;
+    private readonly DbConnection _sqliteConnection;
 
-    public SqliteDapperContext(IAppSettings appSettings, SqliteConnection sqliteConnection) : base(appSettings)
+    public TestDapperContext(IAppSettings appSettings, DbConnection sqliteConnection) : base(appSettings)
     {
         _sqliteConnection = sqliteConnection;
     }

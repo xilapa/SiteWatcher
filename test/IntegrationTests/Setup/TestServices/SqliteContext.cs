@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Data.Common;
+using MediatR;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
@@ -9,9 +10,9 @@ namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 
 public class SqliteContext : SiteWatcherContext
 {
-    private readonly SqliteConnection _connection;
+    private readonly DbConnection _connection;
 
-    public SqliteContext(IAppSettings appSettings, IMediator mediator, SqliteConnection connection) :
+    public SqliteContext(IAppSettings appSettings, IMediator mediator, DbConnection connection) :
         base(appSettings, mediator)
     {
         _connection = connection;

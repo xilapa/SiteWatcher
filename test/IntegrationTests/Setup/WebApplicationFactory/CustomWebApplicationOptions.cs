@@ -36,5 +36,6 @@ public class CustomWebApplicationOptions
 public enum DatabaseType
 {
     SqliteInMemory,
-    SqliteOnDisk
+    SqliteOnDisk,
+    PostgresOnDocker
 }

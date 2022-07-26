@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Data.Common;
+using System.Runtime.CompilerServices;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Npgsql;
 using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
@@ -21,9 +23,12 @@ namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, ICustomWebApplicationFactory where TStartup : class
 {
     private IDictionary<Type, object>? _servicesToReplace;
+
     private string _connectionString;
+    private DbConnection? _dbConnection;
+    private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
+
     private readonly ILoggerFactory _loggerFactory;
-    private readonly SqliteConnection? _sqliteConnection;
     public readonly Mock<IEmailService> EmailServiceMock;
     public readonly Mock<IHttpClientFactory> HttpClientFactoryMock;
     public readonly IAuthService AuthServiceForTokens;
@@ -41,9 +46,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
         HttpClientFactoryMock = new Mock<IHttpClientFactory>();
+
         ConfigureTest(options);
-        _sqliteConnection = new SqliteConnection(_connectionString);
-        _sqliteConnection.Open();
+
         TestSettings = new TestAppSettings();
         TestGoogleSettings = new TestGoogleSettings();
         FakeCache = new FakeCache();
@@ -58,12 +63,31 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         options?.Invoke(optionsInstance);
         CurrentTime = optionsInstance.InitalDate ?? DateTime.UtcNow;
         _servicesToReplace = optionsInstance.ReplacementServices;
-        _connectionString = optionsInstance.DatabaseType switch
+
+        // todo create docker instance if postgres
+
+        switch (optionsInstance.DatabaseType)
         {
-            DatabaseType.SqliteInMemory => "DataSource=:memory:",
-            DatabaseType.SqliteOnDisk => $"DataSource={DateTime.Now.Ticks}.db",
-            _ => "DataSource=:memory:"
-        };
+            case DatabaseType.SqliteInMemory:
+                _connectionString = "DataSource=:memory:";
+                _dbConnection = new SqliteConnection(_connectionString);
+                // handling the connection on factory to avoid the database being destroyed on connection close
+                _dbConnection.Open();
+                _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
+                break;
+            case DatabaseType.SqliteOnDisk:
+                _connectionString = $"DataSource={DateTime.Now.Ticks}.db";
+                _dbConnection = new SqliteConnection(_connectionString);
+                _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
+                break;
+            case DatabaseType.PostgresOnDocker:
+                _connectionString = "DockerConnectionString"; // ???
+                _dbConnection = new NpgsqlConnection(_connectionString);
+                _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _dbConnection);
+                break;
+            default:
+                throw new ArgumentException(nameof(optionsInstance.DatabaseType));
+        }
     }
 
     private static void ApplyEnvironmentVariables(object testSettings)
@@ -130,7 +154,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         {
             var appSettings = srvc.GetRequiredService<IAppSettings>();
             var mediator = srvc.GetRequiredService<IMediator>();
-            return new SqliteContext(appSettings, mediator, _sqliteConnection!);
+            return _contextFactory(appSettings, mediator);
         });
 
         services.AddScoped<IUnitOfWork>(_ => _.GetRequiredService<SiteWatcherContext>());
@@ -143,7 +167,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         services.AddSingleton<IAppSettings>(TestSettings);
         services.AddSingleton<IGoogleSettings>(TestGoogleSettings);
-        services.AddScoped<IDapperContext>(_ => new SqliteDapperContext(TestSettings, _sqliteConnection!));
+        services.AddScoped<IDapperContext>(_ => new TestDapperContext(TestSettings, _dbConnection!));
         services.AddSingleton<IDapperQueries, SqliteDapperQueries>();
     }
 
@@ -167,8 +191,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public SiteWatcherContext GetContext()
     {
         var mediatorMock = new Mock<IMediator>();
-        var context = new SqliteContext(TestSettings, mediatorMock.Object, _sqliteConnection!);
-        return context;
+        return _contextFactory(TestSettings, mediatorMock.Object);
     }
 
     private IAuthService CreateAuthServiceForTokens()
@@ -193,7 +216,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         GC.SuppressFinalize(this);
         await using var context = GetContext();
-        await _sqliteConnection?.CloseAsync()!;
+        await context.Database.CloseConnectionAsync();
 
         // Connections are pooled by SQLite in order to improve performance.
         // It means when you call Close method on a connection object,
@@ -205,10 +228,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // to the db file get released.Then db file may get removed,
         // deleted or used by another process.
         // https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
-        SqliteConnection.ClearAllPools();
+        if(_dbConnection is SqliteConnection) SqliteConnection.ClearAllPools();
+        if(_dbConnection is NpgsqlConnection) NpgsqlConnection.ClearAllPools();
 
         await context.Database.EnsureDeletedAsync();
-        await _sqliteConnection.DisposeAsync();
+        await _dbConnection!.DisposeAsync();
         await base.DisposeAsync();
     }
 }
