@@ -1,5 +1,8 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Configurations;
+using DotNet.Testcontainers.Containers;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +30,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private string _connectionString;
     private DbConnection? _dbConnection;
     private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
+    private TestcontainerDatabase _postgresContainer;
 
     private readonly ILoggerFactory _loggerFactory;
     public readonly Mock<IEmailService> EmailServiceMock;
@@ -47,7 +51,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
         HttpClientFactoryMock = new Mock<IHttpClientFactory>();
 
-        ConfigureTest(options);
+        ConfigureTest(options).Wait();
 
         TestSettings = new TestAppSettings();
         TestGoogleSettings = new TestGoogleSettings();
@@ -57,14 +61,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         AuthServiceForTokens = CreateAuthServiceForTokens();
     }
 
-    private void ConfigureTest(Action<CustomWebApplicationOptions>? options)
+    private async Task ConfigureTest(Action<CustomWebApplicationOptions>? options)
     {
         var optionsInstance = new CustomWebApplicationOptions();
         options?.Invoke(optionsInstance);
         CurrentTime = optionsInstance.InitalDate ?? DateTime.UtcNow;
         _servicesToReplace = optionsInstance.ReplacementServices;
-
-        // todo create docker instance if postgres
 
         switch (optionsInstance.DatabaseType)
         {
@@ -81,7 +83,16 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
                 break;
             case DatabaseType.PostgresOnDocker:
-                _connectionString = "DockerConnectionString"; // ???
+                _postgresContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+                    .WithDatabase(new PostgreSqlTestcontainerConfiguration
+                    {
+                        Database = $"testDb{DateTime.Now.Ticks}",
+                        Username = "postgres",
+                        Password = "postgres"
+                    })
+                    .Build();
+                await _postgresContainer.StartAsync();
+                _connectionString = _postgresContainer.ConnectionString;
                 _dbConnection = new NpgsqlConnection(_connectionString);
                 _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _dbConnection);
                 break;
@@ -233,6 +244,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         await context.Database.EnsureDeletedAsync();
         await _dbConnection!.DisposeAsync();
+        if(_dbConnection is NpgsqlConnection) await _postgresContainer.DisposeAsync();
         await base.DisposeAsync();
     }
 }
