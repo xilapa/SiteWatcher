@@ -100,8 +100,8 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
     }
 
     checkIfDataChanged(): void {
-        this.dataChanged = this.initialUser.name != this.inputFormName?.value.trim() ||
-            this.initialUser.email != this.inputFormEmail?.value.trim() ||
+        this.dataChanged = this.initialUser.name != this.inputFormName?.value?.trim() ||
+            this.initialUser.email != this.inputFormEmail?.value?.trim() ||
             this.initialUser.language != this.updateForm.get('language')?.value ||
             this.darkThemeEnabledInitial != this.darkThemeEnabled;
     }
