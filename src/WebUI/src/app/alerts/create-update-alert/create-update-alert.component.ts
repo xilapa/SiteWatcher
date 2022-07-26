@@ -31,8 +31,10 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
     termWatchModeSelected = false;
     pageTitleTranslationKey: string;
     doingRequest: boolean;
+    dataChanged = false;
     private activePage: string;
     private watchModeSub: Subscription | undefined;
+    private createUpdateAlertFormSub : Subscription;
 
     // update
     alertInitialValues: DetailedAlertView | undefined;
@@ -55,6 +57,7 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
 
     ngOnDestroy(): void {
         this.watchModeSub?.unsubscribe();
+        this.createUpdateAlertFormSub?.unsubscribe();
     }
 
     private removeBuggyPrimeNgHiddenElement(){
@@ -85,7 +88,6 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
         }
 
         this.alertCurrentValues = this.alertInitialValues;
-        console.log(this.alertCurrentValues)
 
         this.createUpdateAlertForm = this.formBuilder.group(
             {
@@ -109,6 +111,8 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
                 if (!this.termWatchModeSelected)
                     this.inputFormWatchModeTerm?.reset();
             });
+
+        this.createUpdateAlertFormSub = this.createUpdateAlertForm.valueChanges.subscribe(() => this.checkIfDataChanged());
 
     }
 
@@ -175,5 +179,14 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
             {Display: this.transloco.translate("alert.watchMode.anyChanges"), Value: EWatchMode.AnyChanges},
             {Display: this.transloco.translate("alert.watchMode.term"), Value: EWatchMode.Term}
         ]
+    }
+
+    private checkIfDataChanged() : void {
+        this.dataChanged = this.alertInitialValues?.Name != this.inputFormName?.value?.trim() ||
+            this.alertInitialValues?.Frequency != this.createUpdateAlertForm.get('frequency')?.value ||
+            this.alertInitialValues?.Site.Name != this.inputFormSiteName?.value?.trim() ||
+            this.alertInitialValues?.Site.Uri != this.inputFormSiteUri?.value?.trim() ||
+            this.alertInitialValues?.WatchMode.WatchMode != this.createUpdateAlertForm.get('watchMode')?.value ||
+            this.alertInitialValues?.WatchMode.Term != this.inputFormWatchModeTerm?.value?.trim();
     }
 }
