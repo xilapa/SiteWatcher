@@ -38,6 +38,8 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)))
             .NotEqual(default(EFrequency))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)))
+            .Must(f => Enum.IsDefined(typeof(EFrequency), (int) f))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
             .When(cmmd => cmmd.Frequency is not null);
 
         RuleFor(cmmd => cmmd.SiteName!.NewValue)
@@ -61,6 +63,8 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
             .NotEqual(default(EWatchMode))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
+            .Must(wm => Enum.IsDefined(typeof(EWatchMode), (int) wm))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
             .When(cmmd => cmmd.WatchMode is not null);
 
         // Term watch validation

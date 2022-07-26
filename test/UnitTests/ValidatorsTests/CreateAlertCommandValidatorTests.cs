@@ -34,7 +34,7 @@ public class CreateAlertCommandValidatorTests
             new CreateAlertCommand
             {
                 Name = "abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1",
-                Frequency = EFrequency.EightHours,
+                Frequency = (EFrequency) 989,
                 SiteName = "abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1",
                 SiteUri = "https://valid-uri.io",
                 WatchMode = EWatchMode.Term,
@@ -43,6 +43,7 @@ public class CreateAlertCommandValidatorTests
             new[]
             {
                 ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.Name)),
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)),
                 ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.SiteName)),
                 ApplicationErrors.ValueBellowMinimumLength(nameof(CreateAlertCommand.Term))
             }
@@ -62,6 +63,23 @@ public class CreateAlertCommandValidatorTests
             new[]
             {
                 ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.Term))
+            }
+        };
+
+        yield return new object[]
+        {
+            new CreateAlertCommand
+            {
+                Name = "abcd",
+                Frequency = EFrequency.EightHours,
+                SiteName = "abcd",
+                SiteUri = "https://valid-uri.io",
+                WatchMode = (EWatchMode) 989,
+                Term = "abcd"
+            },
+            new[]
+            {
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode))
             }
         };
     }

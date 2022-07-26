@@ -22,6 +22,8 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
             .NotEqual(default(EFrequency))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
+            .Must(f => Enum.IsDefined(typeof(EFrequency), (int) f))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)));
 
         RuleFor(cmmd => cmmd.SiteName)
@@ -42,6 +44,8 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
             .NotEqual(default(EWatchMode))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
+            .Must(wm => Enum.IsDefined(typeof(EWatchMode), (int) wm))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)));
 
         // Term watch validation

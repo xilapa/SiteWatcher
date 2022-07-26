@@ -30,6 +30,8 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)))
             .NotEqual(default(ELanguage))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)))
+            .Must(l => Enum.IsDefined(typeof(ELanguage), (int) l))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)));
 
         RuleFor(cmmd => cmmd.Theme)
@@ -37,6 +39,8 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme)))
             .NotEqual(default(ETheme))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme)))
+            .Must(t => Enum.IsDefined(typeof(ETheme), (int) t))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme)));
     }
 }

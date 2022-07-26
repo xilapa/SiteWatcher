@@ -30,6 +30,8 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)))
             .NotEqual(default(ELanguage))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)))
+            .Must(l => Enum.IsDefined(typeof(ELanguage), (int) l))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)));
 
         RuleFor(cmmd => cmmd.Theme)
@@ -37,6 +39,8 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme)))
             .NotEqual(default(ETheme))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme)))
+            .Must(t => Enum.IsDefined(typeof(ETheme), (int) t))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme)));
     }
 }

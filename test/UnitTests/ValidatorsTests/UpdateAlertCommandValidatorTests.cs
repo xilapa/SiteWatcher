@@ -140,6 +140,24 @@ public class UpdateAlertCommandValidatorTests
             },
             Array.Empty<string>()
         };
+
+        yield return new object[]
+        {
+            new UpdateAlertCommmand
+            {
+                AlertId = "alertId",
+                Name = new UpdateInfo<string>("abcde"),
+                Frequency = new UpdateInfo<EFrequency>((EFrequency) 989),
+                SiteName = new UpdateInfo<string>("abcde"),
+                SiteUri = new UpdateInfo<string>("http://site.new"),
+                WatchMode = new UpdateInfo<EWatchMode>((EWatchMode) 989)
+            },
+            new []
+            {
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)),
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode))
+            }
+        };
     }
 
     [Theory]

@@ -1,17 +1,17 @@
 ﻿using FluentAssertions;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Users.Commands.UpdateUser;
+using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.Enums;
 
 namespace UnitTests.ValidatorsTests;
 
-public class UpdateUserCommandValidatorTests
+public class RegisterUserCommandValidatorTests
 {
-    public static IEnumerable<object[]> UpdateUserData()
+        public static IEnumerable<object[]> RegisterUserData()
     {
         yield return new object[]
         {
-            new UpdateUserCommand
+            new RegisterUserCommand
             {
                 Email = "",
                 Language = default,
@@ -20,16 +20,16 @@ public class UpdateUserCommandValidatorTests
             },
             new []
             {
-                ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateUserCommand.Name)),
-                ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateUserCommand.Email)),
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)),
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme))
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(RegisterUserCommand.Name)),
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(RegisterUserCommand.Email)),
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)),
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme))
             }
         };
 
         yield return new object[]
         {
-            new UpdateUserCommand
+            new RegisterUserCommand
             {
                 Email = "invalidEmail",
                 Language = ELanguage.English,
@@ -38,14 +38,14 @@ public class UpdateUserCommandValidatorTests
             },
             new []
             {
-                ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateUserCommand.Name)),
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Email))
+                ApplicationErrors.ValueBellowMinimumLength(nameof(RegisterUserCommand.Name)),
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Email))
             }
         };
 
         yield return new object[]
         {
-            new UpdateUserCommand
+            new RegisterUserCommand
             {
                 Email = "xilapa@email.com",
                 Language = ELanguage.English,
@@ -57,7 +57,7 @@ public class UpdateUserCommandValidatorTests
 
         yield return new object[]
         {
-            new UpdateUserCommand
+            new RegisterUserCommand
             {
                 Email = "xilapa@email.com",
                 Language = (ELanguage) 989,
@@ -66,18 +66,18 @@ public class UpdateUserCommandValidatorTests
             },
             new []
             {
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)),
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme))
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)),
+                ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme))
             }
         };
     }
 
     [Theory]
-    [MemberData(nameof(UpdateUserData))]
-    public async Task Test(UpdateUserCommand command, string[] messages)
+    [MemberData(nameof(RegisterUserData))]
+    public async Task Test(RegisterUserCommand command, string[] messages)
     {
         // Arrange
-        var validator = new UpdateUserCommandValidator();
+        var validator = new RegisterUserCommandValidator();
 
         // Act
         var result = await validator.ValidateAsync(command);
