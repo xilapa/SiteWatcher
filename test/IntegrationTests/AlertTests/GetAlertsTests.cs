@@ -40,12 +40,12 @@ public class GetAlertsTestsBase : BaseTestFixture
 
             // xilapa'll have odd alert ids
             var alertXilapa = await AppFactory
-                .CreateAlert<SimpleAlertView>($"alert{(2 * (i + 1)) - 1}", watchMode, Users.Xilapa.Id, AppFactory.CurrentTime);
+                .CreateAlert<SimpleAlertView>($"alert{(2 * (i + 1)) - 1}", watchMode, Users.Xilapa.Id);
             XilapaAlerts[i] = alertXilapa;
 
             // xulipa'll have even alert ids
             var alertXulipa = await AppFactory
-                .CreateAlert<SimpleAlertView>($"alert{2 * (i + 1)}", watchMode, Users.Xulipa.Id, AppFactory.CurrentTime);
+                .CreateAlert<SimpleAlertView>($"alert{2 * (i + 1)}", watchMode, Users.Xulipa.Id);
             XulipaAlerts[i] = alertXulipa;
         }
     }

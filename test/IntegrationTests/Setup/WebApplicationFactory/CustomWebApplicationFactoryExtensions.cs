@@ -40,19 +40,25 @@ public static class CustomWebApplicationFactoryExtensions
         return result;
     }
 
+    public static async Task<Alert> CreateAlert(this ICustomWebApplicationFactory appFactory, string name,
+        EWatchMode watchMode, UserId userId, DateTime? currentDate = null) =>
+         await CreateAlert<Alert>(appFactory, name, watchMode, userId, currentDate);
+
     public static async Task<T> CreateAlert<T>(this ICustomWebApplicationFactory appFactory, string name,
-        EWatchMode watchMode, UserId userId, DateTime currentDate) where T : class
+        EWatchMode watchMode, UserId userId, DateTime? currentDate = null, string? siteName = null,
+        string? siteUri = null) where T : class
     {
+        currentDate ??= appFactory.CurrentTime;
         var createAlertInput = new CreateAlertInput
         {
             Name = name,
             WatchMode = watchMode,
             Frequency = EFrequency.EightHours,
             Term = "test term",
-            SiteName = "test site",
-            SiteUri = "http://mytest.net"
+            SiteName = siteName ?? "test site",
+            SiteUri = siteUri ?? "http://mytest.net"
         };
-        var alert = AlertFactory.Create(createAlertInput, userId, currentDate);
+        var alert = AlertFactory.Create(createAlertInput, userId, currentDate.Value);
         await WithDbContext(appFactory, async ctx =>
         {
             ctx.Add(alert);

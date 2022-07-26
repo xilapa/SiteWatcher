@@ -28,9 +28,9 @@ public class UpdateAlertTestsBase : BaseTestFixture
     {
         await base.InitializeAsync();
         XilapaAlert = await AppFactory.CreateAlert<DetailedAlertView>("Xilapa alert", EWatchMode.AnyChanges,
-            Users.Xilapa.Id, AppFactory.CurrentTime); // Id = 1
+            Users.Xilapa.Id); // Id = 1
 
-        XulipaAlert = await AppFactory.CreateAlert<Alert>("Xulipa alert", EWatchMode.AnyChanges,
+        XulipaAlert = await AppFactory.CreateAlert("Xulipa alert", EWatchMode.AnyChanges,
             Users.Xulipa.Id, AppFactory.CurrentTime.AddDays(-1)); // Id = 2
     }
 }

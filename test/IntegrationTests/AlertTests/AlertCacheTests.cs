@@ -97,7 +97,7 @@ public class AlertCacheTestsBase : BaseTestFixture
     {
         await base.InitializeAsync();
         var alertToUpdate = await AppFactory
-            .CreateAlert<Alert>("alert", EWatchMode.Term, Users.Xilapa.Id, AppFactory.CurrentTime);
+            .CreateAlert("alert", EWatchMode.Term, Users.Xilapa.Id);
         AlertToUpdateId = alertToUpdate.Id;
     }
 }

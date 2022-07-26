@@ -6,4 +6,5 @@ public interface ICustomWebApplicationFactory
 {
     SiteWatcherContext GetContext();
     IServiceProvider Services { get; }
+    DateTime CurrentTime { get; }
 }
