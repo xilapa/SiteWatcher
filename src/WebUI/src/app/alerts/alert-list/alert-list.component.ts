@@ -13,7 +13,7 @@ import {AlertDetailsComponent} from "../alert-details/alert-details.component";
 })
 export class AlertListComponent implements OnInit, OnDestroy {
 
-    alerts : DetailedAlertView[];
+    alerts: DetailedAlertView[];
     private isMobile: boolean;
     private deviceSub: Subscription;
     private initialAlertsSub: Subscription;
@@ -22,6 +22,7 @@ export class AlertListComponent implements OnInit, OnDestroy {
     private clearSearchResultsSub: Subscription;
     private detailsCloseSub: Subscription;
     private searchStartedSub: Subscription;
+    private isSearchResults = false;
 
     constructor(private readonly alertService: AlertService,
                 private readonly dialogService: DialogService,
@@ -37,18 +38,27 @@ export class AlertListComponent implements OnInit, OnDestroy {
 
         this.searchStartedSub = this.alertService
             .searchStarted()
-            .subscribe(_ => this.alerts = [])
+            .subscribe(_ => {
+                this.alerts = [];
+                this.isSearchResults = true;
+            })
 
         this.alertService
             .searchResults()
             .subscribe(alerts => {
-                if(alerts)
+                if (alerts) {
                     this.alerts = alerts;
-                else
+                    this.isSearchResults = true;
+                } else {
                     this.alertService
                         .getUserAlerts(this.isMobile)
                         .pipe(first())
-                        .subscribe(alerts => this.alerts = alerts)
+                        .subscribe(alerts => {
+                            this.alerts = alerts;
+                            this.isSearchResults = false;
+                        });
+                }
+
             });
     }
 
@@ -63,14 +73,17 @@ export class AlertListComponent implements OnInit, OnDestroy {
     }
 
     onScroll(): void {
+        if (this.isSearchResults)
+            return;
+
         this.scrollAlertsSub = this.alertService
             .getMoreUserAlerts(this.isMobile)
             .subscribe(alerts => this.alerts = alerts);
     }
 
-    seeDetails(alert: DetailedAlertView){
+    seeDetails(alert: DetailedAlertView) {
         const ref = this.dialogService.open(AlertDetailsComponent, {
-            data:{ alert: alert },
+            data: {alert: alert},
             showHeader: false,
             width: '90%',
             dismissableMask: true,
