@@ -123,7 +123,7 @@ export class AlertService {
 
     public getLoadedAlert(alertId: string) : DetailedAlertView | undefined{
         const alertsInMemory = Data.Get(this.userAlertsKey) as DetailedAlertView[];
-        return alertsInMemory.find(a => a.Id == alertId);
+        return alertsInMemory?.find(a => a.Id == alertId);
     }
 
     public updateAlert(updateData: UpdateAlertData): Observable<ApiResponse<DetailedAlertViewApi>> {
