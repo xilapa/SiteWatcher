@@ -31,6 +31,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private DbConnection? _dbConnection;
     private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
     private TestcontainerDatabase _postgresContainer;
+    public DatabaseType DatabaseType { get; private set; }
 
     private readonly ILoggerFactory _loggerFactory;
     public readonly Mock<IEmailService> EmailServiceMock;
@@ -71,6 +72,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         switch (optionsInstance.DatabaseType)
         {
             case DatabaseType.SqliteInMemory:
+                DatabaseType = DatabaseType.SqliteInMemory;
                 _connectionString = "DataSource=:memory:";
                 _dbConnection = new SqliteConnection(_connectionString);
                 // handling the connection on factory to avoid the database being destroyed on connection close
@@ -78,11 +80,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
                 break;
             case DatabaseType.SqliteOnDisk:
+                DatabaseType = DatabaseType.SqliteOnDisk;
                 _connectionString = $"DataSource={DateTime.Now.Ticks}.db";
                 _dbConnection = new SqliteConnection(_connectionString);
                 _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
                 break;
             case DatabaseType.PostgresOnDocker:
+                DatabaseType = DatabaseType.PostgresOnDocker;
                 _postgresContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
                     .WithDatabase(new PostgreSqlTestcontainerConfiguration
                     {
@@ -93,8 +97,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     .Build();
                 await _postgresContainer.StartAsync();
                 _connectionString = _postgresContainer.ConnectionString;
-                _dbConnection = new NpgsqlConnection(_connectionString);
-                _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _dbConnection);
+                _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _connectionString);
                 break;
             default:
                 throw new ArgumentException(nameof(optionsInstance.DatabaseType));
@@ -178,7 +181,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         services.AddSingleton<IAppSettings>(TestSettings);
         services.AddSingleton<IGoogleSettings>(TestGoogleSettings);
-        services.AddScoped<IDapperContext>(_ => new TestDapperContext(TestSettings, _dbConnection!));
+        services.AddScoped<IDapperContext>(_ => new TestDapperContext(TestSettings, _connectionString, DatabaseType));
         services.AddSingleton<IDapperQueries, SqliteDapperQueries>();
     }
 
@@ -243,7 +246,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         if(_dbConnection is NpgsqlConnection) NpgsqlConnection.ClearAllPools();
 
         await context.Database.EnsureDeletedAsync();
-        await _dbConnection!.DisposeAsync();
+        if(_dbConnection is not null) await _dbConnection.DisposeAsync();
         if(_dbConnection is NpgsqlConnection) await _postgresContainer.DisposeAsync();
         await base.DisposeAsync();
     }

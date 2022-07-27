@@ -1,5 +1,4 @@
-﻿using System.Data.Common;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
@@ -8,16 +7,16 @@ namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 
 public class PostgresTestContext : SiteWatcherContext
 {
-    private readonly DbConnection _connection;
+    private readonly string _connectionString;
 
-    public PostgresTestContext(IAppSettings appSettings, IMediator mediator, DbConnection connection) :
+    public PostgresTestContext(IAppSettings appSettings, IMediator mediator, string connectionString) :
         base(appSettings, mediator)
     {
-        _connection = connection;
+        _connectionString = connectionString;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(_connection);
+        optionsBuilder.UseNpgsql(_connectionString);
     }
 }
