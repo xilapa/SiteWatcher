@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using SiteWatcher.Infra;
 
 #nullable disable
 
@@ -8,12 +9,7 @@ namespace Infra.Persistence.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"
-                -- https://www.postgresql.org/docs/current/pgtrgm.html
-                CREATE EXTENSION pg_trgm;
-                -- More about indexes for like queries https://niallburkley.com/blog/index-columns-for-like-in-postgres/
-                CREATE INDEX IX_Alert_SearchField_TRIGRAM ON ""siteWatcher_webApi"".""Alerts"" USING gin(""SearchField"" gin_trgm_ops);
-            ");
+            migrationBuilder.Sql(ManualMigrations.AlertSearchTrigramIndex);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

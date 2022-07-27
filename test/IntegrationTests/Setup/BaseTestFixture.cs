@@ -20,7 +20,7 @@ public class BaseTestFixture : IAsyncLifetime
         Client = AppFactory.CreateClient(new WebApplicationFactoryClientOptions {AllowAutoRedirect = false});
         await using var context = AppFactory.GetContext();
         await context.Database.EnsureCreatedAsync();
-        await Database.SeedDatabase(context, AppFactory.CurrentTime);
+        await Database.SeedDatabase(context, AppFactory.CurrentTime, AppFactory.DatabaseType);
     }
 
     public async Task DisposeAsync()
