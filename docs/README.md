@@ -1,6 +1,7 @@
 ﻿# SiteWatcher WebAPI Backend
 The WebAPI backend is an onion layered architecture, with the models being responsible for the business logic and dealing with their aggregates (DDD).
 In someparts the design is based on the[ Jason Taylor Clean Architecture template](https://github.com/jasontaylordev/CleanArchitecture " Jason Taylor Clean Architecture template"), his approach with MediatR and Domain Events to decouple side effects is very clean and beautiful.
+
 [![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/docs/webapi-backend-architecture.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/docs/webapi-backend-architecture.png)
 
 # SiteWatcher Watcher Worker Backend
