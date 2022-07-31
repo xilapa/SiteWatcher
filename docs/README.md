@@ -7,6 +7,7 @@ In someparts the design is based on the[ Jason Taylor Clean Architecture templat
 # SiteWatcher Watcher Worker Backend
 The Watcher Worker is also an WebAPI to use the minimum Heroku free dynos's hours as possible. However this WebAPI'll be called by a cron job to post watch jobs to a queue. This queue'll be consumed by the consumer on Watcher Worker WebAPI.
 Here is the flow:
+
 [![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/docs/watcher-worker-flow.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/docs/watcher-worker-flow.png)
 The scheduler makes a request to wake-up the server with the job to be done (as the dyno might be in sleep mode). The WatcherService and NotificationServices that lives on the API, also will be waked-up consequently.
 
