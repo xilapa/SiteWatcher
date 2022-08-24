@@ -2,7 +2,6 @@
 using Domain.DTOs.Alert;
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;

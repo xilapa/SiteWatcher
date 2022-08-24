@@ -10,6 +10,25 @@ namespace SiteWatcher.Infra.Repositories;
 
 public class AlertRepository : Repository<Alert>, IAlertRepository
 {
+    private static readonly Func<SiteWatcherContext, AlertId, UserId, Task<UpdateAlertDto?>> GetAlertForUpdateCompiledQuery
+        = EF.CompileAsyncQuery(
+            (SiteWatcherContext context, AlertId alertId, UserId userId) => context.Alerts
+                .Where(a => a.Id == alertId && a.UserId == userId && a.Active)
+                .Select(alert => new UpdateAlertDto
+                {
+                    Id = alert.Id,
+                    UserId = alert.UserId,
+                    CreatedAt = alert.CreatedAt,
+                    Name = alert.Name,
+                    Frequency = alert.Frequency,
+                    SiteName = alert.Site.Name,
+                    SiteUri = alert.Site.Uri,
+                    WatchMode = alert.WatchMode
+                })
+                .AsSplitQuery()
+                .SingleOrDefault()
+        );
+
     public AlertRepository(SiteWatcherContext context) : base(context)
     { }
 
@@ -20,23 +39,7 @@ public class AlertRepository : Repository<Alert>, IAlertRepository
 
     public async Task<Alert?> GetAlertForUpdate(AlertId alertId, UserId userId)
     {
-        var updateAlertDto = await Context.Alerts
-            .Where(a => a.Id == alertId &&
-                        a.UserId == userId &&
-                        a.Active)
-            .Select(alert => new UpdateAlertDto
-            {
-                Id = alert.Id,
-                UserId = alert.UserId,
-                CreatedAt = alert.CreatedAt,
-                Name = alert.Name,
-                Frequency = alert.Frequency,
-                SiteName = alert.Site.Name,
-                SiteUri = alert.Site.Uri,
-                WatchMode = alert.WatchMode
-            })
-            .AsSplitQuery()
-            .SingleOrDefaultAsync();
+        var updateAlertDto = await GetAlertForUpdateCompiledQuery(Context, alertId, userId);
 
         if (updateAlertDto is null)
             return null!;
