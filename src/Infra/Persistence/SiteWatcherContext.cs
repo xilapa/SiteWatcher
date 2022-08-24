@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using PersistenceCompiledModels;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Exceptions;
 using SiteWatcher.Domain.Models;
@@ -25,7 +26,9 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseNpgsql(_appSettings.ConnectionString);
+        optionsBuilder
+            .UseModel(SiteWatcherContextModel.Instance)
+            .UseNpgsql(_appSettings.ConnectionString);
         if (_appSettings.IsDevelopment)
         {
             optionsBuilder
