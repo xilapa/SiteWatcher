@@ -16,7 +16,7 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
 
         builder.Property(a => a.Id)
             .HasConversion<AlertId.EfCoreValueConverter>()
-            .HasValueGenerator<AlertIdGenerator>()
+            .HasValueGeneratorFactory<AlertIdValueGeneratorFactory>()
             .HasColumnType("integer")
             .ValueGeneratedOnAdd()
             .UseIdentityColumn();
@@ -49,9 +49,7 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
 
                 sb.Property(s => s.Uri)
                     .HasColumnType("varchar(512)")
-                    .HasConversion(
-                        v => v.ToString(),
-                        v => new Uri(v))
+                    .HasConversion<UriValueConverter>()
                     .IsRequired();
             });
 
