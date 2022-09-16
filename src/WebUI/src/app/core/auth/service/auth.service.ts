@@ -1,9 +1,9 @@
 import {DOCUMENT} from '@angular/common';
 import {HttpClient} from '@angular/common/http';
 import {Inject, Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, tap} from 'rxjs';
 import {environment} from 'src/environments/environment';
-import {ApiResponse} from "../../interfaces";
+import { EAuthTask } from './auth-task';
 import {AuthenticationResult} from "./authentication-result";
 
 @Injectable({
@@ -27,8 +27,8 @@ export class AuthService {
         this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/register`;
     }
 
-    public authenticate(state: string, code: string, scope: string): Observable<ApiResponse<AuthenticationResult>> {
-        return this.httpClient.post<ApiResponse<AuthenticationResult>>(
+    public authenticate(state: string, code: string, scope: string): Observable<AuthenticationResult> {
+        return this.httpClient.post<AuthenticationResult>(
             `${environment.baseApiUrl}/${this.baseRoute}/authenticate`,
             {state, code, scope})
     }

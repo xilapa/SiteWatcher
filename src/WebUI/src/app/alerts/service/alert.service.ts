@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ApiResponse, PaginatedList} from "../../core/interfaces";
+import {PaginatedList} from "../../core/interfaces";
 import {
     AlertDetailsApi,
     AlertUtils, CreateUpdateAlertModel,
@@ -27,14 +27,14 @@ export class AlertService {
         this.currentLocale = LangUtils.getCurrentLocale(window);
     }
 
-    public createAlert(createModel: CreateUpdateAlertModel): Observable<ApiResponse<DetailedAlertViewApi>> {
+    public createAlert(createModel: CreateUpdateAlertModel): Observable<DetailedAlertViewApi> {
         return this.httpClient
-            .post<ApiResponse<DetailedAlertViewApi>>(`${environment.baseApiUrl}/${this.baseRoute}`, createModel)
+            .post<DetailedAlertViewApi>(`${environment.baseApiUrl}/${this.baseRoute}`, createModel)
             .pipe(tap(res => {
                 // adding the created alert to memory if all alerts are loaded
                 if (this.allUserAlertsLoaded) {
                     const newAlert = AlertUtils
-                        .DetailedAlertViewApiToInternal(res.Result, this.currentLocale);
+                        .DetailedAlertViewApiToInternal(res, this.currentLocale);
                     const alertsAlreadyLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
                     const updatedAlertList = alertsAlreadyLoaded ?
                         alertsAlreadyLoaded.concat(newAlert) : [newAlert];
@@ -80,17 +80,17 @@ export class AlertService {
         const query = `?Take=${isMobile ? 5 : 7}${lastId ? '&LastAlertId=' + lastId : ''}`;
 
         return this.httpClient
-            .get<ApiResponse<PaginatedList<SimpleAlertViewApi>>>(`${environment.baseApiUrl}/${this.baseRoute}${query}`)
+            .get<PaginatedList<SimpleAlertViewApi>>(`${environment.baseApiUrl}/${this.baseRoute}${query}`)
             .pipe(map(apiResponse => {
 
                 // map simple alert to detailed alerts
-                const detailedAlerts = apiResponse.Result.Results
+                const detailedAlerts = apiResponse.Results
                     .map(simpleAlert => AlertUtils
                         .SimpleAlertViewApiToInternal(simpleAlert, this.currentLocale));
 
                 // map to paginated list of detailed alerts
                 const paginatedDetailedAlerts: PaginatedList<DetailedAlertView> = {
-                    Total: apiResponse.Result.Total,
+                    Total: apiResponse.Total,
                     Results: detailedAlerts
                 }
                 return paginatedDetailedAlerts;
@@ -98,13 +98,13 @@ export class AlertService {
     }
 
     public getAlertDetails(alert: DetailedAlertView): Observable<DetailedAlertView> {
-        return this.httpClient.get<ApiResponse<AlertDetailsApi>>(`${environment.baseApiUrl}/${this.baseRoute}/${alert.Id}/details`)
+        return this.httpClient.get<AlertDetailsApi>(`${environment.baseApiUrl}/${this.baseRoute}/${alert.Id as string}/details`)
             .pipe(map(apiResponse => {
                 const populatedAlert =
-                    AlertUtils.PopulateAlertDetails(apiResponse.Result, alert);
+                    AlertUtils.PopulateAlertDetails(apiResponse, alert);
 
                 // update the internal list
-                let alertsLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
+                const alertsLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
                 const index = alertsLoaded.findIndex(a => a.Id == populatedAlert.Id);
                 alertsLoaded[index] = populatedAlert;
 
@@ -112,9 +112,9 @@ export class AlertService {
             }));
     }
 
-    public deleteAlert(alertId: string) : Observable<ApiResponse<any>> {
-        return this.httpClient.delete<ApiResponse<any>>(`${environment.baseApiUrl}/${this.baseRoute}/${alertId}`)
-            .pipe(tap(res => {
+    public deleteAlert(alertId: string) : Observable<any> {
+        return this.httpClient.delete<any>(`${environment.baseApiUrl}/${this.baseRoute}/${alertId}`)
+            .pipe(tap(() => {
                 let alertsLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
                 alertsLoaded = alertsLoaded.filter(a => a.Id != alertId);
                 Data.Share(this.userAlertsKey, alertsLoaded);
@@ -126,14 +126,14 @@ export class AlertService {
         return alertsInMemory?.find(a => a.Id == alertId);
     }
 
-    public updateAlert(updateData: UpdateAlertData): Observable<ApiResponse<DetailedAlertViewApi>> {
+    public updateAlert(updateData: UpdateAlertData): Observable<DetailedAlertViewApi> {
         return this.httpClient
-            .put<ApiResponse<DetailedAlertViewApi>>(`${environment.baseApiUrl}/${this.baseRoute}`, updateData)
+            .put<DetailedAlertViewApi>(`${environment.baseApiUrl}/${this.baseRoute}`, updateData)
             .pipe(tap(res => {
                 // updating the in memory alert if all alerts are loaded
                 if (this.allUserAlertsLoaded) {
                     const updatedAlert = AlertUtils
-                        .DetailedAlertViewApiToInternal(res.Result, this.currentLocale);
+                        .DetailedAlertViewApiToInternal(res, this.currentLocale);
                     const alertsAlreadyLoaded = Data.Get(this.userAlertsKey) as DetailedAlertView[];
 
                     if(!alertsAlreadyLoaded){
@@ -156,10 +156,10 @@ export class AlertService {
     public searchAlerts(searchText: string) : Observable<any>{
         const query =`?Term=${searchText}`;
         return this.httpClient
-            .get<ApiResponse<SimpleAlertViewApi[]>>(`${environment.baseApiUrl}/${this.baseRoute}/search${query}`)
+            .get<SimpleAlertViewApi[]>(`${environment.baseApiUrl}/${this.baseRoute}/search${query}`)
             .pipe(tap(apiResponse => {
                 // map simple alert to detailed alerts
-                const detailedAlerts = apiResponse.Result
+                const detailedAlerts = apiResponse
                     .map(simpleAlert => AlertUtils.SimpleAlertViewApiToInternal(simpleAlert, this.currentLocale));
                 this._searchResults.next(detailedAlerts);
             }))

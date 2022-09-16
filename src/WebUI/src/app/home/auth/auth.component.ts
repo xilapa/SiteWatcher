@@ -7,7 +7,7 @@ import {AuthService} from "../../core/auth/service/auth.service";
 import {EAuthTask} from "../../core/auth/service/auth-task";
 import {utils} from "../../core/utils/utils";
 import {TranslocoService} from "@ngneat/transloco";
-import {finalize, first} from "rxjs";
+import {finalize} from "rxjs";
 
 @Component({
     selector: 'sw-auth',
@@ -37,21 +37,20 @@ export class AuthComponent implements OnInit {
         this.authService.authenticate(state, code, scope)
             .subscribe({
                 next: (response) => {
-
-                    if (response.Result.Task == EAuthTask.Register) {
-                        this.userService.setUserRegisterData(response.Result);
+                    if (response.Task == EAuthTask.Register) {
+                        this.userService.setUserRegisterData(response);
                         this.router.navigateByUrl('/home/register');
                     }
 
-                    if (response.Result.Task == EAuthTask.Login) {
-                        this.userService.setUserData(response.Result);
+                    if (response.Task == EAuthTask.Login) {
+                        this.userService.setUserData(response);
                         this.userService.redirecLoggedUser();
                     }
 
-                    if (response.Result.Task == EAuthTask.Activate) {
+                    if (response.Task == EAuthTask.Activate) {
                         utils.openModal(this.confirmationService, this.translocoService,
                             'home.auth.reactivateUserTitle', 'home.auth.reactivateUserMessage',
-                            () => this.sendEmailToReactivateAccount(response.Result.Token), () => this.router.navigateByUrl('/home')
+                            () => this.sendEmailToReactivateAccount(response.Token), () => this.router.navigateByUrl('/home')
                         );
                     }
                 },

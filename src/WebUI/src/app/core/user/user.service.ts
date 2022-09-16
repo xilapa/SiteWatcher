@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Data} from '../shared-data/shared-data';
 import {TokenService} from '../token/token.service';
 import jwt_decode from "jwt-decode";
-import {ApiResponse, User, UpdateUser, UpdateUserResult, RegisterUserResult} from '../interfaces';
+import {User, UpdateUser, UpdateUserResult, RegisterUserResult} from '../interfaces';
 import {UserRegister} from "../auth/user-register";
 import {ELanguage} from "../lang/language";
 import {AuthenticationResult} from "../auth/service/authentication-result";
@@ -117,13 +117,13 @@ export class UserService {
         this.router.navigate(['/']);
     }
 
-    public register(registerData: UserRegister): Observable<ApiResponse<RegisterUserResult>> {
-        return this.httpClient.post<ApiResponse<RegisterUserResult>>(
+    public register(registerData: UserRegister): Observable<RegisterUserResult> {
+        return this.httpClient.post<RegisterUserResult>(
             `${environment.baseApiUrl}/${this.baseRoute}/register`, registerData, {headers: {'authorization': `Bearer ${this.tokenService.getRegisterToken()}`}})
     }
 
-    public update(updateData: UpdateUser): Observable<ApiResponse<UpdateUserResult>> {
-        return this.httpClient.put<ApiResponse<UpdateUserResult>>(
+    public update(updateData: UpdateUser): Observable<UpdateUserResult> {
+        return this.httpClient.put<UpdateUserResult>(
             `${environment.baseApiUrl}/${this.baseRoute}`, updateData)
     }
 
@@ -156,8 +156,8 @@ export class UserService {
         return this.httpClient.put(`${environment.baseApiUrl}/${this.baseRoute}/resend-confirmation-email`, {});
     }
 
-    public confirmEmail(token: string): Observable<ApiResponse<any>> {
-        return this.httpClient.put<ApiResponse<any>>(`${environment.baseApiUrl}/${this.baseRoute}/confirm-email`, {token});
+    public confirmEmail(token: string): Observable<any> {
+        return this.httpClient.put<any>(`${environment.baseApiUrl}/${this.baseRoute}/confirm-email`, {token});
     }
 
     emailConfirmed(): void {
@@ -165,8 +165,8 @@ export class UserService {
         this.decodeAndNotify();
     }
 
-    reactivateAccount(token: string) : Observable<ApiResponse<any>> {
-        return this.httpClient.put<ApiResponse<any>>(`${environment.baseApiUrl}/${this.baseRoute}/reactivate-account`, {token});
+    reactivateAccount(token: string) : Observable<any> {
+        return this.httpClient.put<any>(`${environment.baseApiUrl}/${this.baseRoute}/reactivate-account`, {token});
     }
 }
 
