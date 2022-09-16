@@ -11,7 +11,7 @@ COPY src/WebAPI ./src/WebAPI/
 #COPY test/UnitTests ./test/UnitTests
 #COPY test/IntegrationTests ./test/IntegrationTests
 #COPY *.sln .
-WORKDIR /src/WebAPI
+WORKDIR app/src/WebAPI
 RUN dotnet restore "WebAPI.csproj"
 
 # Build and publish a release
