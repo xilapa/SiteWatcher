@@ -6,12 +6,12 @@ using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 
-public class DeleteAlertCommand : IRequest<ICommandResult<object>>
+public class DeleteAlertCommand : IRequest<CommandResult>
 {
     public string AlertId { get; set; }
 }
 
-public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, ICommandResult<object>>
+public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, CommandResult>
 {
     private readonly IAlertDapperRepository _alertDapperRepository;
     private readonly IIdHasher _idHasher;
@@ -27,12 +27,11 @@ public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, ICo
         _mediator = mediator;
     }
 
-    public async Task<ICommandResult<object>> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
     {
         var alertId = _idHasher.DecodeId(request.AlertId);
         if (alertId == 0)
-            return new CommandResult<object>().WithError(
-                ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
+            return ReturnError();
 
         var deleted = await _alertDapperRepository
             .DeleteUserAlert(alertId, _session.UserId!.Value, cancellationToken);
@@ -40,9 +39,9 @@ public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, ICo
         if (deleted)
             await _mediator.Publish(new AlertsChangedEvent(_session.UserId.Value), CancellationToken.None);
 
-        return deleted
-            ? new CommandResult<object>()
-            : new CommandResult<object>().WithError(
-                ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
+        return deleted ? CommandResult.Empty() : ReturnError();
     }
+
+    private static CommandResult ReturnError() =>
+        CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
 }

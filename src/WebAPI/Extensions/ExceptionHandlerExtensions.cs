@@ -8,6 +8,7 @@ namespace SiteWatcher.WebAPI.Extensions;
 
 public static class ExceptionHandlerExtensions
 {
+    private static readonly JsonSerializerOptions _opts = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     public static void ConfigureGlobalExceptionHandlerMiddleware(this WebApplication app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
         app.UseExceptionHandler(appBuilder =>
@@ -31,13 +32,11 @@ public static class ExceptionHandlerExtensions
                 if(env.IsDevelopment())
                     response = new { Exception = ExceptionDevResponse.From(exception, traceId)};
                 else
-                    response = new WebApiResponse<object?>(null, ApplicationErrors.INTERNAL_ERROR, $"traceId: {traceId}");
+                    response = new []{ ApplicationErrors.INTERNAL_ERROR, $"traceId: {traceId}"};
 
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/problem+json";
-
-                var opts = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-                await JsonSerializer.SerializeAsync(context.Request.HttpContext.Response.Body, response, opts);
+                await JsonSerializer.SerializeAsync(context.Request.HttpContext.Response.Body, response, _opts);
             });
         });
     }

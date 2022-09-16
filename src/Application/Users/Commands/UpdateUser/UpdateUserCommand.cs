@@ -8,7 +8,7 @@ using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.UpdateUser;
 
-public class UpdateUserCommand : IRequest<ICommandResult<UpdateUserResult>>
+public class UpdateUserCommand : IRequest<CommandResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
@@ -16,7 +16,7 @@ public class UpdateUserCommand : IRequest<ICommandResult<UpdateUserResult>>
     public ETheme Theme { get; set; }
 }
 
-public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ICommandResult<UpdateUserResult>>
+public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, CommandResult>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _uow;
@@ -38,13 +38,12 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, IComm
         _session = session;
     }
 
-    public async Task<ICommandResult<UpdateUserResult>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var appResult = new CommandResult<UpdateUserResult>();
         var user = await _userRepository
             .GetAsync(u => u.Id == _session.UserId && u.Active, cancellationToken);
         if (user is null)
-            return appResult.WithError(ApplicationErrors.USER_DO_NOT_EXIST);
+            return CommandResult.FromError(ApplicationErrors.USER_DO_NOT_EXIST);
 
         user.Update(_mapper.Map<UpdateUserInput>(request), _session.Now);
         await _uow.SaveChangesAsync(cancellationToken);
@@ -52,6 +51,6 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, IComm
         var newToken = _authService.GenerateLoginToken(user);
         await _authService.WhiteListTokenForCurrentUser(newToken);
 
-        return appResult.WithValue(new UpdateUserResult(newToken, !user.EmailConfirmed));
+        return CommandResult.FromValue(new UpdateUserResult(newToken, !user.EmailConfirmed));
     }
 }

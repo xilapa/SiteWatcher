@@ -7,7 +7,6 @@ using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Authorization.Middleware;
 using SiteWatcher.WebAPI.Extensions;
-using SiteWatcher.WebAPI.Filters;
 using DependencyInjection = SiteWatcher.Infra.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);

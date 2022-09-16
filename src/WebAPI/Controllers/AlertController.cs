@@ -9,7 +9,7 @@ using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
+using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.WebAPI.Filters.Cache;
 
@@ -31,8 +31,8 @@ public class AlertController : ControllerBase
     [CommandValidationFilter]
     public async Task<IActionResult> CreateAlert(CreateAlertCommand command)
     {
-        var appResult = await _mediator.Send(command);
-        return Ok(new WebApiResponse<DetailedAlertView>().SetResult(appResult.Value!));
+        var commandResult = await _mediator.Send(command);
+        return commandResult.Handle<DetailedAlertView>();
     }
 
     [HttpGet]
@@ -40,8 +40,8 @@ public class AlertController : ControllerBase
     public async Task<IActionResult> GetUserAlerts([FromQuery] GetUserAlertsCommand command,
         CancellationToken cancellationToken)
     {
-        var appResult = await _mediator.Send(command, cancellationToken);
-        return Ok(new WebApiResponse<PaginatedList<SimpleAlertView>>().SetResult(appResult.Value!));
+        var commandResult = await _mediator.Send(command, cancellationToken);
+        return commandResult.Handle<PaginatedList<SimpleAlertView>>();
     }
 
     [HttpGet("{AlertId}/details")]
@@ -49,25 +49,24 @@ public class AlertController : ControllerBase
     public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlertDetailsCommand command,
         CancellationToken cancellationToken)
     {
-        var appResult = await _mediator.Send(command, cancellationToken);
-        return Ok(new WebApiResponse<AlertDetails>().SetResult(appResult.Value!));
+        var commandResult = await _mediator.Send(command, cancellationToken);
+        return commandResult.Handle<AlertDetails>();
     }
 
     [HttpDelete("{AlertId}")]
     public async Task<IActionResult> DeleteAlert([FromRoute] DeleteAlertCommand command,
         CancellationToken cancellationToken)
     {
-        var appResult = await _mediator.Send(command, cancellationToken);
-        return appResult.Success ? Ok(new WebApiResponse<object>()) : BadRequest(new WebApiResponse<object>());
+        var commandResult = await _mediator.Send(command, cancellationToken);
+        return commandResult.Handle();
     }
 
     [HttpPut]
     [CommandValidationFilter]
     public async Task<IActionResult> UpdateAlert([FromBody] UpdateAlertCommmand command, CancellationToken cancellationToken)
     {
-        var appResult = await _mediator.Send(command, cancellationToken);
-        return appResult.Success ? Ok(new WebApiResponse<DetailedAlertView>(appResult.Value!)) :
-            BadRequest(new WebApiResponse<DetailedAlertView>(null!, appResult.Errors));
+        var commandResult = await _mediator.Send(command, cancellationToken);
+        return commandResult.Handle<DetailedAlertView>();
     }
 
     [HttpGet("search")]
@@ -76,7 +75,7 @@ public class AlertController : ControllerBase
     public async Task<IActionResult> SearchAlerts([FromQuery] SearchAlertCommand command,
         CancellationToken cancellationToken)
     {
-        var appResult = await _mediator.Send(command, cancellationToken);
-        return Ok(new WebApiResponse<IEnumerable<SimpleAlertView>>().SetResult(appResult.Value!));
+        var commandResult = await _mediator.Send(command, cancellationToken);
+        return commandResult.Handle<IEnumerable<SimpleAlertView>>();
     }
 }

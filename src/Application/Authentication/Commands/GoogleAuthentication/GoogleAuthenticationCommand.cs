@@ -7,15 +7,14 @@ using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 
-public class GoogleAuthenticationCommand : IRequest<ICommandResult<AuthenticationResult>>
+public class GoogleAuthenticationCommand : IRequest<CommandResult>
 {
     public string? State { get; set; }
     public string? Code { get; set; }
     public string? Scope { get; set; }
 }
 
-public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenticationCommand,
-        ICommandResult<AuthenticationResult>>
+public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenticationCommand, CommandResult>
 {
     private readonly IGoogleAuthService _googleAuthService;
     private readonly IUserDapperRepository _userDapperRepository;
@@ -29,13 +28,11 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
         _authService = authService;
     }
 
-    public async Task<ICommandResult<AuthenticationResult>> Handle(GoogleAuthenticationCommand request,
-        CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(GoogleAuthenticationCommand request, CancellationToken cancellationToken)
     {
-        var appResult = new CommandResult<AuthenticationResult>();
         var tokenResult = await _googleAuthService.ExchangeCode(request.Code!, cancellationToken);
         if(!tokenResult.Success)
-            return appResult.WithError(ApplicationErrors.GOOGLE_AUTH_ERROR);
+            return CommandResult.FromError(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
         var user = await _userDapperRepository.GetUserAsync(tokenResult.GoogleId, cancellationToken);
 
@@ -44,20 +41,20 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
         {
             var loginToken = _authService.GenerateLoginToken(user);
             await _authService.WhiteListToken(user.Id, loginToken);
-            return appResult
-                .WithValue(new AuthenticationResult(EAuthTask.Login, loginToken, tokenResult.ProfilePicUrl));
+            return CommandResult
+                .FromValue(new AuthenticationResult(EAuthTask.Login, loginToken, tokenResult.ProfilePicUrl));
         }
 
         // User does not exists
         if(user.Id.Equals(UserId.Empty))
         {
             var registerToken = _authService.GenerateRegisterToken(tokenResult.Claims, tokenResult.GoogleId);
-            return appResult
-                 .WithValue(new AuthenticationResult(EAuthTask.Register, registerToken, tokenResult.ProfilePicUrl));
+            return CommandResult
+                .FromValue(new AuthenticationResult(EAuthTask.Register, registerToken, tokenResult.ProfilePicUrl));
         }
 
         // User exists but is deactivated
-        return appResult
-            .WithValue(new AuthenticationResult(EAuthTask.Activate, user.Id.Value.ToString(), null));
+        return CommandResult
+            .FromValue(new AuthenticationResult(EAuthTask.Activate, user.Id.Value.ToString(), null));
     }
 }

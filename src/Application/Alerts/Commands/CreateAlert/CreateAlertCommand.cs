@@ -8,7 +8,7 @@ using SiteWatcher.Domain.Models.Alerts;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
-public class CreateAlertCommand : IRequest<ICommandResult<DetailedAlertView>>
+public class CreateAlertCommand : IRequest<CommandResult>
 {
     public string Name { get; set; }
     public EFrequency Frequency { get; set; }
@@ -20,7 +20,7 @@ public class CreateAlertCommand : IRequest<ICommandResult<DetailedAlertView>>
     public string? Term { get; set; }
 }
 
-public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, ICommandResult<DetailedAlertView>>
+public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, CommandResult>
 {
     private readonly IMapper _mapper;
     private readonly ISession _session;
@@ -35,12 +35,12 @@ public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, ICo
         _uow = uow;
     }
 
-    public async Task<ICommandResult<DetailedAlertView>> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
     {
         var alertInput = _mapper.Map<CreateAlertInput>(request);
         var alert = AlertFactory.Create(alertInput, _session.UserId!.Value, _session.Now);
         _alertRepository.Add(alert);
         await _uow.SaveChangesAsync(cancellationToken);
-        return new CommandResult<DetailedAlertView>(_mapper.Map<DetailedAlertView>(alert));
+        return CommandResult.FromValue(_mapper.Map<DetailedAlertView>(alert));
     }
 }

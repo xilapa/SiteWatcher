@@ -8,7 +8,7 @@ using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 
-public class SearchAlertCommand : IRequest<ICommandResult<IEnumerable<SimpleAlertView>>>, ICacheable
+public class SearchAlertCommand : IRequest<CommandResult>, ICacheable
 {
     public string Term { get; set; }
     public TimeSpan Expiration => TimeSpan.FromMinutes(2);
@@ -17,8 +17,7 @@ public class SearchAlertCommand : IRequest<ICommandResult<IEnumerable<SimpleAler
         CacheKeys.UserAlertSearch(session.UserId!.Value);
 }
 
-public class
-    SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, ICommandResult<IEnumerable<SimpleAlertView>>>
+public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, CommandResult>
 {
     private readonly IAlertDapperRepository _alertDapperRepository;
     private readonly ISession _session;
@@ -31,7 +30,7 @@ public class
         _mapper = mapper;
     }
 
-    public async Task<ICommandResult<IEnumerable<SimpleAlertView>>> Handle(SearchAlertCommand request,
+    public async Task<CommandResult> Handle(SearchAlertCommand request,
         CancellationToken cancellationToken)
     {
         var searchTerms = request
@@ -42,8 +41,8 @@ public class
         var alerts = await _alertDapperRepository
             .SearchSimpleAlerts(searchTerms, _session.UserId!.Value, 10, cancellationToken);
         if (alerts.Count == 0)
-            return new CommandResult<IEnumerable<SimpleAlertView>>(Array.Empty<SimpleAlertView>());
+            return CommandResult.Empty();
         var alertsMapped = _mapper.Map<IEnumerable<SimpleAlertView>>(alerts);
-        return new CommandResult<IEnumerable<SimpleAlertView>>(alertsMapped);
+        return CommandResult.FromValue(alertsMapped);
     }
 }

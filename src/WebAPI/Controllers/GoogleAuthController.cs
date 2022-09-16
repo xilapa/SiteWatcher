@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
+using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -44,12 +44,7 @@ public class GoogleAuthController : ControllerBase
     [HttpPost("authenticate")]
     public async Task<IActionResult> Authenticate(GoogleAuthenticationCommand command, CancellationToken cancellationToken)
     {
-        var response = new WebApiResponse<AuthenticationResult>();
-        var appResult = await _mediator.Send(command, cancellationToken);
-
-        if (!appResult.Success)
-            return BadRequest(response.AddMessages(appResult.Errors));
-
-        return Ok(response.SetResult(appResult.Value!));
+        var commandResult = await _mediator.Send(command, cancellationToken);
+        return commandResult.Handle<AuthenticationResult>();
     }
 }

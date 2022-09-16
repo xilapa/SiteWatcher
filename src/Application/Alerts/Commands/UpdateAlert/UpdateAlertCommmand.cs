@@ -10,7 +10,7 @@ using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 
-public class UpdateAlertCommmand : IRequest<ICommandResult<DetailedAlertView>>
+public class UpdateAlertCommmand : IRequest<CommandResult>
 {
     public string AlertId { get; set; }
     public UpdateInfo<string>? Name { get; set; }
@@ -21,7 +21,7 @@ public class UpdateAlertCommmand : IRequest<ICommandResult<DetailedAlertView>>
     public UpdateInfo<string?>? Term { get; set; }
 }
 
-public class UpdateAlertCommmandHandler : IRequestHandler<UpdateAlertCommmand, ICommandResult<DetailedAlertView>>
+public class UpdateAlertCommmandHandler : IRequestHandler<UpdateAlertCommmand, CommandResult>
 {
     private readonly IMapper _mapper;
     private readonly IAlertRepository _alertRepository;
@@ -36,20 +36,20 @@ public class UpdateAlertCommmandHandler : IRequestHandler<UpdateAlertCommmand, I
         _uow = uow;
     }
 
-    public async Task<ICommandResult<DetailedAlertView>> Handle(UpdateAlertCommmand request, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(UpdateAlertCommmand request, CancellationToken cancellationToken)
     {
         var updateInfo = _mapper.Map<UpdateAlertInput>(request);
 
         if (AlertId.Empty.Equals(updateInfo.AlertId) || updateInfo.AlertId.Value == 0)
-            return new CommandResult<DetailedAlertView>().WithError(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
+            return CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
 
         var alert = await _alertRepository.GetAlertForUpdate(updateInfo.AlertId, _session.UserId!.Value);
         if (alert is null)
-            return new CommandResult<DetailedAlertView>().WithError(ApplicationErrors.ALERT_DO_NOT_EXIST);
+            return CommandResult.FromError(ApplicationErrors.ALERT_DO_NOT_EXIST);
 
         alert.Update(updateInfo, _session.Now);
         await _uow.SaveChangesAsync(CancellationToken.None);
 
-        return new CommandResult<DetailedAlertView>(_mapper.Map<DetailedAlertView>(alert));
+        return CommandResult.FromValue(_mapper.Map<DetailedAlertView>(alert));
     }
 }

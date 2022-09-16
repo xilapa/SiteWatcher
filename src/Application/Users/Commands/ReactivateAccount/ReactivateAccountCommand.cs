@@ -5,12 +5,12 @@ using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Application.Users.Commands.ReactivateAccount;
 
-public class ReactivateAccountCommand : IRequest<ICommandResult<object>>
+public class ReactivateAccountCommand : IRequest<CommandResult>
 {
     public string Token { get; set; }
 }
 
-public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccountCommand, ICommandResult<object>>
+public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccountCommand, CommandResult>
 {
     private readonly IAuthService _authservice;
     private readonly IUserRepository _userRepository;
@@ -26,22 +26,24 @@ public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccount
         _uow = uow;
     }
 
-    public async Task<ICommandResult<object>> Handle(ReactivateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(ReactivateAccountCommand request, CancellationToken cancellationToken)
     {
-        var result = new CommandResult<object>();
         var userId = await _authservice.GetUserIdFromConfirmationToken(request.Token);
         if(userId is null)
-            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
+            return ReturnError();
 
         var user = await _userRepository.GetAsync(u => u.Id == userId && !u.Active, cancellationToken);
         if(user is null)
-            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
+            return ReturnError();
 
         var success = user.ReactivateAccount(request.Token, _session.Now);
         if(!success)
-            result.SetError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
+            return ReturnError();
 
         await _uow.SaveChangesAsync(CancellationToken.None);
-        return result;
+        return CommandResult.Empty();
     }
+
+    private static CommandResult ReturnError() =>
+        CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 }

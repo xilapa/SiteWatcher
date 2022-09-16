@@ -7,7 +7,7 @@ using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 
-public class GetUserAlertsCommand : IRequest<ICommandResult<PaginatedList<SimpleAlertView>>>, ICacheable
+public class GetUserAlertsCommand : IRequest<CommandResult>, ICacheable
 {
     public string? LastAlertId { get; set; }
     public int Take { get; set; } = 10;
@@ -22,7 +22,7 @@ public class GetUserAlertsCommand : IRequest<ICommandResult<PaginatedList<Simple
 }
 
 public class GetUserAlertsCommandHandler :
-    IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>
+    IRequestHandler<GetUserAlertsCommand, CommandResult>
 {
     private readonly IIdHasher _idHasher;
     private readonly ISession _session;
@@ -38,11 +38,11 @@ public class GetUserAlertsCommandHandler :
         _mapper = mapper;
     }
 
-    public async Task<ICommandResult<PaginatedList<SimpleAlertView>>> Handle(GetUserAlertsCommand request,
+    public async Task<CommandResult> Handle(GetUserAlertsCommand request,
         CancellationToken cancellationToken)
     {
         if (request.Take == 0)
-            return new CommandResult<PaginatedList<SimpleAlertView>>(new PaginatedList<SimpleAlertView>(Array.Empty<SimpleAlertView>()));
+            return CommandResult.Empty();
 
         var take = request.Take > 50 ? 50 : request.Take;
         var lastAlertId = string.IsNullOrEmpty(request.LastAlertId) ? 0 : _idHasher.DecodeId(request.LastAlertId);
@@ -51,6 +51,6 @@ public class GetUserAlertsCommandHandler :
             .GetUserAlerts(_session.UserId!.Value, take, lastAlertId, cancellationToken);
 
         var alertsView = _mapper.Map<PaginatedList<SimpleAlertView>>(alertsDto);
-        return new CommandResult<PaginatedList<SimpleAlertView>>(alertsView);
+        return CommandResult.FromValue(alertsView);
     }
 }

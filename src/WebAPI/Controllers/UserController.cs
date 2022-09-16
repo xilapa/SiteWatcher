@@ -11,7 +11,7 @@ using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
+using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -33,13 +33,14 @@ public class UserController : ControllerBase
     [Authorize(Policy = Policies.ValidRegisterData)]
     public async Task<IActionResult> Register(RegisterUserCommand command)
     {
-        var response = new WebApiResponse<RegisterUserResult>();
-        var appResult = await _mediator.Send(command);
-
-        if (!appResult.Success)
-            return Conflict(response.AddMessages(appResult.Errors));
-
-        return Created(string.Empty, response.SetResult(appResult.Value!));
+        var commandResult = await _mediator.Send(command);
+        return commandResult.Handle<RegisterUserResult>(result =>
+            result switch
+            {
+                AlreadyExists => Conflict(),
+                Registered registered => Ok(registered),
+                _ => throw new ArgumentOutOfRangeException(nameof(result))
+            });
     }
 
     [Authorize]
@@ -51,13 +52,8 @@ public class UserController : ControllerBase
     [HttpPut("confirm-email")]
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand confirmEmailCommand)
     {
-        var appResult = await _mediator.Send(confirmEmailCommand);
-
-        if (appResult.Success)
-            return Ok();
-
-        var response = new WebApiResponse<object>();
-        return BadRequest(response.AddMessages(appResult.Errors));
+        var commandResult = await _mediator.Send(confirmEmailCommand);
+        return commandResult.Handle();
     }
 
     [Authorize]
@@ -65,13 +61,8 @@ public class UserController : ControllerBase
     [CommandValidationFilter]
     public async Task<IActionResult> UpdateUser(UpdateUserCommand command)
     {
-        var response = new WebApiResponse<UpdateUserResult>();
-        var appResult = await _mediator.Send(command);
-
-        if (!appResult.Success)
-            return BadRequest(response.AddMessages(appResult.Errors));
-
-        return Ok(response.SetResult(appResult.Value!));
+        var commandResult = await _mediator.Send(command);
+        return commandResult.Handle<UpdateUserResult>();
     }
 
     [Authorize]
@@ -89,13 +80,8 @@ public class UserController : ControllerBase
     [HttpPut("reactivate-account")]
     public async Task<IActionResult> ReactivateAccount(ReactivateAccountCommand reactivateAccountCommand)
     {
-        var appResult = await _mediator.Send(reactivateAccountCommand);
-
-        if (appResult.Success)
-            return Ok();
-
-        var response = new WebApiResponse<object>();
-        return BadRequest(response.AddMessages(appResult.Errors));
+        var commandResult = await _mediator.Send(reactivateAccountCommand);
+        return commandResult.Handle();
     }
 
     [Authorize]

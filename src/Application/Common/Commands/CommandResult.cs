@@ -1,32 +1,39 @@
 namespace SiteWatcher.Application.Common.Commands;
 
-public class CommandResult<T> : ICommandResult<T>
+public abstract class CommandResult
 {
-    public CommandResult() =>
-        _errors = new List<string>();
+    public static ValueResult<T> FromValue<T>(T value) => new (value);
+    public static ErrorResult FromError(string value) => new (value);
+    public static ErrorResult FromErrors(IEnumerable<string> value) => new (value);
 
-    public CommandResult(T result) : this() =>
-        Value = result;
+    private static readonly EmptyResult _empty = new ();
+    public static CommandResult Empty() => _empty;
+}
 
-    public CommandResult<T> WithError(string error)
-    {
-        _errors.Add(error);
-        return this;
-    }
-
-    public CommandResult<T> WithValue(T value)
+public sealed class ValueResult<T> : CommandResult
+{
+    public ValueResult(T value)
     {
         Value = value;
-        return this;
     }
 
-    public void SetError(string error)
+    public T Value { get; init; }
+}
+
+public sealed class EmptyResult : CommandResult
+{ }
+
+public sealed class ErrorResult: CommandResult
+{
+    public ErrorResult(string error)
     {
-        _errors.Add(error);
+        Errors = new [] {error};
     }
 
-    private readonly List<string> _errors;
-    public IEnumerable<string> Errors => _errors.ToArray();
-    public bool Success => _errors.Count == 0;
-    public T? Value { get; private set; }
+    public ErrorResult(IEnumerable<string> errors)
+    {
+        Errors = errors;
+    }
+
+    public IEnumerable<string> Errors { get; }
 }

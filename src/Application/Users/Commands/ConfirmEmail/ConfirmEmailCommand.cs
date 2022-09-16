@@ -5,12 +5,12 @@ using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Application.Users.Commands.ConfirmEmail;
 
-public class ConfirmEmailCommand : IRequest<ICommandResult<object>>
+public class ConfirmEmailCommand : IRequest<CommandResult>
 {
     public string Token { get; set; }
 }
 
-public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, ICommandResult<object>>
+public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, CommandResult>
 {
     private readonly IAuthService _authservice;
     private readonly IUserRepository _userRepository;
@@ -25,22 +25,24 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, I
         _uow = uow;
     }
 
-    public async Task<ICommandResult<object>> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
-        var result = new CommandResult<object>();
         var userId = await _authservice.GetUserIdFromConfirmationToken(request.Token);
         if(userId is null)
-            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
+            return ReturnError();
 
         var user = await _userRepository.GetAsync(u => u.Id == userId && u.Active && !u.EmailConfirmed, cancellationToken);
         if(user is null)
-            return result.WithError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
+            return ReturnError();
 
-        var success = user!.ConfirmEmail(request.Token, _session.Now);
+        var success = user.ConfirmEmail(request.Token, _session.Now);
         if(!success)
-            result.SetError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
+            return ReturnError();
 
         await _uow.SaveChangesAsync(CancellationToken.None);
-        return result;
+        return CommandResult.Empty();
     }
+
+    private static CommandResult ReturnError() =>
+        CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 }

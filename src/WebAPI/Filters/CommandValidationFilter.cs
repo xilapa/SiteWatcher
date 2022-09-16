@@ -2,7 +2,6 @@ using System.Net;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace SiteWatcher.WebAPI.Filters;
 
@@ -20,7 +19,7 @@ public class CommandValidationFilter : ActionFilterAttribute
             return;
         }
 
-        var result = new ObjectResult(new WebApiResponse<object>(null!, errs))
+        var result = new ObjectResult(errs)
         {
             StatusCode = (int) HttpStatusCode.BadRequest
         };
