@@ -12,10 +12,10 @@ COPY src/WebAPI ./src/WebAPI/
 #COPY test/IntegrationTests ./test/IntegrationTests
 #COPY *.sln .
 WORKDIR /src/WebAPI
-RUN dotnet restore
+RUN dotnet restore "WebAPI.csproj"
 
 # Build and publish a release
-RUN dotnet publish -c Release -o out --no-restore
+RUN dotnet publish "WebAPI.csproj" -c Release -o out --no-restore
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
