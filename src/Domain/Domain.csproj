@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="MediatR.Contracts" Version="1.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
