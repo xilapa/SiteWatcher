@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using FluentAssertions;
 using Moq;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
@@ -10,7 +11,7 @@ using SiteWatcher.Domain.Models.Common;
 
 namespace UnitTests.Commands;
 
-public class ConfirmEmailCommandTests
+public sealed class ConfirmEmailCommandTests
 {
     private readonly IAuthService _authService;
 
@@ -35,15 +36,10 @@ public class ConfirmEmailCommandTests
         var commandHandler = new ConfirmEmailCommandHandler(_authService, userRepository.Object, null!, null!);
 
         // Act
-        var result = await commandHandler.Handle(new ConfirmEmailCommand(), CancellationToken.None);
+        var result = await commandHandler.Handle(new ConfirmEmailCommand(), CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Success
-            .Should().BeFalse();
-
-        result.Errors
-            .Count().Should().Be(1);
-
+        result!.Errors.Count().Should().Be(1);
         result.Errors.First()
             .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
     }
@@ -65,13 +61,11 @@ public class ConfirmEmailCommandTests
         var commandHandler = new ConfirmEmailCommandHandler(_authService, userRepository.Object, session, uow);
 
         // Act
-        var result = await commandHandler.Handle(new ConfirmEmailCommand { Token = "INVALID_TOKEN"}, CancellationToken.None);
+        var result = await commandHandler.Handle(new ConfirmEmailCommand { Token = "INVALID_TOKEN"}, CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Success
-            .Should().BeFalse();
 
-        result.Errors
+        result!.Errors
             .Count().Should().Be(1);
 
         result.Errors.First()

@@ -4,7 +4,7 @@ using SiteWatcher.Application.Common.Constants;
 
 namespace UnitTests.ValidatorsTests;
 
-public class DeleteAlertCommandValidatorTests
+public sealed class DeleteAlertCommandValidatorTests
 {
     [Fact]
     public async Task CannotPassEmptyIdToDelete()

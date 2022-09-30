@@ -5,7 +5,7 @@ using SiteWatcher.Domain.Enums;
 
 namespace UnitTests.ValidatorsTests;
 
-public class CreateAlertCommandValidatorTests
+public sealed class CreateAlertCommandValidatorTests
 {
     public static IEnumerable<object[]> CreateAlertData()
     {

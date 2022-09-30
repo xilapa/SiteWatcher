@@ -3,13 +3,14 @@ using Domain.DTOs.Alert;
 using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 
 namespace UnitTests.Commands;
 
-public class UpdateAlertCommandTests
+public sealed class UpdateAlertCommandTests
 {
     private readonly Mock<IAlertRepository> _alertRepositoryMock = new ();
 
@@ -32,10 +33,10 @@ public class UpdateAlertCommandTests
         var command = new UpdateAlertCommmand();
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Errors
+        result!.Errors
             .Should()
             .BeEquivalentTo(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
 
@@ -62,10 +63,10 @@ public class UpdateAlertCommandTests
         var command = new UpdateAlertCommmand();
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Errors
+        result!.Errors
             .Should()
             .BeEquivalentTo(ApplicationErrors.ALERT_DO_NOT_EXIST);
 

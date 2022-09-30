@@ -3,13 +3,14 @@ using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Authentication.Common;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Models.Common;
 
 namespace UnitTests.Commands;
 
-public class GoogleAuthenticationCommandTests
+public sealed class GoogleAuthenticationCommandTests
 {
     private readonly IGoogleAuthService _googleAuthService;
     private readonly IAuthService _authService;
@@ -45,11 +46,10 @@ public class GoogleAuthenticationCommandTests
         var command = new GoogleAuthenticationCommand();
 
         // Act
-        var result = await commandHandler.Handle(command, default);
+        var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.Value!.Task.Should().Be(EAuthTask.Register);
+        result!.Value.Task.Should().Be(EAuthTask.Register);
         result.Value.Token.Should().Be(RegisterToken);
     }
 
@@ -72,11 +72,10 @@ public class GoogleAuthenticationCommandTests
         var command = new GoogleAuthenticationCommand();
 
         // Act
-        var result = await commandHandler.Handle(command, default);
+        var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;
 
         // Assert
-        result.Success.Should().BeTrue();
-        result.Value!.Task.Should().Be(EAuthTask.Activate);
+        result!.Value.Task.Should().Be(EAuthTask.Activate);
         result.Value.Token.Should().Be(userVm.Id.ToString());
     }
 }

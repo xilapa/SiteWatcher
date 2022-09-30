@@ -1,19 +1,18 @@
 ﻿using FluentAssertions;
-using FluentValidation;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Application.Common.Constants;
 
 namespace UnitTests.ValidatorsTests;
 
-public class SearchAlertCommandValidatorTests
+public sealed class SearchAlertCommandValidatorTests
 {
     public static IEnumerable<object[]> InvalidSearchTerms()
     {
-        yield return new string?[] {""};
-        yield return new string?[] {string.Empty};
-        yield return new string?[] {" "};
-        yield return new string?[] {null};
-        yield return new string?[] {default};
+        yield return new object[] {""};
+        yield return new object[] {string.Empty};
+        yield return new object[] {" "};
+        yield return new object[] {null!};
+        yield return new object[] {default!};
     }
 
     [Theory]
@@ -22,7 +21,7 @@ public class SearchAlertCommandValidatorTests
     {
         // Arrange
         var validator = new SearchAlertCommandValidator();
-        var command = new SearchAlertCommand {Term = searchTerm};
+        var command = new SearchAlertCommand {Term = searchTerm!};
 
         // Act
         var result = await validator.ValidateAsync(command);

@@ -4,7 +4,7 @@ using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 
 namespace UnitTests.Commands;
 
-public class SendEmailConfirmationCommandTests
+public sealed class SendEmailConfirmationCommandTests
 {
     [Fact]
     public async Task CantSentEmailConfirmationForNonExistingUser()

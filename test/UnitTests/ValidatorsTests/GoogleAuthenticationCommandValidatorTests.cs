@@ -7,7 +7,7 @@ using SiteWatcher.Application.Interfaces;
 
 namespace UnitTests.ValidatorsTests;
 
-public class GoogleAuthenticationCommandValidatorTests
+public sealed class GoogleAuthenticationCommandValidatorTests
 {
     private readonly ILogger<GoogleAuthenticationCommandValidator> _logger;
     private readonly  IGoogleSettings _googleSettings;

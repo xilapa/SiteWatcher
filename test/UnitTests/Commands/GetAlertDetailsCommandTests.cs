@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.IdHasher;
@@ -8,7 +9,7 @@ using SiteWatcher.IntegrationTests.Setup.TestServices;
 
 namespace UnitTests.Commands;
 
-public class GetAlertDetailsCommandTests
+public sealed class GetAlertDetailsCommandTests
 {
     [Fact]
     public async Task RepositoryIsNotCalledWithInvalidHash()
@@ -24,7 +25,7 @@ public class GetAlertDetailsCommandTests
         var result = await handler.Handle(command, default);
 
         // Assert
-        result.Value.Should().BeNull();
+        result.Should().BeAssignableTo<EmptyResult>();
 
         alertRepoMock
             .Verify(r => r.GetAlertDetails(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()),
