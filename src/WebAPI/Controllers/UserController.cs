@@ -33,14 +33,13 @@ public class UserController : ControllerBase
     [Authorize(Policy = Policies.ValidRegisterData)]
     public async Task<IActionResult> Register(RegisterUserCommand command)
     {
-        var commandResult = await _mediator.Send(command);
-        return commandResult.Handle<RegisterUserResult>(result =>
-            result switch
-            {
-                AlreadyExists => Conflict(),
-                Registered registered => Ok(registered),
-                _ => throw new ArgumentOutOfRangeException(nameof(result))
-            });
+        RegisterUserResult commandResult = await _mediator.Send(command);
+        return commandResult switch
+        {
+            AlreadyExists => Conflict(),
+            Registered registered => Created(string.Empty, registered),
+            _ => throw new ArgumentOutOfRangeException(nameof(commandResult))
+        };
     }
 
     [Authorize]
@@ -53,7 +52,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand confirmEmailCommand)
     {
         var commandResult = await _mediator.Send(confirmEmailCommand);
-        return commandResult.Handle();
+        return commandResult.ToActionResult();
     }
 
     [Authorize]
@@ -62,7 +61,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UpdateUser(UpdateUserCommand command)
     {
         var commandResult = await _mediator.Send(command);
-        return commandResult.Handle<UpdateUserResult>();
+        return commandResult.ToActionResult<UpdateUserResult>();
     }
 
     [Authorize]
@@ -81,7 +80,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> ReactivateAccount(ReactivateAccountCommand reactivateAccountCommand)
     {
         var commandResult = await _mediator.Send(reactivateAccountCommand);
-        return commandResult.Handle();
+        return commandResult.ToActionResult();
     }
 
     [Authorize]

@@ -1,6 +1,5 @@
 using AutoMapper;
 using MediatR;
-using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
@@ -9,7 +8,7 @@ using SiteWatcher.Domain.Models;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommand : IRequest<CommandResult>
+public class RegisterUserCommand : IRequest<RegisterUserResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
@@ -25,7 +24,7 @@ public class RegisterUserCommand : IRequest<CommandResult>
     }
 }
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, CommandResult>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
@@ -43,7 +42,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, C
         _session = session;
     }
 
-    public async Task<CommandResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         request.GetSessionValues(_session);
         var user = User.FromInputModel(_mapper.Map<RegisterUserInput>(request), _session.Now);
@@ -55,12 +54,12 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, C
         }
         catch(UniqueViolationException)
         {
-            return CommandResult.FromValue(RegisterUserResult.AlreadyExists());
+            return RegisterUserResult.AlreadyExists();
         }
 
         var token = _authService.GenerateLoginToken(user);
         await _authService.InvalidateCurrentRegisterToken();
 
-        return CommandResult.FromValue(new Registered(token, !user.EmailConfirmed));
+        return RegisterUserResult.Registered(token, !user.EmailConfirmed);
     }
 }
