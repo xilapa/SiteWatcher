@@ -36,10 +36,9 @@ public class UserRegisterTests : BaseTest, IClassFixture<BaseTestFixture>
             .Should()
             .Be(HttpStatusCode.Conflict);
 
-        result.GetTyped<WebApiResponse<RegisterUserResult>>()!
-            .Messages
+        result.GetTyped<AlreadyExists>()!
             .Should()
-            .BeEquivalentTo(new[] {"The User already exists"});
+            .NotBeNull();
 
         // Checking on database
         var exception = await Record.ExceptionAsync(async () =>

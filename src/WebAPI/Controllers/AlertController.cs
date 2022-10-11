@@ -32,7 +32,7 @@ public class AlertController : ControllerBase
     public async Task<IActionResult> CreateAlert(CreateAlertCommand command)
     {
         var commandResult = await _mediator.Send(command);
-        return commandResult.Handle<DetailedAlertView>();
+        return commandResult.ToActionResult<DetailedAlertView>();
     }
 
     [HttpGet]
@@ -41,7 +41,7 @@ public class AlertController : ControllerBase
         CancellationToken cancellationToken)
     {
         var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.Handle<PaginatedList<SimpleAlertView>>();
+        return commandResult.ToActionResult<PaginatedList<SimpleAlertView>>();
     }
 
     [HttpGet("{AlertId}/details")]
@@ -50,7 +50,7 @@ public class AlertController : ControllerBase
         CancellationToken cancellationToken)
     {
         var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.Handle<AlertDetails>();
+        return commandResult.ToActionResult<AlertDetails>();
     }
 
     [HttpDelete("{AlertId}")]
@@ -58,7 +58,7 @@ public class AlertController : ControllerBase
         CancellationToken cancellationToken)
     {
         var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.Handle();
+        return commandResult.ToActionResult();
     }
 
     [HttpPut]
@@ -66,7 +66,7 @@ public class AlertController : ControllerBase
     public async Task<IActionResult> UpdateAlert([FromBody] UpdateAlertCommmand command, CancellationToken cancellationToken)
     {
         var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.Handle<DetailedAlertView>();
+        return commandResult.ToActionResult<DetailedAlertView>();
     }
 
     [HttpGet("search")]
@@ -76,6 +76,6 @@ public class AlertController : ControllerBase
         CancellationToken cancellationToken)
     {
         var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.Handle<IEnumerable<SimpleAlertView>>();
+        return commandResult.ToActionResult<IEnumerable<SimpleAlertView>>();
     }
 }

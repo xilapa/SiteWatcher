@@ -2,21 +2,23 @@
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
+using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.AlertTests;
 
-public class DeleteAlertTestsBase : BaseTestFixture
+public sealed class DeleteAlertTestsBase : BaseTestFixture
 {
     public override Action<CustomWebApplicationOptions> Options =>
         opts => opts.DatabaseType = DatabaseType.SqliteOnDisk;
 }
 
-public class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsBase>
+public sealed class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsBase>
 {
     public DeleteAlertTests(DeleteAlertTestsBase fixture) : base(fixture)
     { }
@@ -39,10 +41,9 @@ public class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsBase>
         await Task.Delay(300);
 
         result.HttpResponse!
-            .StatusCode.Should().Be(HttpStatusCode.OK);
+            .StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        result.GetTyped<WebApiResponse<object>>()!
-            .Result.Should().BeNull();
+        result.HttpMessageContent.Should().Be(string.Empty);
 
         (await AlertExists(alertName)).Should().BeFalse();
     }
@@ -64,10 +65,10 @@ public class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsBase>
         result.HttpResponse!
             .StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        result.GetTyped<WebApiResponse<object>>()!
-            .Result.Should().BeNull();
+        result.GetTyped<string[]>()
+            .Should().BeEquivalentTo(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
 
-        (await AlertExists(alertName)).Should().BeTrue();
+            (await AlertExists(alertName)).Should().BeTrue();
     }
 
     private async Task<bool> AlertExists(string alertName) =>

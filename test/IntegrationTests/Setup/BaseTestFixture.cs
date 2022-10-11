@@ -9,6 +9,7 @@ public class BaseTestFixture : IAsyncLifetime
     public CustomWebApplicationFactory<Program> AppFactory = null!;
     public HttpClient Client = null!;
 
+    // TODO: transform in method
     /// <summary>
     /// Configure the test server.
     /// </summary>

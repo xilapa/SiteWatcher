@@ -12,11 +12,10 @@ using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.AlertTests;
 
-public class UpdateAlertTestsBase : BaseTestFixture
+public sealed class UpdateAlertTestsBase : BaseTestFixture
 {
     public DetailedAlertView XilapaAlert;
     public Alert XulipaAlert;
@@ -35,7 +34,7 @@ public class UpdateAlertTestsBase : BaseTestFixture
     }
 }
 
-public class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsBase>
+public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsBase>
 {
     private readonly UpdateAlertTestsBase _fixture;
 
@@ -115,7 +114,7 @@ public class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsBase>
         // Assert
         result.HttpResponse!.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var detailedAlert = result.GetTyped<WebApiResponse<DetailedAlertView>>()!.Result;
+        var detailedAlert = result.GetTyped<DetailedAlertView>();
 
         detailedAlert!.Id.Should().Be(_fixture.XilapaAlert.Id);
         detailedAlert.Name.Should().Be(updateCommand.Name!.NewValue);

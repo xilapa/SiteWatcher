@@ -7,11 +7,10 @@ using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.AlertTests;
 
-public class SearchAlertsTestsBase : BaseTestFixture
+public sealed class SearchAlertsTestsBase : BaseTestFixture
 {
     public static SimpleAlertView XilapaWhiteShirt;
     public static SimpleAlertView XilapaBlueShirt;
@@ -61,7 +60,7 @@ public class SearchAlertsTestsBase : BaseTestFixture
     }
 }
 
-public class SearchAlertsTests : BaseTest, IClassFixture<SearchAlertsTestsBase>
+public sealed class SearchAlertsTests : BaseTest, IClassFixture<SearchAlertsTestsBase>
 {
     public SearchAlertsTests(SearchAlertsTestsBase fixture) : base(fixture)
     { }
@@ -135,13 +134,13 @@ public class SearchAlertsTests : BaseTest, IClassFixture<SearchAlertsTestsBase>
         {
             "nonexistent",
             Users.Xulipa,
-            Array.Empty<SimpleAlertView>()
+            null! // Empty result
         };
     }
 
     [Theory]
     [MemberData(nameof(SearchResults))]
-    public async Task SearchWorks(string searchTerm, UserViewModel loggedUser, SimpleAlertView[] expectedSearchResults)
+    public async Task SearchWorks(string searchTerm, UserViewModel loggedUser, SimpleAlertView[]? expectedSearchResults)
     {
         // Arrange
         LoginAs(loggedUser);
@@ -151,12 +150,23 @@ public class SearchAlertsTests : BaseTest, IClassFixture<SearchAlertsTestsBase>
         var httpResult = await GetAsync("alert/search", searchCommand);
 
         // Assert
+        if (expectedSearchResults is null)
+        {
+            httpResult.HttpResponse!
+                .StatusCode
+                .Should().Be(HttpStatusCode.NoContent);
+
+            httpResult.HttpMessageContent
+                .Should().BeEquivalentTo(string.Empty);
+            return;
+        }
+
         httpResult.HttpResponse!.StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        var searchResult = httpResult.
-            GetTyped<WebApiResponse<IEnumerable<SimpleAlertView>>>()!.Result;
+        var searchResult = httpResult.GetTyped<IEnumerable<SimpleAlertView>>();
 
-        searchResult.Should().BeEquivalentTo(expectedSearchResults, opt => opt.WithStrictOrdering());
+        searchResult.Should().BeEquivalentTo(expectedSearchResults,
+            opt => opt.WithStrictOrdering());
     }
 }

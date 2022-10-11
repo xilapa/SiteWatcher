@@ -13,11 +13,10 @@ using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.AlertTests;
 
-public class GetAlertsTestsBase : BaseTestFixture
+public sealed class GetAlertsTestsBase : BaseTestFixture
 {
     public static SimpleAlertView[] XilapaAlerts { get; set; } = null!;
     public static SimpleAlertView[] XulipaAlerts { get; set; } = null!;
@@ -51,7 +50,7 @@ public class GetAlertsTestsBase : BaseTestFixture
     }
 }
 
-public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
+public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 {
     public GetAlertsTests(GetAlertsTestsBase fixture) : base(fixture)
     {
@@ -72,8 +71,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        result.GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()!
-            .Result!.Results.Should()
+        result.GetTyped<PaginatedList<SimpleAlertView>>()!
+            .Results.Should()
             .BeEquivalentTo(GetAlertsTestsBase.XilapaAlerts.Take(10),
                 opt => opt.WithoutStrictOrdering());
     }
@@ -116,8 +115,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
                     .Encode((2 * 60) - 1) // The id of the last xilapa's alert
             },
             GetAlertsTestsBase.StartingTime.AddMinutes(60 * 5), // The creation date of the last xilapa's alert
-            null,
-            null,
+            null!,
+            null!,
             0
         };
     }
@@ -144,11 +143,10 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .Take(command.Take)
             .ToArray();
 
-        var typedResult = result
-            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>();
+        var typedResult = result.GetTyped<PaginatedList<SimpleAlertView>>();
 
-        var resultList = typedResult!.Result!.Results.ToArray();
-        typedResult.Result.Total.Should().Be(GetAlertsTestsBase.XilapaAlerts.Length);
+        var resultList = typedResult!.Results.ToArray();
+        typedResult.Total.Should().Be(GetAlertsTestsBase.XilapaAlerts.Length);
 
         resultList.Length.Should().Be(count);
         if (count != 0)
@@ -212,11 +210,10 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
             .StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        var typedResult = result
-            .GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>();
+        var typedResult = result.GetTyped<PaginatedList<SimpleAlertView>>();
 
-        typedResult!.Result!.Total.Should().Be(total);
-        typedResult.Result.Results.Count().Should().Be(count);
+        typedResult!.Total.Should().Be(total);
+        typedResult.Results.Count().Should().Be(count);
     }
 
     public static IEnumerable<object[]> AlertDetailsData()
@@ -262,8 +259,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
         result.HttpResponse!
             .StatusCode.Should().Be(HttpStatusCode.OK);
 
-        result.GetTyped<WebApiResponse<AlertDetails>>()!
-            .Result.Should().BeEquivalentTo(expected);
+        result.GetTyped<AlertDetails>()!
+            .Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -279,9 +276,8 @@ public class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
         // Assert
         result.HttpResponse!
-            .StatusCode.Should().Be(HttpStatusCode.OK);
+            .StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        result.GetTyped<WebApiResponse<AlertDetails>>()!
-            .Result.Should().BeNull();
+        result.HttpMessageContent.Should().BeEquivalentTo(string.Empty);
     }
 }

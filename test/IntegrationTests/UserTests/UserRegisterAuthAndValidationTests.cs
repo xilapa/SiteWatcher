@@ -3,39 +3,31 @@ using FluentAssertions;
 using IntegrationTests.Setup;
 using MediatR;
 using Moq;
-using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.UserTests;
 
-public class UserRegisterAuthAndValidationTestsBase : BaseTestFixture
+public sealed class UserRegisterAuthAndValidationTestsBase : BaseTestFixture
 {
-    private static readonly RegisterUserResult RegisterUserResult = new("REGISTER_TOKEN", true);
+    public readonly Registered RegisteredUserResult = new("REGISTER_TOKEN", true);
 
-    public WebApiResponse<RegisterUserResult> RegisterResult =
-        new WebApiResponse<RegisterUserResult>()
-            .SetResult(RegisterUserResult);
-
-    public override Action<CustomWebApplicationOptions>? Options => opts =>
+    public override Action<CustomWebApplicationOptions> Options => opts =>
     {
-        var registerUserHandlerMock =
-            new Mock<IRequestHandler<RegisterUserCommand, ICommandResult<RegisterUserResult>>>();
+        var registerUserHandlerMock = new Mock<IRequestHandler<RegisterUserCommand, RegisterUserResult>>();
 
         registerUserHandlerMock.Setup(h =>
                 h.Handle(It.IsAny<RegisterUserCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new CommandResult<RegisterUserResult>(RegisterUserResult));
+            .ReturnsAsync(RegisteredUserResult);
 
-        opts.ReplaceService(typeof(IRequestHandler<RegisterUserCommand, ICommandResult<RegisterUserResult>>),
-            registerUserHandlerMock.Object);
+        opts.ReplaceService(typeof(IRequestHandler<RegisterUserCommand, RegisterUserResult>), registerUserHandlerMock.Object);
     };
 }
 
-public class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRegisterAuthAndValidationTestsBase>
+public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRegisterAuthAndValidationTestsBase>
 {
     private readonly UserRegisterAuthAndValidationTestsBase _fixture;
     private readonly RegisterUserCommand _registerUserCommand;
@@ -85,9 +77,9 @@ public class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRe
             .Should()
             .Be(HttpStatusCode.Created);
 
-        result.GetTyped<WebApiResponse<RegisterUserResult>>()
+        result.GetTyped<Registered>()
             .Should()
-            .BeEquivalentTo(_fixture.RegisterResult);
+            .BeEquivalentTo(_fixture.RegisteredUserResult);
     }
 
     public static IEnumerable<object[]> InvalidRegisterData()
@@ -154,8 +146,7 @@ public class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRe
             .Should()
             .Be(HttpStatusCode.BadRequest);
 
-        result.GetTyped<WebApiResponse<object>>()!
-            .Messages
+        result.GetTyped<string[]>()
             .Should().BeEquivalentTo(messages, opt => opt.WithoutStrictOrdering());
     }
 }
