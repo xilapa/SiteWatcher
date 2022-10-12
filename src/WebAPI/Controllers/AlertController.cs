@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Alert;
+﻿using Domain.DTOs.Alerts;
 using Domain.DTOs.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

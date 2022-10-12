@@ -72,7 +72,7 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
         CommandHandlerMock
             .Setup(h =>
                 h.Handle(It.IsAny<GetUserAlertsCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(CommandResult.FromValue(new PaginatedList<SimpleAlertView>(AlertsView)));
+            .ReturnsAsync(CommandResult.FromValue(new PaginatedList<SimpleAlertView>(AlertsView, 0)));
 
         opt.ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, CommandResult>), CommandHandlerMock.Object);
 

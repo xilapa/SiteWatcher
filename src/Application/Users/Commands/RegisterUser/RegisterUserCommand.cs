@@ -1,4 +1,3 @@
-using AutoMapper;
 using MediatR;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
@@ -17,25 +16,20 @@ public class RegisterUserCommand : IRequest<RegisterUserResult>
     public string? GoogleId { get; set; }
     public string? AuthEmail { get; set; }
 
-    public void GetSessionValues(ISession session)
-    {
-        AuthEmail = session.Email;
-        GoogleId = session.GoogleId;
-    }
+    public RegisterUserInput ToInputModel(ISession session) =>
+        new (Name!, Email!, Language, Theme, session.GoogleId!, session.Email!);
 }
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
 {
-    private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _uow;
     private readonly IAuthService _authService;
     private readonly ISession _session;
 
-    public RegisterUserCommandHandler(IMapper mapper, IUserRepository userRepository,
-        IUnitOfWork uow, IAuthService authService, ISession session)
+    public RegisterUserCommandHandler(IUserRepository userRepository, IUnitOfWork uow, IAuthService authService,
+        ISession session)
     {
-        _mapper = mapper;
         _userRepository = userRepository;
         _uow = uow;
         _authService = authService;
@@ -44,15 +38,14 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
 
     public async Task<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        request.GetSessionValues(_session);
-        var user = User.FromInputModel(_mapper.Map<RegisterUserInput>(request), _session.Now);
+        var user = User.FromInputModel(request.ToInputModel(_session), _session.Now);
 
         try
         {
             _userRepository.Add(user);
             await _uow.SaveChangesAsync(cancellationToken);
         }
-        catch(UniqueViolationException)
+        catch (UniqueViolationException)
         {
             return RegisterUserResult.AlreadyExists();
         }

@@ -1,6 +1,5 @@
 ﻿using System.Net;
-using AutoMapper;
-using Domain.DTOs.Alert;
+using Domain.DTOs.Alerts;
 using FluentAssertions;
 using HashidsNet;
 using IntegrationTests.Setup;
@@ -8,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Extensions;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -138,9 +139,8 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
 
         var alertFromDbMapped = await AppFactory.WithServiceProvider(prv =>
         {
-            var mapper = prv.GetRequiredService<IMapper>();
-            var alertView = mapper.Map<DetailedAlertView>(alertFromDatabase);
-            return Task.FromResult(alertView);
+            var idHasher = prv.GetRequiredService<IIdHasher>();
+            return Task.FromResult(alertFromDatabase!.ToDetailedAlertView(idHasher));
         });
 
         typedResult!.Should().BeEquivalentTo(alertFromDbMapped);

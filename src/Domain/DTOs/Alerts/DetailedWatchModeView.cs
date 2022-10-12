@@ -2,14 +2,14 @@
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
 using SiteWatcher.Domain.Utils;
 
-namespace Domain.DTOs.Alert;
+namespace Domain.DTOs.Alerts;
 
 public class DetailedWatchModeView
 {
     public EWatchMode? WatchMode { get; set; }
     public string? Term { get; set; }
 
-    public static DetailedWatchModeView FromModel(WatchMode watchMode)
+    public static implicit operator DetailedWatchModeView(WatchMode watchMode)
     {
         var watchModeType = Utils.GetWatchModeEnumByType(watchMode);
         var detailedView = new DetailedWatchModeView

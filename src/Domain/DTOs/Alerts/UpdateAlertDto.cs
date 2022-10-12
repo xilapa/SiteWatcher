@@ -2,7 +2,7 @@
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
 using SiteWatcher.Domain.Models.Common;
 
-namespace Domain.DTOs.Alert;
+namespace Domain.DTOs.Alerts;
 
 public class UpdateAlertDto
 {

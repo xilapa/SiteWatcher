@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using Domain.DTOs.Alert;
+using Domain.DTOs.Alerts;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Alerts;

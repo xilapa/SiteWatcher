@@ -15,7 +15,7 @@ public sealed class GetUserAlertsCommandTests
         // Arrange
         var command = new GetUserAlertsCommand {Take = 0};
         var alertDapperRepoMock = new Mock<IAlertDapperRepository>();
-        var handler = new GetUserAlertsCommandHandler(null!, null!, alertDapperRepoMock.Object, null!);
+        var handler = new GetUserAlertsCommandHandler(null!, null!, alertDapperRepoMock.Object);
 
         // Act
         var result = await handler.Handle(command, default);

@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Extensions;
 using SiteWatcher.Domain.Utils;
@@ -21,13 +21,13 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, Com
 {
     private readonly IAlertDapperRepository _alertDapperRepository;
     private readonly ISession _session;
-    private readonly IMapper _mapper;
+    private readonly IIdHasher _idHasher;
 
-    public SearchAlertCommandHandler(IAlertDapperRepository alertDapperRepository, ISession session, IMapper mapper)
+    public SearchAlertCommandHandler(IAlertDapperRepository alertDapperRepository, ISession session, IIdHasher idHasher)
     {
         _alertDapperRepository = alertDapperRepository;
         _session = session;
-        _mapper = mapper;
+        _idHasher = idHasher;
     }
 
     public async Task<CommandResult> Handle(SearchAlertCommand request,
@@ -42,7 +42,7 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, Com
             .SearchSimpleAlerts(searchTerms, _session.UserId!.Value, 10, cancellationToken);
         if (alerts.Count == 0)
             return CommandResult.Empty();
-        var alertsMapped = _mapper.Map<IEnumerable<SimpleAlertView>>(alerts);
+        var alertsMapped = alerts.Select(dto => SimpleAlertView.FromDto(dto, _idHasher));
         return CommandResult.FromValue(alertsMapped);
     }
 }

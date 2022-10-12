@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
@@ -15,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\WebAPI\WebAPI.csproj" />
+    <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

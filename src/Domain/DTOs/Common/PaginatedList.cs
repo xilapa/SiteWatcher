@@ -5,9 +5,10 @@ public class PaginatedList<T>
     public PaginatedList()
     { }
 
-    public PaginatedList(IEnumerable<T> results)
+    public PaginatedList(IEnumerable<T> results, int total)
     {
         Results = results;
+        Total = total;
     }
 
     public int Total { get; set; }

@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Domain.DTOs.Alert;
+﻿using Domain.DTOs.Alerts;
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
@@ -18,29 +18,37 @@ public class CreateAlertCommand : IRequest<CommandResult>
 
     // Term watch
     public string? Term { get; set; }
+
+    public static implicit operator CreateAlertInput(CreateAlertCommand command) =>
+        new(command.Name,
+            command.Frequency,
+            command.SiteName,
+            command.SiteUri,
+            command.WatchMode,
+            command.Term);
 }
 
 public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, CommandResult>
 {
-    private readonly IMapper _mapper;
     private readonly ISession _session;
     private readonly IAlertRepository _alertRepository;
     private readonly IUnitOfWork _uow;
+    private readonly IIdHasher _idHasher;
 
-    public CreateAlertCommandHandler(IMapper mapper, ISession session, IAlertRepository alertRepository, IUnitOfWork uow)
+    public CreateAlertCommandHandler(ISession session, IAlertRepository alertRepository, IUnitOfWork uow,
+        IIdHasher idHasher)
     {
-        _mapper = mapper;
         _session = session;
         _alertRepository = alertRepository;
         _uow = uow;
+        _idHasher = idHasher;
     }
 
     public async Task<CommandResult> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
     {
-        var alertInput = _mapper.Map<CreateAlertInput>(request);
-        var alert = AlertFactory.Create(alertInput, _session.UserId!.Value, _session.Now);
+        var alert = AlertFactory.Create(request, _session.UserId!.Value, _session.Now);
         _alertRepository.Add(alert);
         await _uow.SaveChangesAsync(cancellationToken);
-        return CommandResult.FromValue(_mapper.Map<DetailedAlertView>(alert));
+        return CommandResult.FromValue(alert.ToDetailedAlertView(_idHasher));
     }
 }

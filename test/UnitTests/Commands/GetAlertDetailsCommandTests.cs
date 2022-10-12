@@ -17,7 +17,7 @@ public sealed class GetAlertDetailsCommandTests
         // Arrange
         var alertRepoMock = new Mock<IAlertDapperRepository>();
         var idHasher = new IdHasher(new TestAppSettings());
-        var handler = new GetAlerDetailsCommandHandler(null!, alertRepoMock.Object, idHasher, null!);
+        var handler = new GetAlertDetailsCommandHandler(null!, alertRepoMock.Object, idHasher);
 
         var command = new GetAlertDetailsCommand {AlertId = "invalid"};
 
