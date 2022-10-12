@@ -2,7 +2,7 @@
 
 namespace UnitTests.UtilsTests;
 
-public class GetTokenPayloadTests
+public sealed class GetTokenPayloadTests
 {
     private const string Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" +
                                  ".eyJpZCI6IjdmkaXJjZXUuc2iOjE2NTM1MjcyODIsImV4cCI6MTY1MzUyNzI5MCwiaWF" +

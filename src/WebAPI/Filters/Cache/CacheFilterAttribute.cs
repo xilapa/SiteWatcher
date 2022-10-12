@@ -62,6 +62,7 @@ public class CacheFilterAttribute : Attribute, IAsyncActionFilter, IAsyncResultF
         }
 
         // 30s cache on client, based on official ResponseCacheFilterExecutor
+        // https://github.com/dotnet/aspnetcore/blob/main/src/Mvc/Mvc.Core/src/Filters/ResponseCacheFilterExecutor.cs
         context.HttpContext.Response.Headers.CacheControl = "private,max-age=30";
         await next();
     }

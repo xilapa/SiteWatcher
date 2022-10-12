@@ -62,10 +62,10 @@ public class GoogleAuthenticationTests : BaseTest, IClassFixture<GoogleAuthentic
         result.HttpResponse!.StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        var typedResult = result.GetTyped<WebApiResponse<AuthenticationResult>>();
-        typedResult!.Result!.Task
+        var typedResult = result.GetTyped<AuthenticationResult>();
+        typedResult!.Task
             .Should().Be(EAuthTask.Login);
-        typedResult.Result!.Token
+        typedResult.Token
             .Should().NotBeEmpty();
 
         // HttpFactory should be called one time
@@ -92,15 +92,13 @@ public class GoogleAuthenticationTests : BaseTest, IClassFixture<GoogleAuthentic
         result.HttpResponse!.StatusCode
             .Should().Be(HttpStatusCode.BadRequest);
 
-        var typedResult = result.GetTyped<WebApiResponse<AuthenticationResult>>();
-        typedResult!.Result.Should().BeNull();
+        var typedResult = result.GetTyped<string[]>();
 
-        typedResult.Messages
-            .Should().BeEquivalentTo(new[]
-            {
+        typedResult
+            .Should().BeEquivalentTo(
                 ApplicationErrors.GOOGLE_AUTH_ERROR,
                 ApplicationErrors.GOOGLE_AUTH_ERROR
-            });
+            );
 
         // HttpFactory should not be called
         _fixture.AppFactory.HttpClientFactoryMock
@@ -139,9 +137,8 @@ public class GoogleAuthenticationTests : BaseTest, IClassFixture<GoogleAuthentic
         result.HttpResponse!.StatusCode
             .Should().Be(HttpStatusCode.BadRequest);
 
-        var typedResult = result.GetTyped<WebApiResponse<AuthenticationResult>>();
-        typedResult!.Result.Should().BeNull();
-        typedResult.Messages
+        var typedResult = result.GetTyped<string[]>();
+        typedResult
             .Should().BeEquivalentTo(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
         // HttpFactory should be called one time
@@ -188,10 +185,10 @@ public class GoogleAuthenticationTests : BaseTest, IClassFixture<GoogleAuthentic
         result.HttpResponse!.StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        var typedResult = result.GetTyped<WebApiResponse<AuthenticationResult>>();
-        typedResult!.Result!.Task
+        var typedResult = result.GetTyped<AuthenticationResult>();
+        typedResult!.Task
             .Should().Be(EAuthTask.Login);
-        typedResult.Result!.Token
+        typedResult.Token
             .Should().NotBeEmpty();
 
         // HttpFactory should be called one time

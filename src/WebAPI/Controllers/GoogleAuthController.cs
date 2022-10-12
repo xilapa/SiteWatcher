@@ -45,6 +45,6 @@ public class GoogleAuthController : ControllerBase
     public async Task<IActionResult> Authenticate(GoogleAuthenticationCommand command, CancellationToken cancellationToken)
     {
         var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.Handle<AuthenticationResult>();
+        return commandResult.ToActionResult<AuthenticationResult>();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Domain.DTOs.Alert;
+﻿namespace Domain.DTOs.Alerts;
 
 public class AlertDetailsDto
 {

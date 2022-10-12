@@ -6,7 +6,7 @@ using SiteWatcher.Domain.Models;
 
 namespace UnitTests.ModelTests;
 
-public class UserTests
+public sealed class UserTests
 {
     [Theory]
     [InlineData("email", "email", true)]

@@ -4,7 +4,7 @@ using SiteWatcher.Application.Users.Commands.ActivateAccount;
 
 namespace UnitTests.Commands;
 
-public class SendReactivateAccountEmailCommandTests
+public sealed class SendReactivateAccountEmailCommandTests
 {
     [Fact]
     public async Task CantSentReactivateAccountEmailForNonExistingUser()

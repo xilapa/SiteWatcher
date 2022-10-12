@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
@@ -14,6 +13,8 @@ public class UpdateUserCommand : IRequest<CommandResult>
     public string? Email { get; set; }
     public ELanguage Language { get; set; }
     public ETheme Theme { get; set; }
+
+    public UpdateUserInput ToInputModel() => new (Name!, Email!, Language, Theme);
 }
 
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, CommandResult>
@@ -21,20 +22,17 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Comma
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _uow;
     private readonly IAuthService _authService;
-    private readonly IMapper _mapper;
     private readonly ISession _session;
 
     public UpdateUserCommandHandler(
         IUserRepository userRepository,
         IUnitOfWork uow,
         IAuthService authService,
-        IMapper mapper,
         ISession session)
     {
         _userRepository = userRepository;
         _uow = uow;
         _authService = authService;
-        _mapper = mapper;
         _session = session;
     }
 
@@ -45,7 +43,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Comma
         if (user is null)
             return CommandResult.FromError(ApplicationErrors.USER_DO_NOT_EXIST);
 
-        user.Update(_mapper.Map<UpdateUserInput>(request), _session.Now);
+        user.Update(request.ToInputModel(), _session.Now);
         await _uow.SaveChangesAsync(cancellationToken);
 
         var newToken = _authService.GenerateLoginToken(user);

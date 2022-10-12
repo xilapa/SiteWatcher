@@ -3,7 +3,7 @@ using SiteWatcher.Domain.Extensions;
 
 namespace UnitTests.ExtensionsTests;
 
-public class StringExtensionsTests
+public sealed class StringExtensionsTests
 {
     [Theory]
     [InlineData("Macarrão", "macarrao")]

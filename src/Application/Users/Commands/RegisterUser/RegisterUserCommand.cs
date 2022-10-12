@@ -1,6 +1,4 @@
-using AutoMapper;
 using MediatR;
-using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
@@ -9,7 +7,7 @@ using SiteWatcher.Domain.Models;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommand : IRequest<CommandResult>
+public class RegisterUserCommand : IRequest<RegisterUserResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
@@ -18,49 +16,43 @@ public class RegisterUserCommand : IRequest<CommandResult>
     public string? GoogleId { get; set; }
     public string? AuthEmail { get; set; }
 
-    public void GetSessionValues(ISession session)
-    {
-        AuthEmail = session.Email;
-        GoogleId = session.GoogleId;
-    }
+    public RegisterUserInput ToInputModel(ISession session) =>
+        new (Name!, Email!, Language, Theme, session.GoogleId!, session.Email!);
 }
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, CommandResult>
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
 {
-    private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _uow;
     private readonly IAuthService _authService;
     private readonly ISession _session;
 
-    public RegisterUserCommandHandler(IMapper mapper, IUserRepository userRepository,
-        IUnitOfWork uow, IAuthService authService, ISession session)
+    public RegisterUserCommandHandler(IUserRepository userRepository, IUnitOfWork uow, IAuthService authService,
+        ISession session)
     {
-        _mapper = mapper;
         _userRepository = userRepository;
         _uow = uow;
         _authService = authService;
         _session = session;
     }
 
-    public async Task<CommandResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        request.GetSessionValues(_session);
-        var user = User.FromInputModel(_mapper.Map<RegisterUserInput>(request), _session.Now);
+        var user = User.FromInputModel(request.ToInputModel(_session), _session.Now);
 
         try
         {
             _userRepository.Add(user);
             await _uow.SaveChangesAsync(cancellationToken);
         }
-        catch(UniqueViolationException)
+        catch (UniqueViolationException)
         {
-            return CommandResult.FromValue(RegisterUserResult.AlreadyExists());
+            return RegisterUserResult.AlreadyExists();
         }
 
         var token = _authService.GenerateLoginToken(user);
         await _authService.InvalidateCurrentRegisterToken();
 
-        return CommandResult.FromValue(new Registered(token, !user.EmailConfirmed));
+        return RegisterUserResult.Registered(token, !user.EmailConfirmed);
     }
 }

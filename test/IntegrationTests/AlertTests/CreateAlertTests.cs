@@ -1,22 +1,22 @@
 ﻿using System.Net;
-using AutoMapper;
-using Domain.DTOs.Alert;
+using Domain.DTOs.Alerts;
 using FluentAssertions;
 using HashidsNet;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.AlertTests;
 
-public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
+public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
 {
     public CreateAlertTests(BaseTestFixture fixture) : base(fixture)
     { }
@@ -27,14 +27,15 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
         {
             new CreateAlertCommand(),
             HttpStatusCode.BadRequest,
-            new WebApiResponse<DetailedAlertView>()
-                .AddMessages(
-                    ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.Name)),
-                    ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)),
-                    ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.SiteName)),
-                    ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)),
-                    ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode))
-                    )
+            null!, // DetailedAlertView
+            new[]
+            {
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.Name)),
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)),
+                ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.SiteName)),
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)),
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode))
+            }
         };
 
         yield return new object[]
@@ -47,19 +48,19 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 SiteUri = "https://store.site.io",
                 WatchMode = EWatchMode.AnyChanges
             },
-            HttpStatusCode.OK,
-            new WebApiResponse<DetailedAlertView>()
-                .SetResult(new DetailedAlertView
+            HttpStatusCode.Created,
+            new DetailedAlertView
                 {
                     Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(1),
                     Name = "Test Alert1",
                     Frequency = EFrequency.TwentyFourHours,
-                    Site = new SiteView {Name="store site", Uri="https://store.site.io/"},
+                    Site = new SiteView("store site","https://store.site.io/"),
                     WatchMode = new DetailedWatchModeView
                     {
                         WatchMode = EWatchMode.AnyChanges
                     }
-                })
+                },
+            null! // errors
         };
 
         yield return new object[]
@@ -73,32 +74,32 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 WatchMode = EWatchMode.Term,
                 Term = "lookup term"
             },
-            HttpStatusCode.OK,
-            new WebApiResponse<DetailedAlertView>()
-                .SetResult(new DetailedAlertView
+            HttpStatusCode.Created,
+            new DetailedAlertView
                 {
                     Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(2),
                     Name = "Test Alert2",
                     Frequency = EFrequency.TwentyFourHours,
-                    Site = new SiteView {Name="store site", Uri="https://store.site.io/"},
+                    Site = new SiteView("store site", "https://store.site.io/"),
                     WatchMode = new DetailedWatchModeView
                     {
                         WatchMode = EWatchMode.Term,
                         Term = "lookup term"
                     }
-                })
+                },
+            null! // errors
         };
     }
 
     [Theory]
     [MemberData(nameof(CreateAlertData))]
     public async Task AlertWithAnyChangesWatchIsCreatedCorrectly(CreateAlertCommand command,
-        HttpStatusCode expectedStatusCode, WebApiResponse<DetailedAlertView> expectedResult)
+        HttpStatusCode expectedStatusCode, DetailedAlertView? expectedResult, string[]? errors)
     {
         // Arrange
         LoginAs(Users.Xilapa);
-        if(expectedResult.Result != null)
-            expectedResult.Result.CreatedAt = CurrentTime;
+        if(expectedResult is not null)
+            expectedResult.CreatedAt = CurrentTime;
 
         // Act
         var result = await PostAsync("alert", command);
@@ -107,7 +108,22 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
         result.HttpResponse!.StatusCode
             .Should().Be(expectedStatusCode);
 
-        var typedResult = result.GetTyped<WebApiResponse<DetailedAlertView>>();
+        if (errors is not null)
+        {
+            var typedErrorResult = result.GetTyped<string[]>();
+            typedErrorResult.Should().BeEquivalentTo(errors);
+
+            (await AppFactory.WithDbContext(ctx =>
+            {
+                return ctx.Alerts
+                    .Include(a => a.WatchMode)
+                    .FirstOrDefaultAsync(a => a.Name == command.Name);
+            })).Should().BeNull();
+
+            return;
+        }
+
+        var typedResult = result.GetTyped<DetailedAlertView>();
         typedResult.Should().BeEquivalentTo(expectedResult);
 
         // Check on database
@@ -123,11 +139,10 @@ public class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
 
         var alertFromDbMapped = await AppFactory.WithServiceProvider(prv =>
         {
-            var mapper = prv.GetRequiredService<IMapper>();
-            var alertView = mapper.Map<DetailedAlertView>(alertFromDatabase);
-            return Task.FromResult(alertView);
+            var idHasher = prv.GetRequiredService<IIdHasher>();
+            return Task.FromResult(DetailedAlertView.FromAlert(alertFromDatabase!, idHasher));
         });
 
-        typedResult!.Result.Should().BeEquivalentTo(alertFromDbMapped);
+        typedResult!.Should().BeEquivalentTo(alertFromDbMapped);
     }
 }

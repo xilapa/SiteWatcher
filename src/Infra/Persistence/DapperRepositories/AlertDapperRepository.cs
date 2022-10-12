@@ -1,7 +1,8 @@
 ﻿using System.Dynamic;
 using Dapper;
-using Domain.DTOs.Alert;
+using Domain.DTOs.Alerts;
 using Domain.DTOs.Common;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 
@@ -11,35 +12,39 @@ public class AlertDapperRepository : IAlertDapperRepository
 {
     private readonly IDapperContext _dapperContext;
     private readonly IDapperQueries _dapperQueries;
+    private readonly IIdHasher _idHasher;
 
-    public AlertDapperRepository(IDapperContext dapperContext, IDapperQueries dapperQueries)
+    public AlertDapperRepository(IDapperContext dapperContext, IDapperQueries dapperQueries, IIdHasher idHasher)
     {
         _dapperContext = dapperContext;
         _dapperQueries = dapperQueries;
+        _idHasher = idHasher;
     }
 
-    public async Task<PaginatedList<SimpleAlertViewDto>> GetUserAlerts(UserId userId, int take, int lastAlertId,
+    public async Task<PaginatedList<SimpleAlertView>> GetUserAlerts(UserId userId, int take, int lastAlertId,
         CancellationToken cancellationToken)
     {
         var parameters = new {lastAlertId, userId, take};
         var commandDefinition = new CommandDefinition(_dapperQueries.GetSimpleAlertViewListByUserId, parameters,
             cancellationToken: cancellationToken);
-        var result = new PaginatedList<SimpleAlertViewDto>();
+        var result = new PaginatedList<SimpleAlertView>();
         await _dapperContext.UsingConnectionAsync(async conn =>
         {
             var gridReader = await conn.QueryMultipleAsync(commandDefinition);
             result.Total = await gridReader.ReadSingleAsync<int>();
-            result.Results = await gridReader.ReadAsync<SimpleAlertViewDto>();
+            result.Results = (await gridReader.ReadAsync<SimpleAlertViewDto>())
+                .Select(dto => SimpleAlertView.FromDto(dto, _idHasher));
         });
         return result;
     }
 
-    public async Task<AlertDetailsDto?> GetAlertDetails(int alertId, UserId userId, CancellationToken cancellationToken)
+    public async Task<AlertDetails?> GetAlertDetails(int alertId, UserId userId, CancellationToken cancellationToken)
     {
         var commandDefinition = new CommandDefinition(_dapperQueries.GetAlertDetails, new {alertId, userId},
             cancellationToken: cancellationToken);
-        return await _dapperContext.UsingConnectionAsync(conn =>
+        var alertDetailsDto = await _dapperContext.UsingConnectionAsync(conn =>
             conn.QueryFirstOrDefaultAsync<AlertDetailsDto>(commandDefinition));
+        return alertDetailsDto is null ? null: AlertDetails.FromDto(alertDetailsDto, _idHasher);
     }
 
     public async Task<bool> DeleteUserAlert(int alertId, UserId userId, CancellationToken cancellationToken)
@@ -51,7 +56,7 @@ public class AlertDapperRepository : IAlertDapperRepository
         return affectedRows > 0;
     }
 
-    public async Task<List<SimpleAlertViewDto>> SearchSimpleAlerts(string[] searchTerms, UserId userId, int take,
+    public async Task<IEnumerable<SimpleAlertView>> SearchSimpleAlerts(string[] searchTerms, UserId userId, int take,
         CancellationToken cancellationToken)
     {
         var parameters = new ExpandoObject() as IDictionary<string, object>;
@@ -66,8 +71,9 @@ public class AlertDapperRepository : IAlertDapperRepository
 
         var commandDefinition = new CommandDefinition(_dapperQueries.SearchSimpleAlerts(searchTerms.Length),
             parameters, cancellationToken: cancellationToken);
-        var result = await _dapperContext.UsingConnectionAsync(conn =>
+        var alertViewDtos = await _dapperContext.UsingConnectionAsync(conn =>
             conn.QueryAsync<SimpleAlertViewDto>(commandDefinition));
-        return result.AsList();
+
+        return alertViewDtos.Select(dto => SimpleAlertView.FromDto(dto, _idHasher));
     }
 }

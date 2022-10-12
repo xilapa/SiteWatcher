@@ -4,6 +4,7 @@ public abstract class RegisterUserResult
 {
     private static AlreadyExists _alreadyExists => new();
     public static AlreadyExists AlreadyExists() => _alreadyExists;
+    public static Registered Registered(string token, bool confirmationEmailSend) => new(token, confirmationEmailSend);
 }
 
 public sealed class Registered : RegisterUserResult

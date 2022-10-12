@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Domain.DTOs.Alert;
 using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
@@ -9,32 +8,23 @@ using Moq;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.AlertTests;
 
-public class AlertCacheTestsBase : BaseTestFixture
+public sealed class AlertCacheTestsBase : BaseTestFixture
 {
-    public Mock<IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>> CommandHandlerMock
+    public AlertCacheTestsBase()
     {
-        get;
-        set;
-    }
-
-    public SimpleAlertView[] AlertsView { get; set; }
-    public AlertId AlertToUpdateId { get; set; }
-
-    public override Action<CustomWebApplicationOptions> Options => opt =>
-    {
+        CommandHandlerMock = new Mock<IRequestHandler<GetUserAlertsCommand, CommandResult>>();
         AlertsView = new SimpleAlertView[]
         {
             new()
@@ -65,17 +55,27 @@ public class AlertCacheTestsBase : BaseTestFixture
                 WatchMode = EWatchMode.Term
             }
         };
+    }
 
-        CommandHandlerMock =
-            new Mock<IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>>();
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+        var alertToUpdate = await AppFactory.CreateAlert("alert", EWatchMode.Term, Users.Xilapa.Id);
+        AlertToUpdateId = alertToUpdate.Id;
+    }
 
+    public Mock<IRequestHandler<GetUserAlertsCommand, CommandResult>> CommandHandlerMock { get; }
+    public SimpleAlertView[] AlertsView { get; }
+    public AlertId AlertToUpdateId { get; private set; }
+
+    public override Action<CustomWebApplicationOptions> Options => opt =>
+    {
         CommandHandlerMock
             .Setup(h =>
                 h.Handle(It.IsAny<GetUserAlertsCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new CommandResult<PaginatedList<SimpleAlertView>>(new PaginatedList<SimpleAlertView>(AlertsView)));
+            .ReturnsAsync(CommandResult.FromValue(new PaginatedList<SimpleAlertView>(AlertsView, 0)));
 
-        opt.ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, ICommandResult<PaginatedList<SimpleAlertView>>>),
-            CommandHandlerMock.Object);
+        opt.ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, CommandResult>), CommandHandlerMock.Object);
 
         // Replace services to delete alert test
         var idHasherMock = new Mock<IIdHasher>();
@@ -92,14 +92,6 @@ public class AlertCacheTestsBase : BaseTestFixture
         opt.ReplaceService(typeof(IIdHasher), idHasherMock.Object);
         opt.ReplaceService(typeof(IAlertDapperRepository), alertDapperRepoMock.Object);
     };
-
-    public override async Task InitializeAsync()
-    {
-        await base.InitializeAsync();
-        var alertToUpdate = await AppFactory
-            .CreateAlert("alert", EWatchMode.Term, Users.Xilapa.Id);
-        AlertToUpdateId = alertToUpdate.Id;
-    }
 }
 
 public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
@@ -126,10 +118,10 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         await GetAsync("alert");
         FakeCache.Cache.Count.Should().Be(1);
         var cachedResult = JsonSerializer
-            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>(
+            .Deserialize<PaginatedList<SimpleAlertView>>(
                 (FakeCache.Cache.Values.First().Value as string)!);
 
-        cachedResult!.Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
+        cachedResult!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
 
         _fixture.CommandHandlerMock
             .Verify(c =>
@@ -138,8 +130,8 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
 
         // second call
         var result = await GetAsync("alert");
-        result.GetTyped<WebApiResponse<PaginatedList<SimpleAlertView>>>()! // result must be the same
-            .Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
+        result.GetTyped<PaginatedList<SimpleAlertView>>()! // result must be the same
+            .Results.Should().BeEquivalentTo(_fixture.AlertsView);
         FakeCache.Cache.Count.Should().Be(1); // fake cache must have the same entry
         _fixture.CommandHandlerMock // handler should not be called
             .Verify(c =>
@@ -167,16 +159,16 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         await GetAsync("alert");
         FakeCache.Cache.Count.Should().Be(1);
         var cachedResult = JsonSerializer
-            .Deserialize<WebApiResponse<PaginatedList<SimpleAlertView>>>(
+            .Deserialize<PaginatedList<SimpleAlertView>>(
                 (FakeCache.Cache.Values.First().Value as string)!);
 
-        cachedResult!.Result!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
+        cachedResult!.Results.Should().BeEquivalentTo(_fixture.AlertsView);
 
         // create alert
         var result = await PostAsync("alert", createAlertCommand);
 
         result.HttpResponse!.StatusCode
-            .Should().Be(HttpStatusCode.OK);
+            .Should().Be(HttpStatusCode.Created);
 
         // Await fire and forget to execute
         await Task.Delay(300);
@@ -198,7 +190,7 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         // Act
         var res = await DeleteAsync("alert/mocked");
         res.HttpResponse!
-            .StatusCode.Should().Be(HttpStatusCode.OK);
+            .StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         // Await fire and forget to execute
         await Task.Delay(300);

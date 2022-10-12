@@ -5,7 +5,7 @@ using SiteWatcher.Domain.Enums;
 
 namespace UnitTests.ValidatorsTests;
 
-public class UpdateUserCommandValidatorTests
+public sealed class UpdateUserCommandValidatorTests
 {
     public static IEnumerable<object[]> UpdateUserData()
     {

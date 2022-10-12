@@ -82,12 +82,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .Be(HttpStatusCode.OK);
 
-        var typedResult = result.GetTyped<WebApiResponse<UpdateUserResult>>();
+        var typedResult = result.GetTyped<UpdateUserResult>();
         typedResult!
-            .Messages.Count
-            .Should().Be(0);
-        typedResult
-            .Result!.Token
+            .Token
             .Should().NotBeNullOrEmpty();
 
         var userFromDb = await AppFactory.WithDbContext(ctx =>
@@ -124,13 +121,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .Be(HttpStatusCode.BadRequest);
 
-        var typedResult = result.GetTyped<WebApiResponse<UpdateUserResult>>();
+        var typedResult = result.GetTyped<string[]>();
         typedResult!
-            .Messages
             .Should().NotBeEmpty();
-        typedResult
-            .Result
-            .Should().BeNull();
 
         var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
@@ -291,7 +284,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
-            .Be(HttpStatusCode.OK);
+            .Be(HttpStatusCode.NoContent);
 
         // Checking that the user email is confirmed
         var updatedUser = await AppFactory.WithDbContext(ctx =>
@@ -326,8 +319,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         // Act
         var result = await PutAsync("user/confirm-email", confirmEmailCommand);
 
-        result.GetTyped<WebApiResponse<object>>()!
-            .Messages[0]
+        result.GetTyped<string[]>()![0]
             .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         // Assert
@@ -549,7 +541,7 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
-            .Be(HttpStatusCode.OK);
+            .Be(HttpStatusCode.NoContent);
 
         // Checking that the user was reactivated
         var userFromDb = await AppFactory.WithDbContext(ctx =>
@@ -592,9 +584,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
             .Should()
             .Be(HttpStatusCode.BadRequest);
 
-        var typedResult = result.GetTyped<WebApiResponse<object>>();
-        typedResult!.Messages.Count.Should().Be(1);
-        typedResult.Messages[0].Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
+        var typedResult = result.GetTyped<string[]>();
+        typedResult!.Length.Should().Be(1);
+        typedResult[0].Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         // Checking that the user was reactivated
         var userFromDb = await AppFactory.WithDbContext(ctx =>

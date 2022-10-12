@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
+using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.IdHasher;
@@ -8,7 +10,7 @@ using SiteWatcher.IntegrationTests.Setup.TestServices;
 
 namespace UnitTests.Commands;
 
-public class DeleteAlertCommandTests
+public sealed class DeleteAlertCommandTests
 {
     [Fact]
     public async Task InvalidAlertIdDoesntCallTheDatabase()
@@ -21,10 +23,11 @@ public class DeleteAlertCommandTests
         var command = new DeleteAlertCommand {AlertId = "invalidId"};
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = await handler.Handle(command, default) as ErrorResult;
 
         // Assert
-        result.Success.Should().BeFalse();
+        result!.Errors.Count().Should().Be(1);
+        result.Errors.First().Should().Be(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
         alertDapperRepoMock
             .Verify(r =>
                 r.DeleteUserAlert(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()),

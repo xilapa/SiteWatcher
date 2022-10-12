@@ -9,7 +9,7 @@ using SiteWatcher.Infra.Authorization;
 
 namespace UnitTests.Services;
 
-public class AuthServiceTests
+public sealed class AuthServiceTests
 {
     private readonly AuthService _authService;
     private readonly int _loginTokenExpiration;

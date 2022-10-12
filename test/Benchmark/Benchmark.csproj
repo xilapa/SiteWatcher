@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="AutoMapper" Version="12.0.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -10,11 +11,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="StackExchange.Redis" Version="2.6.48" />
+    <PackageReference Include="StackExchange.Redis" Version="2.6.66" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\WebAPI\WebAPI.csproj" />
+    <ProjectReference Include="..\IntegrationTests\IntegrationTests.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

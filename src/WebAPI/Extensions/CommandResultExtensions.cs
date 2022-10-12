@@ -6,7 +6,7 @@ namespace SiteWatcher.WebAPI.Extensions;
 
 public static class CommandResultExtensions
 {
-    private const string ResultIsNotEmpty = "The result has a value, use instead Handle<T>";
+    private const string ResultIsNotEmpty = "The result has a value, use instead ToActionResult<T>";
 
     /// <summary>
     /// Handle command results with value.
@@ -15,10 +15,10 @@ public static class CommandResultExtensions
     /// <param name="valueResultHandler">Result handler, the default value is OkObjectResult</param>
     /// <typeparam name="T">Type of the CommandValueResult</typeparam>
     /// <returns>Action result</returns>
-    public static IActionResult Handle<T>(this CommandResult commandResult, Func<T, IActionResult>? valueResultHandler = null) =>
+    public static IActionResult ToActionResult<T>(this CommandResult commandResult, Func<T, IActionResult>? valueResultHandler = null) =>
         commandResult switch
         {
-            EmptyResult => new OkResult(),
+            EmptyResult => new OkObjectResult(null),
             ErrorResult errorResult => new BadRequestObjectResult(errorResult.Errors),
             ValueResult<T> valueResult => valueResultHandler is null ?
                 new OkObjectResult(valueResult.Value) : valueResultHandler(valueResult.Value),
@@ -31,12 +31,12 @@ public static class CommandResultExtensions
     /// <param name="commandResult"></param>
     /// <returns>Action result</returns>
     /// <exception cref="InvalidOperationException">The result has a value</exception>
-    public static IActionResult Handle(this CommandResult commandResult) =>
+    public static IActionResult ToActionResult(this CommandResult commandResult) =>
         commandResult switch
         {
-            EmptyResult => new OkResult(),
+            EmptyResult => new OkObjectResult(null),
             ErrorResult errorResult => new BadRequestObjectResult(errorResult.Errors),
-            ValueResult<object> => throw new InvalidOperationException(ResultIsNotEmpty),
-            _ => throw new ArgumentOutOfRangeException(nameof(commandResult), commandResult, null)
+            { } => throw new InvalidOperationException(ResultIsNotEmpty),
+            null => throw new ArgumentNullException(nameof(commandResult))
         };
 }

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using AutoMapper;
 using FluentAssertions;
 using Moq;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
@@ -9,7 +9,7 @@ using SiteWatcher.Domain.Models;
 
 namespace UnitTests.Commands;
 
-public class UpdateUserCommandTests
+public sealed class UpdateUserCommandTests
 {
     [Fact]
     public async Task CantUpdateNonExistingUser()
@@ -21,19 +21,16 @@ public class UpdateUserCommandTests
             .Returns(Task.FromResult<User?>(default));
         var uow = new Mock<IUnitOfWork>().Object;
         var authService = new Mock<IAuthService>().Object;
-        var mapper = new Mock<IMapper>().Object;
         var session = new Mock<ISession>().Object;
 
-        var commandHandler = new UpdateUserCommandHandler(userRepositoryMock.Object, uow, authService, mapper, session);
+        var commandHandler = new UpdateUserCommandHandler(userRepositoryMock.Object, uow, authService, session);
 
         // Act
-        var result = await commandHandler.Handle(new UpdateUserCommand(), CancellationToken.None);
+        var result = await commandHandler.Handle(new UpdateUserCommand(), CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Success
-            .Should().BeFalse();
 
-        result.Errors
+        result!.Errors
             .Count().Should().Be(1);
 
         result.Errors.First()

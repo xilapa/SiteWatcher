@@ -4,7 +4,7 @@ using SiteWatcher.Application.Users.Commands.DeactivateAccount;
 
 namespace UnitTests.Commands;
 
-public class DeactivateAccountCommandTests
+public sealed class DeactivateAccountCommandTests
 {
         [Fact]
         public async Task CantDeactivateNonExistingUser()
