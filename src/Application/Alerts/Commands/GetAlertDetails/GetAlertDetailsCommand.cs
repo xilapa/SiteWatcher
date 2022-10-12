@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Utils;
 
@@ -20,20 +20,18 @@ public class GetAlertDetailsCommand : IRequest<CommandResult>, ICacheable
         CacheKeys.UserAlerts(session.UserId!.Value);
 }
 
-public class GetAlerDetailsCommandHandler : IRequestHandler<GetAlertDetailsCommand, CommandResult>
+public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsCommand, CommandResult>
 {
     private readonly ISession _session;
     private readonly IAlertDapperRepository _alertDapperRepository;
     private readonly IIdHasher _idHasher;
-    private readonly IMapper _mapper;
 
-    public GetAlerDetailsCommandHandler(ISession session, IAlertDapperRepository alertDapperRepository,
-        IIdHasher idHasher, IMapper mapper)
+    public GetAlertDetailsCommandHandler(ISession session, IAlertDapperRepository alertDapperRepository,
+        IIdHasher idHasher)
     {
         _session = session;
         _alertDapperRepository = alertDapperRepository;
         _idHasher = idHasher;
-        _mapper = mapper;
     }
 
     public async Task<CommandResult> Handle(GetAlertDetailsCommand request,
@@ -47,10 +45,8 @@ public class GetAlerDetailsCommandHandler : IRequestHandler<GetAlertDetailsComma
             await _alertDapperRepository.GetAlertDetails(alertId, _session.UserId!.Value,
                 cancellationToken);
 
-        if (alertDetailsDto is null)
-            return CommandResult.Empty();
-
-        var alertDetail = _mapper.Map<AlertDetails>(alertDetailsDto);
-        return CommandResult.FromValue(alertDetail);
+        return alertDetailsDto is null ?
+            CommandResult.Empty() :
+            CommandResult.FromValue(AlertDetails.FromDto(alertDetailsDto, _idHasher));
     }
 }

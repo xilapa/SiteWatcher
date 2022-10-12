@@ -1,15 +1,16 @@
 ﻿using SiteWatcher.Domain.Enums;
 
-namespace Domain.DTOs.Alert;
+namespace Domain.DTOs.Alerts;
 
-public class DetailedAlertView
+public struct SimpleAlertViewDto
 {
-    public string Id { get; set; }
+    public int Id { get; set; }
     public string Name { get; set; }
     public DateTime CreatedAt { get; set; }
     public EFrequency Frequency { get; set; }
     public DateTime? LastVerification { get; set; }
+    // TODO: Count notifications sent
     public int NotificationsSent { get; set; }
-    public SiteView Site { get; set; }
-    public DetailedWatchModeView WatchMode { get; set; }
+    public string SiteName { get; set; }
+    public char WatchMode { get; set; }
 }

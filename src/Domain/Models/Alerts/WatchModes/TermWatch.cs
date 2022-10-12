@@ -1,4 +1,4 @@
-﻿using Domain.DTOs.Alert;
+﻿using Domain.DTOs.Alerts;
 
 namespace SiteWatcher.Domain.Models.Alerts.WatchModes;
 

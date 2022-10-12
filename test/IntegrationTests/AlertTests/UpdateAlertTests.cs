@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Domain.DTOs.Alert;
+using Domain.DTOs.Alerts;
 using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
@@ -55,7 +55,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated.com"},
                 Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwentyFourHours},
                 WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.Term},
-                Term = new UpdateInfo<string?> {NewValue = "new term"}
+                Term = new UpdateInfo<string> {NewValue = "new term"}
             }
         };
 
@@ -69,7 +69,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated2.com"},
                 Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwentyFourHours},
                 WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.Term},
-                Term = new UpdateInfo<string?> {NewValue = "new term2"}
+                Term = new UpdateInfo<string> {NewValue = "new term2"}
             }
         };
 
@@ -96,7 +96,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated4.com"},
                 Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.FourHours},
                 WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.AnyChanges},
-                Term = new UpdateInfo<string?> {NewValue = "new term4"}
+                Term = new UpdateInfo<string> {NewValue = "new term4"}
             }
         };
     }

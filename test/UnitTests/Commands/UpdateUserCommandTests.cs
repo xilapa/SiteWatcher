@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using AutoMapper;
 using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Common.Commands;
@@ -22,10 +21,9 @@ public sealed class UpdateUserCommandTests
             .Returns(Task.FromResult<User?>(default));
         var uow = new Mock<IUnitOfWork>().Object;
         var authService = new Mock<IAuthService>().Object;
-        var mapper = new Mock<IMapper>().Object;
         var session = new Mock<ISession>().Object;
 
-        var commandHandler = new UpdateUserCommandHandler(userRepositoryMock.Object, uow, authService, mapper, session);
+        var commandHandler = new UpdateUserCommandHandler(userRepositoryMock.Object, uow, authService, session);
 
         // Act
         var result = await commandHandler.Handle(new UpdateUserCommand(), CancellationToken.None) as ErrorResult;

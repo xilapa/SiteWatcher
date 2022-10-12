@@ -1,7 +1,9 @@
 ﻿using System.Dynamic;
 using Dapper;
-using Domain.DTOs.Alert;
+using Domain.DTOs.Alerts;
 using Domain.DTOs.Common;
+using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Common;
 
@@ -11,26 +13,30 @@ public class AlertDapperRepository : IAlertDapperRepository
 {
     private readonly IDapperContext _dapperContext;
     private readonly IDapperQueries _dapperQueries;
+    private readonly IIdHasher _idHasher;
 
-    public AlertDapperRepository(IDapperContext dapperContext, IDapperQueries dapperQueries)
+    public AlertDapperRepository(IDapperContext dapperContext, IDapperQueries dapperQueries, IIdHasher idHasher)
     {
         _dapperContext = dapperContext;
         _dapperQueries = dapperQueries;
+        _idHasher = idHasher;
     }
 
-    public async Task<PaginatedList<SimpleAlertViewDto>> GetUserAlerts(UserId userId, int take, int lastAlertId,
+    public async Task<PaginatedList<SimpleAlertView>> GetUserAlerts(UserId userId, int take, int lastAlertId,
         CancellationToken cancellationToken)
     {
         var parameters = new {lastAlertId, userId, take};
         var commandDefinition = new CommandDefinition(_dapperQueries.GetSimpleAlertViewListByUserId, parameters,
             cancellationToken: cancellationToken);
-        var result = new PaginatedList<SimpleAlertViewDto>();
+        var result = new PaginatedList<SimpleAlertView>();
+        var simpleAlertViewDtos = Enumerable.Empty<SimpleAlertViewDto>();
         await _dapperContext.UsingConnectionAsync(async conn =>
         {
             var gridReader = await conn.QueryMultipleAsync(commandDefinition);
             result.Total = await gridReader.ReadSingleAsync<int>();
-            result.Results = await gridReader.ReadAsync<SimpleAlertViewDto>();
+            simpleAlertViewDtos = (await gridReader.ReadAsync<SimpleAlertViewDto>()).AsList();
         });
+        result.Results = simpleAlertViewDtos.Select(dto => SimpleAlertView.FromDto(dto, _idHasher));
         return result;
     }
 

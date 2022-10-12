@@ -2,8 +2,18 @@
 
 namespace SiteWatcher.Domain.DTOs.User;
 
-public struct RegisterUserInput
+public class RegisterUserInput
 {
+    public RegisterUserInput(string name, string email, ELanguage language, ETheme theme, string googleId, string authEmail)
+    {
+        Name = name;
+        Email = email;
+        Language = language;
+        Theme = theme;
+        GoogleId = googleId;
+        AuthEmail = authEmail;
+    }
+
     public string Name { get; set; }
     public string Email { get; set; }
     public ELanguage Language { get; set; }

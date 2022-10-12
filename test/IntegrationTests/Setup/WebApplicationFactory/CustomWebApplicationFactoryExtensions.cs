@@ -1,6 +1,8 @@
-﻿using AutoMapper;
-using Domain.DTOs.Alert;
+﻿using Domain.DTOs.Alerts;
 using Microsoft.Extensions.DependencyInjection;
+using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Common.Extensions;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
@@ -68,11 +70,15 @@ public static class CustomWebApplicationFactoryExtensions
         if(typeof(T) == typeof(Alert))
             return (alert as T)!;
 
-        var alertMapped = await WithServiceProvider(appFactory, provider =>
-        {
-            var mapper = provider.GetRequiredService<IMapper>();
-            return Task.FromResult(mapper.Map<T>(alert));
-        });
-        return alertMapped;
+        var idHasher = await WithServiceProvider(appFactory, provider =>
+            Task.FromResult(provider.GetRequiredService<IIdHasher>()));
+
+        if (typeof(T) == typeof(DetailedAlertView))
+            return (alert.ToDetailedAlertView(idHasher) as T)!;
+
+        if (typeof(T) == typeof(SimpleAlertView))
+            return (SimpleAlertView.FromAlert(alert, idHasher) as T)!;
+
+        throw new NotImplementedException($"Conversion from Alert to {typeof(T).Name}");
     }
 }
