@@ -37,7 +37,7 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
         var user = await _userDapperRepository.GetUserAsync(tokenResult.GoogleId, cancellationToken);
 
         // User exists and is active
-        if (!user.Id.Equals(UserId.Empty) && user.Active)
+        if (user?.Active is true)
         {
             var loginToken = _authService.GenerateLoginToken(user);
             await _authService.WhiteListToken(user.Id, loginToken);
@@ -46,7 +46,7 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
         }
 
         // User does not exists
-        if(user.Id.Equals(UserId.Empty))
+        if(user is null)
         {
             var registerToken = _authService.GenerateRegisterToken(tokenResult.Claims, tokenResult.GoogleId);
             return CommandResult
