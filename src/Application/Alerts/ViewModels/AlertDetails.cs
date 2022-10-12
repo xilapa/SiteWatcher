@@ -3,7 +3,7 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
 
-namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
+namespace SiteWatcher.Application.Alerts.ViewModels;
 
 public class AlertDetails
 {

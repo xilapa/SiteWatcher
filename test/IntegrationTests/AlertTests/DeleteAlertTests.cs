@@ -3,10 +3,9 @@ using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
-using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 

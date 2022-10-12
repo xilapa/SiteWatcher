@@ -2,7 +2,7 @@
 
 namespace Domain.DTOs.Alerts;
 
-public struct SiteView
+public class SiteView
 {
     public SiteView(string name, string uri)
     {

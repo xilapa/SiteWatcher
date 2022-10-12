@@ -1,7 +1,6 @@
 ﻿using Domain.DTOs.Alerts;
 using Microsoft.Extensions.DependencyInjection;
-using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
-using SiteWatcher.Application.Common.Extensions;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
@@ -74,7 +73,7 @@ public static class CustomWebApplicationFactoryExtensions
             Task.FromResult(provider.GetRequiredService<IIdHasher>()));
 
         if (typeof(T) == typeof(DetailedAlertView))
-            return (alert.ToDetailedAlertView(idHasher) as T)!;
+            return (DetailedAlertView.FromAlert(alert, idHasher) as T)!;
 
         if (typeof(T) == typeof(SimpleAlertView))
             return (SimpleAlertView.FromAlert(alert, idHasher) as T)!;

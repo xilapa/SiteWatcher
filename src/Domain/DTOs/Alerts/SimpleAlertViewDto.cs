@@ -2,7 +2,7 @@
 
 namespace Domain.DTOs.Alerts;
 
-public struct SimpleAlertViewDto
+public class SimpleAlertViewDto
 {
     public int Id { get; set; }
     public string Name { get; set; }

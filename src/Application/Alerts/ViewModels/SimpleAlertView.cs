@@ -4,7 +4,7 @@ using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Utils;
 
-namespace SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+namespace SiteWatcher.Application.Alerts.ViewModels;
 
 public class SimpleAlertView
 {

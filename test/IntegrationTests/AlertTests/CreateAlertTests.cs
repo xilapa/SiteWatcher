@@ -6,8 +6,8 @@ using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
@@ -48,13 +48,13 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 SiteUri = "https://store.site.io",
                 WatchMode = EWatchMode.AnyChanges
             },
-            HttpStatusCode.OK,
+            HttpStatusCode.Created,
             new DetailedAlertView
                 {
                     Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(1),
                     Name = "Test Alert1",
                     Frequency = EFrequency.TwentyFourHours,
-                    Site = new SiteView {Name="store site", Uri="https://store.site.io/"},
+                    Site = new SiteView("store site","https://store.site.io/"),
                     WatchMode = new DetailedWatchModeView
                     {
                         WatchMode = EWatchMode.AnyChanges
@@ -74,13 +74,13 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 WatchMode = EWatchMode.Term,
                 Term = "lookup term"
             },
-            HttpStatusCode.OK,
+            HttpStatusCode.Created,
             new DetailedAlertView
                 {
                     Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(2),
                     Name = "Test Alert2",
                     Frequency = EFrequency.TwentyFourHours,
-                    Site = new SiteView {Name="store site", Uri="https://store.site.io/"},
+                    Site = new SiteView("store site", "https://store.site.io/"),
                     WatchMode = new DetailedWatchModeView
                     {
                         WatchMode = EWatchMode.Term,
@@ -140,7 +140,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
         var alertFromDbMapped = await AppFactory.WithServiceProvider(prv =>
         {
             var idHasher = prv.GetRequiredService<IIdHasher>();
-            return Task.FromResult(alertFromDatabase!.ToDetailedAlertView(idHasher));
+            return Task.FromResult(DetailedAlertView.FromAlert(alertFromDatabase!, idHasher));
         });
 
         typedResult!.Should().BeEquivalentTo(alertFromDbMapped);

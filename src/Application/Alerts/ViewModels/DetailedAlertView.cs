@@ -1,7 +1,9 @@
-﻿using SiteWatcher.Domain.Enums;
+﻿using Domain.DTOs.Alerts;
+using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
 
-namespace Domain.DTOs.Alerts;
+namespace SiteWatcher.Application.Alerts.ViewModels;
 
 public class DetailedAlertView
 {
@@ -17,9 +19,9 @@ public class DetailedAlertView
         WatchMode = watchMode;
     }
 
-    public DetailedAlertView(Alert alert, string hashedId)
+    public DetailedAlertView(Alert alert, IIdHasher idHasher)
     {
-        Id = hashedId;
+        Id = idHasher.HashId(alert.Id.Value);
         Name = alert.Name;
         CreatedAt = alert.CreatedAt;
         Frequency = alert.Frequency;
@@ -40,4 +42,7 @@ public class DetailedAlertView
     public int NotificationsSent { get; set; }
     public SiteView Site { get; set; }
     public DetailedWatchModeView WatchMode { get; set; }
+
+    public static DetailedAlertView FromAlert(Alert alert, IIdHasher idHasher) =>
+        new(alert, idHasher);
 }
