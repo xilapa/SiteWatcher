@@ -32,8 +32,7 @@ public class GetUserAlertsCommandHandler : IRequestHandler<GetUserAlertsCommand,
         _alertDapperRepository = alertDapperRepository;
     }
 
-    public async Task<CommandResult> Handle(GetUserAlertsCommand request,
-        CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(GetUserAlertsCommand request, CancellationToken cancellationToken)
     {
         if (request.Take == 0)
             return CommandResult.Empty();
@@ -41,9 +40,9 @@ public class GetUserAlertsCommandHandler : IRequestHandler<GetUserAlertsCommand,
         var take = request.Take > 50 ? 50 : request.Take;
         var lastAlertId = string.IsNullOrEmpty(request.LastAlertId) ? 0 : _idHasher.DecodeId(request.LastAlertId);
 
-        var paginatedListAlertsDto = await _alertDapperRepository
+        var paginatedListAlerts = await _alertDapperRepository
             .GetUserAlerts(_session.UserId!.Value, take, lastAlertId, cancellationToken);
 
-        return CommandResult.FromValue(paginatedListAlertsDto);
+        return CommandResult.FromValue(paginatedListAlerts);
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Domain.DTOs.Alerts;
 using Domain.DTOs.Common;
 using MediatR;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Common;
@@ -17,7 +17,7 @@ public class UpdateAlertCommmand : IRequest<CommandResult>
     public UpdateInfo<EFrequency>? Frequency { get; set; }
     public UpdateInfo<string>? SiteName { get; set; }
     public UpdateInfo<string>? SiteUri { get; set; }
-    public UpdateInfo<EWatchMode>?WatchMode { get; set; }
+    public UpdateInfo<EWatchMode>? WatchMode { get; set; }
     public UpdateInfo<string>? Term { get; set; }
 
     public UpdateAlertInput ToUpdateAlertInput(IIdHasher idHasher)
@@ -42,7 +42,8 @@ public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, Co
     private readonly ISession _session;
     private readonly IUnitOfWork _uow;
 
-    public UpdateAlertCommandHandler(IIdHasher idHasher, IAlertRepository alertRepository, ISession session, IUnitOfWork uow)
+    public UpdateAlertCommandHandler(IIdHasher idHasher, IAlertRepository alertRepository, ISession session,
+        IUnitOfWork uow)
     {
         _idHasher = idHasher;
         _alertRepository = alertRepository;
@@ -64,6 +65,6 @@ public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, Co
         alert.Update(updateInfo, _session.Now);
         await _uow.SaveChangesAsync(CancellationToken.None);
 
-        return CommandResult.FromValue(alert.ToDetailedAlertView(_idHasher));
+        return CommandResult.FromValue(DetailedAlertView.FromAlert(alert, _idHasher));
     }
 }

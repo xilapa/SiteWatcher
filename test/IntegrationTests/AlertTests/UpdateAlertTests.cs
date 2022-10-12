@@ -1,10 +1,10 @@
 ﻿using System.Net;
-using Domain.DTOs.Alerts;
 using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;

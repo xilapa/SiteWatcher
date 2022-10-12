@@ -3,7 +3,7 @@ using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Domain.DTOs.User;
 
-public struct UserViewModel
+public class UserViewModel
 {
     public UserId Id { get; set; }
     public bool Active { get; set; }

@@ -1,5 +1,4 @@
-﻿using Domain.DTOs.Alerts;
-using Domain.DTOs.Common;
+﻿using Domain.DTOs.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.WebAPI.Filters.Cache;
@@ -29,11 +29,8 @@ public class AlertController : ControllerBase
 
     [HttpPost]
     [CommandValidationFilter]
-    public async Task<IActionResult> CreateAlert(CreateAlertCommand command)
-    {
-        var commandResult = await _mediator.Send(command);
-        return commandResult.ToActionResult<DetailedAlertView>();
-    }
+    public async Task<IActionResult> CreateAlert(CreateAlertCommand command) =>
+        Created(string.Empty, await _mediator.Send(command));
 
     [HttpGet]
     [CacheFilter]
@@ -46,12 +43,8 @@ public class AlertController : ControllerBase
 
     [HttpGet("{AlertId}/details")]
     [CacheFilter]
-    public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlertDetailsCommand command,
-        CancellationToken cancellationToken)
-    {
-        var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.ToActionResult<AlertDetails>();
-    }
+    public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlertDetailsCommand command, CancellationToken ct) =>
+        Ok(await _mediator.Send(command, ct));
 
     [HttpDelete("{AlertId}")]
     public async Task<IActionResult> DeleteAlert([FromRoute] DeleteAlertCommand command,
@@ -72,10 +65,6 @@ public class AlertController : ControllerBase
     [HttpGet("search")]
     [CacheFilter]
     [CommandValidationFilter]
-    public async Task<IActionResult> SearchAlerts([FromQuery] SearchAlertCommand command,
-        CancellationToken cancellationToken)
-    {
-        var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.ToActionResult<IEnumerable<SimpleAlertView>>();
-    }
+    public async Task<IActionResult> SearchAlerts([FromQuery] SearchAlertCommand command, CancellationToken cancellationToken) =>
+        Ok(await _mediator.Send(command, cancellationToken));
 }

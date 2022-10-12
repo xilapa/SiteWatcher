@@ -8,6 +8,7 @@ using Moq;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
@@ -167,7 +168,7 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         var result = await PostAsync("alert", createAlertCommand);
 
         result.HttpResponse!.StatusCode
-            .Should().Be(HttpStatusCode.OK);
+            .Should().Be(HttpStatusCode.Created);
 
         // Await fire and forget to execute
         await Task.Delay(300);

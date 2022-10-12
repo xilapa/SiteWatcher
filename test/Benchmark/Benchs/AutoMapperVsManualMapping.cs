@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using Domain.DTOs.Alerts;
 using Domain.DTOs.Common;
-using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Utils;

@@ -25,7 +25,7 @@ public sealed class GetAlertDetailsCommandTests
         var result = await handler.Handle(command, default);
 
         // Assert
-        result.Should().BeAssignableTo<EmptyResult>();
+        result.Should().BeNull();
 
         alertRepoMock
             .Verify(r => r.GetAlertDetails(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()),

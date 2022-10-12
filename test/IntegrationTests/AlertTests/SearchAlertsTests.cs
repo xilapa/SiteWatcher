@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using FluentAssertions;
 using IntegrationTests.Setup;
-using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
+using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -134,7 +134,7 @@ public sealed class SearchAlertsTests : BaseTest, IClassFixture<SearchAlertsTest
         {
             "nonexistent",
             Users.Xulipa,
-            null! // Empty result
+            Array.Empty<SimpleAlertView>()
         };
     }
 
@@ -150,17 +150,6 @@ public sealed class SearchAlertsTests : BaseTest, IClassFixture<SearchAlertsTest
         var httpResult = await GetAsync("alert/search", searchCommand);
 
         // Assert
-        if (expectedSearchResults is null)
-        {
-            httpResult.HttpResponse!
-                .StatusCode
-                .Should().Be(HttpStatusCode.NoContent);
-
-            httpResult.HttpMessageContent
-                .Should().BeEquivalentTo(string.Empty);
-            return;
-        }
-
         httpResult.HttpResponse!.StatusCode
             .Should().Be(HttpStatusCode.OK);
 
