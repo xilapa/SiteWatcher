@@ -1,6 +1,6 @@
 ﻿namespace SiteWatcher.Domain.Models.Alerts;
 
-public record Site
+public class Site
 {
     // ctor for EF
     protected Site()
