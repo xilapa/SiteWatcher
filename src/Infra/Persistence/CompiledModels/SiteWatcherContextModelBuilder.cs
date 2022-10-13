@@ -35,7 +35,7 @@ namespace PersistenceCompiledModels
             TermWatchEntityType.CreateAnnotations(termWatch);
 
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-            AddAnnotation("ProductVersion", "6.0.8");
+            AddAnnotation("ProductVersion", "6.0.10");
             AddAnnotation("Relational:DefaultSchema", "siteWatcher_webApi");
             AddAnnotation("Relational:MaxIdentifierLength", 63);
         }
