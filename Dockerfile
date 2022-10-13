@@ -22,6 +22,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-EXPOSE port 8080
+EXPOSE 8080/tcp
 ENV ASPNETCORE_URLS http://*:8080
 ENTRYPOINT ["dotnet", "WebAPI.dll"]
