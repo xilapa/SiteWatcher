@@ -23,5 +23,5 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 
 EXPOSE 8080/tcp
-ENV ASPNETCORE_URLS https://0.0.0.0:8080;
+ENV ASPNETCORE_URLS http://0.0.0.0:8080;
 ENTRYPOINT ["dotnet", "WebAPI.dll"]
