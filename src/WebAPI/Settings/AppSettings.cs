@@ -1,27 +1,16 @@
-using System.Text.RegularExpressions;
 using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.WebAPI.Settings;
 
 public class AppSettings : IAppSettings
 {
-    private readonly IWebHostEnvironment _env;
-
     public AppSettings(IWebHostEnvironment env)
     {
-        _env = env;
         IsDevelopment = env.IsDevelopment();
     }
 
     public bool IsDevelopment { get; }
-    private string _connectionString = null!;
-
-    [ConfigurationKeyName("DATABASE_URL")]
-    public string ConnectionString
-    {
-        get => _connectionString;
-        set => _connectionString = _env.IsDevelopment() ? value : ParseFlyIoConnectionString(value);
-    }
+    public string ConnectionString { get; set; }
     public string FrontEndUrl { get; set; } = null!;
     public byte[] RegisterKey { get; set; } = null!;
     public byte[] AuthKey { get; set; } = null!;
@@ -35,15 +24,4 @@ public class AppSettings : IAppSettings
     public string ApiKey { get; set; } = null!;
     public string IdHasherSalt { get; set; } = null!;
     public int MinimumHashedIdLength { get; set; }
-
-    private static string ParseFlyIoConnectionString(string connectionString)
-    {
-        var regexString = new Regex(@"\:\/\/(?<user>.*?)\:(?<password>.*?)\@(?<host>.*?)\:(?<port>.*?)\/(?<database>.*)");
-        var matches = regexString.Match(connectionString).Groups;
-        return  $"Server={matches["host"].Value};" +
-                $"Port={matches["port"].Value};" +
-                $"Database={matches["database"].Value};" +
-                $"User Id={matches["user"].Value};" +
-                $"Password={matches["password"].Value}";
-    }
 }
