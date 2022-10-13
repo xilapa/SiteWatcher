@@ -22,8 +22,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-ARG http_port 
-ARG https_port
-EXPOSE $http_port/tcp $https_port/tcp
-ENV ASPNETCORE_URLS http://*:$http_port;https://*:$https_port;
+ARG port 
+EXPOSE $port/tcp
+ENV ASPNETCORE_URLS http://*:$port;
 ENTRYPOINT ["dotnet", "WebAPI.dll"]
