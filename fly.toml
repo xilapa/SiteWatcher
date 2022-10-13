@@ -33,11 +33,11 @@ processes = []
     port = 443
     
   [[services.http_checks]]
-   interval = 20000
-   method = "get"
-   path = "/"
-   protocol = "http"
-   timeout = 15000
-   tls_skip_verify = true
-   restart_limit = 2
-   grace_period = "15s"
+    interval = 20000
+    method = "get"
+    path = "/"
+    protocol = "http"
+    timeout = 15000
+    tls_skip_verify = true
+    restart_limit = 2
+    grace_period = "15s"
