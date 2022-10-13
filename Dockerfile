@@ -22,8 +22,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-# Heroku entrypoint
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet WebAPI.dll
-
-# ENV ASPNETCORE_URLS http://*:7126
-# ENTRYPOINT ["dotnet", "SiteWatcher.WebAPI.dll"]
+EXPOSE port 8080
+ENV ASPNETCORE_URLS http://*:8080
+ENTRYPOINT ["dotnet", "WebAPI.dll"]

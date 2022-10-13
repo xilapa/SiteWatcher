@@ -20,7 +20,7 @@ public class AppSettings : IAppSettings
     public string ConnectionString
     {
         get => _connectionString;
-        set => _connectionString = _env.IsDevelopment() ? value : ParseHerokuConnectionString(value);
+        set => _connectionString = _env.IsDevelopment() ? value : ParseFlyIoConnectionString(value);
     }
     public string FrontEndUrl { get; set; } = null!;
     public byte[] RegisterKey { get; set; } = null!;
@@ -36,7 +36,7 @@ public class AppSettings : IAppSettings
     public string IdHasherSalt { get; set; } = null!;
     public int MinimumHashedIdLength { get; set; }
 
-    private static string ParseHerokuConnectionString(string connectionString)
+    private static string ParseFlyIoConnectionString(string connectionString)
     {
         var regexString = new Regex(@"\:\/\/(?<user>.*?)\:(?<password>.*?)\@(?<host>.*?)\:(?<port>.*?)\/(?<database>.*)");
         var matches = regexString.Match(connectionString).Groups;
