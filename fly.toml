@@ -17,6 +17,7 @@ processes = []
   processes = ["WebAPI"]
   protocol = "tcp"
   script_checks = []
+
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
@@ -31,12 +32,12 @@ processes = []
     handlers = ["tls", "http"]
     port = 443
     
- [[services.http_checks]]
-   interval = 20000
-   method = "get"
-   path = "/"
-   protocol = "http"
-   timeout = 15000
-   tls_skip_verify = true
-   restart_limit = 2
-   grace_period = "15s"
+   [[services.http_checks]]
+     interval = 20000
+     method = "get"
+     path = "/"
+     protocol = "http"
+     timeout = 15000
+     tls_skip_verify = true
+     restart_limit = 2
+     grace_period = "15s"
