@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Infra;
 using SiteWatcher.WebAPI.Filters;
@@ -16,6 +17,7 @@ public class HomeController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Get() => Ok();
 
     [ApiKey]
