@@ -27,7 +27,7 @@ var host = new HostBuilder()
         var workerSettings = hostContext.Configuration
             .GetSection(nameof(WorkerSettings)).Get<WorkerSettings>();
 
-        serviceCollection.AddJobs(workerSettings);
+        serviceCollection.SetupJobs(workerSettings);
     })
     .Build();
 
