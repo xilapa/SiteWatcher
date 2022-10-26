@@ -2,6 +2,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Worker",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/src/Worker/bin/Debug/net6.0/Worker.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/Worker",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
             "name": "Debug Benchmark",
             "type": "coreclr",
             "request": "launch",
