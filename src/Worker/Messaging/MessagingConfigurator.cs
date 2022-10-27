@@ -10,7 +10,7 @@ public static class MessagingConfigurator
 {
     public static IServiceCollection SetupMessaging(this IServiceCollection serviceCollection, WorkerSettings settings)
     {
-        CreateExchanges(settings);
+        CreateExchange(settings);
 
         serviceCollection
             .AddCap(opts =>
@@ -48,7 +48,7 @@ public static class MessagingConfigurator
         return serviceCollection;
     }
 
-    private static void CreateExchanges(WorkerSettings settings)
+    private static void CreateExchange(WorkerSettings settings)
     {
         var connectionFactory = new ConnectionFactory
         {
