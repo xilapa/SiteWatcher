@@ -44,6 +44,11 @@ public static class RoutingKeys
     public const string WatchAlerts = "site-watcher.worker.watch-alerts";
 }
 
+public static class MessageHeaders
+{
+    public const string MessageIdKey = "message-id";
+}
+
 public class WorkerAppSettings : IAppSettings
 {
     public bool IsDevelopment { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quartz;
 using SiteWatcher.Domain.Enums;
-using Worker.Messaging;
+using SiteWatcher.Worker.Messaging;
 
 namespace SiteWatcher.Worker.Jobs;
 
@@ -26,7 +26,11 @@ public sealed class FireWatchAlertsJob : IJob
     {
         var frequency = Enum.Parse<EFrequency>(context.Trigger.Key.Group);
         var message = new WatchAlertsMessage(frequency);
-        await _capBus.PublishAsync(RoutingKeys.WatchAlerts, message);
+        var headers = new Dictionary<string, string>
+        {
+            [MessageHeaders.MessageIdKey] = Guid.NewGuid().ToString()
+        };
+        await _capBus.PublishAsync(RoutingKeys.WatchAlerts, message, headers!);
         _logger.LogInformation("{Date} - Watch Alerts Fired: {Frequency}", DateTime.UtcNow, frequency);
     }
 }
