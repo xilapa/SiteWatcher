@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SiteWatcher.Worker;
+using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
 using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
@@ -30,7 +31,8 @@ var host = new HostBuilder()
             .Configure<WorkerSettings>(hostContext.Configuration.GetSection(nameof(WorkerSettings)))
             .SetupPersistence(workerSettings, hostContext.HostingEnvironment)
             .SetupJobs(workerSettings)
-            .SetupMessaging(workerSettings);
+            .SetupMessaging(workerSettings)
+            .SetupConsumers();
     })
     .Build();
 
