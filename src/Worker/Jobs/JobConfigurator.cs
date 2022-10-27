@@ -15,14 +15,14 @@ public static class JobConfigurator
                  {
                      opts.UseMicrosoftDependencyInjectionJobFactory();
 
-                     opts.AddJob<FireWatchForChangesJob>(opt => opt.WithIdentity(FireWatchForChangesJob.Name));
+                     opts.AddJob<FireWatchAlertsJob>(opt => opt.WithIdentity(FireWatchAlertsJob.Name));
 
                      foreach (var (freq, cron) in settings.Triggers)
                      {
                          opts.AddTrigger(opt => opt
-                            .ForJob(FireWatchForChangesJob.Name)
+                            .ForJob(FireWatchAlertsJob.Name)
                             // Store the alert frequency on group
-                            .WithIdentity(FireWatchForChangesJob.Name,freq.ToString())
+                            .WithIdentity(FireWatchAlertsJob.Name,freq.ToString())
                             .WithCronSchedule(cron));
                      }
                  })
