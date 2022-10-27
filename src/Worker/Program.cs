@@ -23,13 +23,12 @@ var host = new HostBuilder()
             .AddCommandLine(args)
     )
     .ConfigureServices((hostContext, serviceCollection)=> {
-        var workerSettings = new WorkerSettings(hostContext.HostingEnvironment);
-        hostContext.Configuration
-            .GetSection(nameof(WorkerSettings)).Bind(workerSettings);
+        var workerSettings = hostContext.Configuration
+            .GetSection(nameof(WorkerSettings)).Get<WorkerSettings>();
 
         serviceCollection
             .Configure<WorkerSettings>(hostContext.Configuration.GetSection(nameof(WorkerSettings)))
-            .SetupPersistence(workerSettings)
+            .SetupPersistence(workerSettings, hostContext.HostingEnvironment)
             .SetupJobs(workerSettings)
             .SetupMessaging(workerSettings);
     })

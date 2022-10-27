@@ -26,7 +26,7 @@ public sealed class FireWatchAlertsJob : IJob
     {
         var frequency = Enum.Parse<EFrequency>(context.Trigger.Key.Group);
         var message = new WatchAlertsMessage(frequency);
-        await _capBus.PublishAsync(_settings.WatchAlertsExchange, message);
+        await _capBus.PublishAsync(RoutingKeys.WatchAlerts, message);
         _logger.LogInformation("{Date} - Watch Alerts Fired: {Frequency}", DateTime.UtcNow, frequency);
     }
 }

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Hosting;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Enums;
 
@@ -6,13 +5,9 @@ namespace SiteWatcher.Worker;
 
 public class WorkerSettings
 {
-    public WorkerSettings(IHostEnvironment env)
+    public WorkerSettings()
     {
         Triggers = new Dictionary<EFrequency, string>();
-        AppSettings = new WorkerAppSettings
-        {
-            IsDevelopment = env.IsDevelopment()
-        };
     }
 
     public bool EnableJobs { get; set; }
@@ -20,9 +15,9 @@ public class WorkerSettings
     public Dictionary<EFrequency, string> Triggers { get; set; }
 
     public bool UseInMemoryStorageAndQueue { get; set; }
-    public string WatchAlertsExchange { get; set; } = null!;
     public RabbitMqSettings RabbitMq { get; set; } = null!;
-    public WorkerAppSettings AppSettings { get; set; }
+    public WorkerAppSettings AppSettings { get; set; } = null!;
+    public ConsumerSettings Consumers { get; set; } = null!;
 }
 
 public class RabbitMqSettings
@@ -33,9 +28,25 @@ public class RabbitMqSettings
     public int Port { get; set; }
 }
 
+public class ConsumerSettings
+{
+    // Set zero to use the processor count
+    public int PerQueueConcurrency { get; set; }
+}
+
+public static class Exchanges
+{
+    public const string SiteWatcher = "site-watcher";
+}
+
+public static class RoutingKeys
+{
+    public const string WatchAlerts = "site-watcher.worker.watch-alerts";
+}
+
 public class WorkerAppSettings : IAppSettings
 {
-    public bool IsDevelopment { get; set;}
+    public bool IsDevelopment { get; set; }
     public string ConnectionString { get; set; } = null!;
     public string FrontEndUrl { get; set; } = null!;
     public byte[] RegisterKey { get; set; } = null!;
