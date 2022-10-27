@@ -14,10 +14,10 @@ namespace SiteWatcher.Infra;
 public class SiteWatcherContext : DbContext, IUnitOfWork
 {
     private readonly IAppSettings _appSettings;
-    private readonly IMediator _mediator;
+    private readonly IMediator? _mediator;
     public const string Schema = "siteWatcher_webApi";
 
-    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator)
+    public SiteWatcherContext(IAppSettings appSettings, IMediator? mediator)
     {
         _appSettings = appSettings;
         _mediator = mediator;
@@ -48,7 +48,7 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     {
         try
         {
-            await _mediator.DispatchDomainEvents(this);
+            await _mediator?.DispatchDomainEvents(this);
             return await base.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateException ex)

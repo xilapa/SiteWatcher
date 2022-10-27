@@ -1,24 +1,32 @@
+using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Quartz;
 using SiteWatcher.Domain.Enums;
+using Worker.Messaging;
 
 namespace SiteWatcher.Worker.Jobs;
 
 public sealed class FireWatchForChangesJob : IJob
 {
     private readonly ILogger<FireWatchForChangesJob> _logger;
+    private readonly ICapPublisher _capBus;
+    private readonly WorkerSettings _settings;
+
     public static string Name => nameof(FireWatchForChangesJob);
 
-    public FireWatchForChangesJob(ILogger<FireWatchForChangesJob> logger)
+    public FireWatchForChangesJob(ILogger<FireWatchForChangesJob> logger, ICapPublisher capBus, IOptions<WorkerSettings> settings)
     {
         _logger = logger;
+        _capBus = capBus;
+        _settings = settings.Value;
     }
 
-    public Task Execute(IJobExecutionContext context)
+    public async Task Execute(IJobExecutionContext context)
     {
-        // TODO: use the trigger group to send a message to the queue
         var frequency = Enum.Parse<EFrequency>(context.Trigger.Key.Group);
-        _logger.LogInformation($"Started {(int)frequency}");
-        return Task.CompletedTask;
+        var message = new WatchAlertsMessage(frequency);
+        await _capBus.PublishAsync(_settings.WatchAlertsExchange, message);
+        _logger.LogInformation("{Date} - Watch Alerts Fired: {Frequency}", DateTime.UtcNow, frequency);
     }
 }

@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SiteWatcher.Worker;
 using SiteWatcher.Worker.Jobs;
+using SiteWatcher.Worker.Messaging;
+using SiteWatcher.Worker.Persistence;
 
 var host = new HostBuilder()
     .ConfigureDefaults(args)
@@ -21,13 +23,15 @@ var host = new HostBuilder()
             .AddCommandLine(args)
     )
     .ConfigureServices((hostContext, serviceCollection)=> {
+        var workerSettings = new WorkerSettings(hostContext.HostingEnvironment);
+        hostContext.Configuration
+            .GetSection(nameof(WorkerSettings)).Bind(workerSettings);
+
         serviceCollection
-            .Configure<WorkerSettings>(hostContext.Configuration.GetSection(nameof(WorkerSettings)));
-
-        var workerSettings = hostContext.Configuration
-            .GetSection(nameof(WorkerSettings)).Get<WorkerSettings>();
-
-        serviceCollection.SetupJobs(workerSettings);
+            .Configure<WorkerSettings>(hostContext.Configuration.GetSection(nameof(WorkerSettings)))
+            .SetupPersistence(workerSettings)
+            .SetupJobs(workerSettings)
+            .SetupMessaging(workerSettings);
     })
     .Build();
 
