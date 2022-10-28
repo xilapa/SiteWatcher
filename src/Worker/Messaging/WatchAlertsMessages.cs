@@ -1,6 +1,6 @@
 using SiteWatcher.Domain.Enums;
 
-namespace Worker.Messaging;
+namespace SiteWatcher.Worker.Messaging;
 
 public class WatchAlertsMessage
 {

@@ -17,6 +17,7 @@ namespace PersistenceCompiledModels
             var site = SiteEntityType.Create(this);
             var termOccurrence = TermOccurrenceEntityType.Create(this);
             var watchMode = WatchModeEntityType.Create(this);
+            var idempotentConsumer = IdempotentConsumerEntityType.Create(this);
             var user = UserEntityType.Create(this);
             var anyChangesWatch = AnyChangesWatchEntityType.Create(this, watchMode);
             var termWatch = TermWatchEntityType.Create(this, watchMode);
@@ -30,6 +31,7 @@ namespace PersistenceCompiledModels
             SiteEntityType.CreateAnnotations(site);
             TermOccurrenceEntityType.CreateAnnotations(termOccurrence);
             WatchModeEntityType.CreateAnnotations(watchMode);
+            IdempotentConsumerEntityType.CreateAnnotations(idempotentConsumer);
             UserEntityType.CreateAnnotations(user);
             AnyChangesWatchEntityType.CreateAnnotations(anyChangesWatch);
             TermWatchEntityType.CreateAnnotations(termWatch);

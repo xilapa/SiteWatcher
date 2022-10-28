@@ -48,7 +48,8 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     {
         try
         {
-            await _mediator?.DispatchDomainEvents(this);
+            if(_mediator != null)
+                await _mediator.DispatchDomainEvents(this);
             return await base.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateException ex)
@@ -70,4 +71,5 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
 
     public DbSet<User> Users { get; set; }
     public DbSet<Alert> Alerts { get; set; }
+    public DbSet<IdempotentConsumer> IdempotentConsumers { get; set; }
 }

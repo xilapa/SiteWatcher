@@ -1,6 +1,7 @@
 using DotNetCore.CAP.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using Savorboard.CAP.InMemoryMessageQueue;
 using SiteWatcher.Infra;
 
@@ -34,7 +35,7 @@ public static class MessagingConfigurator
                         opt.ExchangeName = Exchanges.SiteWatcher;
                         opt.CustomHeaders = message => new List<KeyValuePair<string, string>>
                         {
-                            new KeyValuePair<string, string>(DotNetCore.CAP.Messages.Headers.MessageId, SnowflakeId.Default().NextId().ToString()),
+                            new KeyValuePair<string, string>(DotNetCore.CAP.Messages.Headers.MessageId, GetMessageId(message)),
                             new KeyValuePair<string, string>(DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
                         };
                     });
@@ -46,6 +47,22 @@ public static class MessagingConfigurator
                 opts.UseDispatchingPerGroup = true;
             });
         return serviceCollection;
+    }
+
+    private static string GetMessageId(BasicDeliverEventArgs message)
+    {
+        var hasMessageId = message.BasicProperties.Headers.TryGetValue(MessageHeaders.MessageIdKey, out var messageId);
+        if (hasMessageId && messageId != null)
+        {
+            var byteMessageId = (byte[])messageId;
+            var stringMessageId = byteMessageId != null ? System.Text.Encoding.UTF8.GetString(byteMessageId): string.Empty;
+
+            return string.IsNullOrEmpty(stringMessageId) ?
+                SnowflakeId.Default().NextId().ToString()
+                : stringMessageId;
+        }
+
+        return SnowflakeId.Default().NextId().ToString();
     }
 
     private static void CreateExchange(WorkerSettings settings)
