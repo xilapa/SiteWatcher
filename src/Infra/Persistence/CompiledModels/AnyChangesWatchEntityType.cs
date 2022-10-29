@@ -19,13 +19,13 @@ namespace PersistenceCompiledModels
                 baseEntityType,
                 discriminatorProperty: "WatchMode");
 
-            var htmlText = runtimeEntityType.AddProperty(
-                "HtmlText",
-                typeof(string),
-                propertyInfo: typeof(AnyChangesWatch).GetProperty("HtmlText", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(AnyChangesWatch).GetField("<HtmlText>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+            var htmlHash = runtimeEntityType.AddProperty(
+                "HtmlHash",
+                typeof(int?),
+                propertyInfo: typeof(AnyChangesWatch).GetProperty("HtmlHash", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(AnyChangesWatch).GetField("<HtmlHash>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
-            htmlText.AddAnnotation("Relational:ColumnType", "text");
+            htmlHash.AddAnnotation("Relational:ColumnType", "integer");
 
             return runtimeEntityType;
         }

@@ -9,5 +9,5 @@ public class AnyChangesWatch : WatchMode
     public AnyChangesWatch(DateTime currentDate) : base(currentDate)
     { }
 
-    public string? HtmlText { get; private set; }
+    public int? HtmlHash { get; private set; }
 }

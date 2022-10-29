@@ -42,8 +42,8 @@ public class AnyChangesWatchMapping : IEntityTypeConfiguration<AnyChangesWatch>
 {
     public void Configure(EntityTypeBuilder<AnyChangesWatch> builder)
     {
-        builder.Property(a => a.HtmlText)
-            .HasColumnType("text");
+        builder.Property(a => a.HtmlHash)
+            .HasColumnType("integer");
     }
 }
 
