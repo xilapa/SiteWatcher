@@ -16,13 +16,14 @@ public static class HttpClientExtensions
         var stringContent = new StringContent(stringBody);
 
         var policy = policyFunc(logger, uri, stringBody);
-        var httpResponse = await policy
+        using var httpResponse = await policy
             .ExecuteAsync(() => httpClient.PostAsync(uri, stringContent, cancellationToken));
 
         if (!httpResponse.IsSuccessStatusCode)
             return default;
 
-        var result = await httpResponse.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
+        using var content = httpResponse.Content;
+        var result = await content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken);
         return result;
     }
 }
