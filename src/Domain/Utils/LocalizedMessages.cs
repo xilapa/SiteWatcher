@@ -62,4 +62,65 @@ public static class LocalizedMessages
             ELanguage.BrazilianPortuguese => "Sua conta e todos os seus dados no SiteWatcher foram excluídos."
         };
     }
+
+    public static string AlertNotificationMessageSubject(ELanguage language)
+    {
+        return language switch
+        {
+            ELanguage.English => "Your alerts have been triggered",
+            ELanguage.Spanish => "Tus alertas han sido activadas",
+            ELanguage.BrazilianPortuguese => "Seus alertas foram disparados"
+        };
+    }
+
+    public static string AlertNotificationMessageTemplate(ELanguage language)
+    {
+        return language switch
+        {
+            ELanguage.English => @"
+                    Hello {{userName}}!
+                    <br>
+                    The following alerts have been triggered:
+                    <ul>
+                        {% for alert in alertsToNotify %}
+                        <li>
+                            <b>{{alert.Name}}</b>
+                            <br>
+                            <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    Email sent automatically by <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>",
+
+            ELanguage.Spanish => @"
+                    Hola {{userName}}!
+                    <br>
+                    Se han activado las siguientes alertas:
+                    <ul>
+                        {% for alert in alertsToNotify %}
+                        <li>
+                            <b>{{alert.Name}}</b>
+                            <br>
+                            <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    Correo electrónico enviado automáticamente por <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>",
+
+            ELanguage.BrazilianPortuguese => @"
+                    Olá {{userName}}!
+                    <br>
+                    Os seguintes alertas foram disparados:
+                    <ul>
+                        {% for alert in alertsToNotify %}
+                        <li>
+                            <b>{{alert.Name}}</b>
+                            <br>
+                            <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    Email enviado automaticamente por <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>"
+        };
+    }
 }
