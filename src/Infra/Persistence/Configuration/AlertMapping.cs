@@ -60,5 +60,13 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
         builder.Property(a => a.SearchField)
             .HasColumnType("varchar(640)")
             .IsRequired();
+
+        builder.HasMany(a => a.Notifications)
+            .WithOne()
+            .HasForeignKey(nameof(AlertId));
+
+        builder.Metadata
+            .FindNavigation(nameof(Alert.Notifications))!
+            .SetPropertyAccessMode(PropertyAccessMode.FieldDuringConstruction);
     }
 }
