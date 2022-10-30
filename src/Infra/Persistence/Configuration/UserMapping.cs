@@ -4,7 +4,7 @@ using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
 
-namespace SiteWatcher.Infra.Configuration;
+namespace SiteWatcher.Infra.Persistence.Configuration;
 
 public class UserMapping : BaseModelMapping<User,UserId>
 {

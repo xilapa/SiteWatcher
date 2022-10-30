@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Models;
 
-namespace SiteWatcher.Infra.Configuration;
+namespace SiteWatcher.Infra.Persistence.Configuration;
 
 public class IdempotentConsumerMapping : IEntityTypeConfiguration<IdempotentConsumer>
 {

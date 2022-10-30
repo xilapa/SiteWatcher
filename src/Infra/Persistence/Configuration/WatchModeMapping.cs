@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
 using SiteWatcher.Domain.Models.Common;
 
-namespace SiteWatcher.Infra.Configuration;
+namespace SiteWatcher.Infra.Persistence.Configuration;
 
 public class WatchModeMapping : BaseModelMapping<WatchMode, WatchModeId>
 {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
-using SiteWatcher.Infra.Configuration;
+using SiteWatcher.Infra.Persistence.Configuration;
 
 #pragma warning disable 219, 612, 618
 #nullable enable

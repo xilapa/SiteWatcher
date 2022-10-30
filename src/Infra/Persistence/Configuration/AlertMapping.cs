@@ -4,7 +4,7 @@ using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Alerts.WatchModes;
 using SiteWatcher.Domain.Models.Common;
 
-namespace SiteWatcher.Infra.Configuration;
+namespace SiteWatcher.Infra.Persistence.Configuration;
 
 public class AlertMapping : BaseModelMapping<Alert, AlertId>
 {
