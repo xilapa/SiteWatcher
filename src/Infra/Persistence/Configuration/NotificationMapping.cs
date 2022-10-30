@@ -23,5 +23,8 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.CreatedAt)
             .HasColumnType("timestamptz")
             .IsRequired();
+
+        builder.Property(nameof(AlertId))
+            .IsRequired();
     }
 }
