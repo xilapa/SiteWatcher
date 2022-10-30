@@ -24,13 +24,31 @@ public sealed class FireWatchAlertsJob : IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        var frequency = Enum.Parse<EFrequency>(context.Trigger.Key.Group);
-        var message = new WatchAlertsMessage(frequency);
+        var frequencies = GetAlertFrequenciesToWatch();
+        var message = new WatchAlertsMessage(frequencies);
+
         var headers = new Dictionary<string, string>
         {
             [MessageHeaders.MessageIdKey] = Guid.NewGuid().ToString()
         };
         await _capBus.PublishAsync(RoutingKeys.WatchAlerts, message, headers!);
-        _logger.LogInformation("{Date} - Watch Alerts Fired: {Frequency}", DateTime.UtcNow, frequency);
+
+        _logger.LogInformation("{Date} - Watch Alerts Fired: {Frequencies}", DateTime.UtcNow, frequencies);
+    }
+
+    private static IEnumerable<EFrequency> GetAlertFrequenciesToWatch()
+    {
+        var alertFrequenciesToWatch = new List<EFrequency>();
+
+        var currentHour = DateTime.Now.Hour;
+
+        // If the rest of current hour/ frequency is zero, this alerts of this frequency needs to be watched
+        foreach(var frequency in Enum.GetValues<EFrequency>())
+        {
+            if (currentHour % (int)frequency == 0)
+                alertFrequenciesToWatch.Add(frequency);
+        }
+
+        return alertFrequenciesToWatch;
     }
 }

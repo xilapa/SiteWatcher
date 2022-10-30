@@ -5,15 +5,7 @@ namespace SiteWatcher.Worker;
 
 public class WorkerSettings
 {
-    public WorkerSettings()
-    {
-        Triggers = new Dictionary<EFrequency, string>();
-    }
-
     public bool EnableJobs { get; set; }
-
-    public Dictionary<EFrequency, string> Triggers { get; set; }
-
     public bool UseInMemoryStorageAndQueue { get; set; }
     public RabbitMqSettings RabbitMq { get; set; } = null!;
     public WorkerAppSettings AppSettings { get; set; } = null!;

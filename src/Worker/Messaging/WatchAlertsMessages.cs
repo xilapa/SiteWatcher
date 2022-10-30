@@ -4,10 +4,10 @@ namespace SiteWatcher.Worker.Messaging;
 
 public class WatchAlertsMessage
 {
-    public WatchAlertsMessage(EFrequency frequency)
+    public WatchAlertsMessage(IEnumerable<EFrequency> frequencies)
     {
-        Frequency = frequency;
+        Frequencies = frequencies;
     }
 
-    public EFrequency Frequency { get; }
+    public IEnumerable<EFrequency> Frequencies { get; }
 }
