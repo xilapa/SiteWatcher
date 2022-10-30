@@ -14,6 +14,7 @@ namespace PersistenceCompiledModels
         partial void Initialize()
         {
             var alert = AlertEntityType.Create(this);
+            var notification = NotificationEntityType.Create(this);
             var site = SiteEntityType.Create(this);
             var termOccurrence = TermOccurrenceEntityType.Create(this);
             var watchMode = WatchModeEntityType.Create(this);
@@ -23,11 +24,13 @@ namespace PersistenceCompiledModels
             var termWatch = TermWatchEntityType.Create(this, watchMode);
 
             AlertEntityType.CreateForeignKey1(alert, user);
+            NotificationEntityType.CreateForeignKey1(notification, alert);
             SiteEntityType.CreateForeignKey1(site, alert);
             TermOccurrenceEntityType.CreateForeignKey1(termOccurrence, termWatch);
             WatchModeEntityType.CreateForeignKey1(watchMode, alert);
 
             AlertEntityType.CreateAnnotations(alert);
+            NotificationEntityType.CreateAnnotations(notification);
             SiteEntityType.CreateAnnotations(site);
             TermOccurrenceEntityType.CreateAnnotations(termOccurrence);
             WatchModeEntityType.CreateAnnotations(watchMode);
