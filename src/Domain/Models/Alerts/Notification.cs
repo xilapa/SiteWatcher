@@ -10,8 +10,10 @@ public class Notification
 
     public Notification(DateTime currentTime)
     {
-        CreationDate = currentTime;
+        Id = new NotificationId();
+        CreatedAt = currentTime;
     }
 
-    public DateTime CreationDate { get; private set; }
+    public NotificationId Id { get; set; }
+    public DateTime CreatedAt { get; private set; }
 }
