@@ -165,7 +165,7 @@ public class GoogleAuthenticationTests : BaseTest, IClassFixture<GoogleAuthentic
         };
 
         _fixture.AppFactory.HttpClientFactoryMock
-            .SetupSequence(_ => _.CreateClient(AuthenticationDefaults.GoogleAuthClient))
+            .Setup(_ => _.CreateClient(AuthenticationDefaults.GoogleAuthClient))
             .Returns(new HttpClient(new FakeHttpDelegateHandler(responses)));
 
         // Save a fake state on cache
