@@ -52,7 +52,7 @@ public class UserMapping : BaseModelMapping<User,UserId>
         builder.HasIndex(u => u.SecurityStamp, "IX_User_SecurityStamp")
                 .IsUnique(false);
 
-        builder.HasMany<Alert>()
+        builder.HasMany(u => u.Alerts)
                 .WithOne()
                 .IsRequired()
                 .HasForeignKey(a => a.UserId);

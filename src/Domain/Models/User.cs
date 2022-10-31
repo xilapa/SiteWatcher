@@ -2,6 +2,7 @@ using Domain.Events;
 using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Models.Alerts;
 
 namespace SiteWatcher.Domain.Models;
 
@@ -20,6 +21,7 @@ public class User : BaseModel<UserId>
         EmailConfirmed = email == authEmail;
         Language = language;
         Theme = theme;
+        Alerts = Enumerable.Empty<Alert>();
 
         GenerateEmailConfirmationToken(currentDate);
     }
@@ -31,6 +33,7 @@ public class User : BaseModel<UserId>
     public ELanguage Language { get; private set; }
     public ETheme Theme { get; private set; }
     public string? SecurityStamp { get; private set; }
+    public IEnumerable<Alert> Alerts { get; init; }
 
     public void Update(UpdateUserInput updatedValues, DateTime updateDate)
     {
