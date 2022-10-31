@@ -42,7 +42,7 @@ public static class MessagingConfigurator
                 }
 
                 opts.FailedRetryCount = 3;
-                opts.ConsumerThreadCount = settings.Consumers.PerQueueConcurrency == 0 ? Environment.ProcessorCount : settings.Consumers.PerQueueConcurrency;
+                opts.ConsumerThreadCount = settings.Consumers.ConcurrencyBetweenQueues == 0 ? Environment.ProcessorCount : settings.Consumers.ConcurrencyBetweenQueues;
                 // Enable the concurrency level to be per queue
                 opts.UseDispatchingPerGroup = true;
             });

@@ -1,6 +1,9 @@
 using System.Text.Json;
 using DotNetCore.CAP;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using SiteWatcher.Domain.Models;
 using SiteWatcher.Infra;
 using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
@@ -11,21 +14,26 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
 {
     private readonly ILogger<WatchAlertsConsumer> _logger;
     private readonly SiteWatcherContext _context;
+    private readonly ICapPublisher _capPublisher;
+    private readonly ConsumerSettings _settings;
 
-    public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context)
+    public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context, ICapPublisher capPublisher, IOptions<WorkerSettings> settings)
     {
         _logger = logger;
         _context = context;
+        _capPublisher = capPublisher;
+        _settings = settings.Value.Consumers;
     }
 
     // CAP uses this attribute to create a queue and bind it with a routing key.
     // The message name is the routing key and group name is used to create the queue name.
     // Cap append the version on the queue name (e.g., queue-name.v1)
     [CapSubscribe(RoutingKeys.WatchAlerts, Group = RoutingKeys.WatchAlerts)]
-    public async Task Consume(WatchAlertsMessage message, [FromCap]CapHeader capHeader, CancellationToken cancellationToken)
+    public async Task Consume(WatchAlertsMessage message, [FromCap] CapHeader capHeader, CancellationToken cancellationToken)
     {
+        var messageId = capHeader[MessageHeaders.MessageIdKey]!;
         var hasBeenProcessed = await _context
-            .HasBeenProcessed(capHeader[MessageHeaders.MessageIdKey]!, nameof(WatchAlertsConsumer));
+            .HasBeenProcessed(messageId, nameof(WatchAlertsConsumer));
 
         if (hasBeenProcessed)
         {
@@ -33,20 +41,40 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
             return;
         }
 
-        using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        using var transaction = _context.Database.BeginTransaction(_capPublisher, autoCommit: false);
 
-        await GenerateNotifications(message);
-        await _context.MarkAsConsumed(capHeader[MessageHeaders.MessageIdKey]!, nameof(WatchAlertsConsumer));
+        await GenerateNotifications(message, cancellationToken);
 
-        await transaction.CommitAsync(cancellationToken);
+        await _context.SaveChangesAsync(CancellationToken.None);
+        await _context.MarkMessageAsConsumed(messageId, nameof(WatchAlertsConsumer));
+
+        await transaction.CommitAsync(CancellationToken.None);
 
         var messageJson = JsonSerializer.Serialize(message);
-        _logger.LogInformation("{Date} Message received: {Message}", DateTime.UtcNow, messageJson);
+        _logger.LogInformation("{Date} Message consumed: {Message}", DateTime.UtcNow, messageJson);
     }
 
-    private async Task GenerateNotifications(WatchAlertsMessage message)
+    private async Task GenerateNotifications(WatchAlertsMessage message, CancellationToken cancellationToken)
     {
-        await Task.Delay(500);
+        var frequencies = message.Frequencies;
+
+        var usersWithAlerts = _context.Users
+            .Include(u => u.Alerts.Where(_ => frequencies.Contains(_.Frequency)))
+            .ThenInclude(a => a.WatchMode)
+            .AsAsyncEnumerable();
+
+        var parallelOptions = new ParallelOptions
+        {
+            CancellationToken = cancellationToken,
+            MaxDegreeOfParallelism = _settings.ConcurrencyBetweenMessages
+        };
+
+        await Parallel.ForEachAsync(usersWithAlerts, parallelOptions, GenerateNotification);
+    }
+
+    private async ValueTask GenerateNotification(User user, CancellationToken cancellationToken)
+    {
+        // TODO: publish notification message
     }
 }
 

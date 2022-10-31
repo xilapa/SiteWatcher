@@ -1,5 +1,4 @@
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
 
 namespace SiteWatcher.Worker;
 
@@ -23,7 +22,8 @@ public class RabbitMqSettings
 public class ConsumerSettings
 {
     // Set zero to use the processor count
-    public int PerQueueConcurrency { get; set; }
+    public int ConcurrencyBetweenQueues { get; set; }
+    public int ConcurrencyBetweenMessages { get; set; }
 }
 
 public static class Exchanges
