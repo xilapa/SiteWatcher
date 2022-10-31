@@ -23,7 +23,6 @@ public class Alert : BaseModel<AlertId>
         Frequency = frequency;
         Site = site;
         WatchMode = watchMode;
-        _notifications = new List<Notification>();
         GenerateSearchField();
         AddDomainEvent(new AlertsChangedEvent(UserId));
     }
@@ -35,8 +34,8 @@ public class Alert : BaseModel<AlertId>
     public Site Site { get; private set; }
     public WatchMode WatchMode { get; private set; }
 
-    private readonly List<Notification> _notifications;
-    public IReadOnlyCollection<Notification> Notifications => _notifications.ToArray();
+    private List<Notification>? _notifications;
+    public IReadOnlyCollection<Notification> Notifications => _notifications?.ToArray() ?? Array.Empty<Notification>();
 
     public string SearchField { get; private set; }
 
@@ -73,7 +72,7 @@ public class Alert : BaseModel<AlertId>
         if (updateInput.WatchMode is not null || updateInput.Term is not null)
             UpdateWatchMode(updateInput, updateDate);
 
-        if(regenerateSearchField) GenerateSearchField();
+        if (regenerateSearchField) GenerateSearchField();
 
         LastUpdatedAt = updateDate;
 
