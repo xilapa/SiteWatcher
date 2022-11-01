@@ -32,7 +32,7 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="StackExchange.Redis" Version="2.6.66" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
