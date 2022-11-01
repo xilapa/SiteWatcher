@@ -32,7 +32,8 @@ var host = new HostBuilder()
             .SetupPersistence(workerSettings, hostContext.HostingEnvironment)
             .SetupJobs(workerSettings)
             .SetupMessaging(workerSettings)
-            .SetupConsumers();
+            .SetupConsumers()
+            .AddHttpClient();
     })
     .Build();
 

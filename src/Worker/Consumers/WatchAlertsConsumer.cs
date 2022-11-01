@@ -5,8 +5,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Infra;
+using SiteWatcher.Infra.Http;
 using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
+using static SiteWatcher.Infra.Http.HttpRetryPolicies;
 
 namespace SiteWatcher.Worker.Consumers;
 
@@ -16,13 +18,16 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
     private readonly SiteWatcherContext _context;
     private readonly ICapPublisher _capPublisher;
     private readonly ConsumerSettings _settings;
+    private readonly HttpClient _httpClient;
 
-    public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context, ICapPublisher capPublisher, IOptions<WorkerSettings> settings)
+    public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context, ICapPublisher capPublisher,
+        IOptions<WorkerSettings> settings, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _context = context;
         _capPublisher = capPublisher;
         _settings = settings.Value.Consumers;
+        _httpClient = httpClientFactory.CreateClient();
     }
 
     // CAP uses this attribute to create a queue and bind it with a routing key.
@@ -75,6 +80,23 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
     private async ValueTask GenerateNotification(User user, CancellationToken cancellationToken)
     {
         // TODO: publish notification message
+        // HttpClient is thread safe
+        // https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-6.0#thread-safety
+
+        foreach (var alert in user.Alerts)
+        {
+            var (htmlStream, sucess) = await _httpClient
+                .GetStreamAsyncWithRetries(alert.Site.Uri,
+                                            _logger,
+                                            TransientErrorsRetryWithTimeout,
+                                            cancellationToken);
+
+            // TODO: on the alert email, inform that some sites cannot be reached
+            if (!sucess)
+                continue;
+
+            //TODO: pass the stream to be processed by the alert
+        }
     }
 }
 
