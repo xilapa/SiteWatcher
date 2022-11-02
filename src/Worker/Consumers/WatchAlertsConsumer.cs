@@ -1,5 +1,6 @@
 using System.Text.Json;
 using DotNetCore.CAP;
+using Fluid;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
     private readonly ICapPublisher _capPublisher;
     private readonly WorkerSettings _settings;
     private readonly HttpClient _httpClient;
+    private static readonly FluidParser _parser = new();
 
     public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context, ICapPublisher capPublisher,
         IOptions<WorkerSettings> settings, IHttpClientFactory httpClientFactory)
@@ -106,15 +108,23 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
                 alertsToNotifySuccess.Add(alertToNotify);
         }
 
-        if(alertsToNotifySuccess.Count == 0 && alertsToNotifyError.Count == 0)
+        if (alertsToNotifySuccess.Count == 0 && alertsToNotifyError.Count == 0)
             return;
 
+        // Get the message template and the data to fill the template
         var messageTemplate = LocalizedMessages.AlertNotificationMessageTemplate(user.Language);
         var messageData = new AlertNotificationMessageData(
             user.Name, alertsToNotifySuccess,
             alertsToNotifyError, _settings.SiteWatcherUri
             );
-        // TODO: fill template with fluid
+
+        // Fill the template using Fluid
+        var parsedTemplate =_parser.Parse(messageTemplate);
+        var templateOptions = new TemplateOptions();
+        templateOptions.MemberAccessStrategy.Register<AlertToNotify>();
+        var templateContext = new TemplateContext(messageData, templateOptions);
+        var messageBody = await parsedTemplate.RenderAsync(templateContext);
+
         // TODO: publish notification message
     }
 }
