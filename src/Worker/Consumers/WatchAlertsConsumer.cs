@@ -93,7 +93,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
             var (htmlStream, sucess) = await _httpClient
                 .GetStreamAsyncWithRetries(alert.Site.Uri,
                                             _logger,
-                                            TransientErrorsRetryWithTimeout,
+                                            AnyErrorRetryWithTimeout,
                                             cancellationToken);
 
             if (!sucess)

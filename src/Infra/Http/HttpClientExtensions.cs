@@ -27,25 +27,32 @@ public static class HttpClientExtensions
         return result;
     }
 
-        public static async Task<(Stream html, bool success)> GetStreamAsyncWithRetries(this HttpClient httpClient,
-        Uri uri, ILogger logger,
-        Func<ILogger, string, string, IAsyncPolicy<HttpResponseMessage>> policyFunc,
-        CancellationToken cancellationToken)
+    public static async Task<(Stream html, bool success)> GetStreamAsyncWithRetries(this HttpClient httpClient,
+    Uri uri, ILogger logger,
+    Func<ILogger, string, string, IAsyncPolicy<HttpResponseMessage>> policyFunc,
+    CancellationToken cancellationToken)
     {
         var policy = policyFunc(logger, uri.ToString(), string.Empty);
-        using var httpResponse = await policy
-            .ExecuteAsync(() => httpClient.GetAsync(uri, cancellationToken));
+        try
+        {
+            using var httpResponse = await policy
+                .ExecuteAsync(() => httpClient.GetAsync(uri, cancellationToken));
 
-        if(!httpResponse.IsSuccessStatusCode)
+            if (!httpResponse.IsSuccessStatusCode)
+                return (Stream.Null, false);
+
+            using var content = httpResponse.Content;
+            using var htmlResult = await content.ReadAsStreamAsync(cancellationToken);
+
+            // Copy the value to a new stream and return it
+            htmlResult.Position = 0;
+            var memoryStream = new MemoryStream();
+            await htmlResult.CopyToAsync(memoryStream, cancellationToken);
+            return (memoryStream, true);
+        }
+        catch
+        {
             return (Stream.Null, false);
-
-        using var content = httpResponse.Content;
-        using var htmlResult = await content.ReadAsStreamAsync(cancellationToken);
-
-        // Copy the value to a new stream and return it
-        htmlResult.Position = 0;
-        var memoryStream = new MemoryStream();
-        await htmlResult.CopyToAsync(memoryStream, cancellationToken);
-        return (memoryStream, true);
+        }
     }
 }
