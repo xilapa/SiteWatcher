@@ -151,10 +151,10 @@ public class Alert : BaseModel<AlertId>
         SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
     }
 
-    public async Task<AlertToNotify?> VerifySiteHtml(Stream html, ELanguage userLanguage)
+    public async Task<AlertToNotify?> VerifySiteHtml(Stream html, ELanguage userLanguage, DateTime currentTime)
     {
         var notifyUser = await WatchMode.VerifySite(html);
-
+        LastVerification = currentTime;
         return notifyUser ? new AlertToNotify(this, userLanguage) : null;
     }
 }
