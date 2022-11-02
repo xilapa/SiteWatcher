@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Alerts;
+using SiteWatcher.Domain.Utils;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;
 using SiteWatcher.Worker.Messaging;
@@ -18,7 +19,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
     private readonly ILogger<WatchAlertsConsumer> _logger;
     private readonly SiteWatcherContext _context;
     private readonly ICapPublisher _capPublisher;
-    private readonly ConsumerSettings _settings;
+    private readonly WorkerSettings _settings;
     private readonly HttpClient _httpClient;
 
     public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context, ICapPublisher capPublisher,
@@ -27,7 +28,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         _logger = logger;
         _context = context;
         _capPublisher = capPublisher;
-        _settings = settings.Value.Consumers;
+        _settings = settings.Value;
         _httpClient = httpClientFactory.CreateClient();
     }
 
@@ -72,7 +73,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         var parallelOptions = new ParallelOptions
         {
             CancellationToken = cancellationToken,
-            MaxDegreeOfParallelism = _settings.ConcurrencyBetweenMessages
+            MaxDegreeOfParallelism = _settings.Consumers.ConcurrencyBetweenMessages
         };
 
         await Parallel.ForEachAsync(usersWithAlerts, parallelOptions, GenerateNotification);
@@ -105,6 +106,15 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
                 alertsToNotifySuccess.Add(alertToNotify);
         }
 
+        if(alertsToNotifySuccess.Count == 0 && alertsToNotifyError.Count == 0)
+            return;
+
+        var messageTemplate = LocalizedMessages.AlertNotificationMessageTemplate(user.Language);
+        var messageData = new AlertNotificationMessageData(
+            user.Name, alertsToNotifySuccess,
+            alertsToNotifyError, _settings.SiteWatcherUri
+            );
+        // TODO: fill template with fluid
         // TODO: publish notification message
     }
 }

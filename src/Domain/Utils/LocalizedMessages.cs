@@ -78,13 +78,13 @@ public static class LocalizedMessages
         return language switch
         {
             ELanguage.English => @"
-                    Hello {{userName}}!
+                    Hello {{UserName}}!
                     <br>
-                    {% if hasSuccess %}
+                    {% if HasSuccess %}
                       <br>
                       The following alerts have been triggered:
                       <ul>
-                          {% for alert in alertsToNotifySuccess %}
+                          {% for alert in AlertsToNotifySuccess %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
@@ -94,11 +94,11 @@ public static class LocalizedMessages
                       </ul>
                     {% endif %}
                         
-                    {% if HasErros %}
+                    {% if HasErrors %}
                       <br>
                       The following alerts sites couldn't be reached:
                       <ul>
-                          {% for alert in alertsToNotifyError %}
+                          {% for alert in AlertsToNotifyError %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
@@ -111,16 +111,16 @@ public static class LocalizedMessages
                     {% endif %}
 
                     <br>
-                    Email sent automatically by <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>",
+                    Email sent automatically by <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>",
 
             ELanguage.Spanish => @"
-                                        Hola {{userName}}!
+                    Hola {{UserName}}!
                     <br>
-                    {% if hasSuccess %}
+                    {% if HasSuccess %}
                       <br>
                       Se han activado las siguientes alertas:
                       <ul>
-                          {% for alert in alertsToNotifySuccess %}
+                          {% for alert in AlertsToNotifySuccess %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
@@ -130,11 +130,11 @@ public static class LocalizedMessages
                       </ul>
                     {% endif %}
                         
-                    {% if HasErros %}
+                    {% if HasErrors %}
                       <br>
                       No se pudo acceder a los siguientes sitios de alertas:
                       <ul>
-                          {% for alert in alertsToNotifyError %}
+                          {% for alert in AlertsToNotifyError %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
@@ -147,16 +147,16 @@ public static class LocalizedMessages
                     {% endif %}
 
                     <br>
-                    Correo electrónico enviado automáticamente por <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>",
+                    Correo electrónico enviado automáticamente por <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>",
 
             ELanguage.BrazilianPortuguese => @"
-                    Olá {{userName}}!
+                    Olá {{UserName}}!
                     <br>
-                    {% if hasSuccess %}
+                    {% if HasSuccess %}
                       <br>
                       Os seguintes alertas foram disparados:
                       <ul>
-                          {% for alert in alertsToNotifySuccess %}
+                          {% for alert in AlertsToNotifySuccess %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
@@ -166,11 +166,11 @@ public static class LocalizedMessages
                       </ul>
                     {% endif %}
                         
-                    {% if HasErros %}
+                    {% if HasErrors %}
                       <br>
                       No se pudo acceder a los siguientes sitios de alertas:
                       <ul>
-                          {% for alert in alertsToNotifyError %}
+                          {% for alert in AlertsToNotifyError %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
@@ -183,7 +183,7 @@ public static class LocalizedMessages
                     {% endif %}
 
                     <br>
-                    Email enviado automaticamente por <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>"
+                    Email enviado automaticamente por <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>"
         };
     }
 

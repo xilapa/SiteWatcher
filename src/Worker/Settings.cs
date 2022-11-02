@@ -9,6 +9,7 @@ public class WorkerSettings
     public RabbitMqSettings RabbitMq { get; set; } = null!;
     public WorkerAppSettings AppSettings { get; set; } = null!;
     public ConsumerSettings Consumers { get; set; } = null!;
+    public string SiteWatcherUri { get; set; } = null!;
 }
 
 public class RabbitMqSettings
