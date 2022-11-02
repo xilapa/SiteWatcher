@@ -1,5 +1,5 @@
 ﻿using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Email;
+using SiteWatcher.Domain.Models.Emails;
 
 namespace SiteWatcher.Domain.Utils;
 

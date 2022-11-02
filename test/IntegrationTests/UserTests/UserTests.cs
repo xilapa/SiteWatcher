@@ -7,7 +7,7 @@ using Moq;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Email;
+using SiteWatcher.Domain.Models.Emails;
 using SiteWatcher.Domain.Utils;
 using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.WebAPI.DTOs.ViewModels;

@@ -6,7 +6,7 @@ using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
-using SiteWatcher.Infra.Email;
+using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.FireAndForget;
 using SiteWatcher.Infra.Repositories;
 using StackExchange.Redis;

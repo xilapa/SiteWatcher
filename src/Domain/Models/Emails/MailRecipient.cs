@@ -1,4 +1,4 @@
-﻿namespace SiteWatcher.Domain.Models.Email;
+﻿namespace SiteWatcher.Domain.Models.Emails;
 
 public struct MailRecipient
 {

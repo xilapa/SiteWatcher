@@ -4,7 +4,7 @@ using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Email;
+using SiteWatcher.Domain.Models.Emails;
 using SiteWatcher.Domain.Utils;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;

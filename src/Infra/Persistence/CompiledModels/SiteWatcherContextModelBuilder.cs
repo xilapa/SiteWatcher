@@ -18,6 +18,7 @@ namespace PersistenceCompiledModels
             var site = SiteEntityType.Create(this);
             var termOccurrence = TermOccurrenceEntityType.Create(this);
             var watchMode = WatchModeEntityType.Create(this);
+            var email = EmailEntityType.Create(this);
             var idempotentConsumer = IdempotentConsumerEntityType.Create(this);
             var user = UserEntityType.Create(this);
             var anyChangesWatch = AnyChangesWatchEntityType.Create(this, watchMode);
@@ -25,6 +26,7 @@ namespace PersistenceCompiledModels
 
             AlertEntityType.CreateForeignKey1(alert, user);
             NotificationEntityType.CreateForeignKey1(notification, alert);
+            NotificationEntityType.CreateForeignKey2(notification, email);
             SiteEntityType.CreateForeignKey1(site, alert);
             TermOccurrenceEntityType.CreateForeignKey1(termOccurrence, termWatch);
             WatchModeEntityType.CreateForeignKey1(watchMode, alert);
@@ -34,6 +36,7 @@ namespace PersistenceCompiledModels
             SiteEntityType.CreateAnnotations(site);
             TermOccurrenceEntityType.CreateAnnotations(termOccurrence);
             WatchModeEntityType.CreateAnnotations(watchMode);
+            EmailEntityType.CreateAnnotations(email);
             IdempotentConsumerEntityType.CreateAnnotations(idempotentConsumer);
             UserEntityType.CreateAnnotations(user);
             AnyChangesWatchEntityType.CreateAnnotations(anyChangesWatch);

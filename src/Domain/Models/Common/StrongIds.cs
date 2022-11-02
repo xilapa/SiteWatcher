@@ -20,5 +20,8 @@ public partial struct AlertId {}
 [StronglyTypedId(backingType: StronglyTypedIdBackingType.Int)]
 public partial struct WatchModeId {}
 
-[StronglyTypedId(backingType: StronglyTypedIdBackingType.Int)]
+[StronglyTypedId(backingType: StronglyTypedIdBackingType.Guid)]
 public partial struct NotificationId {}
+
+[StronglyTypedId(backingType: StronglyTypedIdBackingType.Int)]
+public partial struct EmailId {}

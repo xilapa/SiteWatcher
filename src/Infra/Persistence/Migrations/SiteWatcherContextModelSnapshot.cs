@@ -66,11 +66,8 @@ namespace SiteWatcher.Infra.Migrations
 
             modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Notification", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AlertId")
                         .HasColumnType("integer");
@@ -78,9 +75,14 @@ namespace SiteWatcher.Infra.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamptz");
 
+                    b.Property<int?>("EmailId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AlertId");
+
+                    b.HasIndex("EmailId");
 
                     b.ToTable("Notifications", "siteWatcher_webApi");
                 });
@@ -119,6 +121,37 @@ namespace SiteWatcher.Infra.Migrations
                     b.ToTable("WatchModes", "siteWatcher_webApi");
 
                     b.HasDiscriminator<char>("WatchMode");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Models.Emails.Email", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Recipients")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Emails", "siteWatcher_webApi");
                 });
 
             modelBuilder.Entity("SiteWatcher.Domain.Models.IdempotentConsumer", b =>
@@ -244,6 +277,12 @@ namespace SiteWatcher.Infra.Migrations
                         .HasForeignKey("AlertId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("SiteWatcher.Domain.Models.Emails.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId");
+
+                    b.Navigation("Email");
                 });
 
             modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode", b =>

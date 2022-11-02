@@ -1,4 +1,4 @@
-﻿using SiteWatcher.Domain.Models.Email;
+﻿using SiteWatcher.Domain.Models.Emails;
 
 namespace SiteWatcher.Application.Interfaces;
 

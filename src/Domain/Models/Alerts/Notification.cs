@@ -1,4 +1,5 @@
 using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Models.Emails;
 
 namespace SiteWatcher.Domain.Models.Alerts;
 
@@ -10,10 +11,11 @@ public class Notification
 
     public Notification(DateTime currentTime)
     {
-        Id = new NotificationId();
+        Id = NotificationId.New();
         CreatedAt = currentTime;
     }
 
     public NotificationId Id { get; set; }
-    public DateTime CreatedAt { get; private set; }
+    public DateTime CreatedAt { get; }
+    public Email? Email { get; set; }
 }

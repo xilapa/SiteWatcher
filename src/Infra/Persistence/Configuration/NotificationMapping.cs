@@ -15,10 +15,7 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
 
         builder.Property(n => n.Id)
             .HasConversion<NotificationId.EfCoreValueConverter>()
-            .HasValueGeneratorFactory<NotificationIdValueGeneratorFactory>()
-            .HasColumnType("integer")
-            .ValueGeneratedOnAdd()
-            .UseIdentityColumn();
+            .HasColumnType("uuid");
 
         builder.Property(n => n.CreatedAt)
             .HasColumnType("timestamptz")
@@ -26,5 +23,12 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
 
         builder.Property(nameof(AlertId))
             .IsRequired();
+
+        builder.HasOne(n => n.Email)
+            .WithMany()
+            .HasForeignKey(nameof(EmailId));
+
+        builder.Property(nameof(EmailId))
+            .IsRequired(false);
     }
 }

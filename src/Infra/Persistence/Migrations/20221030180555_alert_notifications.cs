@@ -15,8 +15,7 @@ namespace Infra.Persistence.Migrations
                 schema: "siteWatcher_webApi",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<int>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamptz", nullable: false),
                     AlertId = table.Column<int>(type: "integer", nullable: false)
                 },

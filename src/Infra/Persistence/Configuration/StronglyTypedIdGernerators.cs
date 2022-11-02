@@ -43,7 +43,7 @@ public class WatchModeIdValueGeneratorFactory : ValueGeneratorFactory
 #region NotificationId
 internal class NotificationIdGenerator : StrongIdIntGenerator<NotificationId>
 {
-    public override NotificationId Next(EntityEntry entry) => new(-1);
+    public override NotificationId Next(EntityEntry entry) => new NotificationId();
 }
 
 public class NotificationIdValueGeneratorFactory : ValueGeneratorFactory
@@ -51,6 +51,21 @@ public class NotificationIdValueGeneratorFactory : ValueGeneratorFactory
     public override ValueGenerator Create(IProperty property, IEntityType entityType)
     {
         return new NotificationIdGenerator();
+    }
+}
+#endregion
+
+#region EmailId
+internal class EmailIdGenerator : StrongIdIntGenerator<EmailId>
+{
+    public override EmailId Next(EntityEntry entry) => new (-1);
+}
+
+public class EmailIdValueGeneratorFactory : ValueGeneratorFactory
+{
+    public override ValueGenerator Create(IProperty property, IEntityType entityType)
+    {
+        return new EmailIdGenerator();
     }
 }
 #endregion

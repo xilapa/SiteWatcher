@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Domain.Models.Common;
-using SiteWatcher.Infra.Persistence.Configuration;
+using SiteWatcher.Domain.Models.Emails;
 
 #pragma warning disable 219, 612, 618
 #nullable enable
@@ -28,12 +27,9 @@ namespace PersistenceCompiledModels
                 typeof(NotificationId),
                 propertyInfo: typeof(Notification).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Notification).GetField("<Id>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
-                valueGeneratorFactory: new NotificationIdValueGeneratorFactory().Create,
                 valueConverter: new NotificationId.EfCoreValueConverter());
-            id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-            id.AddAnnotation("Relational:ColumnType", "integer");
+            id.AddAnnotation("Relational:ColumnType", "uuid");
 
             var alertId = runtimeEntityType.AddProperty(
                 "AlertId",
@@ -46,12 +42,20 @@ namespace PersistenceCompiledModels
                 fieldInfo: typeof(Notification).GetField("<CreatedAt>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             createdAt.AddAnnotation("Relational:ColumnType", "timestamptz");
 
+            var emailId = runtimeEntityType.AddProperty(
+                "EmailId",
+                typeof(EmailId?),
+                nullable: true);
+
             var key = runtimeEntityType.AddKey(
                 new[] { id });
             runtimeEntityType.SetPrimaryKey(key);
 
             var index = runtimeEntityType.AddIndex(
                 new[] { alertId });
+
+            var index0 = runtimeEntityType.AddIndex(
+                new[] { emailId });
 
             return runtimeEntityType;
         }
@@ -71,6 +75,22 @@ namespace PersistenceCompiledModels
                 propertyInfo: typeof(Alert).GetProperty("Notifications", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Alert).GetField("_notifications", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 propertyAccessMode: PropertyAccessMode.FieldDuringConstruction);
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("EmailId")! },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id")! })!,
+                principalEntityType);
+
+            var email = declaringEntityType.AddNavigation("Email",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(Email),
+                propertyInfo: typeof(Notification).GetProperty("Email", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Notification).GetField("<Email>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }

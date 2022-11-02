@@ -34,8 +34,8 @@ public class Alert : BaseModel<AlertId>
     public Site Site { get; private set; }
     public WatchMode WatchMode { get; private set; }
 
-    private readonly List<Notification>? _notifications;
-    public IReadOnlyCollection<Notification> Notifications => _notifications?.ToArray() ?? Array.Empty<Notification>();
+    private List<Notification>? _notifications;
+    public IReadOnlyCollection<Notification> Notifications => _notifications ?? new List<Notification>();
 
     public string SearchField { get; private set; }
 
@@ -155,6 +155,13 @@ public class Alert : BaseModel<AlertId>
     {
         var notifyUser = await WatchMode.VerifySite(html);
         LastVerification = currentTime;
+
+        if (notifyUser)
+        {
+            _notifications ??= new List<Notification>();
+            _notifications.Add(new Notification(currentTime));
+        }
+
         return notifyUser ? new AlertToNotify(this, userLanguage) : null;
     }
 }
