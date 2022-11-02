@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Alerts;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;
 using SiteWatcher.Worker.Messaging;
@@ -79,12 +80,12 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
 
     private async ValueTask GenerateNotification(User user, CancellationToken cancellationToken)
     {
-        // TODO: publish notification message
-        // HttpClient is thread safe
-        // https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-6.0#thread-safety
+        var alertsToNotify = new List<AlertToNotify>();
 
         foreach (var alert in user.Alerts)
         {
+            // HttpClient is thread safe
+            // https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-6.0#thread-safety
             var (htmlStream, sucess) = await _httpClient
                 .GetStreamAsyncWithRetries(alert.Site.Uri,
                                             _logger,
@@ -95,8 +96,12 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
             if (!sucess)
                 continue;
 
-            //TODO: pass the stream to be processed by the alert
+            var alertToNotify = await alert.VerifySiteHtml(htmlStream, user.Language);
+            if (alertToNotify != null)
+                alertsToNotify.Add(alertToNotify);
         }
+
+        // TODO: publish notification message
     }
 }
 
