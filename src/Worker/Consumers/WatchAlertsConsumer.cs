@@ -80,7 +80,8 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
 
     private async ValueTask GenerateNotification(User user, CancellationToken cancellationToken)
     {
-        var alertsToNotify = new List<AlertToNotify>();
+        var alertsToNotifySuccess = new List<AlertToNotify>();
+        var alertsToNotifyError = new List<AlertToNotify>();
 
         foreach (var alert in user.Alerts)
         {
@@ -92,13 +93,15 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
                                             TransientErrorsRetryWithTimeout,
                                             cancellationToken);
 
-            // TODO: on the alert email, inform that some sites cannot be reached
             if (!sucess)
+            {
+                alertsToNotifyError.Add(new AlertToNotify(alert, user.Language));
                 continue;
+            }
 
             var alertToNotify = await alert.VerifySiteHtml(htmlStream, user.Language);
             if (alertToNotify != null)
-                alertsToNotify.Add(alertToNotify);
+                alertsToNotifySuccess.Add(alertToNotify);
         }
 
         // TODO: publish notification message

@@ -80,46 +80,109 @@ public static class LocalizedMessages
             ELanguage.English => @"
                     Hello {{userName}}!
                     <br>
-                    The following alerts have been triggered:
-                    <ul>
-                        {% for alert in alertsToNotify %}
-                        <li>
-                            <b>{{alert.Name}}</b>
-                            <br>
-                            <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    {% if hasSuccess %}
+                      <br>
+                      The following alerts have been triggered:
+                      <ul>
+                          {% for alert in alertsToNotifySuccess %}
+                          <li>
+                              <b>{{alert.Name}}</b>
+                              <br>
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                          </li>
+                          {% endfor %}
+                      </ul>
+                    {% endif %}
+                        
+                    {% if HasErros %}
+                      <br>
+                      The following alerts sites couldn't be reached:
+                      <ul>
+                          {% for alert in alertsToNotifyError %}
+                          <li>
+                              <b>{{alert.Name}}</b>
+                              <br>
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                          </li>
+                          {% endfor %}
+                      </ul>
+					Please verify the site and edit the alert. If the site is working, this could be caused by a transient failure and can be ignored.<br>
+                    Anyway, the site will be verified on the next scheduled frequency.
+                    {% endif %}
+
+                    <br>
                     Email sent automatically by <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>",
 
             ELanguage.Spanish => @"
-                    Hola {{userName}}!
+                                        Hola {{userName}}!
                     <br>
-                    Se han activado las siguientes alertas:
-                    <ul>
-                        {% for alert in alertsToNotify %}
-                        <li>
-                            <b>{{alert.Name}}</b>
-                            <br>
-                            <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    {% if hasSuccess %}
+                      <br>
+                      Se han activado las siguientes alertas:
+                      <ul>
+                          {% for alert in alertsToNotifySuccess %}
+                          <li>
+                              <b>{{alert.Name}}</b>
+                              <br>
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                          </li>
+                          {% endfor %}
+                      </ul>
+                    {% endif %}
+                        
+                    {% if HasErros %}
+                      <br>
+                      No se pudo acceder a los siguientes sitios de alertas:
+                      <ul>
+                          {% for alert in alertsToNotifyError %}
+                          <li>
+                              <b>{{alert.Name}}</b>
+                              <br>
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                          </li>
+                          {% endfor %}
+                      </ul>					
+					Verifique el sitio y edite la alerta. Si el sitio está funcionando, esto podría deberse a una falla transitoria y puede ignorarse.<br>
+                    De todos modos, el sitio será verificado en la próxima frecuencia programada.
+                    {% endif %}
+
+                    <br>
                     Correo electrónico enviado automáticamente por <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>",
 
             ELanguage.BrazilianPortuguese => @"
                     Olá {{userName}}!
                     <br>
-                    Os seguintes alertas foram disparados:
-                    <ul>
-                        {% for alert in alertsToNotify %}
-                        <li>
-                            <b>{{alert.Name}}</b>
-                            <br>
-                            <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    {% if hasSuccess %}
+                      <br>
+                      Os seguintes alertas foram disparados:
+                      <ul>
+                          {% for alert in alertsToNotifySuccess %}
+                          <li>
+                              <b>{{alert.Name}}</b>
+                              <br>
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                          </li>
+                          {% endfor %}
+                      </ul>
+                    {% endif %}
+                        
+                    {% if HasErros %}
+                      <br>
+                      No se pudo acceder a los siguientes sitios de alertas:
+                      <ul>
+                          {% for alert in alertsToNotifyError %}
+                          <li>
+                              <b>{{alert.Name}}</b>
+                              <br>
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                          </li>
+                          {% endfor %}
+                      </ul>
+					Verifique o site e edite o alerta. Se o site estiver funcionando, isso pode ser causado por uma falha temporária e pode ser ignorado.<br>
+                    De qualquer forma, o site será verificado na próxima frequência programada.
+                    {% endif %}
+
+                    <br>
                     Email enviado automaticamente por <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>"
         };
     }
