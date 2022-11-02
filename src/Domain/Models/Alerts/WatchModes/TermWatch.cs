@@ -21,6 +21,12 @@ public class TermWatch : WatchMode
         Term = updateAlertInput.Term.NewValue!;
     }
 
+    public override Task<bool> VerifySite(Stream html)
+    {
+        // TODO:
+        throw new NotImplementedException();
+    }
+
     public string Term { get; private set; }
     private readonly IEnumerable<TermOccurrence> _occurrences;
     public IReadOnlyCollection<TermOccurrence> Occurrences => _occurrences.ToArray();

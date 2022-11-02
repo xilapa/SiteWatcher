@@ -21,11 +21,10 @@ namespace PersistenceCompiledModels
 
             var htmlHash = runtimeEntityType.AddProperty(
                 "HtmlHash",
-                typeof(int?),
+                typeof(string),
                 propertyInfo: typeof(AnyChangesWatch).GetProperty("HtmlHash", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(AnyChangesWatch).GetField("<HtmlHash>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                nullable: true);
-            htmlHash.AddAnnotation("Relational:ColumnType", "integer");
+                fieldInfo: typeof(AnyChangesWatch).GetField("<HtmlHash>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            htmlHash.AddAnnotation("Relational:ColumnType", "varchar(64)");
 
             return runtimeEntityType;
         }

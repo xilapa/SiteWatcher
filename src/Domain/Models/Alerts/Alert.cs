@@ -34,7 +34,7 @@ public class Alert : BaseModel<AlertId>
     public Site Site { get; private set; }
     public WatchMode WatchMode { get; private set; }
 
-    private List<Notification>? _notifications;
+    private readonly List<Notification>? _notifications;
     public IReadOnlyCollection<Notification> Notifications => _notifications?.ToArray() ?? Array.Empty<Notification>();
 
     public string SearchField { get; private set; }
@@ -149,5 +149,12 @@ public class Alert : BaseModel<AlertId>
         }
 
         SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
+    }
+
+    public async Task<AlertToNotify?> VerifySiteHtml(Stream html, ELanguage userLanguage)
+    {
+        var notifyUser = await WatchMode.VerifySite(html);
+
+        return notifyUser ? new AlertToNotify(this, userLanguage) : null;
     }
 }

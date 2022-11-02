@@ -14,4 +14,11 @@ public abstract class WatchMode : BaseModel<WatchModeId>
     }
 
     public bool FirstWatchDone { get; protected set; }
+
+    /// <summary>
+    /// Returns true if has detected changes
+    /// </summary>
+    /// <param name="html">The hmtl webpage as stream</param>
+    /// <returns></returns>
+    public abstract Task<bool> VerifySite(Stream html);
 }
