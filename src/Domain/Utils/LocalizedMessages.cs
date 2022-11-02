@@ -77,8 +77,8 @@ public static class LocalizedMessages
     {
         return language switch
         {
-            ELanguage.English => @"
-                    Hello {{UserName}}!
+            ELanguage.English =>
+                    @"Hello {{UserName}}!
                     <br>
                     {% if HasSuccess %}
                       <br>
@@ -90,6 +90,7 @@ public static class LocalizedMessages
                               <br>
                               <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
                           </li>
+                          <br>
                           {% endfor %}
                       </ul>
                     {% endif %}
@@ -102,19 +103,19 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
                           </li>
+                          <br>
                           {% endfor %}
                       </ul>
 					Please verify the site and edit the alert. If the site is working, this could be caused by a transient failure and can be ignored.<br>
-                    Anyway, the site will be verified on the next scheduled frequency.
+                    Anyway, the site will be verified on the next scheduled frequency.<br><br>
                     {% endif %}
 
-                    <br>
                     Email sent automatically by <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>",
 
-            ELanguage.Spanish => @"
-                    Hola {{UserName}}!
+            ELanguage.Spanish =>
+                    @"Hola {{UserName}}!
                     <br>
                     {% if HasSuccess %}
                       <br>
@@ -124,8 +125,9 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
                           </li>
+                          <br>
                           {% endfor %}
                       </ul>
                     {% endif %}
@@ -138,19 +140,19 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
                           </li>
+                          <br>
                           {% endfor %}
                       </ul>					
 					Verifique el sitio y edite la alerta. Si el sitio está funcionando, esto podría deberse a una falla transitoria y puede ignorarse.<br>
-                    De todos modos, el sitio será verificado en la próxima frecuencia programada.
+                    De todos modos, el sitio será verificado en la próxima frecuencia programada.<br><br>
                     {% endif %}
 
-                    <br>
                     Correo electrónico enviado automáticamente por <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>",
 
-            ELanguage.BrazilianPortuguese => @"
-                    Olá {{UserName}}!
+            ELanguage.BrazilianPortuguese =>
+                    @"Olá {{UserName}}!
                     <br>
                     {% if HasSuccess %}
                       <br>
@@ -160,29 +162,30 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
                           </li>
+                          <br>
                           {% endfor %}
                       </ul>
                     {% endif %}
                         
                     {% if HasErrors %}
                       <br>
-                      No se pudo acceder a los siguientes sitios de alertas:
+                      Não foi possível acessar os seguintes sites de alertas:
                       <ul>
                           {% for alert in AlertsToNotifyError %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
                           </li>
+                          <br>
                           {% endfor %}
                       </ul>
 					Verifique o site e edite o alerta. Se o site estiver funcionando, isso pode ser causado por uma falha temporária e pode ser ignorado.<br>
-                    De qualquer forma, o site será verificado na próxima frequência programada.
+                    De qualquer forma, o site será verificado na próxima frequência programada.<br><br>
                     {% endif %}
 
-                    <br>
                     Email enviado automaticamente por <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>"
         };
     }
