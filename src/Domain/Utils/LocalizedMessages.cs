@@ -123,4 +123,57 @@ public static class LocalizedMessages
                     Email enviado automaticamente por <a href=""{{siteWatcher.uri}}"">SiteWatcher</a>"
         };
     }
+
+    public static string WatchModeString(ELanguage language, EWatchMode watchMode)
+    {
+        return language switch
+        {
+            ELanguage.English => watchMode switch
+            {
+                EWatchMode.AnyChanges => "Monitoring type: Any Changes",
+                EWatchMode.Term => "Monitoring type: Term"
+            },
+            ELanguage.Spanish => watchMode switch
+            {
+                EWatchMode.AnyChanges => "Tipo de monitoreo: Algún cambio",
+                EWatchMode.Term => "Tipo de monitoreo: Algún cambio"
+            },
+            ELanguage.BrazilianPortuguese => watchMode switch
+            {
+                EWatchMode.AnyChanges => "Tipo de monitoramento: Quaisquer mudanças",
+                EWatchMode.Term => "Tipo de monitoramento: Termo"
+            }
+        };
+    }
+
+    public static string FrequencyString(ELanguage language, EFrequency frequency)
+    {
+        return language switch
+        {
+            ELanguage.English => frequency switch
+            {
+                EFrequency.TwoHours => "Every two hours",
+                EFrequency.FourHours => "Every four hours",
+                EFrequency.EightHours => "Every eight hours",
+                EFrequency.TwelveHours => "Every twelve hours",
+                EFrequency.TwentyFourHours => "Every twenty four hours"
+            },
+            ELanguage.Spanish => frequency switch
+            {
+                EFrequency.TwoHours => "Cada dos horas",
+                EFrequency.FourHours => "Cada cuatro horas",
+                EFrequency.EightHours => "Cada ocho horas",
+                EFrequency.TwelveHours => "Cada doce horas",
+                EFrequency.TwentyFourHours => "Cada veinticuatro horas"
+            },
+            ELanguage.BrazilianPortuguese => frequency switch
+            {
+                EFrequency.TwoHours => "A cada duas horas",
+                EFrequency.FourHours => "A cada quatro horas",
+                EFrequency.EightHours => "A cada oito horas",
+                EFrequency.TwelveHours => "A cada doze horas",
+                EFrequency.TwentyFourHours => "A cada vinte e quatro horas"
+            }
+        };
+    }
 }
