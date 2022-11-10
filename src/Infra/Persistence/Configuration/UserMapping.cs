@@ -53,7 +53,7 @@ public class UserMapping : BaseModelMapping<User,UserId>
                 .IsUnique(false);
 
         builder.HasMany(u => u.Alerts)
-                .WithOne()
+                .WithOne(a => a.User)
                 .IsRequired()
                 .HasForeignKey(a => a.UserId);
     }

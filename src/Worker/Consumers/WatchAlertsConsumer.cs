@@ -102,7 +102,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
             }
 
             // TODO: create a wrapper for date, to make tests possible
-            var alertToNotify = await alert.VerifySiteHtml(htmlStream, user.Language, DateTime.UtcNow);
+            var alertToNotify = await alert.VerifySiteHtml(htmlStream, DateTime.UtcNow);
             if (alertToNotify != null)
                 alertsToNotifySuccess.Add(alertToNotify);
         }

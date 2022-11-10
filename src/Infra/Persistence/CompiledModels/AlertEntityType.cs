@@ -113,6 +113,13 @@ namespace PersistenceCompiledModels
                 deleteBehavior: DeleteBehavior.Cascade,
                 required: true);
 
+            var user = declaringEntityType.AddNavigation("User",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(User),
+                propertyInfo: typeof(Alert).GetProperty("User", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(Alert).GetField("<User>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
             var alerts = principalEntityType.AddNavigation("Alerts",
                 runtimeForeignKey,
                 onDependent: false,

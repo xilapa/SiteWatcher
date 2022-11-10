@@ -28,6 +28,7 @@ public class Alert : BaseModel<AlertId>
     }
 
     public UserId UserId { get; private set; }
+    public User User { get; set; }
     public string Name { get; private set; }
     public EFrequency Frequency { get; private set; }
     public DateTime? LastVerification { get; private set; }
@@ -151,7 +152,7 @@ public class Alert : BaseModel<AlertId>
         SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
     }
 
-    public async Task<AlertToNotify?> VerifySiteHtml(Stream html, ELanguage userLanguage, DateTime currentTime)
+    public async Task<AlertToNotify?> VerifySiteHtml(Stream html, DateTime currentTime)
     {
         var notifyUser = await WatchMode.VerifySite(html);
         LastVerification = currentTime;
@@ -162,6 +163,6 @@ public class Alert : BaseModel<AlertId>
             _notifications.Add(new Notification(currentTime));
         }
 
-        return notifyUser ? new AlertToNotify(this, userLanguage) : null;
+        return notifyUser ? new AlertToNotify(this, User.Language) : null;
     }
 }

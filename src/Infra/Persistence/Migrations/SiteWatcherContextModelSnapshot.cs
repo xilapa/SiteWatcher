@@ -18,7 +18,7 @@ namespace SiteWatcher.Infra.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("siteWatcher_webApi")
-                .HasAnnotation("ProductVersion", "6.0.10")
+                .HasAnnotation("ProductVersion", "6.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -239,7 +239,7 @@ namespace SiteWatcher.Infra.Migrations
 
             modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Alert", b =>
                 {
-                    b.HasOne("SiteWatcher.Domain.Models.User", null)
+                    b.HasOne("SiteWatcher.Domain.Models.User", "User")
                         .WithMany("Alerts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -268,6 +268,8 @@ namespace SiteWatcher.Infra.Migrations
 
                     b.Navigation("Site")
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Notification", b =>
