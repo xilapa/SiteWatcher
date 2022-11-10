@@ -7,28 +7,32 @@ public class Email
     // ctor for EF
     protected Email()
     {
-        Recipients = new List<EmailRecipient>();
+        Recipients = new List<MailRecipient>();
     }
 
-    public Email(DateTime currentTime, string body, string subject, string? error) : this()
+    public Email(string body, string subject, params MailRecipient[] recipients)
     {
         Id = new EmailId();
-        DateSent = currentTime;
         Subject = subject;
         Body = body;
-        ErrorMessage = error;
+        Recipients = recipients.ToList();
     }
 
     public EmailId Id { get; set; }
-    public List<EmailRecipient> Recipients { get; set; }
-    public DateTime DateSent { get; set; }
+    public List<MailRecipient> Recipients { get; set; }
+    public DateTime? DateSent { get; set; }
     public string Subject { get; set; }
     public string Body { get; set; }
     public string? ErrorMessage { get; set; }
-}
 
-public class EmailRecipient
-{
-    public string Name { get; set; }
-    public string Email { get; set; }
+    public bool HasSent()
+    {
+        if (!DateSent.HasValue)
+            return false;
+
+        if (!string.IsNullOrEmpty(ErrorMessage))
+            return false;
+
+        return true;
+    }
 }

@@ -21,12 +21,12 @@ public class EmailMapping : IEntityTypeConfiguration<Email>
             .UseIdentityColumn();
 
         builder.Property(e => e.Recipients)
-            .HasConversion<EmailRecipientsValueConverter>()
+            .HasConversion<MailRecipientsValueConverter>()
             .IsRequired();
 
         builder.Property(e => e.DateSent)
             .HasColumnType("timestamptz")
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(e => e.Subject)
             .HasColumnType("varchar(255)")

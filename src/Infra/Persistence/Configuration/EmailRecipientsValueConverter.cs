@@ -4,11 +4,11 @@ using SiteWatcher.Domain.Models.Emails;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
-public class EmailRecipientsValueConverter : ValueConverter<List<EmailRecipient>, string>
+public class MailRecipientsValueConverter : ValueConverter<List<MailRecipient>, string>
 {
-    public EmailRecipientsValueConverter() : base(
+    public MailRecipientsValueConverter() : base(
         recipients => JsonSerializer.Serialize(recipients, (JsonSerializerOptions)null!),
-        json => JsonSerializer.Deserialize<List<EmailRecipient>>(json, (JsonSerializerOptions)null!)!)
+        json => JsonSerializer.Deserialize<List<MailRecipient>>(json, (JsonSerializerOptions)null!)!)
     {
     }
 }
