@@ -19,8 +19,8 @@ namespace PersistenceCompiledModels
             var termOccurrence = TermOccurrenceEntityType.Create(this);
             var watchMode = WatchModeEntityType.Create(this);
             var email = EmailEntityType.Create(this);
-            var idempotentConsumer = IdempotentConsumerEntityType.Create(this);
             var user = UserEntityType.Create(this);
+            var idempotentConsumer = IdempotentConsumerEntityType.Create(this);
             var anyChangesWatch = AnyChangesWatchEntityType.Create(this, watchMode);
             var termWatch = TermWatchEntityType.Create(this, watchMode);
 
@@ -37,8 +37,8 @@ namespace PersistenceCompiledModels
             TermOccurrenceEntityType.CreateAnnotations(termOccurrence);
             WatchModeEntityType.CreateAnnotations(watchMode);
             EmailEntityType.CreateAnnotations(email);
-            IdempotentConsumerEntityType.CreateAnnotations(idempotentConsumer);
             UserEntityType.CreateAnnotations(user);
+            IdempotentConsumerEntityType.CreateAnnotations(idempotentConsumer);
             AnyChangesWatchEntityType.CreateAnnotations(anyChangesWatch);
             TermWatchEntityType.CreateAnnotations(termWatch);
 

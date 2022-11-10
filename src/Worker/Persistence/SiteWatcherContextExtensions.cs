@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Worker;
 using SiteWatcher.Infra;
 
 namespace SiteWatcher.Worker.Persistence;

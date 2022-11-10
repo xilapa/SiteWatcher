@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Worker;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
@@ -8,7 +8,7 @@ public class IdempotentConsumerMapping : IEntityTypeConfiguration<IdempotentCons
 {
     public void Configure(EntityTypeBuilder<IdempotentConsumer> builder)
     {
-        builder.ToTable("IdempotentConsumers", "worker");
+        builder.ToTable("IdempotentConsumers", schema: "worker");
 
         builder.HasKey(i => new { i.MessageId, i.Consumer });
 

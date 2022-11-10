@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata;
-using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Models.Worker;
 
 #pragma warning disable 219, 612, 618
 #nullable enable
@@ -14,7 +14,7 @@ namespace PersistenceCompiledModels
         public static RuntimeEntityType Create(RuntimeModel model, RuntimeEntityType? baseEntityType = null)
         {
             var runtimeEntityType = model.AddEntityType(
-                "SiteWatcher.Domain.Models.IdempotentConsumer",
+                "SiteWatcher.Domain.Models.Worker.IdempotentConsumer",
                 typeof(IdempotentConsumer),
                 baseEntityType);
 

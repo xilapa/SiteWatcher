@@ -7,6 +7,7 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Exceptions;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Alerts;
+using SiteWatcher.Domain.Models.Worker;
 using SiteWatcher.Infra.Extensions;
 
 namespace SiteWatcher.Infra;
