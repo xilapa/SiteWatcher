@@ -8,7 +8,7 @@
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.0.123" />
 		<PackageReference Include="Hashids.net" Version="1.6.1" />
-		<PackageReference Include="MailKit" Version="3.4.1" />
+		<PackageReference Include="MailKit" Version="3.4.2" />
 		<PackageReference Include="MediatR" Version="11.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="6.0.10" />
@@ -19,20 +19,20 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.23.1" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.25.0" />
 		<PackageReference Include="Npgsql" Version="6.0.7" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
 		<PackageReference Include="Polly" Version="7.2.3" />
-		<PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
+		<PackageReference Include="Roslynator.Analyzers" Version="4.1.2">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.1.1">
+		<PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.1.2">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="StackExchange.Redis" Version="2.6.66" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
+		<PackageReference Include="StackExchange.Redis" Version="2.6.80" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Application\Application.csproj" />
