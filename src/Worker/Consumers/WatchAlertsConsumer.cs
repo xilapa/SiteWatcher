@@ -1,12 +1,10 @@
 using System.Text.Json;
 using DotNetCore.CAP;
-using Fluid;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Utils;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;
 using SiteWatcher.Worker.Messaging;
@@ -22,7 +20,6 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
     private readonly ICapPublisher _capPublisher;
     private readonly WorkerSettings _settings;
     private readonly HttpClient _httpClient;
-    private static readonly FluidParser _parser = new();
 
     public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context, ICapPublisher capPublisher,
         IOptions<WorkerSettings> settings, IHttpClientFactory httpClientFactory)
@@ -99,6 +96,8 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
             if (!sucess)
             {
                 alertsToNotifyError.Add(new AlertToNotify(alert, user.Language));
+                _logger.LogError("{CurrentTime}: Error on fetching site : {Site} from User {UserId} - Alert {AlertId}",
+                     DateTime.Now, alert.Site.Uri, user.Id, alert.Id);
                 continue;
             }
 
@@ -111,19 +110,10 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         if (alertsToNotifySuccess.Count == 0 && alertsToNotifyError.Count == 0)
             return;
 
-        // Get the message template and the data to fill the template
-        var messageTemplate = LocalizedMessages.AlertNotificationMessageTemplate(user.Language);
-        var messageData = new AlertNotificationMessageData(
-            user.Name, alertsToNotifySuccess,
-            alertsToNotifyError, _settings.SiteWatcherUri
-            );
-
-        // Fill the template using Fluid
-        var parsedTemplate =_parser.Parse(messageTemplate);
-        var templateOptions = new TemplateOptions();
-        templateOptions.MemberAccessStrategy.Register<AlertToNotify>();
-        var templateContext = new TemplateContext(messageData, templateOptions);
-        var messageBody = await parsedTemplate.RenderAsync(templateContext);
+        // Get the related notification Ids
+        var notificationIds = user.Alerts
+            .SelectMany(a => a.Notifications)
+            .Select(n => n.Id);
 
         // TODO: publish notification message
     }

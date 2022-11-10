@@ -1,4 +1,6 @@
-namespace SiteWatcher.Domain.Models.Alerts;
+using SiteWatcher.Domain.Models.Alerts;
+
+namespace SiteWatcher.Domain.Utils.Notifications;
 
 public class AlertNotificationMessageData
 {
