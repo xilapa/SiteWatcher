@@ -43,7 +43,7 @@ namespace PersistenceCompiledModels
 
             var dateSent = runtimeEntityType.AddProperty(
                 "DateSent",
-                typeof(DateTime),
+                typeof(DateTime?),
                 propertyInfo: typeof(Email).GetProperty("DateSent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Email).GetField("<DateSent>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             dateSent.AddAnnotation("Relational:ColumnType", "timestamptz");
@@ -58,10 +58,10 @@ namespace PersistenceCompiledModels
 
             var recipients = runtimeEntityType.AddProperty(
                 "Recipients",
-                typeof(List<EmailRecipient>),
+                typeof(List<MailRecipient>),
                 propertyInfo: typeof(Email).GetProperty("Recipients", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Email).GetField("<Recipients>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                valueConverter: new EmailRecipientsValueConverter());
+                valueConverter: new MailRecipientsValueConverter());
 
             var subject = runtimeEntityType.AddProperty(
                 "Subject",

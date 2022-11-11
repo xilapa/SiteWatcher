@@ -2,18 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SiteWatcher.Infra;
 
 #nullable disable
 
-namespace SiteWatcher.Infra.Migrations
+namespace Infra.Persistence.Migrations
 {
     [DbContext(typeof(SiteWatcherContext))]
-    partial class SiteWatcherContextModelSnapshot : ModelSnapshot
+    [Migration("20221110025651_email_date_sent_nullable")]
+    partial class email_date_sent_nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
