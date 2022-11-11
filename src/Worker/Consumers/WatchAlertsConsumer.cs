@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
@@ -5,10 +6,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Alerts;
+using SiteWatcher.Domain.Models.Emails;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;
 using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
+using SiteWatcher.Worker.Utils;
 using static SiteWatcher.Infra.Http.HttpRetryPolicies;
 
 namespace SiteWatcher.Worker.Consumers;
@@ -75,10 +78,17 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
             MaxDegreeOfParallelism = _settings.Consumers.ConcurrencyBetweenMessages
         };
 
-        await Parallel.ForEachAsync(usersWithAlerts, parallelOptions, GenerateNotification);
+        // TODO: create a class to represent the message to publish
+        var messagesToPublish =
+            new ConcurrentBag<(EmailNotificationMessage, Dictionary<string, string>)>();
+        await Parallel.ForEachAsync(usersWithAlerts, parallelOptions,
+        (user, ct) => GenerateNotification(user, messagesToPublish, ct));
+
+        foreach (var (msg, headers) in messagesToPublish)
+            await _capPublisher.PublishAsync(RoutingKeys.EmailNotification, msg, headers!, cancellationToken);
     }
 
-    private async ValueTask GenerateNotification(User user, CancellationToken cancellationToken)
+    private async ValueTask GenerateNotification(User user, ConcurrentBag<(EmailNotificationMessage, Dictionary<string, string>)> messagesToPublishBag, CancellationToken cancellationToken)
     {
         var alertsToNotifySuccess = new List<AlertToNotify>();
         var alertsToNotifyError = new List<AlertToNotify>();
@@ -110,12 +120,30 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         if (alertsToNotifySuccess.Count == 0 && alertsToNotifyError.Count == 0)
             return;
 
-        // Get the related notification Ids
-        var notificationIds = user.Alerts
-            .SelectMany(a => a.Notifications)
-            .Select(n => n.Id);
+        var emailNotificationMessage = await EmailNotificationMessageFactory
+            .Generate(user, alertsToNotifySuccess, alertsToNotifyError, _settings.SiteWatcherUri);
 
-        // TODO: publish notification message
+        // TODO: move email creation to EmailNotificationMessageFactory
+        // Save the email message that will be published to be sent
+        // The notification sender will set the DateSent value
+        var email = new Email(emailNotificationMessage.Body, emailNotificationMessage.Subject, emailNotificationMessage.Recipients);
+        _context.Add(email);
+        // TODO: Email musta have Guid as Id
+
+        // Correlate each notification with the email
+        // As the alert notifications are not loaded to memory, each alert will have at most one notification
+        foreach (var notification in user.Alerts.SelectMany(_ => _.Notifications))
+            notification.SetEmail(email);
+
+        // Publish the email message on the bus
+        // Use the email id as the message id
+        var headers = new Dictionary<string, string>
+        {
+            [MessageHeaders.MessageIdKey] = email.Id.ToString()
+        };
+
+        // Message is published after, because the database connection is in use by the async enumerable
+        messagesToPublishBag.Add((emailNotificationMessage, headers));
     }
 }
 
