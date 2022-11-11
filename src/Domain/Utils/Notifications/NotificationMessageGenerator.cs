@@ -10,6 +10,7 @@ public static class NotificationMessageGenerator
 
     public static string GetSubject()
     {
+        // TODO: return the subject based on user language
         return string.Empty;
     }
 
