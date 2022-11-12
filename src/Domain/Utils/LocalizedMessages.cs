@@ -73,6 +73,7 @@ public static class LocalizedMessages
         };
     }
 
+    // TODO: move these htmls to a separated file
     public static string AlertNotificationMessageTemplate(ELanguage language)
     {
         return language switch

@@ -1,4 +1,5 @@
 using Fluid;
+using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Alerts;
 
@@ -8,11 +9,8 @@ public static class NotificationMessageGenerator
 {
     private static readonly FluidParser _parser = new();
 
-    public static string GetSubject()
-    {
-        // TODO: return the subject based on user language
-        return string.Empty;
-    }
+    public static string GetSubject(ELanguage language) =>
+        LocalizedMessages.AlertNotificationMessageSubject(language);
 
     public static async Task<string> GetBody(User user, List<AlertToNotify> successes, List<AlertToNotify> errors, string siteWatcherUri)
     {
