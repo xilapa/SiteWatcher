@@ -78,7 +78,6 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
             MaxDegreeOfParallelism = _settings.Consumers.ConcurrencyBetweenMessages
         };
 
-        // TODO: create a class to represent the message to publish
         var messagesToPublish =
             new ConcurrentBag<(EmailNotificationMessage, Dictionary<string, string>)>();
         await Parallel.ForEachAsync(usersWithAlerts, parallelOptions,
@@ -120,15 +119,13 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         if (alertsToNotifySuccess.Count == 0 && alertsToNotifyError.Count == 0)
             return;
 
-        var emailNotificationMessage = await EmailNotificationMessageFactory
+        var (email, emailNotificationMessage) = await EmailNotificationMessageFactory
             .Generate(user, alertsToNotifySuccess, alertsToNotifyError, _settings.SiteWatcherUri);
 
-        // TODO: move email creation to EmailNotificationMessageFactory
         // Save the email message that will be published to be sent
         // The notification sender will set the DateSent value
-        var email = new Email(emailNotificationMessage.Body, emailNotificationMessage.Subject, emailNotificationMessage.Recipients);
         _context.Add(email);
-        // TODO: Email musta have Guid as Id
+        // TODO: Email must have Guid as Id
 
         // Correlate each notification with the email
         // As the alert notifications are not loaded to memory, each alert will have at most one notification
