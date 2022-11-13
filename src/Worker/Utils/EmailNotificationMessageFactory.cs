@@ -10,7 +10,7 @@ public static class EmailNotificationMessageFactory
 {
     public static async Task<EmailNotificationMessage> Generate(User user, List<AlertToNotify> successes, List<AlertToNotify> errors, string siteWatcherUri)
     {
-        var subject = NotificationMessageGenerator.GetSubject();
+        var subject = NotificationMessageGenerator.GetSubject(user.Language);
         var body = await NotificationMessageGenerator.GetBody(user, successes, errors, siteWatcherUri);
         var emailRecipient = new MailRecipient(user.Name, user.Email);
         return new EmailNotificationMessage(subject, body, emailRecipient);
