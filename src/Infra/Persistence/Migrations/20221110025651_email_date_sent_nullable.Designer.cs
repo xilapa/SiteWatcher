@@ -77,8 +77,8 @@ namespace Infra.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamptz");
 
-                    b.Property<int?>("EmailId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("EmailId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -127,11 +127,8 @@ namespace Infra.Persistence.Migrations
 
             modelBuilder.Entity("SiteWatcher.Domain.Models.Emails.Email", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Body")
                         .IsRequired()

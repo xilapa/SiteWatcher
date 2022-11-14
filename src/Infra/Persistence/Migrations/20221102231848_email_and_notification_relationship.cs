@@ -19,11 +19,11 @@ namespace Infra.Persistence.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer");
 
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.AddColumn<Guid>(
                 name: "EmailId",
                 schema: "siteWatcher_webApi",
                 table: "Notifications",
-                type: "int",
+                type: "uuid",
                 nullable: true);
 
             migrationBuilder.CreateTable(
@@ -31,8 +31,7 @@ namespace Infra.Persistence.Migrations
                 schema: "siteWatcher_webApi",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Recipients = table.Column<string>(type: "text", nullable: false),
                     DateSent = table.Column<DateTime>(type: "timestamptz", nullable: false),
                     Subject = table.Column<string>(type: "varchar(255)", nullable: false),
@@ -88,8 +87,7 @@ namespace Infra.Persistence.Migrations
                 type: "integer",
                 nullable: false,
                 oldClrType: typeof(Guid),
-                oldType: "uuid")
-                .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                oldType: "uuid");
         }
     }
 }

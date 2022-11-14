@@ -17,7 +17,7 @@ namespace Infra.Persistence.Migrations
                 type: "uuid",
                 nullable: true,
                 oldClrType: typeof(int),
-                oldType: "int",
+                oldType: "uuid",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<Guid>(
@@ -27,8 +27,7 @@ namespace Infra.Persistence.Migrations
                 type: "uuid",
                 nullable: false,
                 oldClrType: typeof(int),
-                oldType: "int")
-                .OldAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                oldType: "uuid");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
