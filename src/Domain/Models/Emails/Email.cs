@@ -12,7 +12,7 @@ public class Email
 
     public Email(string body, string subject, params MailRecipient[] recipients)
     {
-        Id = new EmailId();
+        Id = EmailId.New();
         Subject = subject;
         Body = body;
         Recipients = recipients.ToList();
