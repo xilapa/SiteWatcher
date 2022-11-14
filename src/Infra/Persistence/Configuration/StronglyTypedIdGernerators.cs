@@ -54,18 +54,3 @@ public class NotificationIdValueGeneratorFactory : ValueGeneratorFactory
     }
 }
 #endregion
-
-#region EmailId
-internal class EmailIdGenerator : StrongIdIntGenerator<EmailId>
-{
-    public override EmailId Next(EntityEntry entry) => new (-1);
-}
-
-public class EmailIdValueGeneratorFactory : ValueGeneratorFactory
-{
-    public override ValueGenerator Create(IProperty property, IEntityType entityType)
-    {
-        return new EmailIdGenerator();
-    }
-}
-#endregion

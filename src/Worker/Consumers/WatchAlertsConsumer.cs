@@ -125,7 +125,6 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         // Save the email message that will be published to be sent
         // The notification sender will set the DateSent value
         _context.Add(email);
-        // TODO: Email must have Guid as Id
 
         // Correlate each notification with the email
         // As the alert notifications are not loaded to memory, each alert will have at most one notification

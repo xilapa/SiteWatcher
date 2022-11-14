@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SiteWatcher.Domain.Models.Common;
 using SiteWatcher.Domain.Models.Emails;
 using SiteWatcher.Infra.Persistence.Configuration;
@@ -27,12 +26,9 @@ namespace PersistenceCompiledModels
                 typeof(EmailId),
                 propertyInfo: typeof(Email).GetProperty("Id", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(Email).GetField("<Id>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                valueGenerated: ValueGenerated.OnAdd,
                 afterSaveBehavior: PropertySaveBehavior.Throw,
-                valueGeneratorFactory: new EmailIdValueGeneratorFactory().Create,
                 valueConverter: new EmailId.EfCoreValueConverter());
-            id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-            id.AddAnnotation("Relational:ColumnType", "int");
+            id.AddAnnotation("Relational:ColumnType", "uuid");
 
             var body = runtimeEntityType.AddProperty(
                 "Body",
@@ -45,7 +41,8 @@ namespace PersistenceCompiledModels
                 "DateSent",
                 typeof(DateTime?),
                 propertyInfo: typeof(Email).GetProperty("DateSent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(Email).GetField("<DateSent>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+                fieldInfo: typeof(Email).GetField("<DateSent>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
             dateSent.AddAnnotation("Relational:ColumnType", "timestamptz");
 
             var errorMessage = runtimeEntityType.AddProperty(

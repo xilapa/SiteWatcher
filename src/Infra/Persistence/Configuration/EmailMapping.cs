@@ -15,10 +15,7 @@ public class EmailMapping : IEntityTypeConfiguration<Email>
 
         builder.Property(e => e.Id)
             .HasConversion<EmailId.EfCoreValueConverter>()
-            .HasValueGeneratorFactory<EmailIdValueGeneratorFactory>()
-            .HasColumnType("int")
-            .ValueGeneratedOnAdd()
-            .UseIdentityColumn();
+            .HasColumnType("uuid");
 
         builder.Property(e => e.Recipients)
             .HasConversion<MailRecipientsValueConverter>()
