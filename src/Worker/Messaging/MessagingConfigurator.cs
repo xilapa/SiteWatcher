@@ -27,6 +27,7 @@ public static class MessagingConfigurator
                     opts.UseRabbitMQ(opt =>
                     {
                         opt.HostName = settings.RabbitMq.Host;
+                        opt.VirtualHost = settings.RabbitMq.Host;
                         opt.UserName = settings.RabbitMq.UserName;
                         opt.Password = settings.RabbitMq.Password;
                         opt.Port = settings.RabbitMq.Port;
@@ -71,8 +72,10 @@ public static class MessagingConfigurator
         var connectionFactory = new ConnectionFactory
         {
             HostName = settings.RabbitMq.Host,
+            VirtualHost = settings.RabbitMq.VirtualHost,
             UserName = settings.RabbitMq.UserName,
-            Password = settings.RabbitMq.Password
+            Password = settings.RabbitMq.Password,
+            Port = settings.RabbitMq.Port
         };
 
         using var connection = connectionFactory.CreateConnection();
