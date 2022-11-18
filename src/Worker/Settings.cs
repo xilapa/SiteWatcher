@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Worker;
@@ -62,6 +63,8 @@ public class EmailSettings : IEmailSettings
     public string SmtpHost { get; set; } = null!;
     public string SmtpUser { get; set; } = null!;
     public string SmtpPassword { get; set; } = null!;
+
+    [ConfigurationKeyName("Email_Port")]
     public int Port { get; set; }
     public bool UseTls {get; set; }
     public int EmailDelaySeconds { get; set; }
