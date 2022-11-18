@@ -46,7 +46,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
 
         if (hasBeenProcessed)
         {
-            _logger.LogInformation("{Date} Message has already been processed: {MessageId}", DateTime.UtcNow, capHeader[MessageHeaders.MessageIdKey]!);
+            _logger.LogInformation("{Date} Message has already been processed: {MessageId}", DateTime.UtcNow, messageId);
             return;
         }
 
@@ -75,7 +75,7 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         var parallelOptions = new ParallelOptions
         {
             CancellationToken = cancellationToken,
-            MaxDegreeOfParallelism = _settings.Consumers.ConcurrencyBetweenMessages
+            MaxDegreeOfParallelism = Environment.ProcessorCount - 2 > 0 ? Environment.ProcessorCount - 2 : 1
         };
 
         var messagesToPublish =

@@ -8,7 +8,6 @@ public class WorkerSettings
     public bool UseInMemoryStorageAndQueue { get; set; }
     public RabbitMqSettings RabbitMq { get; set; } = null!;
     public WorkerAppSettings AppSettings { get; set; } = null!;
-    public ConsumerSettings Consumers { get; set; } = null!;
     public string SiteWatcherUri { get; set; } = null!;
     public EmailSettings EmailSettings { get; set; } = null!;
 }
@@ -19,13 +18,6 @@ public class RabbitMqSettings
     public string UserName { get; set; } = null!;
     public string Password { get; set; } = null!;
     public int Port { get; set; }
-}
-
-public class ConsumerSettings
-{
-    // Set zero to use the processor count
-    public int ConcurrencyBetweenQueues { get; set; }
-    public int ConcurrencyBetweenMessages { get; set; }
 }
 
 public static class Exchanges

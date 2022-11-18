@@ -41,8 +41,9 @@ public static class MessagingConfigurator
                     });
                 }
 
-                opts.FailedRetryCount = 3;
-                opts.ConsumerThreadCount = settings.Consumers.ConcurrencyBetweenQueues == 0 ? Environment.ProcessorCount : settings.Consumers.ConcurrencyBetweenQueues;
+                opts.FailedRetryCount = 25;
+                // Email notification consumer needs to have only one consumer
+                opts.ConsumerThreadCount = 1;
                 // Enable the concurrency level to be per queue
                 opts.UseDispatchingPerGroup = true;
             });
