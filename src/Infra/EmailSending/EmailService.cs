@@ -27,7 +27,7 @@ public class EmailService : IEmailService
         msg.Body = new TextPart(mailMessage.HtmlBody ? TextFormat.Html : TextFormat.Text) { Text = mailMessage.Body };
 
         using var smtpClient = new SmtpClient();
-        await smtpClient.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.Port, true, cancellationToken);
+        await smtpClient.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.Port, _emailSettings.UseSsl, cancellationToken);
         await smtpClient.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword, cancellationToken);
         await smtpClient.SendAsync(msg, cancellationToken);
         await smtpClient.DisconnectAsync(true, cancellationToken);

@@ -15,6 +15,6 @@ public class EmailSettings : IEmailSettings
     [ConfigurationKeyName("Email_Port")]
     public int Port { get; set; }
 
-    public bool UseTls {get; set; }
+    public bool UseSsl {get; set; }
     public int EmailDelaySeconds { get; set; }
 }

@@ -50,7 +50,7 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
         _smtpClient ??= new SmtpClient();
 
         if (!_smtpClient.IsConnected)
-            await _smtpClient.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.Port, useSsl: false, cancellationToken);
+            await _smtpClient.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.Port, _emailSettings.UseSsl, cancellationToken);
 
         if (!_smtpClient.IsAuthenticated)
             await _smtpClient.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPassword, cancellationToken);

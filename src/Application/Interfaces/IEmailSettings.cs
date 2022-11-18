@@ -10,6 +10,6 @@ public interface IEmailSettings
     public string SmtpUser { get; set; }
     public string SmtpPassword { get; set; }
     public int Port { get; set; }
-    public bool UseTls { get; set; }
+    public bool UseSsl { get; set; }
     public int EmailDelaySeconds { get; set; }
 }
