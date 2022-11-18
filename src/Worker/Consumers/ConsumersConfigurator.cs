@@ -7,7 +7,8 @@ public static class ConsumersConfigurator
     public static IServiceCollection SetupConsumers(this IServiceCollection serviceCollection)
     {
         serviceCollection
-            .AddTransient<IWatchAlertsConsumer, WatchAlertsConsumer>();
+            .AddTransient<IWatchAlertsConsumer, WatchAlertsConsumer>()
+            .AddTransient<IEmailNotificationConsumer, EmailNotificationConsumer>();
         return serviceCollection;
     }
 }

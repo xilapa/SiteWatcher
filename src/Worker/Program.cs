@@ -6,6 +6,7 @@ using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
 using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
+using SiteWatcher.Worker.Utils;
 
 var host = new HostBuilder()
     .ConfigureDefaults(args)
@@ -33,7 +34,8 @@ var host = new HostBuilder()
             .SetupJobs(workerSettings)
             .SetupMessaging(workerSettings)
             .SetupConsumers()
-            .AddHttpClient();
+            .AddHttpClient()
+            .SetupEmail(workerSettings);
     })
     .Build();
 
