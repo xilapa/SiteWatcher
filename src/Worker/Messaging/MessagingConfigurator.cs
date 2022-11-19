@@ -27,7 +27,7 @@ public static class MessagingConfigurator
                     opts.UseRabbitMQ(opt =>
                     {
                         opt.HostName = rabbitSettings.Host;
-                        opt.VirtualHost = rabbitSettings.Host;
+                        opt.VirtualHost = rabbitSettings.VirtualHost;
                         opt.UserName = rabbitSettings.UserName;
                         opt.Password = rabbitSettings.Password;
                         opt.Port = rabbitSettings.Port;
