@@ -6,9 +6,9 @@ namespace SiteWatcher.Worker.Utils;
 
 public static class SetupEmailSending
 {
-    public static IServiceCollection SetupEmail(this IServiceCollection services, WorkerSettings settings)
+    public static IServiceCollection SetupEmail(this IServiceCollection services, EmailSettings settings)
     {
-        services.AddSingleton<IEmailServiceSingleton>(new EmailServiceSingleton(settings.EmailSettings));
+        services.AddSingleton<IEmailServiceSingleton>(new EmailServiceSingleton(settings));
         return services;
     }
 }

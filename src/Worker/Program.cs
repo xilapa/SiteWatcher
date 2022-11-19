@@ -10,12 +10,6 @@ using SiteWatcher.Worker.Utils;
 
 var host = new HostBuilder()
     .ConfigureDefaults(args)
-    .ConfigureHostConfiguration(configBuilder =>
-        configBuilder
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddEnvironmentVariables("DOTNET_")
-            .AddCommandLine(args)
-    )
     .ConfigureAppConfiguration((hostContext, configBuilder) =>
         configBuilder
             .SetBasePath(AppContext.BaseDirectory)
@@ -25,17 +19,18 @@ var host = new HostBuilder()
             .AddCommandLine(args)
     )
     .ConfigureServices((hostContext, serviceCollection)=> {
-        var workerSettings = hostContext.Configuration
-            .GetSection(nameof(WorkerSettings)).Get<WorkerSettings>();
+        var workerSettings = hostContext.Configuration.Get<WorkerSettings>();
+        var rabbitMqSettings = hostContext.Configuration.Get<RabbitMqSettings>();
+        var emailSettings = hostContext.Configuration.Get<EmailSettings>();
 
         serviceCollection
-            .Configure<WorkerSettings>(hostContext.Configuration.GetSection(nameof(WorkerSettings)))
+            .Configure<WorkerSettings>(hostContext.Configuration)
             .SetupPersistence(workerSettings, hostContext.HostingEnvironment)
             .SetupJobs(workerSettings)
-            .SetupMessaging(workerSettings)
+            .SetupMessaging(workerSettings, rabbitMqSettings)
             .SetupConsumers()
             .AddHttpClient()
-            .SetupEmail(workerSettings);
+            .SetupEmail(emailSettings);
     })
     .Build();
 

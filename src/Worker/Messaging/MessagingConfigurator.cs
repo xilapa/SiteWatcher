@@ -9,9 +9,9 @@ namespace SiteWatcher.Worker.Messaging;
 
 public static class MessagingConfigurator
 {
-    public static IServiceCollection SetupMessaging(this IServiceCollection serviceCollection, WorkerSettings settings)
+    public static IServiceCollection SetupMessaging(this IServiceCollection serviceCollection, WorkerSettings settings, RabbitMqSettings rabbitSettings)
     {
-        CreateExchange(settings);
+        CreateExchange(rabbitSettings);
 
         serviceCollection
             .AddCap(opts =>
@@ -26,11 +26,11 @@ public static class MessagingConfigurator
                     opts.UseEntityFramework<SiteWatcherContext>();
                     opts.UseRabbitMQ(opt =>
                     {
-                        opt.HostName = settings.RabbitMq.Host;
-                        opt.VirtualHost = settings.RabbitMq.Host;
-                        opt.UserName = settings.RabbitMq.UserName;
-                        opt.Password = settings.RabbitMq.Password;
-                        opt.Port = settings.RabbitMq.Port;
+                        opt.HostName = rabbitSettings.Host;
+                        opt.VirtualHost = rabbitSettings.Host;
+                        opt.UserName = rabbitSettings.UserName;
+                        opt.Password = rabbitSettings.Password;
+                        opt.Port = rabbitSettings.Port;
 
                         // Configuration to publish/consume messages from a custom exchange
                         opt.ExchangeName = Exchanges.SiteWatcher;
@@ -57,7 +57,7 @@ public static class MessagingConfigurator
         if (hasMessageId && messageId != null)
         {
             var byteMessageId = (byte[])messageId;
-            var stringMessageId = byteMessageId != null ? System.Text.Encoding.UTF8.GetString(byteMessageId): string.Empty;
+            var stringMessageId = byteMessageId != null ? System.Text.Encoding.UTF8.GetString(byteMessageId) : string.Empty;
 
             return string.IsNullOrEmpty(stringMessageId) ?
                 SnowflakeId.Default().NextId().ToString()
@@ -67,15 +67,15 @@ public static class MessagingConfigurator
         return SnowflakeId.Default().NextId().ToString();
     }
 
-    private static void CreateExchange(WorkerSettings settings)
+    private static void CreateExchange(RabbitMqSettings settings)
     {
         var connectionFactory = new ConnectionFactory
         {
-            HostName = settings.RabbitMq.Host,
-            VirtualHost = settings.RabbitMq.VirtualHost,
-            UserName = settings.RabbitMq.UserName,
-            Password = settings.RabbitMq.Password,
-            Port = settings.RabbitMq.Port
+            HostName = settings.Host,
+            VirtualHost = settings.VirtualHost,
+            UserName = settings.UserName,
+            Password = settings.Password,
+            Port = settings.Port
         };
 
         using var connection = connectionFactory.CreateConnection();

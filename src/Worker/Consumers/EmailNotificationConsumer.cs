@@ -15,15 +15,13 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
 {
     private readonly ILogger<EmailNotificationConsumer> _logger;
     private readonly SiteWatcherContext _context;
-    private readonly WorkerSettings _settings;
     private readonly IEmailServiceSingleton _emailService;
 
     public EmailNotificationConsumer(ILogger<EmailNotificationConsumer> logger, SiteWatcherContext context,
-        IOptions<WorkerSettings> settings, IEmailServiceSingleton emailService)
+     IEmailServiceSingleton emailService)
     {
         _logger = logger;
         _context = context;
-        _settings = settings.Value;
         this._emailService = emailService;
     }
 

@@ -1,6 +1,5 @@
 using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Quartz;
 using SiteWatcher.Domain.Enums;
 using SiteWatcher.Worker.Messaging;
@@ -11,15 +10,13 @@ public sealed class FireWatchAlertsJob : IJob
 {
     private readonly ILogger<FireWatchAlertsJob> _logger;
     private readonly ICapPublisher _capBus;
-    private readonly WorkerSettings _settings;
 
     public static string Name => nameof(FireWatchAlertsJob);
 
-    public FireWatchAlertsJob(ILogger<FireWatchAlertsJob> logger, ICapPublisher capBus, IOptions<WorkerSettings> settings)
+    public FireWatchAlertsJob(ILogger<FireWatchAlertsJob> logger, ICapPublisher capBus)
     {
         _logger = logger;
         _capBus = capBus;
-        _settings = settings.Value;
     }
 
     public async Task Execute(IJobExecutionContext context)
@@ -40,6 +37,7 @@ public sealed class FireWatchAlertsJob : IJob
     {
         var alertFrequenciesToWatch = new List<EFrequency>();
 
+        // TODO: Wrapper for time, to make tests possible
         var currentHour = DateTime.Now.Hour;
 
         // If the rest of current hour/ frequency is zero, this alerts of this frequency needs to be watched
