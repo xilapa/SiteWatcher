@@ -116,7 +116,5 @@ public sealed class HealthCheckSettings
     [ConfigurationKeyName("HealtCheck_UiPath")]
     public string UiPath { get; set; } = null!;
 
-    public string DbPath => $"{BasePath}/{TagDatabase}";
-    public string RabbitMqPath => $"{BasePath}/{TagRabbitMq}";
-    public string EmailHostPath => $"{BasePath}/{TagEmailHost}";
+    public string FullCheckPath => $"{BasePath}/full";
 }

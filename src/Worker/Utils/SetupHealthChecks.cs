@@ -39,6 +39,7 @@ public static class SetupHealthChecks
     {
         var healthCheckSettings = configuration.Get<HealthCheckSettings>();
 
+        // Simple connect endpoint
         endpointBuilder.MapHealthChecks(healthCheckSettings.BasePath,
         new HealthCheckOptions
         {
@@ -46,24 +47,11 @@ public static class SetupHealthChecks
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
-        endpointBuilder.MapHealthChecks(healthCheckSettings.DbPath,
+        // Full dependencies check endpoint
+        endpointBuilder.MapHealthChecks(healthCheckSettings.FullCheckPath,
         new HealthCheckOptions
         {
-            Predicate = hc => hc.Tags.Contains(HealthCheckSettings.TagDatabase),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-
-        endpointBuilder.MapHealthChecks(healthCheckSettings.EmailHostPath,
-        new HealthCheckOptions
-        {
-            Predicate = hc => hc.Tags.Contains(HealthCheckSettings.TagEmailHost),
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
-
-        endpointBuilder.MapHealthChecks(healthCheckSettings.RabbitMqPath,
-        new HealthCheckOptions
-        {
-            Predicate = hc => hc.Tags.Contains(HealthCheckSettings.TagRabbitMq),
+            Predicate = hc => hc.Tags.Count != 0,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
@@ -82,20 +70,12 @@ public static class SetupHealthChecks
             opts.SetApiMaxActiveRequests(1);
             opts.MaximumHistoryEntriesPerEndpoint(100);
             opts.AddHealthCheckEndpoint(
-                "Worker",
+                "Worker - Simple Connect",
                 $"{healthCheckSettings.BaseHost}/{healthCheckSettings.BasePath}"
             );
             opts.AddHealthCheckEndpoint(
-                "Database",
-                $"{healthCheckSettings.BaseHost}/{healthCheckSettings.DbPath}"
-            );
-            opts.AddHealthCheckEndpoint(
-                "EmailHost",
-                $"{healthCheckSettings.BaseHost}/{healthCheckSettings.EmailHostPath}"
-            );
-            opts.AddHealthCheckEndpoint(
-                "RabbitMq",
-                $"{healthCheckSettings.BaseHost}/{healthCheckSettings.RabbitMqPath}"
+                "Worker - Full dependency chek",
+                $"{healthCheckSettings.BaseHost}/{healthCheckSettings.FullCheckPath}"
             );
             opts.SetEvaluationTimeInSeconds(15 * 60);
         })
