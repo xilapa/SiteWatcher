@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SiteWatcher.Worker;
@@ -19,7 +21,26 @@ var host = new HostBuilder()
             .AddEnvironmentVariables("DOTNET_")
             .AddCommandLine(args)
     )
-    .ConfigureServices((hostContext, serviceCollection)=> {
+    .ConfigureWebHostDefaults(webBuilder =>
+    {
+        webBuilder.ConfigureServices(services =>
+        {
+            var configuration = services
+                .BuildServiceProvider()
+                .GetRequiredService<IConfiguration>();
+
+            services.ConfigureHealthChecks(configuration)
+                .ConfigureHealthChecksUI(configuration);
+        });
+
+        webBuilder.Configure((context, app) =>
+        {
+            app.UseRouting();
+            app.UseEndpoints(e => e.ConfigureHealthCheckEndpoints(context.Configuration));
+        });
+    })
+    .ConfigureServices((hostContext, serviceCollection) =>
+    {
         var workerSettings = hostContext.Configuration.Get<WorkerSettings>();
         var rabbitMqSettings = hostContext.Configuration.Get<RabbitMqSettings>();
         var emailSettings = hostContext.Configuration.Get<EmailSettings>();

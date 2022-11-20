@@ -100,3 +100,23 @@ public class EmailSettings : IEmailSettings
     [ConfigurationKeyName("EmailSettings_EmailDelaySeconds")]
     public int EmailDelaySeconds { get; set; }
 }
+
+public sealed class HealthCheckSettings
+{
+    public const string TagDatabase = "db";
+    public const string TagRabbitMq = "rabbitMq";
+    public const string TagEmailHost = "email";
+
+    [ConfigurationKeyName("HealtCheck_BaseHost")]
+    public string BaseHost { get; set; } = null!;
+
+    [ConfigurationKeyName("HealtCheck_BasePath")]
+    public string BasePath { get; set; } = null!;
+
+    [ConfigurationKeyName("HealtCheck_UiPath")]
+    public string UiPath { get; set; } = null!;
+
+    public string DbPath => $"{BasePath}/{TagDatabase}";
+    public string RabbitMqPath => $"{BasePath}/{TagRabbitMq}";
+    public string EmailHostPath => $"{BasePath}/{TagEmailHost}";
+}

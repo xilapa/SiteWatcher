@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="6.0.5" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.PostgreSQL.Storage" Version="6.0.4" />
     <PackageReference Include="DotNetCore.CAP" Version="6.2.1" />
     <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="6.2.1" />
     <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="6.2.1" />
