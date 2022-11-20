@@ -18,7 +18,7 @@ public class WorkerSettings
     public string DbConnectionString { get; set; } = null!;
 }
 
-public class RabbitMqSettings
+public class RabbitMqSettings : IRabbitMqSettings
 {
     [ConfigurationKeyName("RabbitMq_Host")]
     public string Host { get; set; } = null!;
