@@ -26,7 +26,7 @@ var host = new HostBuilder()
         serviceCollection
             .Configure<WorkerSettings>(hostContext.Configuration)
             .SetupPersistence(workerSettings, hostContext.HostingEnvironment)
-            .SetupJobs(workerSettings)
+            .SetupJobs(workerSettings, hostContext.HostingEnvironment)
             .SetupMessaging(workerSettings, rabbitMqSettings)
             .SetupConsumers()
             .AddHttpClient()
