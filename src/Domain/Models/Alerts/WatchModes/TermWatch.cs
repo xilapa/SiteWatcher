@@ -20,7 +20,7 @@ public class TermWatch : WatchMode
 
     public void Update(UpdateAlertInput updateAlertInput)
     {
-        Term = updateAlertInput.Term.NewValue!;
+        Term = updateAlertInput.Term!.NewValue!;
     }
 
     public override async Task<bool> VerifySite(Stream html)

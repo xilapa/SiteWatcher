@@ -16,6 +16,8 @@ public class AlertDetails
         SiteUri = alertDetailsDto.SiteUri;
         WatchModeId = idHasher.HashId(alertDetailsDto.WatchModeId);
         Term = alertDetailsDto.Term;
+        RegexPattern = alertDetailsDto.RegexPattern;
+        NotifyOnDisappearance = alertDetailsDto.NotifyOnDisappearance;
     }
 
     public AlertDetails(Alert alert, IIdHasher idHasher)
@@ -24,12 +26,16 @@ public class AlertDetails
         SiteUri = alert.Site.Uri.ToString();
         WatchModeId = idHasher.HashId(alert.WatchMode.Id.Value);
         Term = (alert.WatchMode as TermWatch)?.Term;
+        RegexPattern = (alert.WatchMode as RegexWatch)?.RegexPattern;
+        NotifyOnDisappearance = (alert.WatchMode as RegexWatch)?.NotifyOnDisappearance;
     }
 
     public string Id { get; set; } = null!;
     public string SiteUri { get; set; } = null!;
     public string WatchModeId { get; set; } = null!;
     public string? Term { get; set; }
+    public string? RegexPattern { get; set; }
+    public bool? NotifyOnDisappearance { get; set; }
 
     public static AlertDetails FromDto(AlertDetailsDto dto, IIdHasher idHasher) =>
         new(dto, idHasher);

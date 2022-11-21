@@ -21,16 +21,20 @@ public static class AlertFactory
         {
             EWatchMode.AnyChanges => new AnyChangesWatch(currentDate),
             EWatchMode.Term => new TermWatch(inputModel.Term!, currentDate),
+            EWatchMode.Regex => new RegexWatch(inputModel.RegexPattern!,
+                inputModel.NotifyOnDisappearance!.Value, currentDate),
             _ => throw new ArgumentOutOfRangeException(nameof(inputModel.WatchMode))
         };
     }
 
     public static WatchMode CreateWatchMode(UpdateAlertInput updateInput, DateTime currentDate)
     {
-        return updateInput.WatchMode.NewValue! switch
+        return updateInput.WatchMode!.NewValue! switch
         {
             EWatchMode.AnyChanges => new AnyChangesWatch(currentDate),
-            EWatchMode.Term => new TermWatch(updateInput.Term.NewValue!, currentDate),
+            EWatchMode.Term => new TermWatch(updateInput.Term!.NewValue!, currentDate),
+            EWatchMode.Regex => new RegexWatch(updateInput.RegexPattern!.NewValue!,
+                updateInput.NotifyOnDisappearance!.NewValue, currentDate),
             _ => throw new ArgumentOutOfRangeException(nameof(updateInput.WatchMode))
         };
     }

@@ -22,6 +22,7 @@ namespace PersistenceCompiledModels
             var user = UserEntityType.Create(this);
             var idempotentConsumer = IdempotentConsumerEntityType.Create(this);
             var anyChangesWatch = AnyChangesWatchEntityType.Create(this, watchMode);
+            var regexWatch = RegexWatchEntityType.Create(this, watchMode);
             var termWatch = TermWatchEntityType.Create(this, watchMode);
 
             AlertEntityType.CreateForeignKey1(alert, user);
@@ -40,6 +41,7 @@ namespace PersistenceCompiledModels
             UserEntityType.CreateAnnotations(user);
             IdempotentConsumerEntityType.CreateAnnotations(idempotentConsumer);
             AnyChangesWatchEntityType.CreateAnnotations(anyChangesWatch);
+            RegexWatchEntityType.CreateAnnotations(regexWatch);
             TermWatchEntityType.CreateAnnotations(termWatch);
 
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);

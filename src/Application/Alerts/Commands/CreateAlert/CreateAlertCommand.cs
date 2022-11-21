@@ -9,14 +9,18 @@ namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
 public class CreateAlertCommand : IRequest<DetailedAlertView>
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
     public EFrequency Frequency { get; set; }
-    public string SiteName { get; set; }
-    public string SiteUri { get; set; }
+    public string SiteName { get; set; } = null!;
+    public string SiteUri { get; set; } = null!;
     public EWatchMode WatchMode { get; set; }
 
     // Term watch
     public string? Term { get; set; }
+
+    // Regex watch
+    public bool? NotifyOnDisappearance { get; set; }
+    public string? RegexPattern { get; set; }
 
     public static implicit operator CreateAlertInput(CreateAlertCommand command) =>
         new(command.Name,
@@ -24,7 +28,9 @@ public class CreateAlertCommand : IRequest<DetailedAlertView>
             command.SiteName,
             command.SiteUri,
             command.WatchMode,
-            command.Term);
+            command.Term,
+            command.NotifyOnDisappearance,
+            command.RegexPattern);
 }
 
 public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, DetailedAlertView>

@@ -10,20 +10,22 @@ public static class Utils
 {
     private const int LongSize = sizeof(long);
     private const int SpanSize = sizeof(long) + 40;
-    private const byte WhiteSpaceByte = (byte) ' ';
-    private const byte PlusByte = (byte) '+';
-    private const byte SlashByte = (byte) '/';
+    private const byte WhiteSpaceByte = (byte)' ';
+    private const byte PlusByte = (byte)'+';
+    private const byte SlashByte = (byte)'/';
     private const byte DefaultByte = default!;
     private const char HyphenChar = '-';
     private static readonly Dictionary<Type, EWatchMode> WatchModesTypeDictionary = new()
     {
         {typeof(AnyChangesWatch), EWatchMode.AnyChanges},
-        {typeof(TermWatch), EWatchMode.Term}
+        {typeof(TermWatch), EWatchMode.Term},
+        {typeof(RegexWatch), EWatchMode.Regex}
     };
     private static readonly Dictionary<char, EWatchMode> WatchModesDiscriminatorDictionary = new()
     {
         {'A', EWatchMode.AnyChanges},
-        {'T', EWatchMode.Term}
+        {'T', EWatchMode.Term},
+        {'R', EWatchMode.Regex}
     };
 
     public static string GenerateSafeRandomBase64String()
@@ -63,7 +65,7 @@ public static class Utils
                 PlusByte => HyphenChar,
                 SlashByte => HyphenChar,
                 DefaultByte => HyphenChar,
-                _ => (char) base64Bytes[i]
+                _ => (char)base64Bytes[i]
             };
         }
 
@@ -76,7 +78,7 @@ public static class Utils
         var firstDotIdx = tokenSpan.IndexOf('.') + 1;
         var secondDotIdx = tokenSpan[firstDotIdx..].IndexOf('.');
 
-        return token[firstDotIdx .. (firstDotIdx + secondDotIdx)];
+        return token[firstDotIdx..(firstDotIdx + secondDotIdx)];
     }
 
     public static EWatchMode? GetWatchModeEnumByType(WatchMode watchMode) =>

@@ -7,7 +7,8 @@ namespace SiteWatcher.Application.Alerts.ViewModels;
 
 public class DetailedAlertView
 {
-    public DetailedAlertView(string id, string name, DateTime createdAt, EFrequency frequency, DateTime? lastVerification, int notificationsSent, SiteView site, DetailedWatchModeView watchMode)
+    public DetailedAlertView(string id, string name, DateTime createdAt, EFrequency frequency,
+        DateTime? lastVerification, int notificationsSent, SiteView site, DetailedWatchModeView watchMode)
     {
         Id = id;
         Name = name;

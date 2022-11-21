@@ -58,5 +58,20 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .MaximumLength(64)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.Term)))
             .When(cmmd => EWatchMode.Term.Equals(cmmd.WatchMode));
+
+        // Regex watch validation
+        RuleFor(cmmd => cmmd.RegexPattern)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.RegexPattern)))
+            .MaximumLength(512)
+            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.RegexPattern)))
+            .When(cmmd => EWatchMode.Regex.Equals(cmmd.WatchMode));
+
+        RuleFor(cmmd => cmmd.NotifyOnDisappearance)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.NotifyOnDisappearance)))
+            .When(cmmd => EWatchMode.Regex.Equals(cmmd.WatchMode));
     }
 }

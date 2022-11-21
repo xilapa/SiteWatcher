@@ -30,7 +30,8 @@ public class WatchModeMapping : BaseModelMapping<WatchMode, WatchModeId>
 
         builder.HasDiscriminator<char>(nameof(WatchMode))
             .HasValue<AnyChangesWatch>('A')
-            .HasValue<TermWatch>('T');
+            .HasValue<TermWatch>('T')
+            .HasValue<RegexWatch>('R');
 
         builder.Property(nameof(WatchMode))
             .HasColumnType("char")
@@ -66,5 +67,24 @@ public class TermWatchMapping : IEntityTypeConfiguration<TermWatch>
         builder.Metadata
             .FindNavigation(nameof(TermWatch.Occurrences))!
             .SetPropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+public sealed class RegexWatchMapping : IEntityTypeConfiguration<RegexWatch>
+{
+    public void Configure(EntityTypeBuilder<RegexWatch> builder)
+    {
+        builder.Property(r => r.NotifyOnDisappearance)
+            .HasColumnType("boolean")
+            .IsRequired();
+
+        builder.Property(r => r.RegexPattern)
+            .HasColumnType("varchar(512)")
+            .IsRequired();
+
+        builder.Property("_matches")
+            .HasConversion<RegexWatchMatchesValueConverter>()
+            .HasColumnType("text")
+            .HasColumnName(nameof(RegexWatch.Matches));
     }
 }

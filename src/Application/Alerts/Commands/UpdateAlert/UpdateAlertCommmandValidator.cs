@@ -15,7 +15,9 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
                             cmmd.SiteName is null &&
                             cmmd.SiteUri is null &&
                             cmmd.WatchMode is null &&
-                            cmmd.Term is null))
+                            cmmd.Term is null &&
+                            cmmd.RegexPattern is null &&
+                            cmmd.NotifyOnDisappearance is null))
             .WithMessage(ApplicationErrors.UPDATE_DATA_IS_NULL);
 
         RuleFor(cmmd => cmmd.AlertId)
@@ -71,7 +73,8 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
         RuleFor(cmmd => cmmd.Term)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
-            .When(cmmd => cmmd.WatchMode is not null && EWatchMode.Term.Equals(cmmd.WatchMode.NewValue));
+            .When(cmmd => cmmd.WatchMode is not null
+                        && EWatchMode.Term.Equals(cmmd.WatchMode.NewValue));
 
         RuleFor(cmmd => cmmd.Term!.NewValue)
             .Cascade(CascadeMode.Stop)
@@ -84,5 +87,36 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .When(cmmd => cmmd.WatchMode is not null
                           && EWatchMode.Term.Equals(cmmd.WatchMode.NewValue)
                           && cmmd.Term is not null);
+
+        // Regex watch validation
+        RuleFor(cmmd => cmmd.RegexPattern)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.RegexPattern)))
+            .When(cmmd => cmmd.WatchMode is not null
+                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue));
+
+        RuleFor(cmmd => cmmd.RegexPattern!.NewValue)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.RegexPattern)))
+            .MaximumLength(512)
+            .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.RegexPattern)))
+            .When(cmmd => cmmd.WatchMode is not null
+                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue)
+                            && cmmd.RegexPattern is not null);
+
+        RuleFor(cmmd => cmmd.NotifyOnDisappearance)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
+            .When(cmmd => cmmd.WatchMode is not null
+                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue));
+
+        RuleFor(cmmd => cmmd.NotifyOnDisappearance!.NewValue)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.NotifyOnDisappearance)))
+            .When(cmmd => cmmd.WatchMode is not null
+                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue)
+                            && cmmd.NotifyOnDisappearance is not null);
     }
 }

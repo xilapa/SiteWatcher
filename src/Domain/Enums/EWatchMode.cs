@@ -3,5 +3,6 @@
 public enum EWatchMode
 {
     AnyChanges = 1,
-    Term
+    Term,
+    Regex
 }

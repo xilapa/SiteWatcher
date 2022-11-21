@@ -52,7 +52,9 @@ public class DapperQueries : IDapperQueries
                 a.""Id"",
                 a.""Site_Uri"" SiteUri,
                 wm.""Id"" WatchModeId,
-                wm.""Term""
+                wm.""Term"",
+                wm.""RegexPattern"",
+                wm.""NotifyOnDisappearance""
             FROM 
             ""siteWatcher_webApi"".""Alerts"" a
                 INNER JOIN ""siteWatcher_webApi"".""WatchModes"" wm 

@@ -6,7 +6,10 @@ namespace Domain.DTOs.Alerts;
 
 public class UpdateAlertInput
 {
-    public UpdateAlertInput(AlertId alertId, UpdateInfo<string>? name, UpdateInfo<EFrequency>? frequency, UpdateInfo<string>? siteName, UpdateInfo<string>? siteUri, UpdateInfo<EWatchMode>? watchMode, UpdateInfo<string>? term)
+    public UpdateAlertInput(AlertId alertId, UpdateInfo<string>? name, UpdateInfo<EFrequency>? frequency,
+        UpdateInfo<string>? siteName, UpdateInfo<string>? siteUri, UpdateInfo<EWatchMode>? watchMode,
+        UpdateInfo<string>? term, UpdateInfo<bool>? notifyOnDisappearance, UpdateInfo<string>? regexPattern
+    )
     {
         AlertId = alertId;
         Name = name;
@@ -15,6 +18,8 @@ public class UpdateAlertInput
         SiteUri = siteUri;
         WatchMode = watchMode;
         Term = term;
+        NotifyOnDisappearance = notifyOnDisappearance;
+        RegexPattern = regexPattern;
     }
 
     public AlertId AlertId { get; set; }
@@ -24,4 +29,6 @@ public class UpdateAlertInput
     public UpdateInfo<string>? SiteUri { get; set; }
     public UpdateInfo<EWatchMode>? WatchMode { get; set; }
     public UpdateInfo<string>? Term { get; set; }
+    public UpdateInfo<bool>? NotifyOnDisappearance { get; set; }
+    public UpdateInfo<string>? RegexPattern { get; set; }
 }

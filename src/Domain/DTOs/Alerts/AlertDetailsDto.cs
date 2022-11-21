@@ -6,4 +6,6 @@ public class AlertDetailsDto
     public string SiteUri { get; set; } = null!;
     public int WatchModeId { get; set; }
     public string? Term { get; set; }
+    public bool? NotifyOnDisappearance { get; set; }
+    public string? RegexPattern { get; set; }
 }

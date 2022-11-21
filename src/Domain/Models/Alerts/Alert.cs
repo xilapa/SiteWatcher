@@ -70,7 +70,9 @@ public class Alert : BaseModel<AlertId>
             regenerateSearchField = true;
         }
 
-        if (updateInput.WatchMode is not null || updateInput.Term is not null)
+        // TODO: remove these verifications after tests
+        if (updateInput.WatchMode is not null || updateInput.Term is not null
+            || updateInput.RegexPattern is not null || updateInput.NotifyOnDisappearance is not null)
             UpdateWatchMode(updateInput, updateDate);
 
         if (regenerateSearchField) GenerateSearchField();
@@ -108,8 +110,13 @@ public class Alert : BaseModel<AlertId>
         }
 
         // Update term watchMode
+        // TODO: move this null check to the TermWatch update method
         if (currentWatchMode.Equals(EWatchMode.Term) && updateInput.Term is not null)
             (WatchMode as TermWatch)!.Update(updateInput);
+
+        // Update regex watchMode
+        if (currentWatchMode.Equals(EWatchMode.Regex))
+            (WatchMode as RegexWatch)!.Update(updateInput);
 
         // any changes doesn't have field to update, so just ignore it
     }
