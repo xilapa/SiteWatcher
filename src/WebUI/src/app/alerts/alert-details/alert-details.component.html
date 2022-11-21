@@ -87,12 +87,27 @@
                     <div class="alert-detail-group-row-content">
                         {{t(alert.WatchModeTranslationKey ?? '')}}
                     </div>
+                    <!-- term watch mode -->
                     <div class="alert-detail-group-row-content"
                          *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Term && alert.FullyLoaded">
                         {{'"' + (alert.WatchMode.Term ?? '') + '"'}}
                     </div>
+
+                    <!-- regex watch mode -->
+                    <div class="alert-detail-group-row-content"
+                        *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Regex && alert.FullyLoaded">
+                        {{'"' + (alert.WatchMode.RegexPattern ?? '') + '"'}}
+                    </div>
+
+                    <div class="alert-detail-group-row-content"
+                    *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Regex && alert.FullyLoaded">
+                    {{t('alert.common.notifyOnDisappearance') +": "+ t(alert.NotifyOnDisappearanceTranslationKey ?? '')}}
+                    </div>
+
+                    <!-- loading -->
                     <div class="alert-detail-group-row-content loading-text"
-                         *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Term && !alert.FullyLoaded">
+                        *ngIf="(alert.WatchMode.WatchMode == watchModeEnum.Term
+                                || alert.WatchMode.WatchMode == watchModeEnum.Regex) && !alert.FullyLoaded">
                         {{t('common.loading')}}
                     </div>
                 </div>

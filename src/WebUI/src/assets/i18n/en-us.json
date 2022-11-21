@@ -98,7 +98,8 @@
     },
     "watchMode": {
       "anyChanges": "Any changes",
-      "term": "Term"
+      "term": "Term",
+      "regex": "Regex"
     },
     "createUpdate": {
       "created": "Alert created.",
@@ -115,7 +116,11 @@
       "watchMode": "Monitoring type",
       "term": "Term to be monitored",
       "termPlaceholder": "Type a term to fire the alert",
-      "save": "Save"
+      "save": "Save",
+      "regexPattern": "Regex Pattern",
+      "regexPatternPlaceholder": "[^.]*Word[^.]*\\.?",
+      "notifyOnDisappearance": "Notify on regex match disappearance",
+      "watchModeRegexLength": "The value must have between 1 or 512 characters"
     },
     "list": {
       "site": "Site",
@@ -127,6 +132,7 @@
       "notificationsSentMobile": "Notifications",
       "frequencyMobile": "Frequency",
       "watchModeMobile": "Type",
+      "notifyOnDisappearance": "Notify on disappearance",
       "lastVerification": "Last verification",
       "sent": "sent"
     }

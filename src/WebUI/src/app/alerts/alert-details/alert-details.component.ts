@@ -1,12 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {DetailedAlertView} from "../common/alert";
-import {EWatchMode} from "../common/e-watch-mode";
-import {AlertService} from "../service/alert.service";
-import {utils} from "../../core/utils/utils";
-import {MessageService} from "primeng/api";
-import {TranslocoService} from "@ngneat/transloco";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router } from "@angular/router";
+import { TranslocoService } from "@ngneat/transloco";
+import { MessageService } from "primeng/api";
+import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
+import { utils } from "../../core/utils/utils";
+import { DetailedAlertView } from "../common/alert";
+import { EWatchMode } from "../common/e-watch-mode";
+import { AlertService } from "../service/alert.service";
 
 @Component({
     selector: 'sw-alert-details',
@@ -40,7 +40,7 @@ export class AlertDetailsComponent implements OnInit {
     deleteAlert() : void {
         this.alertService.deleteAlert(this.alert.Id as string)
             .subscribe({
-                next: (response) => {
+                next: (_) => {
                     this.dialogRef.close(true);
                     utils.toastSuccess(this.messageService, this.transloco,
                         this.transloco.translate('alert.createUpdate.created'));

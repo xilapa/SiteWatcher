@@ -49,7 +49,7 @@
                 </sw-inline-input-error-msg>
             </div>
 
-            <!-- site uri-- precisa começar com https://.... -->
+            <!-- site uri-- needs to start with https://.... -->
             <div class="form-group">
                 <label for="siteUri" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.siteUri') }}</label>
                 <div class="form-input">
@@ -96,6 +96,37 @@
                         [show_if]="inputFormWatchModeTerm?.touched && inputFormWatchModeTerm?.dirty && inputFormWatchModeTerm?.invalid"
                         [message]="t('common.invalidStringLength')">
                 </sw-inline-input-error-msg>
+            </div>
+
+            <!--regex pattern-->
+            <div *ngIf="regexWatchModeSelected" class="form-group input-after-dropdown-padding">
+                <label for="regexPattern" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.regexPattern') }}</label>
+                <div class="form-input">
+                    <input
+                            class="sw-input-color"
+                            id="regexPattern" type="text" pInputText
+                            [placeholder]="t('alert.createUpdate.regexPatternPlaceholder')" formControlName="regexPattern"
+                            [class.invalid-input]="inputFormWatchModeRegexPattern?.touched
+                                && inputFormWatchModeRegexPattern?.dirty
+                                && inputFormWatchModeRegexPattern?.invalid">
+                </div>
+                <sw-inline-input-error-msg
+                        [show_if]="inputFormWatchModeRegexPattern?.touched && inputFormWatchModeRegexPattern?.dirty && inputFormWatchModeRegexPattern?.invalid"
+                        [message]="t('alert.createUpdate.watchModeRegexLength')">
+                </sw-inline-input-error-msg>
+            </div>
+
+            <!--regex - NotifyOnDisappearance -->
+            <div *ngIf="regexWatchModeSelected" class="form-group">
+                <label for="notifyOnDisappearance" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.notifyOnDisappearance') }}</label>
+                <div class="form-input">
+                    <p-dropdown id="notifyOnDisappearance"
+                                [options]="notifyOnDisappearanceOptions"
+                                optionLabel="Display"
+                                optionValue="Value"
+                                formControlName="notifyOnDisappearance">
+                    </p-dropdown>
+                </div>
             </div>
 
             <!-- submit button -->

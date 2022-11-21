@@ -98,7 +98,8 @@
     },
     "watchMode": {
       "anyChanges": "Algún cambio",
-      "term": "Término"
+      "term": "Término",
+      "regex": "Regex"
     },
     "createUpdate": {
       "created": "Alerta creada.",
@@ -115,7 +116,11 @@
       "watchMode": "Tipo de monitoreo",
       "term": "Plazo a monitorear",
       "termPlaceholder": "Escriba un término para disparar la alerta",
-      "save": "Guardar"
+      "save": "Guardar",
+      "regexPattern": "Patrón de regex",
+      "regexPatternPlaceholder": "[^.]*Palabra[^.]*\\.?",
+      "notifyOnDisappearance": "Notificar sobre la desaparición de coincidencias de regex",
+      "watchModeRegexLength": "El valor debe tener entre 1 o 512 caracteres"
     },
     "list": {
       "site": "Sitio",
@@ -127,6 +132,7 @@
       "notificationsSentMobile": "Notificaciones",
       "frequencyMobile": "Frecuencia",
       "watchModeMobile": "Tipo",
+      "notifyOnDisappearance": "Notificar sobre la desaparición",
       "lastVerification": "Última verificación",
       "sent": "enviada(s)"
     }
