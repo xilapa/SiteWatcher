@@ -45,9 +45,9 @@ public static class HttpClientExtensions
             using var htmlResult = await content.ReadAsStreamAsync(cancellationToken);
 
             // Copy the value to a new stream and return it
-            htmlResult.Position = 0;
             var memoryStream = new MemoryStream();
             await htmlResult.CopyToAsync(memoryStream, cancellationToken);
+            memoryStream.Position = 0;
             return (memoryStream, true);
         }
         catch
