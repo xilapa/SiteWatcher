@@ -12,7 +12,7 @@ public class RegexWatch : WatchMode
         _matches = new List<string>();
     }
 
-    public RegexWatch(string regexPattern, bool notifyOnDisappearance, DateTime currentDate) :base(currentDate)
+    public RegexWatch(string regexPattern, bool notifyOnDisappearance, DateTime currentDate) : base(currentDate)
     {
         RegexPattern = regexPattern;
         NotifyOnDisappearance = notifyOnDisappearance;
@@ -21,31 +21,33 @@ public class RegexWatch : WatchMode
 
     public bool NotifyOnDisappearance { get; private set; }
     public string RegexPattern { get; private set; }
-    private readonly List<string> _matches;
-    public IReadOnlyCollection<string> Matches => _matches.ToArray();
+    private List<string> _matches;
+    public IReadOnlyCollection<string> Matches => _matches;
 
     public void Update(UpdateAlertInput updateAlertInput)
     {
-        if(updateAlertInput.NotifyOnDisappearance == null && updateAlertInput.RegexPattern == null)
+        if (updateAlertInput.NotifyOnDisappearance == null && updateAlertInput.RegexPattern == null)
             return;
 
-        if(updateAlertInput.NotifyOnDisappearance != null)
+        if (updateAlertInput.NotifyOnDisappearance != null)
             NotifyOnDisappearance = updateAlertInput.NotifyOnDisappearance.NewValue;
 
-        if(updateAlertInput.RegexPattern?.NewValue != null)
+        if (updateAlertInput.RegexPattern?.NewValue != null)
             RegexPattern = updateAlertInput.RegexPattern.NewValue;
     }
 
     public override async Task<bool> VerifySite(Stream html)
     {
         var htmlExtractedText = await HtmlUtils.ExtractText(html);
+        await html.DisposeAsync();
 
         var newMatches = Regex.Matches(htmlExtractedText, RegexPattern, RegexOptions.IgnoreCase);
 
         // Save the ocurrences for future comparison
         if (!FirstWatchDone)
         {
-            _matches.AddRange(newMatches.Select(m => m.Value.Trim()));
+            // It's needed to change the reference for EF see the change and persist
+            _matches = new(newMatches.Select(m => m.Value.Trim()));
             FirstWatchDone = true;
             return false;
         }
@@ -56,11 +58,12 @@ public class RegexWatch : WatchMode
         bool SaveMatchesAndReturn(bool different)
         {
             if (!different) return false;
-            _matches.Clear();
-            _matches.AddRange(newMatchesArray);
+            // It's needed to change the reference for EF see the change and persist
+            _matches = new(newMatchesArray);
             return true;
         }
 
+        // TODO: group identical occurrences and verify if the new count is greater than the old count
         // Verify if it has new occurrences
         var hasNewOccurrences = false;
         foreach (var newMatch in newMatchesArray)

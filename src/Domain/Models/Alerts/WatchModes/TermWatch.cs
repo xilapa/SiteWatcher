@@ -26,7 +26,10 @@ public class TermWatch : WatchMode
     public override async Task<bool> VerifySite(Stream html)
     {
         var htmlExtractedText = await HtmlUtils.ExtractText(html);
+        await html.DisposeAsync();
 
+        // TODO: stop getting the occurrence context
+        // TODO: save the term occurrence count and compare
         // The max length of Term is 64, the max length of Ocurrence.Context is 512.
         // So, there are left 448 characters to get, 224 for each side.
         var pattern = $"([^.]{{0,224}}{Term}[^.]{{0,224}}\\.?)";

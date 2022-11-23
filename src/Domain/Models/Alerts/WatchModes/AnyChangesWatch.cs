@@ -22,6 +22,7 @@ public class AnyChangesWatch : WatchMode
     {
         var shaHasher = SHA256.Create();
         var hashedBytes = await shaHasher.ComputeHashAsync(html);
+        await html.DisposeAsync();
 
         // Create an hexadecimal string
         var stringBuilder = StringBuilderCache.Acquire(64);
