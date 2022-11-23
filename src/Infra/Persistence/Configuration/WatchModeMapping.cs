@@ -82,7 +82,7 @@ public sealed class RegexWatchMapping : IEntityTypeConfiguration<RegexWatch>
             .HasColumnType("varchar(512)")
             .IsRequired();
 
-        builder.Property("_matches")
+        builder.Property<List<string>>("_matches")
             .HasConversion<RegexWatchMatchesValueConverter>()
             .HasColumnType("text")
             .HasColumnName(nameof(RegexWatch.Matches));

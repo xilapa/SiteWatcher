@@ -227,16 +227,17 @@ namespace SiteWatcher.Infra.Migrations
                 {
                     b.HasBaseType("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode");
 
-                    b.Property<string>("Matches")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("NotifyOnDisappearance")
                         .HasColumnType("boolean");
 
                     b.Property<string>("RegexPattern")
                         .IsRequired()
                         .HasColumnType("varchar(512)");
+
+                    b.Property<string>("_matches")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Matches");
 
                     b.HasDiscriminator().HasValue('R');
                 });
