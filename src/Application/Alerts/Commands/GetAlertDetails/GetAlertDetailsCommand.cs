@@ -10,7 +10,7 @@ public class GetAlertDetailsCommand : IRequest<AlertDetails?>, ICacheable
     public string AlertId { get; set; }
 
     public TimeSpan Expiration =>
-        TimeSpan.FromMinutes(10);
+        TimeSpan.FromMinutes(60);
 
     public string HashFieldName =>
         $"AlertId:{AlertId}";

@@ -8,8 +8,8 @@ namespace SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 
 public class SearchAlertCommand : IRequest<IEnumerable<SimpleAlertView>>, ICacheable
 {
-    public string Term { get; set; }
-    public TimeSpan Expiration => TimeSpan.FromMinutes(2);
+    public string Term { get; set; } = null!;
+    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
     public string HashFieldName => $"Term:{Term}";
     public string GetKey(ISession session)  =>
         CacheKeys.UserAlertSearch(session.UserId!.Value);

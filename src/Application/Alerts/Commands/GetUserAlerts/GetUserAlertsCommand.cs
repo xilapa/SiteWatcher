@@ -16,7 +16,7 @@ public class GetUserAlertsCommand : IRequest<CommandResult>, ICacheable
     public string HashFieldName =>
         $"Take:{Take}-LastId:{LastAlertId}";
 
-    public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+    public TimeSpan Expiration => TimeSpan.FromMinutes(60);
 }
 
 public class GetUserAlertsCommandHandler : IRequestHandler<GetUserAlertsCommand, CommandResult>
