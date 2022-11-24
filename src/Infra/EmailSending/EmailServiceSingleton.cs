@@ -41,7 +41,10 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
             // set the smtp client to null and return the error
             await TryDisconnectClient();
             _smtpClient = null;
-            return e.Message;
+
+            return string.IsNullOrEmpty(e.Message) ?
+                $"Error sending the email: {e.InnerException?.Message ?? "No inner exception message"}" 
+                : e.Message;
         }
     }
 
