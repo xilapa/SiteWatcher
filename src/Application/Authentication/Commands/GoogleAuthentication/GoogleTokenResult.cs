@@ -15,9 +15,10 @@ public class GoogleTokenResult
     public GoogleTokenResult(bool success)
     {
         Success = success;
+        Claims = Enumerable.Empty<Claim>();
     }
 
-    public string GoogleId { get; }
+    public string? GoogleId { get; }
     public string? ProfilePicUrl { get; }
     public bool Success { get; }
     public IEnumerable<Claim> Claims { get; }

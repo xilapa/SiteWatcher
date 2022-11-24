@@ -7,10 +7,7 @@ namespace SiteWatcher.Application.Alerts.ViewModels;
 
 public class AlertDetails
 {
-    public AlertDetails()
-    { }
-
-    public AlertDetails(AlertDetailsDto alertDetailsDto, IIdHasher idHasher)
+    private AlertDetails(AlertDetailsDto alertDetailsDto, IIdHasher idHasher)
     {
         Id = idHasher.HashId(alertDetailsDto.Id);
         SiteUri = alertDetailsDto.SiteUri;
@@ -20,7 +17,7 @@ public class AlertDetails
         NotifyOnDisappearance = alertDetailsDto.NotifyOnDisappearance;
     }
 
-    public AlertDetails(Alert alert, IIdHasher idHasher)
+    private AlertDetails(Alert alert, IIdHasher idHasher)
     {
         Id = idHasher.HashId(alert.Id.Value);
         SiteUri = alert.Site.Uri.ToString();

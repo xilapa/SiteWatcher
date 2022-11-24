@@ -40,6 +40,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
     {
         var user = User.FromInputModel(request.ToInputModel(_session), _session.Now);
 
+        // TODO: remove this exception, to no rely on database for a business rule
         try
         {
             _userRepository.Add(user);

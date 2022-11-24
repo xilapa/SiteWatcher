@@ -28,7 +28,7 @@ public class GoogleAuthenticationCommandValidator : AbstractValidator<GoogleAuth
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.GOOGLE_AUTH_ERROR)
-            .MustAsync((state, cancellationToken) => StateMatch(state))
+            .MustAsync((state, _) => StateMatch(state!))
             .WithMessage(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
         RuleFor(cmmd => cmmd.Code)
@@ -36,7 +36,7 @@ public class GoogleAuthenticationCommandValidator : AbstractValidator<GoogleAuth
             .WithMessage(ApplicationErrors.GOOGLE_AUTH_ERROR);
     }
 
-    protected bool IsMissingScope(string defaultScopes, string? scopesToBeChecked)
+    private bool IsMissingScope(string defaultScopes, string? scopesToBeChecked)
     {
         var scopesToBeCheckedSpan = scopesToBeChecked.AsSpan();
         var scopeSpan = defaultScopes.AsSpan();

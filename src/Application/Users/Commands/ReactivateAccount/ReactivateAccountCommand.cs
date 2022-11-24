@@ -7,7 +7,7 @@ namespace SiteWatcher.Application.Users.Commands.ReactivateAccount;
 
 public class ReactivateAccountCommand : IRequest<CommandResult>
 {
-    public string Token { get; set; }
+    public string? Token { get; set; }
 }
 
 public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccountCommand, CommandResult>
@@ -28,6 +28,9 @@ public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccount
 
     public async Task<CommandResult> Handle(ReactivateAccountCommand request, CancellationToken cancellationToken)
     {
+        if(request.Token == null)
+            return ReturnError();
+
         var userId = await _authservice.GetUserIdFromConfirmationToken(request.Token);
         if(userId is null)
             return ReturnError();

@@ -7,7 +7,7 @@ namespace SiteWatcher.Application.Users.Commands.ConfirmEmail;
 
 public class ConfirmEmailCommand : IRequest<CommandResult>
 {
-    public string Token { get; set; }
+    public string? Token { get; set; }
 }
 
 public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, CommandResult>
@@ -27,6 +27,9 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, C
 
     public async Task<CommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
+        if(request.Token == null)
+            return ReturnError();
+
         var userId = await _authservice.GetUserIdFromConfirmationToken(request.Token);
         if(userId is null)
             return ReturnError();

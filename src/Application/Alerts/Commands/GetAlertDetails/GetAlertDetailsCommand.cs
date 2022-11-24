@@ -7,7 +7,7 @@ namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 
 public class GetAlertDetailsCommand : IRequest<AlertDetails?>, ICacheable
 {
-    public string AlertId { get; set; }
+    public string? AlertId { get; set; }
 
     public TimeSpan Expiration =>
         TimeSpan.FromMinutes(60);
@@ -35,12 +35,14 @@ public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsComm
 
     public async Task<AlertDetails?> Handle(GetAlertDetailsCommand request, CancellationToken cancellationToken)
     {
+        if(request.AlertId == null)
+            return default;
+
         var alertId = _idHasher.DecodeId(request.AlertId);
         if (alertId == 0)
             return null;
 
-        var alertDetails = await _alertDapperRepository.GetAlertDetails(alertId, _session.UserId!.Value,
-                cancellationToken);
-        return alertDetails;
+        return await _alertDapperRepository
+            .GetAlertDetails(alertId, _session.UserId!.Value, cancellationToken);
     }
 }

@@ -35,14 +35,14 @@ public class DetailedAlertView
     public DetailedAlertView()
     { }
 
-    public string Id { get; set; }
-    public string Name { get; set; }
+    public string? Id { get; set; }
+    public string? Name { get; set; }
     public DateTime CreatedAt { get; set; }
     public EFrequency Frequency { get; set; }
     public DateTime? LastVerification { get; set; }
     public int NotificationsSent { get; set; }
-    public SiteView Site { get; set; }
-    public DetailedWatchModeView WatchMode { get; set; }
+    public SiteView? Site { get; set; }
+    public DetailedWatchModeView? WatchMode { get; set; }
 
     public static DetailedAlertView FromAlert(Alert alert, IIdHasher idHasher) =>
         new(alert, idHasher);

@@ -11,7 +11,7 @@ public class SearchAlertCommand : IRequest<IEnumerable<SimpleAlertView>>, ICache
     public string Term { get; set; } = null!;
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
     public string HashFieldName => $"Term:{Term}";
-    public string GetKey(ISession session)  =>
+    public string GetKey(ISession session) =>
         CacheKeys.UserAlertSearch(session.UserId!.Value);
 }
 
@@ -33,8 +33,7 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEn
             .Where(t => !string.IsNullOrEmpty(t))
             .Select(t => t.ToLowerCaseWithoutDiacritics()).ToArray();
 
-        var simpleAlerts = await _alertDapperRepository
+        return await _alertDapperRepository
             .SearchSimpleAlerts(searchTerms, _session.UserId!.Value, 10, cancellationToken);
-        return simpleAlerts;
     }
 }

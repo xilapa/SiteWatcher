@@ -8,7 +8,7 @@ namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 
 public class DeleteAlertCommand : IRequest<CommandResult>
 {
-    public string AlertId { get; set; }
+    public string? AlertId { get; set; }
 }
 
 public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, CommandResult>
@@ -29,6 +29,9 @@ public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, Com
 
     public async Task<CommandResult> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
     {
+        if(request.AlertId == null)
+            return ReturnError();
+
         var alertId = _idHasher.DecodeId(request.AlertId);
         if (alertId == 0)
             return ReturnError();
