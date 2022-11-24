@@ -125,13 +125,13 @@ public class Alert : BaseModel<AlertId>
     {
         // Separating name parts ignoring non-alphanumerics characters, diacritics and case
         var nameParts = Regex.Split(Name, "\\W")
-            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 2)
+            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 1)
             .Select(p => p.ToLowerCaseWithoutDiacritics())
             .ToArray();
 
         // Separating site name parts ignoring white spaces, diacritics and case
         var siteNameParts = Regex.Split(Site.Name, "\\W")
-            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 2)
+            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 1)
             .Select(p => p.ToLowerCaseWithoutDiacritics())
             .ToArray();
 
@@ -140,7 +140,7 @@ public class Alert : BaseModel<AlertId>
         var siteUri = Site.Uri.AbsoluteUri[doubleBarIndex..].ToLowerCaseWithoutDiacritics();
 
         var siteUriParts = Regex.Split(siteUri, "\\W")
-            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 2)
+            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 1)
             .Select(p => p.ToLowerCaseWithoutDiacritics())
             .ToArray();
 
