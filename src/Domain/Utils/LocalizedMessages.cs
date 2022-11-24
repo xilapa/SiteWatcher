@@ -10,7 +10,8 @@ public static class LocalizedMessages
         {
             ELanguage.English => "Email confirmation",
             ELanguage.Spanish => "Confirmación de correo electrónico",
-            ELanguage.BrazilianPortuguese => "Confirmação de e-mail"
+            ELanguage.BrazilianPortuguese => "Confirmação de e-mail",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -20,7 +21,8 @@ public static class LocalizedMessages
         {
             ELanguage.English => $"Please confirm your email address by clicking on the link below: <a href='{link}'>Confirm email</a>",
             ELanguage.Spanish => $"Confirme su dirección de correo electrónico haciendo clic en el siguiente enlace: <a href='{link}'>Confirmar correo electrónico</a>",
-            ELanguage.BrazilianPortuguese => $"Confirme seu endereço de e-mail clicando no link abaixo: <a href='{link}'>Confirmar e-mail</a>"
+            ELanguage.BrazilianPortuguese => $"Confirme seu endereço de e-mail clicando no link abaixo: <a href='{link}'>Confirmar e-mail</a>",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -30,7 +32,8 @@ public static class LocalizedMessages
         {
             ELanguage.English => "Account activation",
             ELanguage.Spanish => "Activación de cuenta",
-            ELanguage.BrazilianPortuguese => "Ativação de conta"
+            ELanguage.BrazilianPortuguese => "Ativação de conta",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -40,7 +43,8 @@ public static class LocalizedMessages
         {
             ELanguage.English => $"Please activate your account by clicking on the link below: <a href='{link}'>Activate account</a>",
             ELanguage.Spanish => $"Activa tu cuenta haciendo clic en el siguiente enlace: <a href='{link}'>Activar cuenta</a>",
-            ELanguage.BrazilianPortuguese => $"Ative sua conta clicando no link abaixo: <a href='{link}'>Ativar conta</a>"
+            ELanguage.BrazilianPortuguese => $"Ative sua conta clicando no link abaixo: <a href='{link}'>Ativar conta</a>",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -50,7 +54,8 @@ public static class LocalizedMessages
         {
             ELanguage.English => "Account deleted",
             ELanguage.Spanish => "Cuenta eliminada",
-            ELanguage.BrazilianPortuguese => "Conta deletada"
+            ELanguage.BrazilianPortuguese => "Conta deletada",
+            _ => throw new NotImplementedException()
         };
     }
     public static string AccountDeletedBody(ELanguage language)
@@ -59,7 +64,8 @@ public static class LocalizedMessages
         {
             ELanguage.English => "Your account and all of your data on SiteWatcher has been deleted.",
             ELanguage.Spanish => "Su cuenta y todos sus datos en SiteWatcher han sido eliminados.",
-            ELanguage.BrazilianPortuguese => "Sua conta e todos os seus dados no SiteWatcher foram excluídos."
+            ELanguage.BrazilianPortuguese => "Sua conta e todos os seus dados no SiteWatcher foram excluídos.",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -69,7 +75,8 @@ public static class LocalizedMessages
         {
             ELanguage.English => "Your alerts have been triggered",
             ELanguage.Spanish => "Tus alertas han sido activadas",
-            ELanguage.BrazilianPortuguese => "Seus alertas foram disparados"
+            ELanguage.BrazilianPortuguese => "Seus alertas foram disparados",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -187,7 +194,8 @@ public static class LocalizedMessages
                     De qualquer forma, o site será verificado na próxima frequência programada.<br><br>
                     {% endif %}
 
-                    Email enviado automaticamente por <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>"
+                    Email enviado automaticamente por <a href=""{{SiteWatcherUri}}"">SiteWatcher</a>",
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -198,18 +206,25 @@ public static class LocalizedMessages
             ELanguage.English => watchMode switch
             {
                 EWatchMode.AnyChanges => "Monitoring type: Any Changes",
-                EWatchMode.Term => "Monitoring type: Term"
+                EWatchMode.Term => "Monitoring type: Term",
+                EWatchMode.Regex => "Monitoring type: Regex Pattern",
+                _ => throw new NotImplementedException()
             },
             ELanguage.Spanish => watchMode switch
             {
                 EWatchMode.AnyChanges => "Tipo de monitoreo: Algún cambio",
-                EWatchMode.Term => "Tipo de monitoreo: Algún cambio"
+                EWatchMode.Term => "Tipo de monitoreo: Algún cambio",
+                EWatchMode.Regex => "Tipo de monitoreo: Patrón de regex",
+                _ => throw new NotImplementedException()
             },
             ELanguage.BrazilianPortuguese => watchMode switch
             {
                 EWatchMode.AnyChanges => "Tipo de monitoramento: Quaisquer mudanças",
-                EWatchMode.Term => "Tipo de monitoramento: Termo"
-            }
+                EWatchMode.Term => "Tipo de monitoramento: Termo",
+                EWatchMode.Regex => "Tipo de monitoramento: Padrão de regex",
+                _ => throw new NotImplementedException()
+            },
+            _ => throw new NotImplementedException()
         };
     }
 
@@ -223,7 +238,8 @@ public static class LocalizedMessages
                 EFrequency.FourHours => "Every four hours",
                 EFrequency.EightHours => "Every eight hours",
                 EFrequency.TwelveHours => "Every twelve hours",
-                EFrequency.TwentyFourHours => "Every twenty four hours"
+                EFrequency.TwentyFourHours => "Every twenty four hours",
+                _ => throw new NotImplementedException()
             },
             ELanguage.Spanish => frequency switch
             {
@@ -231,7 +247,8 @@ public static class LocalizedMessages
                 EFrequency.FourHours => "Cada cuatro horas",
                 EFrequency.EightHours => "Cada ocho horas",
                 EFrequency.TwelveHours => "Cada doce horas",
-                EFrequency.TwentyFourHours => "Cada veinticuatro horas"
+                EFrequency.TwentyFourHours => "Cada veinticuatro horas",
+                _ => throw new NotImplementedException()
             },
             ELanguage.BrazilianPortuguese => frequency switch
             {
@@ -239,8 +256,10 @@ public static class LocalizedMessages
                 EFrequency.FourHours => "A cada quatro horas",
                 EFrequency.EightHours => "A cada oito horas",
                 EFrequency.TwelveHours => "A cada doze horas",
-                EFrequency.TwentyFourHours => "A cada vinte e quatro horas"
-            }
+                EFrequency.TwentyFourHours => "A cada vinte e quatro horas",
+                _ => throw new NotImplementedException()
+            },
+            _ => throw new NotImplementedException()
         };
     }
 }
