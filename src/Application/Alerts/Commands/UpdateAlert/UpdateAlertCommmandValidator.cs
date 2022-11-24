@@ -110,13 +110,5 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
             .When(cmmd => cmmd.WatchMode is not null
                             && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue));
-
-        RuleFor(cmmd => cmmd.NotifyOnDisappearance!.NewValue)
-            .Cascade(CascadeMode.Stop)
-            .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.NotifyOnDisappearance)))
-            .When(cmmd => cmmd.WatchMode is not null
-                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue)
-                            && cmmd.NotifyOnDisappearance is not null);
     }
 }
