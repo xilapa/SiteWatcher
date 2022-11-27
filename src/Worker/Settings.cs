@@ -43,7 +43,6 @@ public static class Exchanges
 
 public static class RoutingKeys
 {
-    public const string WatchAlerts = "site-watcher.worker.watch-alerts";
     public const string EmailNotification = "site-watcher.worker.notifications.email";
 }
 

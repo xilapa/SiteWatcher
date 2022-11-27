@@ -20,11 +20,11 @@ public static class JobConfigurator
                  {
                      opts.UseMicrosoftDependencyInjectionJobFactory();
 
-                     opts.AddJob<FireWatchAlertsJob>(opt => opt.WithIdentity(FireWatchAlertsJob.Name));
+                     opts.AddJob<WatchAlertsJob>(opt => opt.WithIdentity(WatchAlertsJob.Name));
 
                     // Fire the job every two hours
                      opts.AddTrigger(opt => opt
-                     .ForJob(FireWatchAlertsJob.Name)
+                     .ForJob(WatchAlertsJob.Name)
                      .WithCronSchedule(fireWatchAlertsCron));
                  })
             // Wait to jobs to end gracefully on shutdown request

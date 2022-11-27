@@ -4,27 +4,29 @@ using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Quartz;
+using SiteWatcher.Domain.Enums;
 using SiteWatcher.Domain.Models;
 using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Emails;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;
 using SiteWatcher.Worker.Messaging;
-using SiteWatcher.Worker.Persistence;
 using SiteWatcher.Worker.Utils;
 using static SiteWatcher.Infra.Http.HttpRetryPolicies;
 
-namespace SiteWatcher.Worker.Consumers;
+namespace SiteWatcher.Worker.Jobs;
 
-public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
+public sealed class WatchAlertsJob : IJob
 {
-    private readonly ILogger<WatchAlertsConsumer> _logger;
+    private readonly ILogger<WatchAlertsJob> _logger;
     private readonly SiteWatcherContext _context;
     private readonly ICapPublisher _capPublisher;
     private readonly WorkerSettings _settings;
     private readonly HttpClient _httpClient;
 
-    public WatchAlertsConsumer(ILogger<WatchAlertsConsumer> logger, SiteWatcherContext context, ICapPublisher capPublisher,
+    public static string Name => nameof(WatchAlertsJob);
+
+    public WatchAlertsJob(ILogger<WatchAlertsJob> logger, SiteWatcherContext context, ICapPublisher capPublisher,
         IOptions<WorkerSettings> settings, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
@@ -34,28 +36,18 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         _httpClient = httpClientFactory.CreateClient();
     }
 
-    // CAP uses this attribute to create a queue and bind it with a routing key.
-    // The message name is the routing key and group name is used to create the queue name.
-    // Cap append the version on the queue name (e.g., queue-name.v1)
-    [CapSubscribe(RoutingKeys.WatchAlerts, Group = RoutingKeys.WatchAlerts)]
-    public async Task Consume(WatchAlertsMessage message, [FromCap] CapHeader capHeader, CancellationToken cancellationToken)
+    public async Task Execute(IJobExecutionContext context)
     {
-        var messageId = capHeader[MessageHeaders.MessageIdKey]!;
-        var hasBeenProcessed = await _context
-            .HasBeenProcessed(messageId, nameof(WatchAlertsConsumer));
+        var frequencies = GetAlertFrequenciesToWatch();
+        var message = new WatchAlertsMessage(frequencies);
 
-        if (hasBeenProcessed)
-        {
-            _logger.LogInformation("{Date} Message has already been processed: {MessageId}", DateTime.UtcNow, messageId);
-            return;
-        }
+        _logger.LogInformation("{Date} - Watch Alerts Started: {Frequencies}", DateTime.UtcNow, frequencies);
 
         using var transaction = _context.Database.BeginTransaction(_capPublisher, autoCommit: false);
 
-        await GenerateNotifications(message, cancellationToken);
+        await GenerateNotifications(message, context.CancellationToken);
 
         await _context.SaveChangesAsync(CancellationToken.None);
-        await _context.MarkMessageAsConsumed(messageId, nameof(WatchAlertsConsumer));
 
         await transaction.CommitAsync(CancellationToken.None);
 
@@ -63,6 +55,24 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         _logger.LogInformation("{Date} Message consumed: {Message}", DateTime.UtcNow, messageJson);
     }
 
+    private static IEnumerable<EFrequency> GetAlertFrequenciesToWatch()
+    {
+        var alertFrequenciesToWatch = new List<EFrequency>();
+
+        // TODO: Wrapper for time, to make tests possible
+        var currentHour = DateTime.Now.Hour;
+
+        // If the rest of current hour/ frequency is zero, this alerts of this frequency needs to be watched
+        foreach (var frequency in Enum.GetValues<EFrequency>())
+        {
+            if (currentHour % (int)frequency == 0)
+                alertFrequenciesToWatch.Add(frequency);
+        }
+
+        return alertFrequenciesToWatch;
+    }
+
+    // TODO: generate notification and generate notifications should be one use case of the application
     private async Task GenerateNotifications(WatchAlertsMessage message, CancellationToken cancellationToken)
     {
         var frequencies = message.Frequencies;
@@ -141,9 +151,4 @@ public sealed class WatchAlertsConsumer : IWatchAlertsConsumer, ICapSubscribe
         // Message is published after, because the database connection is in use by the async enumerable
         messagesToPublishBag.Add((emailNotificationMessage, headers));
     }
-}
-
-public interface IWatchAlertsConsumer
-{
-    Task Consume(WatchAlertsMessage message, CapHeader capHeader, CancellationToken cancellationToken);
 }
