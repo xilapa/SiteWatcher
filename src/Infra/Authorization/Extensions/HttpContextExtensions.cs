@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Infra.Authorization.Extensions;
 

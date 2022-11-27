@@ -4,13 +4,13 @@ using System.Text;
 using System.Text.Json;
 using Moq;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.DTOs.User;
+using SiteWatcher.Domain.Common;
+using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.IntegrationTests.Setup;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using DomainUtils = SiteWatcher.Domain.Utils.Utils;
 
 namespace IntegrationTests.Setup;
 
@@ -54,7 +54,7 @@ public abstract class BaseTest
         };
         var token = _fixture.AppFactory.AuthServiceForTokens.GenerateRegisterToken(claims, userViewModel.GetGoogleId());
         _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        return DomainUtils.GetTokenPayload(token);
+        return Utils.GetTokenPayload(token);
     }
 
     protected void RemoveLoginToken()

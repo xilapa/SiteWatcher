@@ -1,4 +1,4 @@
-﻿using SiteWatcher.Domain.Utils;
+﻿using SiteWatcher.Domain.Common;
 
 namespace UnitTests.UtilsTests;
 

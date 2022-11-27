@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
@@ -43,7 +43,7 @@ public class WatchModeIdValueGeneratorFactory : ValueGeneratorFactory
 #region NotificationId
 internal class NotificationIdGenerator : StrongIdIntGenerator<NotificationId>
 {
-    public override NotificationId Next(EntityEntry entry) => new NotificationId();
+    public override NotificationId Next(EntityEntry entry) => new ();
 }
 
 public class NotificationIdValueGeneratorFactory : ValueGeneratorFactory

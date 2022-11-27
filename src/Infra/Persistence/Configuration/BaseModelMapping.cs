@@ -1,6 +1,6 @@
-using SiteWatcher.Domain.Models.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 

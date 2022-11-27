@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Alerts.Entities.Notifications;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 

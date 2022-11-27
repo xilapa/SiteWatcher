@@ -1,10 +1,10 @@
 ﻿using System.Dynamic;
 using Dapper;
-using Domain.DTOs.Alerts;
-using Domain.DTOs.Common;
+using Domain.Alerts.DTOs;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 

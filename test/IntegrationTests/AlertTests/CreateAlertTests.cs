@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Domain.DTOs.Alerts;
+using Domain.Alerts.DTOs;
 using FluentAssertions;
 using HashidsNet;
 using IntegrationTests.Setup;
@@ -9,7 +9,7 @@ using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -43,21 +43,21 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
             new CreateAlertCommand
             {
                 Name = "Test Alert1",
-                Frequency = EFrequency.TwentyFourHours,
+                Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                WatchMode = EWatchMode.AnyChanges
+                WatchMode = WatchModes.AnyChanges
             },
             HttpStatusCode.Created,
             new DetailedAlertView
                 {
                     Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(1),
                     Name = "Test Alert1",
-                    Frequency = EFrequency.TwentyFourHours,
+                    Frequency = Frequencies.TwentyFourHours,
                     Site = new SiteView("store site","https://store.site.io/"),
                     WatchMode = new DetailedWatchModeView
                     {
-                        WatchMode = EWatchMode.AnyChanges
+                        WatchMode = WatchModes.AnyChanges
                     }
                 },
             null! // errors
@@ -68,10 +68,10 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
             new CreateAlertCommand
             {
                 Name = "Test Alert2",
-                Frequency = EFrequency.TwentyFourHours,
+                Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                WatchMode = EWatchMode.Term,
+                WatchMode = WatchModes.Term,
                 Term = "lookup term"
             },
             HttpStatusCode.Created,
@@ -79,11 +79,11 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 {
                     Id = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength).Encode(2),
                     Name = "Test Alert2",
-                    Frequency = EFrequency.TwentyFourHours,
+                    Frequency = Frequencies.TwentyFourHours,
                     Site = new SiteView("store site", "https://store.site.io/"),
                     WatchMode = new DetailedWatchModeView
                     {
-                        WatchMode = EWatchMode.Term,
+                        WatchMode = WatchModes.Term,
                         Term = "lookup term"
                     }
                 },

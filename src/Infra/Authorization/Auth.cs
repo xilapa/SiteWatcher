@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.GoogleAuth;
 using SiteWatcher.Infra.Authorization.Handlers;

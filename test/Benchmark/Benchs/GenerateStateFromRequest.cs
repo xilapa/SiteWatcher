@@ -2,7 +2,7 @@
 using System.Text.Json;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Primitives;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Benchmark.Benchs;
 

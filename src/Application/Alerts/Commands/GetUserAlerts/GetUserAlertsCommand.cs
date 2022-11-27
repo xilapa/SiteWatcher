@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Utils;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetUserAlerts;

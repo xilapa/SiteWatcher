@@ -1,6 +1,6 @@
-﻿using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Common;
+﻿using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.IntegrationTests.Utils;
 
@@ -11,9 +11,9 @@ public static class Users
         Id = new UserId(new Guid("00000000-0000-0000-0000-000000000001")),
         Active = true,
         Email = "xilapa@email.com",
-        Language = ELanguage.English,
+        Language = Language.English,
         Name = nameof(Xilapa),
-        Theme = ETheme.Dark,
+        Theme = Theme.Dark,
         EmailConfirmed = true
     };
 
@@ -22,9 +22,9 @@ public static class Users
         Id = new UserId(new Guid("00000000-0000-0000-0000-000000000002")),
         Active = true,
         Email = "xulipa@email.com",
-        Language = ELanguage.English,
+        Language = Language.English,
         Name = nameof(Xulipa),
-        Theme = ETheme.Dark,
+        Theme = Theme.Dark,
         EmailConfirmed = false
     };
 }

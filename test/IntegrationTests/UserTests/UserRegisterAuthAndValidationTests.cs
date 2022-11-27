@@ -5,7 +5,7 @@ using MediatR;
 using Moq;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 
@@ -38,9 +38,9 @@ public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture
         _registerUserCommand  = new RegisterUserCommand
         {
             Email = "email@email.com",
-            Language = ELanguage.English,
+            Language = Language.English,
             Name = "Xilapilson",
-            Theme = ETheme.Dark
+            Theme = Theme.Dark
         };
     }
 
@@ -107,9 +107,9 @@ public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture
             new RegisterUserCommand
             {
                 Email = "invalidEmail",
-                Language = ELanguage.English,
+                Language = Language.English,
                 Name = "Xi",
-                Theme = ETheme.Dark
+                Theme = Theme.Dark
             },
             new []
             {
@@ -123,9 +123,9 @@ public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture
             new RegisterUserCommand
             {
                 Email = "xilapa@email.com",
-                Language = ELanguage.English,
+                Language = Language.English,
                 Name = "Xil4pa4",
-                Theme = ETheme.Dark
+                Theme = Theme.Dark
             },
             new [] {ApplicationErrors.NAME_MUST_HAVE_ONLY_LETTERS}
         };

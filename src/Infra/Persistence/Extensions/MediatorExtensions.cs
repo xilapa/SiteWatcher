@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Infra.Extensions;
 

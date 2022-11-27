@@ -1,13 +1,13 @@
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Worker.Messaging;
 
 public class WatchAlertsMessage
 {
-    public WatchAlertsMessage(IEnumerable<EFrequency> frequencies)
+    public WatchAlertsMessage(IEnumerable<Frequencies> frequencies)
     {
         Frequencies = frequencies;
     }
 
-    public IEnumerable<EFrequency> Frequencies { get; }
+    public IEnumerable<Frequencies> Frequencies { get; }
 }

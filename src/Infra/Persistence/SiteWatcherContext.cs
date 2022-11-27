@@ -2,13 +2,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using PersistenceCompiledModels;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Exceptions;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Emails;
-using SiteWatcher.Domain.Models.Worker;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Common.Exceptions;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra.Extensions;
 
 namespace SiteWatcher.Infra;
@@ -29,7 +28,7 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder
-            .UseModel(SiteWatcherContextModel.Instance)
+            // .UseModel(SiteWatcherContextModel.Instance)
             .UseNpgsql(_appSettings.ConnectionString);
         if (_appSettings.IsDevelopment)
         {

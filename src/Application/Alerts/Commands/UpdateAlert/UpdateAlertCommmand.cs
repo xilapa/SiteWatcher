@@ -1,12 +1,12 @@
-﻿using Domain.DTOs.Alerts;
-using Domain.DTOs.Common;
+﻿using Domain.Alerts.DTOs;
 using MediatR;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 
@@ -14,10 +14,10 @@ public class UpdateAlertCommmand : IRequest<CommandResult>
 {
     public string AlertId { get; set; } = null!;
     public UpdateInfo<string>? Name { get; set; }
-    public UpdateInfo<EFrequency>? Frequency { get; set; }
+    public UpdateInfo<Frequencies>? Frequency { get; set; }
     public UpdateInfo<string>? SiteName { get; set; }
     public UpdateInfo<string>? SiteUri { get; set; }
-    public UpdateInfo<EWatchMode>? WatchMode { get; set; }
+    public UpdateInfo<WatchModes>? WatchMode { get; set; }
 
     // Term watch
     public UpdateInfo<string>? Term { get; set; }

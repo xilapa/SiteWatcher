@@ -1,7 +1,7 @@
-﻿using Domain.Events;
-using MediatR;
+﻿using MediatR;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Users.Events;
 
 namespace SiteWatcher.Application.Users.EventHandlers;
 

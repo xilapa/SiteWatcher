@@ -1,8 +1,8 @@
-﻿using Domain.DTOs.Common;
-using FluentAssertions;
+﻿using FluentAssertions;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.DTOs;
 
 namespace UnitTests.ValidatorsTests;
 
@@ -35,10 +35,10 @@ public sealed class UpdateAlertCommandValidatorTests
             {
                 AlertId = "alertId",
                 Name = new UpdateInfo<string>(),
-                Frequency = new UpdateInfo<EFrequency>(),
+                Frequency = new UpdateInfo<Frequencies>(),
                 SiteName = new UpdateInfo<string>(),
                 SiteUri = new UpdateInfo<string>(),
-                WatchMode = new UpdateInfo<EWatchMode>()
+                WatchMode = new UpdateInfo<WatchModes>()
             },
             new[]
             {
@@ -56,10 +56,10 @@ public sealed class UpdateAlertCommandValidatorTests
             {
                 AlertId = "alertId",
                 Name = new UpdateInfo<string>("ab"),
-                Frequency = new UpdateInfo<EFrequency>(default),
+                Frequency = new UpdateInfo<Frequencies>(default),
                 SiteName = new UpdateInfo<string>("ab"),
                 SiteUri = new UpdateInfo<string>("ab"),
-                WatchMode = new UpdateInfo<EWatchMode>(default)
+                WatchMode = new UpdateInfo<WatchModes>(default)
             },
             new[]
             {
@@ -77,10 +77,10 @@ public sealed class UpdateAlertCommandValidatorTests
             {
                 AlertId = "alertId",
                 Name = new UpdateInfo<string>("abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1"),
-                Frequency = new UpdateInfo<EFrequency>(EFrequency.EightHours),
+                Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                WatchMode = new UpdateInfo<EWatchMode>(EWatchMode.Term)
+                WatchMode = new UpdateInfo<WatchModes>(WatchModes.Term)
             },
             new[]
             {
@@ -96,10 +96,10 @@ public sealed class UpdateAlertCommandValidatorTests
             {
                 AlertId = "alertId",
                 Name = new UpdateInfo<string>("abcde"),
-                Frequency = new UpdateInfo<EFrequency>(EFrequency.EightHours),
+                Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                WatchMode = new UpdateInfo<EWatchMode>(EWatchMode.Term),
+                WatchMode = new UpdateInfo<WatchModes>(WatchModes.Term),
                 Term = new UpdateInfo<string?>()
             },
             new[]
@@ -114,10 +114,10 @@ public sealed class UpdateAlertCommandValidatorTests
             {
                 AlertId = "alertId",
                 Name = new UpdateInfo<string>("abcde"),
-                Frequency = new UpdateInfo<EFrequency>(EFrequency.EightHours),
+                Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                WatchMode = new UpdateInfo<EWatchMode>(EWatchMode.Term),
+                WatchMode = new UpdateInfo<WatchModes>(WatchModes.Term),
                 Term = new UpdateInfo<string?>(null)
             },
             new[]
@@ -132,10 +132,10 @@ public sealed class UpdateAlertCommandValidatorTests
             {
                 AlertId = "alertId",
                 Name = new UpdateInfo<string>("abcde"),
-                Frequency = new UpdateInfo<EFrequency>(EFrequency.EightHours),
+                Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                WatchMode = new UpdateInfo<EWatchMode>(EWatchMode.Term),
+                WatchMode = new UpdateInfo<WatchModes>(WatchModes.Term),
                 Term = new UpdateInfo<string?>("term")
             },
             Array.Empty<string>()
@@ -147,10 +147,10 @@ public sealed class UpdateAlertCommandValidatorTests
             {
                 AlertId = "alertId",
                 Name = new UpdateInfo<string>("abcde"),
-                Frequency = new UpdateInfo<EFrequency>((EFrequency) 989),
+                Frequency = new UpdateInfo<Frequencies>((Frequencies) 989),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                WatchMode = new UpdateInfo<EWatchMode>((EWatchMode) 989)
+                WatchMode = new UpdateInfo<WatchModes>((WatchModes) 989)
             },
             new []
             {

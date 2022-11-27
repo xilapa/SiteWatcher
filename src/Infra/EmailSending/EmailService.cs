@@ -2,7 +2,7 @@
 using SiteWatcher.Application.Interfaces;
 using MailKit.Net.Smtp;
 using MimeKit.Text;
-using SiteWatcher.Domain.Models.Emails;
+using SiteWatcher.Domain.Emails;
 
 namespace SiteWatcher.Infra.EmailSending;
 

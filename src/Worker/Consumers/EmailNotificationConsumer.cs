@@ -2,12 +2,11 @@ using System.Text.Json;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra;
 using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
-using SiteWatcher.Domain.Models.Common;
 
 namespace SiteWatcher.Worker.Consumers;
 

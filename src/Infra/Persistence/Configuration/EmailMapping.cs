@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SiteWatcher.Domain.Models.Emails;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Emails;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 

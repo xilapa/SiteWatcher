@@ -1,5 +1,5 @@
-﻿using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Common;
+﻿using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Interfaces;
 

@@ -33,7 +33,7 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
         if(!tokenResult.Success)
             return CommandResult.FromError(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
-        var user = await _userDapperRepository.GetUserAsync(tokenResult.GoogleId, cancellationToken);
+        var user = await _userDapperRepository.GetUserAsync(tokenResult.GoogleId!, cancellationToken);
 
         // User exists and is active
         if (user?.Active is true)
@@ -41,19 +41,19 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
             var loginToken = _authService.GenerateLoginToken(user);
             await _authService.WhiteListToken(user.Id, loginToken);
             return CommandResult
-                .FromValue(new AuthenticationResult(EAuthTask.Login, loginToken, tokenResult.ProfilePicUrl));
+                .FromValue(new AuthenticationResult(AuthTask.Login, loginToken, tokenResult.ProfilePicUrl));
         }
 
         // User does not exists
         if(user is null)
         {
-            var registerToken = _authService.GenerateRegisterToken(tokenResult.Claims, tokenResult.GoogleId);
+            var registerToken = _authService.GenerateRegisterToken(tokenResult.Claims, tokenResult.GoogleId!);
             return CommandResult
-                .FromValue(new AuthenticationResult(EAuthTask.Register, registerToken, tokenResult.ProfilePicUrl));
+                .FromValue(new AuthenticationResult(AuthTask.Register, registerToken, tokenResult.ProfilePicUrl));
         }
 
         // User exists but is deactivated
         return CommandResult
-            .FromValue(new AuthenticationResult(EAuthTask.Activate, user.Id.Value.ToString(), null));
+            .FromValue(new AuthenticationResult(AuthTask.Activate, user.Id.Value.ToString(), null));
     }
 }

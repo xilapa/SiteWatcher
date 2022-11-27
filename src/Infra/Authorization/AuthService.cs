@@ -2,11 +2,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Extensions;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common;
+using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.Enums;
+using SiteWatcher.Domain.Common.Extensions;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Domain.Utils;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Extensions;
@@ -44,7 +47,7 @@ public class AuthService : IAuthService
             new(AuthenticationDefaults.ClaimTypes.Theme, ((int) userVm.Theme).ToString())
         };
 
-        return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);
+        return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
     }
 
     public string GenerateLoginToken(User user)
@@ -59,7 +62,7 @@ public class AuthService : IAuthService
             new(AuthenticationDefaults.ClaimTypes.Theme, ((int) user.Theme).ToString())
         };
 
-        return GenerateToken(claims, ETokenPurpose.Login, LoginTokenExpiration);
+        return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
     }
 
     public string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId)
@@ -74,26 +77,26 @@ public class AuthService : IAuthService
         {
             tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Name),
             tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email),
-            new(AuthenticationDefaults.ClaimTypes.Language, ((int) locale.GetEnumValue<ELanguage>()).ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int) locale!.GetEnumValue<Language>()).ToString()),
             new(AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
         };
 
-        return GenerateToken(claims, ETokenPurpose.Register, RegisterTokenExpiration);
+        return GenerateToken(claims, TokenPurpose.Register, RegisterTokenExpiration);
     }
 
-    private string GenerateToken(IEnumerable<Claim> claims, ETokenPurpose tokenPurpose, int expiration)
+    private string GenerateToken(IEnumerable<Claim> claims, TokenPurpose tokenPurpose, int expiration)
     {
         var key = tokenPurpose switch
         {
-            ETokenPurpose.Register => _appSettings.RegisterKey,
-            ETokenPurpose.Login => _appSettings.AuthKey,
+            TokenPurpose.Register => _appSettings.RegisterKey,
+            TokenPurpose.Login => _appSettings.AuthKey,
             _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
         };
 
         var issuer = tokenPurpose switch
         {
-            ETokenPurpose.Register => AuthenticationDefaults.Issuers.Register,
-            ETokenPurpose.Login => AuthenticationDefaults.Issuers.Login,
+            TokenPurpose.Register => AuthenticationDefaults.Issuers.Register,
+            TokenPurpose.Login => AuthenticationDefaults.Issuers.Login,
             _ => throw new ArgumentException("Value out of range", nameof(tokenPurpose)),
         };
 

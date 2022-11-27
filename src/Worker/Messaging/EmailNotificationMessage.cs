@@ -1,4 +1,4 @@
-using SiteWatcher.Domain.Models.Emails;
+using SiteWatcher.Domain.Emails;
 
 namespace SiteWatcher.Worker.Messaging;
 

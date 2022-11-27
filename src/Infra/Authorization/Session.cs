@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Extensions;
 using ISession = SiteWatcher.Application.Interfaces.ISession;
@@ -30,7 +30,7 @@ public class Session : ISession
         var hasLang =
             int.TryParse(Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Language)?.Value,
                 out var lang);
-        Language = hasLang ? (ELanguage) lang : null;
+        Language = hasLang ? (Language) lang : null;
 
         var authenticated = httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
         AuthTokenPayload = authenticated ? httpContextAccessor.HttpContext.GetAuthTokenPayload() : string.Empty;
@@ -41,6 +41,6 @@ public class Session : ISession
     public string? Email { get; }
     public string? GoogleId { get; }
     public string? UserName { get; }
-    public ELanguage? Language { get; }
+    public Language? Language { get; }
     public string AuthTokenPayload { get; }
 }

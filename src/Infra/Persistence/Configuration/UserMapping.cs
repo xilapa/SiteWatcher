@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 

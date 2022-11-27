@@ -1,13 +1,13 @@
-﻿using Domain.DTOs.Alerts;
+﻿using Domain.Alerts.DTOs;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Alerts;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Application.Alerts.ViewModels;
 
 public class DetailedAlertView
 {
-    public DetailedAlertView(string id, string name, DateTime createdAt, EFrequency frequency,
+    public DetailedAlertView(string id, string name, DateTime createdAt, Frequencies frequency,
         DateTime? lastVerification, int notificationsSent, SiteView site, DetailedWatchModeView watchMode)
     {
         Id = id;
@@ -38,7 +38,7 @@ public class DetailedAlertView
     public string? Id { get; set; }
     public string? Name { get; set; }
     public DateTime CreatedAt { get; set; }
-    public EFrequency Frequency { get; set; }
+    public Frequencies Frequency { get; set; }
     public DateTime? LastVerification { get; set; }
     public int NotificationsSent { get; set; }
     public SiteView? Site { get; set; }

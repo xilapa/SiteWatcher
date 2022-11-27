@@ -1,5 +1,5 @@
 ﻿using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 
@@ -87,7 +87,7 @@ public class DapperQueries : IDapperQueries
         }
         orderByQueryBuilder.Append(')');
 
-        var baseQuery = $@"
+        return $@"
             SELECT 
                 a.""Id"",
 	            a.""Name"",
@@ -107,6 +107,5 @@ public class DapperQueries : IDapperQueries
                 {StringBuilderCache.GetStringAndRelease(orderByQueryBuilder)}
             DESC
             LIMIT @take";
-        return baseQuery;
     }
 }

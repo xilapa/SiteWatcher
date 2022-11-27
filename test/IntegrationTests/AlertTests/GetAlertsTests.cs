@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Domain.DTOs.Common;
 using FluentAssertions;
 using HashidsNet;
 using IntegrationTests.Setup;
@@ -8,8 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -34,7 +34,7 @@ public sealed class GetAlertsTestsBase : BaseTestFixture
         AppFactory.CurrentTime = StartingTime;
         for (var i = 0; i < 60; i++)
         {
-            var watchMode = i > 9 ? EWatchMode.Term : EWatchMode.AnyChanges;
+            var watchMode = i > 9 ? WatchModes.Term : WatchModes.AnyChanges;
             AppFactory.CurrentTime = AppFactory.CurrentTime.AddMinutes(5);
 
             // xilapa'll have odd alert ids

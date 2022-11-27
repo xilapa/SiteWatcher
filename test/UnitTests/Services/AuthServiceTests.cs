@@ -3,8 +3,8 @@ using System.Runtime.CompilerServices;
 using Moq;
 using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Models.Common;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.Authorization;
 
 namespace UnitTests.Services;

@@ -1,9 +1,9 @@
 using MediatR;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Exceptions;
-using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Common.Exceptions;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
@@ -11,8 +11,8 @@ public class RegisterUserCommand : IRequest<RegisterUserResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
-    public ELanguage Language { get; set; }
-    public ETheme Theme { get; set; }
+    public Language Language { get; set; }
+    public Theme Theme { get; set; }
     public string? GoogleId { get; set; }
     public string? AuthEmail { get; set; }
 

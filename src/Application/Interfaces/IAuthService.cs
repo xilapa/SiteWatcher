@@ -1,13 +1,14 @@
 using System.Security.Claims;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Application.Interfaces;
 
 public interface IAuthService
 {
     string GenerateLoginToken(UserViewModel user);
-    string GenerateLoginToken(Domain.Models.User user);
+    string GenerateLoginToken(User user);
     string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId);
 
     /// <summary>

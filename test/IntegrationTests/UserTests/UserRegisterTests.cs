@@ -3,11 +3,10 @@ using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 
 namespace IntegrationTests.UserTests;
 
@@ -62,9 +61,9 @@ public class UserRegisterTests : BaseTest, IClassFixture<BaseTestFixture>
         var registerUserCommand = new RegisterUserCommand
         {
             Email = userToRegisterViewModel.Email,
-            Language = ELanguage.Spanish,
+            Language = Language.Spanish,
             Name = userToRegisterViewModel.Name,
-            Theme = ETheme.Light
+            Theme = Theme.Light
         };
 
         // Act

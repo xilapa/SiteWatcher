@@ -1,8 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.IntegrationTests.Utils;

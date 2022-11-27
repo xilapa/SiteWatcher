@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using BenchmarkDotNet.Attributes;
-using SiteWatcher.Domain.Extensions;
+using SiteWatcher.Domain.Common.Extensions;
 
 namespace SiteWatcher.Benchmark.Benchs;
 

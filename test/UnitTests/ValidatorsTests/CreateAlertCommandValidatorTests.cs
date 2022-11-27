@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Alerts.Enums;
 
 namespace UnitTests.ValidatorsTests;
 
@@ -34,10 +34,10 @@ public sealed class CreateAlertCommandValidatorTests
             new CreateAlertCommand
             {
                 Name = "abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1",
-                Frequency = (EFrequency) 989,
+                Frequency = (Frequencies) 989,
                 SiteName = "abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1",
                 SiteUri = "https://valid-uri.io",
-                WatchMode = EWatchMode.Term,
+                WatchMode = WatchModes.Term,
                 Term = "ab"
             },
             new[]
@@ -54,10 +54,10 @@ public sealed class CreateAlertCommandValidatorTests
             new CreateAlertCommand
             {
                 Name = "abcd",
-                Frequency = EFrequency.EightHours,
+                Frequency = Frequencies.EightHours,
                 SiteName = "abcd",
                 SiteUri = "https://valid-uri.io",
-                WatchMode = EWatchMode.Term,
+                WatchMode = WatchModes.Term,
                 Term = "abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1"
             },
             new[]
@@ -71,10 +71,10 @@ public sealed class CreateAlertCommandValidatorTests
             new CreateAlertCommand
             {
                 Name = "abcd",
-                Frequency = EFrequency.EightHours,
+                Frequency = Frequencies.EightHours,
                 SiteName = "abcd",
                 SiteUri = "https://valid-uri.io",
-                WatchMode = (EWatchMode) 989,
+                WatchMode = (WatchModes) 989,
                 Term = "abcd"
             },
             new[]

@@ -1,13 +1,13 @@
 ﻿using System.Net;
-using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Alerts.ViewModels;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -26,10 +26,10 @@ public sealed class UpdateAlertTestsBase : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        XilapaAlert = await AppFactory.CreateAlert<DetailedAlertView>("Xilapa alert", EWatchMode.AnyChanges,
+        XilapaAlert = await AppFactory.CreateAlert<DetailedAlertView>("Xilapa alert", WatchModes.AnyChanges,
             Users.Xilapa.Id); // Id = 1
 
-        XulipaAlert = await AppFactory.CreateAlert("Xulipa alert", EWatchMode.AnyChanges,
+        XulipaAlert = await AppFactory.CreateAlert("Xulipa alert", WatchModes.AnyChanges,
             Users.Xulipa.Id, AppFactory.CurrentTime.AddDays(-1)); // Id = 2
     }
 }
@@ -53,8 +53,8 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert"},
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated.com"},
-                Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwentyFourHours},
-                WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.Term},
+                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwentyFourHours},
+                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.Term},
                 Term = new UpdateInfo<string> {NewValue = "new term"}
             }
         };
@@ -67,8 +67,8 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert2"},
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name2"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated2.com"},
-                Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwentyFourHours},
-                WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.Term},
+                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwentyFourHours},
+                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.Term},
                 Term = new UpdateInfo<string> {NewValue = "new term2"}
             }
         };
@@ -81,8 +81,8 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert3"},
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name3"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated3.com"},
-                Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.TwoHours},
-                WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.AnyChanges}
+                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwoHours},
+                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.AnyChanges}
             }
         };
 
@@ -94,8 +94,8 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert4"},
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name4"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated4.com"},
-                Frequency = new UpdateInfo<EFrequency> {NewValue = EFrequency.FourHours},
-                WatchMode = new UpdateInfo<EWatchMode> {NewValue = EWatchMode.AnyChanges},
+                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
+                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.AnyChanges},
                 Term = new UpdateInfo<string> {NewValue = "new term4"}
             }
         };
@@ -118,14 +118,14 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
 
         detailedAlert!.Id.Should().Be(_fixture.XilapaAlert.Id);
         detailedAlert.Name.Should().Be(updateCommand.Name!.NewValue);
-        detailedAlert.Site.Name.Should().Be(updateCommand.SiteName!.NewValue);
+        detailedAlert.Site!.Name.Should().Be(updateCommand.SiteName!.NewValue);
         detailedAlert.Site.Uri.Should().StartWith(updateCommand.SiteUri!.NewValue);
         detailedAlert.CreatedAt.Should().Be(_fixture.XilapaAlert.CreatedAt);
         detailedAlert.Frequency.Should().Be(updateCommand.Frequency!.NewValue);
-        detailedAlert.WatchMode.WatchMode.Should().Be(updateCommand.WatchMode!.NewValue);
+        detailedAlert.WatchMode!.WatchMode.Should().Be(updateCommand.WatchMode!.NewValue);
         detailedAlert.WatchMode.Term
             .Should()
-            .Be(EWatchMode.Term.Equals(updateCommand.WatchMode!.NewValue) ? updateCommand.Term!.NewValue : null);
+            .Be(WatchModes.Term.Equals(updateCommand.WatchMode!.NewValue) ? updateCommand.Term!.NewValue : null);
 
         // Checking alert update date on db
         (await AppFactory.WithDbContext(async ctx =>

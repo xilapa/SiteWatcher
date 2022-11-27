@@ -1,19 +1,19 @@
-﻿using Domain.DTOs.Alerts;
+﻿using Domain.Alerts.DTOs;
 using MediatR;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Alerts;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
 public class CreateAlertCommand : IRequest<DetailedAlertView>
 {
     public string Name { get; set; } = null!;
-    public EFrequency Frequency { get; set; }
+    public Frequencies Frequency { get; set; }
     public string SiteName { get; set; } = null!;
     public string SiteUri { get; set; } = null!;
-    public EWatchMode WatchMode { get; set; }
+    public WatchModes WatchMode { get; set; }
 
     // Term watch
     public string? Term { get; set; }

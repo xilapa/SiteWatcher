@@ -10,9 +10,9 @@ using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
-using SiteWatcher.Domain.Utils;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
+using SiteWatcher.Domain.Common.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
 

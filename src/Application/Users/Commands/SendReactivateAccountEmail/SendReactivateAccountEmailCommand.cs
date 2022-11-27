@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Users.Commands.ActivateAccount;
 

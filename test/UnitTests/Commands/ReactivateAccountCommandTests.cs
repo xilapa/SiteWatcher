@@ -5,9 +5,9 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ReactivateAccount;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace UnitTests.Commands;
 
@@ -53,7 +53,7 @@ public sealed class ReactivateAccountCommandTests
     {
         // Arrange
         var user = new User("googleId", "name", "email", "authEmail",
-            ELanguage.BrazilianPortuguese, ETheme.Light, DateTime.Now);
+            Language.BrazilianPortuguese, Theme.Light, DateTime.Now);
         user.Deactivate(DateTime.Now);
 
         var userRepository = new Mock<IUserRepository>();
@@ -71,7 +71,7 @@ public sealed class ReactivateAccountCommandTests
 
         // Assert
 
-        result.Errors
+        result!.Errors
             .Count().Should().Be(1);
 
         result.Errors.First()

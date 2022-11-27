@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 
@@ -38,9 +38,9 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)))
-            .NotEqual(default(EFrequency))
+            .NotEqual(default(Frequencies))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)))
-            .Must(f => Enum.IsDefined(typeof(EFrequency), (int) f))
+            .Must(f => Enum.IsDefined(typeof(Frequencies), (int) f))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
             .When(cmmd => cmmd.Frequency is not null);
 
@@ -63,9 +63,9 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
-            .NotEqual(default(EWatchMode))
+            .NotEqual(default(WatchModes))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
-            .Must(wm => Enum.IsDefined(typeof(EWatchMode), (int) wm))
+            .Must(wm => Enum.IsDefined(typeof(WatchModes), (int) wm))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
             .When(cmmd => cmmd.WatchMode is not null);
 
@@ -74,7 +74,7 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
             .When(cmmd => cmmd.WatchMode is not null
-                        && EWatchMode.Term.Equals(cmmd.WatchMode.NewValue));
+                        && WatchModes.Term.Equals(cmmd.WatchMode.NewValue));
 
         RuleFor(cmmd => cmmd.Term!.NewValue)
             .Cascade(CascadeMode.Stop)
@@ -85,7 +85,7 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .MaximumLength(64)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(UpdateAlertCommmand.Term)))
             .When(cmmd => cmmd.WatchMode is not null
-                          && EWatchMode.Term.Equals(cmmd.WatchMode.NewValue)
+                          && WatchModes.Term.Equals(cmmd.WatchMode.NewValue)
                           && cmmd.Term is not null);
 
         // Regex watch validation
@@ -93,7 +93,7 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.RegexPattern)))
             .When(cmmd => cmmd.WatchMode is not null
-                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue));
+                            && WatchModes.Regex.Equals(cmmd.WatchMode.NewValue));
 
         RuleFor(cmmd => cmmd.RegexPattern!.NewValue)
             .Cascade(CascadeMode.Stop)
@@ -102,13 +102,13 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .MaximumLength(512)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.RegexPattern)))
             .When(cmmd => cmmd.WatchMode is not null
-                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue)
+                            && WatchModes.Regex.Equals(cmmd.WatchMode.NewValue)
                             && cmmd.RegexPattern is not null);
 
         RuleFor(cmmd => cmmd.NotifyOnDisappearance)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
             .When(cmmd => cmmd.WatchMode is not null
-                            && EWatchMode.Regex.Equals(cmmd.WatchMode.NewValue));
+                            && WatchModes.Regex.Equals(cmmd.WatchMode.NewValue));
     }
 }

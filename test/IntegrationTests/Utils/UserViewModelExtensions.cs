@@ -1,6 +1,6 @@
 ﻿using ReflectionMagic;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.IntegrationTests.Utils;
 

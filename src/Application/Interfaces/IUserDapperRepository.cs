@@ -1,5 +1,5 @@
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Application.Interfaces;
 

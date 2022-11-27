@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SiteWatcher.Domain.Models.Emails;
+using SiteWatcher.Domain.Emails;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 

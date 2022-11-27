@@ -10,7 +10,7 @@ using SiteWatcher.Infra.Authorization.GoogleAuth;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
+
 
 namespace IntegrationTests.AuthenticationTests;
 
@@ -64,7 +64,7 @@ public class GoogleAuthenticationTests : BaseTest, IClassFixture<GoogleAuthentic
 
         var typedResult = result.GetTyped<AuthenticationResult>();
         typedResult!.Task
-            .Should().Be(EAuthTask.Login);
+            .Should().Be(AuthTask.Login);
         typedResult.Token
             .Should().NotBeEmpty();
 
@@ -187,7 +187,7 @@ public class GoogleAuthenticationTests : BaseTest, IClassFixture<GoogleAuthentic
 
         var typedResult = result.GetTyped<AuthenticationResult>();
         typedResult!.Task
-            .Should().Be(EAuthTask.Login);
+            .Should().Be(AuthTask.Login);
         typedResult.Token
             .Should().NotBeEmpty();
 

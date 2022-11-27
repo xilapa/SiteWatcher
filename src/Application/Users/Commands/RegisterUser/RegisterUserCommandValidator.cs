@@ -1,7 +1,7 @@
 using FluentValidation;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Common.Validation;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
@@ -29,18 +29,18 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)))
-            .NotEqual(default(ELanguage))
+            .NotEqual(default(Language))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)))
-            .Must(l => Enum.IsDefined(typeof(ELanguage), (int) l))
+            .Must(l => Enum.IsDefined(typeof(Language), (int) l))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Language)));
 
         RuleFor(cmmd => cmmd.Theme)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme)))
-            .NotEqual(default(ETheme))
+            .NotEqual(default(Theme))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme)))
-            .Must(t => Enum.IsDefined(typeof(ETheme), (int) t))
+            .Must(t => Enum.IsDefined(typeof(Theme), (int) t))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(RegisterUserCommand.Theme)));
     }
 }

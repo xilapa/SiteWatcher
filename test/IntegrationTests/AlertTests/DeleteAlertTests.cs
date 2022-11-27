@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 
@@ -28,7 +28,7 @@ public sealed class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsB
         // Arrange
         const string alertName = "testAlert";
         var alertCreated = await AppFactory
-            .CreateAlert<SimpleAlertView>(alertName, EWatchMode.AnyChanges, Users.Xulipa.Id);
+            .CreateAlert<SimpleAlertView>(alertName, WatchModes.AnyChanges, Users.Xulipa.Id);
 
         (await AlertExists(alertName)).Should().BeTrue();
 
@@ -53,7 +53,7 @@ public sealed class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsB
         // Arrange
         const string alertName = "testAlertNotDeleted";
         var alertCreated = await AppFactory
-            .CreateAlert<SimpleAlertView>(alertName, EWatchMode.AnyChanges, Users.Xulipa.Id);
+            .CreateAlert<SimpleAlertView>(alertName, WatchModes.AnyChanges, Users.Xulipa.Id);
 
         (await AlertExists(alertName)).Should().BeTrue();
 

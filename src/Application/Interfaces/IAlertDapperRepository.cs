@@ -1,6 +1,6 @@
-﻿using Domain.DTOs.Common;
-using SiteWatcher.Application.Alerts.ViewModels;
-using SiteWatcher.Domain.Models.Common;
+﻿using SiteWatcher.Application.Alerts.ViewModels;
+using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Interfaces;
 

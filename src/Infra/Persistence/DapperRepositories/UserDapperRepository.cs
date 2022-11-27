@@ -1,7 +1,7 @@
 using Dapper;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 
@@ -16,7 +16,7 @@ public class UserDapperRepository : IUserDapperRepository
         _dapperQueries = dapperQueries;
     }
 
-    public async Task<UserViewModel> GetUserAsync(string googleId, CancellationToken cancellationToken)
+    public async Task<UserViewModel?> GetUserAsync(string googleId, CancellationToken cancellationToken)
     {
         var commandDefinition = new CommandDefinition(_dapperQueries.GetUserByGoogleId, new {googleId},
             cancellationToken: cancellationToken);

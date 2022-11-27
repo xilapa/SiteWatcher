@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quartz;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Alerts;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Alerts.ValueObjects;
+using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;
 using SiteWatcher.Worker.Messaging;
@@ -55,15 +55,15 @@ public sealed class WatchAlertsJob : IJob
         _logger.LogInformation("{Date} Message consumed: {Message}", DateTime.UtcNow, messageJson);
     }
 
-    private static IEnumerable<EFrequency> GetAlertFrequenciesToWatch()
+    private static IEnumerable<Frequencies> GetAlertFrequenciesToWatch()
     {
-        var alertFrequenciesToWatch = new List<EFrequency>();
+        var alertFrequenciesToWatch = new List<Frequencies>();
 
         // TODO: Wrapper for time, to make tests possible
         var currentHour = DateTime.Now.Hour;
 
         // If the rest of current hour/ frequency is zero, this alerts of this frequency needs to be watched
-        foreach (var frequency in Enum.GetValues<EFrequency>())
+        foreach (var frequency in Enum.GetValues<Frequencies>())
         {
             if (currentHour % (int)frequency == 0)
                 alertFrequenciesToWatch.Add(frequency);

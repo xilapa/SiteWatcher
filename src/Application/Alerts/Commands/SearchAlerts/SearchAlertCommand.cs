@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Extensions;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.Extensions;
 
 namespace SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 

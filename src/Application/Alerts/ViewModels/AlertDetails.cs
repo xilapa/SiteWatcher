@@ -1,12 +1,15 @@
-﻿using Domain.DTOs.Alerts;
+﻿using Domain.Alerts.DTOs;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Alerts.WatchModes;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Entities.WatchModes;
 
 namespace SiteWatcher.Application.Alerts.ViewModels;
 
 public class AlertDetails
 {
+    public AlertDetails()
+    { }
+
     private AlertDetails(AlertDetailsDto alertDetailsDto, IIdHasher idHasher)
     {
         Id = idHasher.HashId(alertDetailsDto.Id);

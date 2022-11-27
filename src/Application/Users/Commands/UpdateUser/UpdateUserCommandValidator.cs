@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Common.Validation;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.UpdateUser;
 
@@ -29,18 +29,18 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)))
-            .NotEqual(default(ELanguage))
+            .NotEqual(default(Language))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)))
-            .Must(l => Enum.IsDefined(typeof(ELanguage), (int) l))
+            .Must(l => Enum.IsDefined(typeof(Language), (int) l))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Language)));
 
         RuleFor(cmmd => cmmd.Theme)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme)))
-            .NotEqual(default(ETheme))
+            .NotEqual(default(Theme))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme)))
-            .Must(t => Enum.IsDefined(typeof(ETheme), (int) t))
+            .Must(t => Enum.IsDefined(typeof(Theme), (int) t))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateUserCommand.Theme)));
     }
 }

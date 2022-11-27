@@ -2,8 +2,8 @@
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.UpdateUser;
 
@@ -11,8 +11,8 @@ public class UpdateUserCommand : IRequest<CommandResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
-    public ELanguage Language { get; set; }
-    public ETheme Theme { get; set; }
+    public Language Language { get; set; }
+    public Theme Theme { get; set; }
 
     public UpdateUserInput ToInputModel() => new (Name!, Email!, Language, Theme);
 }

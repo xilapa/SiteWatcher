@@ -1,4 +1,4 @@
-using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Users;
 
 namespace SiteWatcher.Application.Interfaces;
 

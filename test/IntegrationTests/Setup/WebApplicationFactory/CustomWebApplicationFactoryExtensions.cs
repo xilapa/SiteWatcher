@@ -1,10 +1,10 @@
-﻿using Domain.DTOs.Alerts;
+﻿using Domain.Alerts.DTOs;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -42,11 +42,13 @@ public static class CustomWebApplicationFactoryExtensions
     }
 
     public static async Task<Alert> CreateAlert(this ICustomWebApplicationFactory appFactory, string name,
-        EWatchMode watchMode, UserId userId, DateTime? currentDate = null) =>
-         await CreateAlert<Alert>(appFactory, name, watchMode, userId, currentDate);
+        WatchModes watchMode, UserId userId, DateTime? currentDate = null)
+    {
+        return await CreateAlert<Alert>(appFactory, name, watchMode, userId, currentDate);
+    }
 
     public static async Task<T> CreateAlert<T>(this ICustomWebApplicationFactory appFactory, string name,
-        EWatchMode watchMode, UserId userId, DateTime? currentDate = null, string? siteName = null,
+        WatchModes watchMode, UserId userId, DateTime? currentDate = null, string? siteName = null,
         string? siteUri = null) where T : class
     {
         currentDate ??= appFactory.CurrentTime;
@@ -54,7 +56,7 @@ public static class CustomWebApplicationFactoryExtensions
         {
             Name = name,
             WatchMode = watchMode,
-            Frequency = EFrequency.EightHours,
+            Frequency = Frequencies.EightHours,
             Term = "test term",
             SiteName = siteName ?? "test site",
             SiteUri = siteUri ?? "http://mytest.net"

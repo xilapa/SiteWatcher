@@ -5,22 +5,21 @@ using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Emails;
-using SiteWatcher.Domain.Utils;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.WebAPI.DTOs.ViewModels;
 using System.Runtime.CompilerServices;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
 using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
-using SiteWatcher.Domain.DTOs.User;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.Enums;
+using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Common.Constants;
 
 namespace IntegrationTests.UserTests;
 
@@ -69,9 +68,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         var updateUserCommand = new UpdateUserCommand
         {
             Email = "newemail@email.com",
-            Language = ELanguage.Spanish,
+            Language = Language.Spanish,
             Name = "XilapaNewName",
-            Theme = ETheme.Light
+            Theme = Theme.Light
         };
 
         // Act
@@ -108,9 +107,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         var updateUserCommand = new UpdateUserCommand
         {
             Email = "newemail@email.com",
-            Language = ELanguage.Spanish,
+            Language = Language.Spanish,
             Name = "Xilapa4NewName",
-            Theme = ETheme.Light
+            Theme = Theme.Light
         };
 
         // Act
@@ -141,9 +140,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         var updateUserCommand = new UpdateUserCommand
         {
             Email = "newemail@email.com",
-            Language = ELanguage.Spanish,
+            Language = Language.Spanish,
             Name = "XilapaNewName",
-            Theme = ETheme.Light
+            Theme = Theme.Light
         };
 
         // Act
@@ -210,9 +209,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         var registerUserCommand = new RegisterUserCommand
         {
             Email = $"new-{userViewModel.Email}",
-            Language = ELanguage.BrazilianPortuguese,
+            Language = Language.BrazilianPortuguese,
             Name = userViewModel.Name,
-            Theme = ETheme.Light
+            Theme = Theme.Light
         };
 
         // Act

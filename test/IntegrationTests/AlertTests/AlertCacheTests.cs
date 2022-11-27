@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Domain.DTOs.Common;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using MediatR;
@@ -11,8 +10,9 @@ using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -30,29 +30,29 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
             new()
             {
                 Id = "id1",
-                Frequency = EFrequency.TwelveHours,
+                Frequency = Frequencies.TwelveHours,
                 Name = "alert1",
                 CreatedAt = DateTime.UtcNow,
                 SiteName = "siteName1",
-                WatchMode = EWatchMode.Term
+                WatchMode = WatchModes.Term
             },
             new()
             {
                 Id = "id2",
-                Frequency = EFrequency.TwentyFourHours,
+                Frequency = Frequencies.TwentyFourHours,
                 Name = "alert2",
                 CreatedAt = DateTime.UtcNow,
                 SiteName = "siteName2",
-                WatchMode = EWatchMode.AnyChanges
+                WatchMode = WatchModes.AnyChanges
             },
             new()
             {
                 Id = "id3",
-                Frequency = EFrequency.FourHours,
+                Frequency = Frequencies.FourHours,
                 Name = "alert3",
                 CreatedAt = DateTime.UtcNow.AddMinutes(6),
                 SiteName = "siteName3",
-                WatchMode = EWatchMode.Term
+                WatchMode = WatchModes.Term
             }
         };
     }
@@ -60,7 +60,7 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        var alertToUpdate = await AppFactory.CreateAlert("alert", EWatchMode.Term, Users.Xilapa.Id);
+        var alertToUpdate = await AppFactory.CreateAlert("alert", WatchModes.Term, Users.Xilapa.Id);
         AlertToUpdateId = alertToUpdate.Id;
     }
 
@@ -146,9 +146,9 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         FakeCache.Cache.Count.Should().Be(0);
         var createAlertCommand = new CreateAlertCommand
         {
-            Frequency = EFrequency.EightHours,
+            Frequency = Frequencies.EightHours,
             Name = "name",
-            WatchMode = EWatchMode.AnyChanges,
+            WatchMode = WatchModes.AnyChanges,
             SiteName = "site",
             SiteUri = "http://site.test.io"
         };

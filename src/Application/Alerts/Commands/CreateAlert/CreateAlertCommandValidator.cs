@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
@@ -21,9 +21,9 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
-            .NotEqual(default(EFrequency))
+            .NotEqual(default(Frequencies))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)))
-            .Must(f => Enum.IsDefined(typeof(EFrequency), (int) f))
+            .Must(f => Enum.IsDefined(typeof(Frequencies), (int) f))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)));
 
         RuleFor(cmmd => cmmd.SiteName)
@@ -43,9 +43,9 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
-            .NotEqual(default(EWatchMode))
+            .NotEqual(default(WatchModes))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
-            .Must(wm => Enum.IsDefined(typeof(EWatchMode), (int) wm))
+            .Must(wm => Enum.IsDefined(typeof(WatchModes), (int) wm))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)));
 
         // Term watch validation
@@ -57,7 +57,7 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(CreateAlertCommand.Term)))
             .MaximumLength(64)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.Term)))
-            .When(cmmd => EWatchMode.Term.Equals(cmmd.WatchMode));
+            .When(cmmd => WatchModes.Term.Equals(cmmd.WatchMode));
 
         // Regex watch validation
         RuleFor(cmmd => cmmd.RegexPattern)
@@ -66,12 +66,12 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.RegexPattern)))
             .MaximumLength(512)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.RegexPattern)))
-            .When(cmmd => EWatchMode.Regex.Equals(cmmd.WatchMode));
+            .When(cmmd => WatchModes.Regex.Equals(cmmd.WatchMode));
 
         RuleFor(cmmd => cmmd.NotifyOnDisappearance)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.NotifyOnDisappearance)))
-            .When(cmmd => EWatchMode.Regex.Equals(cmmd.WatchMode));
+            .When(cmmd => WatchModes.Regex.Equals(cmmd.WatchMode));
     }
 }

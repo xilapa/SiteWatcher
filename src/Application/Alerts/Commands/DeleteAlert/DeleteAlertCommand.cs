@@ -1,8 +1,8 @@
-﻿using Domain.Events.Alerts;
-using MediatR;
+﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Alerts.Events;
 
 namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 

@@ -1,11 +1,6 @@
-﻿using Domain.DTOs.Alerts;
-using FluentAssertions;
-using Moq;
-using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
-using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Common.Constants;
+﻿using Moq;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace UnitTests.Commands;
 
@@ -19,6 +14,7 @@ public sealed class UpdateAlertCommandTests
         yield return new object[] {AlertId.Empty};
     }
 
+//TODO: make these tests run
     // [Theory]
     // [MemberData(nameof(InvalidIdData))]
     // public async Task AlertIsNotUpdatedWithInvalidId(AlertId alertId)

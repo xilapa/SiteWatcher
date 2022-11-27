@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using SiteWatcher.Domain.Extensions;
+using SiteWatcher.Domain.Common.Extensions;
 
 namespace UnitTests.ExtensionsTests;
 

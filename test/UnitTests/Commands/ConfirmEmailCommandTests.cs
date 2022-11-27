@@ -5,9 +5,9 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace UnitTests.Commands;
 
@@ -49,7 +49,7 @@ public sealed class ConfirmEmailCommandTests
     {
         // Arrange
         var user = new User("googleId", "name", "email", "authEmail",
-            ELanguage.BrazilianPortuguese, ETheme.Light, DateTime.Now);
+            Language.BrazilianPortuguese, Theme.Light, DateTime.Now);
 
         var userRepository = new Mock<IUserRepository>();
         userRepository

@@ -5,8 +5,8 @@ using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Models.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users.DTOs;
 
 namespace UnitTests.Commands;
 
@@ -49,7 +49,7 @@ public sealed class GoogleAuthenticationCommandTests
         var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;
 
         // Assert
-        result!.Value.Task.Should().Be(EAuthTask.Register);
+        result!.Value.Task.Should().Be(AuthTask.Register);
         result.Value.Token.Should().Be(RegisterToken);
     }
 
@@ -75,7 +75,7 @@ public sealed class GoogleAuthenticationCommandTests
         var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;
 
         // Assert
-        result!.Value.Task.Should().Be(EAuthTask.Activate);
+        result!.Value.Task.Should().Be(AuthTask.Activate);
         result.Value.Token.Should().Be(userVm.Id.ToString());
     }
 }

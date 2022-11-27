@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using BenchmarkDotNet.Attributes;
-using Domain.DTOs.Alerts;
-using Domain.DTOs.Common;
+using Domain.Alerts.DTOs;
 using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common;
+using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 
@@ -24,7 +24,7 @@ public class AutoMapperVsManualMapping
             alertsDtos.Add(new SimpleAlertViewDto
             {
                 Id = index,
-                Frequency = EFrequency.EightHours,
+                Frequency = Frequencies.EightHours,
                 Name = $"Alert {index}",
                 CreatedAt = DateTime.Now,
                 LastVerification = DateTime.Now.AddDays(-index),

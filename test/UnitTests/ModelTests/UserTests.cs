@@ -1,8 +1,8 @@
-﻿using Domain.Events;
-using FluentAssertions;
-using SiteWatcher.Domain.DTOs.User;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models;
+﻿using FluentAssertions;
+using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Enums;
+using SiteWatcher.Domain.Users.Events;
 
 namespace UnitTests.ModelTests;
 
@@ -15,7 +15,7 @@ public sealed class UserTests
     {
         // Arrange
         // Act
-        var user = new User("googleId", "name", email, authEmail, ELanguage.English, ETheme.Dark, DateTime.Now);
+        var user = new User("googleId", "name", email, authEmail, Language.English, Theme.Dark, DateTime.Now);
 
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
@@ -34,14 +34,14 @@ public sealed class UserTests
     public void UserEmailConfirmedAfterUpdate(string email, string authEmail, string newEmail, bool emailConfirmed)
     {
         // Arrange
-        var user = new User("googleId", "name", email, authEmail, ELanguage.English, ETheme.Dark, DateTime.Now);
+        var user = new User("googleId", "name", email, authEmail, Language.English, Theme.Dark, DateTime.Now);
         user.ClearDomainEvents();
         var userUpdate = new UpdateUserInput
         {
             Name = "name",
             Email = newEmail,
-            Language = ELanguage.English,
-            Theme = ETheme.Dark
+            Language = Language.English,
+            Theme = Theme.Dark
         };
 
         // Act
@@ -64,7 +64,7 @@ public sealed class UserTests
 
         // Act
         var user = new User("googleId", "name", "email", "email",
-            ELanguage.English, ETheme.Dark, DateTime.UtcNow);
+            Language.English, Theme.Dark, DateTime.UtcNow);
 
         // Assert
         Guid.Empty

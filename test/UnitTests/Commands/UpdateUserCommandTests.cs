@@ -5,7 +5,7 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
-using SiteWatcher.Domain.Models;
+using SiteWatcher.Domain.Users;
 
 namespace UnitTests.Commands;
 

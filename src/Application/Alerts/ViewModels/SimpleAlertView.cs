@@ -1,8 +1,8 @@
-﻿using Domain.DTOs.Alerts;
+﻿using Domain.Alerts.DTOs;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Utils;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Application.Alerts.ViewModels;
 
@@ -38,12 +38,12 @@ public class SimpleAlertView
     public string? Id { get; set; }
     public string? Name { get; set; }
     public DateTime CreatedAt { get; set; }
-    public EFrequency Frequency { get; set; }
+    public Frequencies Frequency { get; set; }
     public DateTime? LastVerification { get; set; }
     // TODO: Count notifications sent
     public int NotificationsSent { get; set; }
     public string? SiteName { get; set; }
-    public EWatchMode WatchMode { get; set; }
+    public WatchModes WatchMode { get; set; }
 
     public static SimpleAlertView FromDto(SimpleAlertViewDto dto, IIdHasher idHasher) =>
         new(dto, idHasher);

@@ -1,5 +1,5 @@
-﻿using SiteWatcher.Domain.Enums;
-using SiteWatcher.Domain.Models.Common;
+﻿using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Interfaces;
 
@@ -10,6 +10,6 @@ public interface ISession
     public string? Email { get;}
     public string? GoogleId { get; }
     public string? UserName { get; }
-    public ELanguage? Language { get; }
+    public Language? Language { get; }
     public string AuthTokenPayload { get; }
 }

@@ -1,5 +1,4 @@
-﻿using Domain.DTOs.Common;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
@@ -9,6 +8,7 @@ using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Alerts.ViewModels;
+using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.WebAPI.Filters.Cache;

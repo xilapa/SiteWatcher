@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
-using SiteWatcher.Domain.Enums;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace UnitTests.ValidatorsTests;
 
@@ -32,9 +32,9 @@ public sealed class RegisterUserCommandValidatorTests
             new RegisterUserCommand
             {
                 Email = "invalidEmail",
-                Language = ELanguage.English,
+                Language = Language.English,
                 Name = "Xi",
-                Theme = ETheme.Dark
+                Theme = Theme.Dark
             },
             new []
             {
@@ -48,9 +48,9 @@ public sealed class RegisterUserCommandValidatorTests
             new RegisterUserCommand
             {
                 Email = "xilapa@email.com",
-                Language = ELanguage.English,
+                Language = Language.English,
                 Name = "Xil4pa4",
-                Theme = ETheme.Dark
+                Theme = Theme.Dark
             },
             new [] {ApplicationErrors.NAME_MUST_HAVE_ONLY_LETTERS}
         };
@@ -60,9 +60,9 @@ public sealed class RegisterUserCommandValidatorTests
             new RegisterUserCommand
             {
                 Email = "xilapa@email.com",
-                Language = (ELanguage) 989,
+                Language = (Language) 989,
                 Name = "xilapa",
-                Theme = (ETheme) 989
+                Theme = (Theme) 989
             },
             new []
             {

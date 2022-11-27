@@ -1,7 +1,7 @@
-using SiteWatcher.Domain.Models;
-using SiteWatcher.Domain.Models.Alerts;
-using SiteWatcher.Domain.Models.Emails;
-using SiteWatcher.Domain.Utils.Notifications;
+using SiteWatcher.Domain.Alerts.Entities.Notifications;
+using SiteWatcher.Domain.Alerts.ValueObjects;
+using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Users;
 using SiteWatcher.Worker.Messaging;
 
 namespace SiteWatcher.Worker.Utils;
