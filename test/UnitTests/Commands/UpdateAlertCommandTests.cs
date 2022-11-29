@@ -1,5 +1,5 @@
 ﻿using Moq;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace UnitTests.Commands;

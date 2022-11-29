@@ -1,4 +1,4 @@
-﻿namespace SiteWatcher.Application.Interfaces;
+﻿namespace SiteWatcher.Common.Services;
 
 public interface IIdHasher
 {

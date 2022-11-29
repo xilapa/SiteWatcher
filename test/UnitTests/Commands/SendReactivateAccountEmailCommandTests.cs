@@ -1,6 +1,7 @@
 ﻿using Moq;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
+using SiteWatcher.Common.Repositories;
+using SiteWatcher.Domain.Users.Repositories;
 
 namespace UnitTests.Commands;
 

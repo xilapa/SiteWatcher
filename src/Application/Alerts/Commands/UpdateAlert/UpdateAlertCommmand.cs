@@ -1,10 +1,12 @@
-﻿using Domain.Alerts.DTOs;
-using MediatR;
-using SiteWatcher.Application.Alerts.ViewModels;
+﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
+using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 

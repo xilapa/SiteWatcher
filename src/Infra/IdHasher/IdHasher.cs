@@ -1,5 +1,6 @@
 ﻿using HashidsNet;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 
 namespace SiteWatcher.Infra.IdHasher;
 

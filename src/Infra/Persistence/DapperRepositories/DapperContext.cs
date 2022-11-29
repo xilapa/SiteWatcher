@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using Npgsql;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 

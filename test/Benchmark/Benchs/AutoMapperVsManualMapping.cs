@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using BenchmarkDotNet.Attributes;
-using Domain.Alerts.DTOs;
-using SiteWatcher.Application.Alerts.ViewModels;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 
@@ -68,7 +68,7 @@ public class AutoMapperVsManualMapping
         return new PaginatedList<SimpleAlertView>
         {
             Total = _paginatedAlertsDto.Total,
-            Results = _paginatedAlertsDto.Results.Select(dto => SimpleAlertView.FromDto(dto, _idHasher))
+            Results = _paginatedAlertsDto.Results.Select(dto => dto.ToSimpleAlertView(_idHasher))
         };
     }
 }

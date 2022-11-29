@@ -1,4 +1,4 @@
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Common.Repositories;
 
 public interface IUnitOfWork : IDisposable
 {

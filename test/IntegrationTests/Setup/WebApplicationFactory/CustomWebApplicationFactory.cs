@@ -15,6 +15,8 @@ using Moq;
 using Npgsql;
 using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;

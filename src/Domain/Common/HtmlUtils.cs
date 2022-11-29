@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
@@ -14,10 +15,12 @@ public static class HtmlUtils
     {
         var webPageDocument = await _htmlParser.ParseDocumentAsync(html, CancellationToken.None);
 
-        foreach(var element in webPageDocument.All.ToArray())
+        foreach (var element in webPageDocument.All.ToArray())
         {
-            if(_tagsToRemove.Contains(element.TagName))
+            if (_tagsToRemove.Contains(element.TagName))
+            {
                 element.Remove();
+            }
         }
 
         return webPageDocument.DocumentElement.ToHtml(_markupFormatter);
@@ -29,7 +32,7 @@ internal class CustomMarkupFormatter : IMarkupFormatter
     public string CloseTag(IElement element, bool selfClosing) => string.Empty;
     public string Comment(IComment comment) => string.Empty;
     public string Doctype(IDocumentType doctype) => string.Empty;
-    public string LiteralText(ICharacterData text) => text.Data;
+    public string LiteralText(ICharacterData text) => string.Empty;
     public string OpenTag(IElement element, bool selfClosing) => string.Empty;
     public string Processing(IProcessingInstruction processing) => string.Empty;
     public string Text(ICharacterData text) => text.Data;

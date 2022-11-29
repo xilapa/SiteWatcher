@@ -5,9 +5,12 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
+using SiteWatcher.Common.Repositories;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
+using SiteWatcher.Domain.Users.Repositories;
 
 namespace UnitTests.Commands;
 

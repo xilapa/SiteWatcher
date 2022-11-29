@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;

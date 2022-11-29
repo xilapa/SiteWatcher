@@ -1,4 +1,4 @@
-﻿using SiteWatcher.Application.Interfaces;
+﻿using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Infra.DapperRepositories;

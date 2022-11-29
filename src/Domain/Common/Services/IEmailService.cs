@@ -1,6 +1,6 @@
 ﻿using SiteWatcher.Domain.Emails;
 
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Common.Services;
 
 public interface IEmailService
 {

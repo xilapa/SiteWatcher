@@ -2,8 +2,9 @@
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common;
 
-namespace Domain.Alerts.DTOs;
+namespace SiteWatcher.Domain.Alerts.DTOs;
 
+//TODO: move to detailed alert view
 public sealed class DetailedWatchModeView
 {
     public WatchModes? WatchMode { get; set; }

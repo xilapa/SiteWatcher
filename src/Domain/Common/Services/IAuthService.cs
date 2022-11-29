@@ -3,7 +3,7 @@ using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Common.Services;
 
 public interface IAuthService
 {

@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Enums;
@@ -10,7 +11,6 @@ using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
-using SiteWatcher.Domain.Utils;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Extensions;
 

@@ -1,9 +1,7 @@
-﻿using Domain.Alerts.DTOs;
-using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Alerts;
+﻿using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Enums;
 
-namespace SiteWatcher.Application.Alerts.ViewModels;
+namespace SiteWatcher.Domain.Alerts.DTOs;
 
 public class DetailedAlertView
 {

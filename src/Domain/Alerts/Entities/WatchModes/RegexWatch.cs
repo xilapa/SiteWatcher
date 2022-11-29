@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using Domain.Alerts.DTOs;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.Entities.WatchModes;

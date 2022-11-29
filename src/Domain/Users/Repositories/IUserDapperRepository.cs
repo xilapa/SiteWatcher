@@ -1,7 +1,7 @@
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.DTOs;
 
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Domain.Users.Repositories;
 
 public interface IUserDapperRepository
 {

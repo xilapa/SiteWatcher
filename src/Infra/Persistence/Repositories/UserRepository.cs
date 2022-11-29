@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Infra.Repositories;
 

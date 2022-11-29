@@ -1,5 +1,4 @@
-﻿namespace SiteWatcher.Application.Interfaces;
-
+﻿namespace SiteWatcher.Common.Repositories;
 public interface IDapperQueries
 {
     string GetUserByGoogleId { get; }

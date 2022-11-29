@@ -7,7 +7,7 @@ using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
-using SiteWatcher.Application.Alerts.ViewModels;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;

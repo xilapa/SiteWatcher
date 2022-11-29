@@ -1,27 +1,13 @@
-﻿using Domain.Alerts.DTOs;
-using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Alerts;
+﻿using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common;
 
-namespace SiteWatcher.Application.Alerts.ViewModels;
+namespace SiteWatcher.Domain.Alerts.DTOs;
 
 public class SimpleAlertView
 {
     public SimpleAlertView()
     { }
-
-    public SimpleAlertView(SimpleAlertViewDto alertViewDto, IIdHasher idHasher)
-    {
-        Id = idHasher.HashId(alertViewDto.Id);
-        Name = alertViewDto.Name;
-        CreatedAt = alertViewDto.CreatedAt;
-        Frequency = alertViewDto.Frequency;
-        LastVerification = alertViewDto.LastVerification;
-        NotificationsSent = 0;
-        SiteName = alertViewDto.SiteName;
-        WatchMode = Utils.GetWatchModeEnumByTableDiscriminator(alertViewDto.WatchMode)!.Value;
-    }
 
     public SimpleAlertView(Alert alert, IIdHasher idHasher)
     {
@@ -44,9 +30,6 @@ public class SimpleAlertView
     public int NotificationsSent { get; set; }
     public string? SiteName { get; set; }
     public WatchModes WatchMode { get; set; }
-
-    public static SimpleAlertView FromDto(SimpleAlertViewDto dto, IIdHasher idHasher) =>
-        new(dto, idHasher);
 
     public static SimpleAlertView FromAlert(Alert alert, IIdHasher idHasher) =>
         new(alert, idHasher);

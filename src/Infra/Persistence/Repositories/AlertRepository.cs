@@ -1,9 +1,10 @@
 ﻿using System.Linq.Expressions;
-using Domain.Alerts.DTOs;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Infra.Repositories;

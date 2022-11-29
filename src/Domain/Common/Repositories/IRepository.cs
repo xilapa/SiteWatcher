@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Common.Repositories;
 
 public interface IRepository<T> where T : class
 {

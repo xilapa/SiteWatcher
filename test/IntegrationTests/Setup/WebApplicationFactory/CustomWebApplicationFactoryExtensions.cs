@@ -1,8 +1,7 @@
-﻿using Domain.Alerts.DTOs;
-using Microsoft.Extensions.DependencyInjection;
-using SiteWatcher.Application.Alerts.ViewModels;
-using SiteWatcher.Application.Interfaces;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra;

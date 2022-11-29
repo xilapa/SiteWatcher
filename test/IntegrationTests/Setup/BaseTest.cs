@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using Moq;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Infra.Authorization.Constants;

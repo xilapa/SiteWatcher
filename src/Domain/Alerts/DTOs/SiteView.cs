@@ -1,6 +1,6 @@
 ﻿using SiteWatcher.Domain.Alerts.ValueObjects;
 
-namespace Domain.Alerts.DTOs;
+namespace SiteWatcher.Domain.Alerts.DTOs;
 
 public sealed class SiteView
 {

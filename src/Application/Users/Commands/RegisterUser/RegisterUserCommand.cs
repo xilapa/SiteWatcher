@@ -1,9 +1,12 @@
 using MediatR;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.Exceptions;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
+using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 

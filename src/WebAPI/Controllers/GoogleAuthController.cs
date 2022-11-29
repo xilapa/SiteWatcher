@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 

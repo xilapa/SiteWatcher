@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Events;
+using SiteWatcher.Domain.Alerts.Repositories;
 
 namespace SiteWatcher.Application.Alerts.EventHandlers;
 

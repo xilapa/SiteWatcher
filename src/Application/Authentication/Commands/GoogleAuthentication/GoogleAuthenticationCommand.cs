@@ -3,6 +3,8 @@ using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 

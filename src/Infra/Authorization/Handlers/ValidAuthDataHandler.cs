@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 
 namespace SiteWatcher.Infra.Authorization.Handlers;
 

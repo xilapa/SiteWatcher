@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Users.Events;
+using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Users.Commands.DeleteUser;
 

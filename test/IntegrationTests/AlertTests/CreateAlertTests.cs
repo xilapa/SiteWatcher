@@ -1,14 +1,13 @@
 ﻿using System.Net;
-using Domain.Alerts.DTOs;
 using FluentAssertions;
 using HashidsNet;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
-using SiteWatcher.Application.Alerts.ViewModels;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;

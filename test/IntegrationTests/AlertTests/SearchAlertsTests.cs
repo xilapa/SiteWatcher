@@ -2,7 +2,7 @@
 using FluentAssertions;
 using IntegrationTests.Setup;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
-using SiteWatcher.Application.Alerts.ViewModels;
+using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;

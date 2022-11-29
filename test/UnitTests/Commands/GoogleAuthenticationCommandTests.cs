@@ -5,8 +5,10 @@ using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Repositories;
 
 namespace UnitTests.Commands;
 

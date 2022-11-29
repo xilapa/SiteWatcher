@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 
 namespace SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
 

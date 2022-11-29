@@ -1,24 +1,12 @@
-﻿using Domain.Alerts.DTOs;
-using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Alerts;
+﻿using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Entities.WatchModes;
 
-namespace SiteWatcher.Application.Alerts.ViewModels;
+namespace SiteWatcher.Domain.Alerts.DTOs;
 
 public class AlertDetails
 {
     public AlertDetails()
     { }
-
-    private AlertDetails(AlertDetailsDto alertDetailsDto, IIdHasher idHasher)
-    {
-        Id = idHasher.HashId(alertDetailsDto.Id);
-        SiteUri = alertDetailsDto.SiteUri;
-        WatchModeId = idHasher.HashId(alertDetailsDto.WatchModeId);
-        Term = alertDetailsDto.Term;
-        RegexPattern = alertDetailsDto.RegexPattern;
-        NotifyOnDisappearance = alertDetailsDto.NotifyOnDisappearance;
-    }
 
     private AlertDetails(Alert alert, IIdHasher idHasher)
     {
@@ -36,9 +24,6 @@ public class AlertDetails
     public string? Term { get; set; }
     public string? RegexPattern { get; set; }
     public bool? NotifyOnDisappearance { get; set; }
-
-    public static AlertDetails FromDto(AlertDetailsDto dto, IIdHasher idHasher) =>
-        new(dto, idHasher);
 
     public static AlertDetails FromAlert(Alert alert, IIdHasher idHasher) =>
         new(alert, idHasher);

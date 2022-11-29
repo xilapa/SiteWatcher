@@ -2,7 +2,7 @@
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace UnitTests.Commands;

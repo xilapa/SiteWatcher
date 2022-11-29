@@ -1,9 +1,10 @@
-﻿using SiteWatcher.Application.Alerts.ViewModels;
+﻿using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Domain.Alerts.Repositories;
 
+// TODO: rename to IAlertQueryRepository
 public interface IAlertDapperRepository
 {
     Task<PaginatedList<SimpleAlertView>> GetUserAlerts(UserId userId, int take, int lastAlertId,

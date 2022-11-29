@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common.Exceptions;
 using SiteWatcher.Domain.Common.ValueObjects;

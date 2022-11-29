@@ -1,7 +1,8 @@
 using SiteWatcher.Domain.Alerts.ValueObjects;
 
-namespace SiteWatcher.Domain.Utils.Notifications;
+namespace SiteWatcher.Domain.Alerts.DTOs;
 
+// TODO: this needs to be near the notification
 public sealed class AlertNotificationMessageData
 {
     public AlertNotificationMessageData(string userName, List<AlertToNotify> successNotifications,

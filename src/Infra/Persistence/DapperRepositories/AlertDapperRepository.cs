@@ -1,8 +1,11 @@
 ﻿using System.Dynamic;
 using Dapper;
-using Domain.Alerts.DTOs;
-using SiteWatcher.Application.Alerts.ViewModels;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
+using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Alerts.DTOs;
+using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 
@@ -24,7 +27,7 @@ public class AlertDapperRepository : IAlertDapperRepository
     public async Task<PaginatedList<SimpleAlertView>> GetUserAlerts(UserId userId, int take, int lastAlertId,
         CancellationToken cancellationToken)
     {
-        var parameters = new {lastAlertId, userId, take};
+        var parameters = new { lastAlertId, userId, take };
         var commandDefinition = new CommandDefinition(_dapperQueries.GetSimpleAlertViewListByUserId, parameters,
             cancellationToken: cancellationToken);
         var result = new PaginatedList<SimpleAlertView>();
@@ -33,23 +36,23 @@ public class AlertDapperRepository : IAlertDapperRepository
             var gridReader = await conn.QueryMultipleAsync(commandDefinition);
             result.Total = await gridReader.ReadSingleAsync<int>();
             result.Results = (await gridReader.ReadAsync<SimpleAlertViewDto>())
-                .Select(dto => SimpleAlertView.FromDto(dto, _idHasher));
+                .Select(dto => dto.ToSimpleAlertView(_idHasher));
         });
         return result;
     }
 
     public async Task<AlertDetails?> GetAlertDetails(int alertId, UserId userId, CancellationToken cancellationToken)
     {
-        var commandDefinition = new CommandDefinition(_dapperQueries.GetAlertDetails, new {alertId, userId},
+        var commandDefinition = new CommandDefinition(_dapperQueries.GetAlertDetails, new { alertId, userId },
             cancellationToken: cancellationToken);
         var alertDetailsDto = await _dapperContext.UsingConnectionAsync(conn =>
             conn.QueryFirstOrDefaultAsync<AlertDetailsDto>(commandDefinition));
-        return alertDetailsDto is null ? null: AlertDetails.FromDto(alertDetailsDto, _idHasher);
+        return alertDetailsDto?.ToAlertDetails(_idHasher);
     }
 
     public async Task<bool> DeleteUserAlert(int alertId, UserId userId, CancellationToken cancellationToken)
     {
-        var commandDefinition = new CommandDefinition(_dapperQueries.DeleteUserAlert, new {alertId, userId},
+        var commandDefinition = new CommandDefinition(_dapperQueries.DeleteUserAlert, new { alertId, userId },
             cancellationToken: cancellationToken);
         var affectedRows = await _dapperContext.UsingConnectionAsync(conn =>
             conn.ExecuteAsync(commandDefinition));
@@ -66,7 +69,7 @@ public class AlertDapperRepository : IAlertDapperRepository
         for (var i = 0; i < searchTerms.Length; i++)
         {
             parameters.Add($"searchTermWildCards{i}", $"%{searchTerms[i]}%");
-            parameters.Add($"searchTerm{i}",searchTerms[i]);
+            parameters.Add($"searchTerm{i}", searchTerms[i]);
         }
 
         var commandDefinition = new CommandDefinition(_dapperQueries.SearchSimpleAlerts(searchTerms.Length),
@@ -74,6 +77,56 @@ public class AlertDapperRepository : IAlertDapperRepository
         var alertViewDtos = await _dapperContext.UsingConnectionAsync(conn =>
             conn.QueryAsync<SimpleAlertViewDto>(commandDefinition));
 
-        return alertViewDtos.Select(dto => SimpleAlertView.FromDto(dto, _idHasher));
+        return alertViewDtos.Select(dto => dto.ToSimpleAlertView(_idHasher));
     }
 }
+
+#region DTOs
+public sealed class AlertDetailsDto
+{
+    public int Id { get; set; }
+    public string SiteUri { get; set; } = null!;
+    public int WatchModeId { get; set; }
+    public string? Term { get; set; }
+    public string? RegexPattern { get; set; }
+    public bool? NotifyOnDisappearance { get; set; }
+
+    public AlertDetails ToAlertDetails(IIdHasher idHasher) =>
+    new()
+    {
+        Id = idHasher.HashId(Id),
+        SiteUri = SiteUri,
+        // TODO: remove this Id
+        WatchModeId = idHasher.HashId(WatchModeId),
+        Term = Term,
+        RegexPattern = RegexPattern,
+        NotifyOnDisappearance = NotifyOnDisappearance
+    };
+}
+
+public sealed class SimpleAlertViewDto
+{
+    public int Id { get; set; }
+    public string? Name { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public Frequencies Frequency { get; set; }
+    public DateTime? LastVerification { get; set; }
+    // TODO: Count notifications sent
+    public int NotificationsSent { get; set; }
+    public string? SiteName { get; set; }
+    public char WatchMode { get; set; }
+
+    public SimpleAlertView ToSimpleAlertView(IIdHasher idHasher) =>
+    new ()
+    {
+        Id = idHasher.HashId(Id),
+        Name = Name,
+        CreatedAt = CreatedAt,
+        Frequency = Frequency,
+        LastVerification = LastVerification,
+        NotificationsSent = 0,
+        SiteName = SiteName,
+        WatchMode = Utils.GetWatchModeEnumByTableDiscriminator(WatchMode)!.Value
+    };
+}
+#endregion

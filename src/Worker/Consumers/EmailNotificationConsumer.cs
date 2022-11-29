@@ -2,7 +2,7 @@ using System.Text.Json;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra;
 using SiteWatcher.Worker.Messaging;
@@ -21,7 +21,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
     {
         _logger = logger;
         _context = context;
-        this._emailService = emailService;
+        _emailService = emailService;
     }
 
     // CAP uses this attribute to create a queue and bind it with a routing key.
@@ -59,6 +59,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
         // TODO: create a wrapper for date, to make tests possible
         email.DateSent = DateTime.UtcNow;
 
+        // TODO: create flag to disable email sending
         return await _emailService.SendEmailAsync(message.Subject, message.Body, message.Recipients, cancellationToken);
     }
 }

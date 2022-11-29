@@ -2,7 +2,7 @@
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 
-namespace Domain.Alerts.DTOs;
+namespace SiteWatcher.Domain.Alerts.DTOs;
 
 public sealed class UpdateAlertInput
 {

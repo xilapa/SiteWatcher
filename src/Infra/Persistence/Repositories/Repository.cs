@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
 
 namespace SiteWatcher.Infra.Repositories;
 
