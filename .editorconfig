@@ -7,3 +7,17 @@ csharp_style_pattern_matching_over_as_with_null_check = false
 
 # IDE0063: Use simple 'using' statement
 csharp_prefer_simple_using_statement = false
+
+# private fields must be camel case and starting with underscore
+dotnet_naming_rule.private_members_with_underscore.symbols  = private_fields
+dotnet_naming_rule.private_members_with_underscore.style    = prefix_underscore
+dotnet_naming_rule.private_members_with_underscore.severity = suggestion
+ 
+dotnet_naming_symbols.private_fields.applicable_kinds           = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+ 
+dotnet_naming_style.prefix_underscore.capitalization = camel_case
+dotnet_naming_style.prefix_underscore.required_prefix = _
+
+# unnused usings
+dotnet_diagnostic.IDE0005.severity = error

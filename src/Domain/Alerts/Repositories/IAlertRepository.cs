@@ -1,5 +1,4 @@
 ﻿using SiteWatcher.Common.Repositories;
-using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Domain.Alerts.Repositories;

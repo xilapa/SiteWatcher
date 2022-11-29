@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Quartz;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.ValueObjects;
-using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;

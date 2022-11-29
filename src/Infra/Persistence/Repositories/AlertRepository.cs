@@ -1,6 +1,5 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Entities.WatchModes;
