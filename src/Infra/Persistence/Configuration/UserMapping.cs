@@ -55,5 +55,10 @@ public class UserMapping : BaseModelMapping<User,UserId>
                 .WithOne(a => a.User)
                 .IsRequired()
                 .HasForeignKey(a => a.UserId);
+
+        builder.HasMany(u => u.Emails)
+                .WithOne()
+                .IsRequired()
+                .HasForeignKey(e => e.UserId);
     }
 }

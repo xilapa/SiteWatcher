@@ -6,24 +6,24 @@ public class Email
 {
     // ctor for EF
     protected Email()
-    {
-        Recipients = new List<MailRecipient>();
-    }
+    {  }
 
-    public Email(string body, string subject, params MailRecipient[] recipients)
+    public Email(string body, string subject, MailRecipient recipient)
     {
         Id = EmailId.New();
         Subject = subject;
         Body = body;
-        Recipients = recipients.ToList();
+        Recipient = $"{recipient.Name}:{recipient.Email}";
+        UserId = recipient.UserId;
     }
 
     public EmailId Id { get; set; }
-    public List<MailRecipient> Recipients { get; set; }
+    public string Recipient { get; set; } = null!;
     public DateTime? DateSent { get; set; }
     public string Subject { get; set; } = null!;
     public string? Body { get; set; }
     public string? ErrorMessage { get; set; }
+    public UserId UserId { get; set; }
 
     public bool HasSent()
     {

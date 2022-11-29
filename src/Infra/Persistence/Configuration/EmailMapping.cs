@@ -17,8 +17,9 @@ public class EmailMapping : IEntityTypeConfiguration<Email>
             .HasConversion<EmailId.EfCoreValueConverter>()
             .HasColumnType("uuid");
 
-        builder.Property(e => e.Recipients)
-            .HasConversion<MailRecipientsValueConverter>()
+        // UserName + : + UserEmail = 64 + 1 + 320 = 385
+        builder.Property(e => e.Recipient)
+            .HasColumnType("varchar(385)")
             .IsRequired();
 
         builder.Property(e => e.DateSent)

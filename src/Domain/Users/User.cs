@@ -1,6 +1,7 @@
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Domain.Users.Events;
@@ -14,6 +15,7 @@ public class User : BaseModel<UserId>
     protected User() : base()
     {
         Alerts = Enumerable.Empty<Alert>();
+        Emails = Enumerable.Empty<Email>();
     }
 
     public User(string googleId, string name, string email, string authEmail, Language language, Theme theme,
@@ -26,6 +28,7 @@ public class User : BaseModel<UserId>
         Language = language;
         Theme = theme;
         Alerts = Enumerable.Empty<Alert>();
+        Emails = Enumerable.Empty<Email>();
 
         GenerateEmailConfirmationToken(currentDate);
     }
@@ -38,7 +41,7 @@ public class User : BaseModel<UserId>
     public Theme Theme { get; private set; }
     public string? SecurityStamp { get; private set; }
     public IEnumerable<Alert> Alerts { get; init; }
-    // TODO: add collection of emails
+    public IEnumerable<Email> Emails { get; set; }
 
     public void Update(UpdateUserInput updatedValues, DateTime updateDate)
     {
