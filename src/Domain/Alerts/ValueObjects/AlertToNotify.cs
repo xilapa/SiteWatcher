@@ -1,13 +1,14 @@
 using SiteWatcher.Domain.Common;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.Enums;
 using static SiteWatcher.Domain.Common.Utils;
 
 namespace SiteWatcher.Domain.Alerts.ValueObjects;
 
-// TODO: Remove this
+// TODO: Try to remove this
 public sealed class AlertToNotify
 {
-    public AlertToNotify(Alert alert, Language userLanguage)
+    public AlertToNotify(Alert alert, NotificationId notificationId, Language userLanguage)
     {
         Name = alert.Name;
         SiteUri = alert.Site.Uri.ToString();
@@ -15,12 +16,13 @@ public sealed class AlertToNotify
         FrequencyString = LocalizedMessages.FrequencyString(userLanguage, alert.Frequency);
         var watchMode = GetWatchModeEnumByType(alert.WatchMode);
         WatchModeString = LocalizedMessages.WatchModeString(userLanguage, watchMode!.Value);
+        NotificationId = notificationId;
     }
 
-    public string Name { get; private set; }
-    public string SiteUri { get; private set; }
-    public string SiteName { get; private set; }
-    public string FrequencyString { get; private set; }
-    public string WatchModeString { get; private set; }
-
+    public string Name { get; }
+    public string SiteUri { get; }
+    public string SiteName { get; }
+    public string FrequencyString { get; }
+    public string WatchModeString { get; }
+    public NotificationId NotificationId { get; }
 }

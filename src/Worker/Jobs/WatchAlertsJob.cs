@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Quartz;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.ValueObjects;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Http;
@@ -72,7 +73,7 @@ public sealed class WatchAlertsJob : IJob
         return alertFrequenciesToWatch;
     }
 
-    // TODO: generate notification and generate notifications should be one use case of the application
+    // TODO: generate notification and generate notifications should be an use case of the application
     private async Task GenerateNotifications(WatchAlertsMessage message, CancellationToken cancellationToken)
     {
         var frequencies = message.Frequencies;
@@ -102,6 +103,7 @@ public sealed class WatchAlertsJob : IJob
         var alertsToNotifySuccess = new List<AlertToNotify>();
         var alertsToNotifyError = new List<AlertToNotify>();
 
+        // TODO: move this to a domain service
         foreach (var alert in user.Alerts)
         {
             // HttpClient is thread safe
@@ -114,7 +116,7 @@ public sealed class WatchAlertsJob : IJob
 
             if (!sucess)
             {
-                alertsToNotifyError.Add(new AlertToNotify(alert, user.Language));
+                alertsToNotifyError.Add(alert.GenerateAlertToNotify(DateTime.UtcNow));
                 _logger.LogError("{CurrentTime}: Error on fetching site : {Site} from User {UserId} - Alert {AlertId}",
                      DateTime.Now, alert.Site.Uri, user.Id, alert.Id);
                 continue;
@@ -128,7 +130,9 @@ public sealed class WatchAlertsJob : IJob
 
         if (alertsToNotifySuccess.Count == 0 && alertsToNotifyError.Count == 0)
             return;
+        // end of domain service
 
+        // TODO: move the generation of email notification message to a domain service
         var (email, emailNotificationMessage) = await EmailNotificationMessageFactory
             .Generate(user, alertsToNotifySuccess, alertsToNotifyError, _settings.SiteWatcherUri);
 
@@ -136,10 +140,13 @@ public sealed class WatchAlertsJob : IJob
         // The notification sender will set the DateSent value
         _context.Add(email);
 
-        // Correlate each notification with the email
-        // As the alert notifications are not loaded to memory, each alert will have at most one notification
-        foreach (var notification in user.Alerts.SelectMany(_ => _.Notifications))
-            notification.SetEmail(email);
+        var alertToNotifySuccessIds = alertsToNotifySuccess.Select(_ => _.NotificationId);
+        var alertToNotifyErrorsIds = alertsToNotifyError.Select(_ => _.NotificationId);
+        bool _;
+        foreach(var alert in user.Alerts)
+            _ = alert.SetEmail(email, alertToNotifySuccessIds) || alert.SetEmail(email, alertToNotifyErrorsIds);
+
+        // end of domain service
 
         // Publish the email message on the bus
         // Use the email id as the message id

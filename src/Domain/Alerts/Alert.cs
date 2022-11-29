@@ -8,6 +8,7 @@ using SiteWatcher.Domain.Alerts.ValueObjects;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Extensions;
 using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users;
 using static SiteWatcher.Domain.Common.Utils;
 
@@ -168,12 +169,33 @@ public class Alert : BaseModel<AlertId>
         var notifyUser = await WatchMode.VerifySite(html);
         LastVerification = currentTime;
 
-        if (notifyUser)
-        {
-            _notifications ??= new List<Notification>();
-            _notifications.Add(new Notification(currentTime));
-        }
+        AlertToNotify? alertToNotify = null;
 
-        return notifyUser ? new AlertToNotify(this, User.Language) : null;
+        if (notifyUser)
+            alertToNotify = GenerateAlertToNotify(currentTime);
+
+        return alertToNotify;
+    }
+
+    public AlertToNotify GenerateAlertToNotify(DateTime currentTime)
+    {
+        var notification = new Notification(currentTime);
+        _notifications ??= new List<Notification>();
+        _notifications.Add(notification);
+        return new AlertToNotify(this, notification.Id, User.Language);
+    }
+
+    /// <summary>
+    /// Correlate the email with the notification.
+    /// </summary>
+    /// <param name="email">The email to be set on the notifications</param>
+    /// <param name="notificationIds">The list of notifications Ids</param>
+    /// <returns>True if the email was set on any notification, False if there is no notification with the Ids passed</returns>
+    public bool SetEmail(Email email, IEnumerable<NotificationId> notificationIds)
+    {
+        var notification = _notifications?.SingleOrDefault(n => notificationIds.Contains(n.Id));
+        if (notification == null) return false;
+        notification.SetEmail(email);
+        return true;
     }
 }

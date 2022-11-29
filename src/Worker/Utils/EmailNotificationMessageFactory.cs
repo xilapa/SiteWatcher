@@ -12,7 +12,7 @@ public static class EmailNotificationMessageFactory
     {
         var subject = NotificationMessageGenerator.GetSubject(user.Language);
         var body = await NotificationMessageGenerator.GetBody(user, successes, errors, siteWatcherUri);
-        var emailRecipient = new MailRecipient(user.Name, user.Email);
+        var emailRecipient = new MailRecipient(user.Name, user.Email, user.Id);
         var notificationMsg = new EmailNotificationMessage(subject, body, emailRecipient);
 
         var email = new Email(body, subject, emailRecipient);

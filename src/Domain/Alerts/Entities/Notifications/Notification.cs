@@ -17,7 +17,12 @@ public class Notification
 
     public NotificationId Id { get; set; }
     public DateTime CreatedAt { get; }
+    public EmailId? EmailId { get; set; }
     public Email? Email { get; set; }
 
-    public void SetEmail(Email email) => Email = email;
+    public void SetEmail(Email email)
+    {
+        EmailId = email.Id;
+        Email = email;
+    }
 }
