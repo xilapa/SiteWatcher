@@ -1,6 +1,8 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
-
 namespace SiteWatcher.Infra.HealthChecks;
 
 public sealed class PostgresConnectionHealthCheck : IHealthCheck

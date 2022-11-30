@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SiteWatcher.Application.Interfaces;

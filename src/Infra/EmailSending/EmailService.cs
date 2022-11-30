@@ -4,6 +4,8 @@ using MailKit.Net.Smtp;
 using MimeKit.Text;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Common.Services;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace SiteWatcher.Infra.EmailSending;
 

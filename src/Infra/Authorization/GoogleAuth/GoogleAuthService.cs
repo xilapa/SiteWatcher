@@ -1,4 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Interfaces;

@@ -2,6 +2,11 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Polly;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.IO;
 
 namespace SiteWatcher.Infra.Http;
 

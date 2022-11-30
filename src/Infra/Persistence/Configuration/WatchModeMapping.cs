@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Alerts.Entities.WatchModes;
 using SiteWatcher.Domain.Common.ValueObjects;

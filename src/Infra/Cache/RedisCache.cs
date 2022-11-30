@@ -1,4 +1,6 @@
+using System;
 using System.Text.Json;
+using System.Threading.Tasks;
 using SiteWatcher.Application.Interfaces;
 using StackExchange.Redis;
 
@@ -40,7 +42,7 @@ public class RedisCache : ICache
     {
         var objectJson = await _connectionMultiplexer.GetDatabase().StringGetAsync(key);
         if (objectJson.IsNullOrEmpty) return default;
-        var @object = JsonSerializer.Deserialize<T>(objectJson);
+        var @object = JsonSerializer.Deserialize<T>(objectJson!);
         return @object;
     }
 
