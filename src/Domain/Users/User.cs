@@ -14,8 +14,8 @@ public class User : BaseModel<UserId>
     // ctor for EF
     protected User() : base()
     {
-        Alerts = Enumerable.Empty<Alert>();
-        Emails = Enumerable.Empty<Email>();
+        Alerts = new List<Alert>();
+        Emails = new List<Email>();
     }
 
     public User(string googleId, string name, string email, string authEmail, Language language, Theme theme,
@@ -27,8 +27,8 @@ public class User : BaseModel<UserId>
         EmailConfirmed = email == authEmail;
         Language = language;
         Theme = theme;
-        Alerts = Enumerable.Empty<Alert>();
-        Emails = Enumerable.Empty<Email>();
+        Alerts = new List<Alert>();
+        Emails = new List<Email>();
 
         GenerateEmailConfirmationToken(currentDate);
     }
@@ -40,8 +40,8 @@ public class User : BaseModel<UserId>
     public Language Language { get; private set; }
     public Theme Theme { get; private set; }
     public string? SecurityStamp { get; private set; }
-    public IEnumerable<Alert> Alerts { get; init; }
-    public IEnumerable<Email> Emails { get; set; }
+    public ICollection<Alert> Alerts { get; init; }
+    public ICollection<Email> Emails { get; set; }
 
     public void Update(UpdateUserInput updatedValues, DateTime updateDate)
     {
