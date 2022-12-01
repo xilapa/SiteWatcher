@@ -18,7 +18,7 @@ RUN dotnet restore "src/WebAPI/WebAPI.csproj"
 RUN dotnet publish "src/WebAPI/WebAPI.csproj" -c Release -o out --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
