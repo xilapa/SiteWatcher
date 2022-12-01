@@ -13,7 +13,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI.PostgreSQL.Storage" Version="6.0.4" />
     <PackageReference Include="DotNetCore.CAP" Version="6.2.1" />
     <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="6.2.1" />
-    <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="6.2.1" />
+    <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="7.0.0" />
     <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="6.2.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.5.0" />
