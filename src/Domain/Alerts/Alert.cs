@@ -17,7 +17,7 @@ namespace SiteWatcher.Domain.Alerts;
 public class Alert : BaseModel<AlertId>
 {
     // ctor for EF
-    protected Alert() : base()
+    protected Alert()
     { }
 
     public Alert(UserId userId, string name, Frequencies frequency, DateTime currentDate, Site site, WatchMode watchMode)
@@ -33,17 +33,17 @@ public class Alert : BaseModel<AlertId>
     }
 
     public UserId UserId { get; private set; }
-    public User User { get; set; }
-    public string Name { get; private set; }
+    public User User { get; set; } = null!;
+    public string Name { get; private set; } = null!;
     public Frequencies Frequency { get; private set; }
     public DateTime? LastVerification { get; private set; }
-    public Site Site { get; private set; }
-    public WatchMode WatchMode { get; private set; }
+    public Site Site { get; private set; } = null!;
+    public WatchMode WatchMode { get; private set; } = null!;
 
     private List<Notification>? _notifications;
     public IReadOnlyCollection<Notification> Notifications => _notifications ?? new List<Notification>();
 
-    public string SearchField { get; private set; }
+    public string SearchField { get; private set; } = null!;
 
     public static Alert GetModelForUpdate(UpdateAlertDto updateAlertDto) =>
         new()
