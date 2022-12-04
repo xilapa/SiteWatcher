@@ -295,7 +295,7 @@ namespace SiteWatcher.Infra.Migrations
 
             modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Notifications.Notification", b =>
                 {
-                    b.HasOne("SiteWatcher.Domain.Alerts.Alert", null)
+                    b.HasOne("SiteWatcher.Domain.Alerts.Alert", "Alert")
                         .WithMany("Notifications")
                         .HasForeignKey("AlertId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -304,6 +304,8 @@ namespace SiteWatcher.Infra.Migrations
                     b.HasOne("SiteWatcher.Domain.Emails.Email", "Email")
                         .WithMany()
                         .HasForeignKey("EmailId");
+
+                    b.Navigation("Alert");
 
                     b.Navigation("Email");
                 });

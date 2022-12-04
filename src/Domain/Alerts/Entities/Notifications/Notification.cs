@@ -19,6 +19,7 @@ public class Notification
     public DateTime CreatedAt { get; }
     public EmailId? EmailId { get; set; }
     public Email? Email { get; set; }
+    public Alert Alert { get; set; }
 
     public void SetEmail(Email email)
     {

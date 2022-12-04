@@ -42,6 +42,7 @@ public class Alert : BaseModel<AlertId>
 
     private List<Notification>? _notifications;
     public IReadOnlyCollection<Notification> Notifications => _notifications ?? new List<Notification>();
+    public ICollection<Email> Emails { get; set; }
 
     public string SearchField { get; private set; } = null!;
 

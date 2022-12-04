@@ -1,3 +1,4 @@
+using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Domain.Emails;
@@ -24,6 +25,7 @@ public class Email
     public string? Body { get; set; }
     public string? ErrorMessage { get; set; }
     public UserId UserId { get; set; }
+    public ICollection<Alert> Alerts { get; set; }
 
     public bool HasSent()
     {

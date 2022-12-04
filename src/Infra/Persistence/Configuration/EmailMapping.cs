@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SiteWatcher.Domain.Alerts.Entities.Notifications;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
 
@@ -37,5 +38,16 @@ public class EmailMapping : IEntityTypeConfiguration<Email>
         builder.Property(e => e.ErrorMessage)
             .HasColumnType("text")
             .IsRequired(false);
+
+        builder.HasMany(e => e.Alerts)
+            .WithMany(a => a.Emails)
+            .UsingEntity<Notification>(
+                j => j.HasOne(n => n.Alert)
+                .WithMany(a => a.Notifications)
+                .HasForeignKey(nameof(AlertId)),
+                j => j.HasOne(n => n.Email)
+                .WithMany()
+                .HasForeignKey(n => n.EmailId)
+            );
     }
 }
