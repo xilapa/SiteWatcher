@@ -1,23 +1,30 @@
 import { AbstractControl, ValidationErrors } from "@angular/forms";
 import { EWatchMode } from "../../alerts/common/e-watch-mode";
 
-export const watchModeRegexValidator = (control: AbstractControl) :  ValidationErrors | null => {
+export const watchModeRegexValidator = (control: AbstractControl): ValidationErrors | null => {
     const watchMode = (control.parent?.get('watchMode')?.value as EWatchMode);
     const isRegexWatch = watchMode == EWatchMode.Regex;
 
-    if(!isRegexWatch)
+    if (!isRegexWatch)
         return null;
 
-    if(!control.value)
+    if (!control.value)
         return { watchModeRegexValidator: true };
 
-    if (control.value && control.value.trim().length == 0)
+    const trimmedValue = control.value.trim() as string;
+
+    if (trimmedValue.length == 0)
         return { watchModeRegexValidator: true };
 
-    if(control.value.length > 512)
+    if (trimmedValue[0] == '/')
+        return { watchModeRegexValidator: true };
+
+    const invalidEndRegex = new RegExp('\/[gmixsuajd]*$') 
+    if (invalidEndRegex.test(trimmedValue))
+        return { watchModeRegexValidator: true };
+
+    if (control.value.length > 512)
         return { watchModeRegexValidator: true };
 
     return null;
 }
-
-

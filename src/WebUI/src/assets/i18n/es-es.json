@@ -120,7 +120,7 @@
       "regexPattern": "Patrón de regex",
       "regexPatternPlaceholder": "[^.]*Palabra[^.]*\\.?",
       "notifyOnDisappearance": "Notificar sobre la desaparición de coincidencias de regex",
-      "watchModeRegexLength": "El valor debe tener entre 1 o 512 caracteres"
+      "watchModeRegexInvalid": "Regex debe tener entre 1 o 512 caracteres. No debe comenzar con / (barra invertida) y no debe terminar con /gmi o cualquier variación de otras banderas de expresiones regulares."
     },
     "list": {
       "site": "Sitio",

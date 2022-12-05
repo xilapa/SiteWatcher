@@ -120,7 +120,7 @@
       "regexPattern": "Padrão de regex",
       "regexPatternPlaceholder": "[^.]*Palavra[^.]*\\.?",
       "notifyOnDisappearance": "Notificar quando um match do regex desaparecer",
-      "watchModeRegexLength": "O valor deve ter entre 1 e 512 letras"
+      "watchModeRegexInvalid": "Regex deve ter entre 1 e 512 caracteres. Não deve começar com / (barra invertida) e não deve terminar com /gmi ou qualquer outra variação de flags regex"
     },
     "list": {
       "site": "Site",
