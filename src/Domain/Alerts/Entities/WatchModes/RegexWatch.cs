@@ -102,7 +102,7 @@ public class RegexWatch : WatchMode
 /// <summary>
 /// Hold the match value with it count.
 /// </summary>
-internal sealed class Matches : Dictionary<string, int>
+public sealed class Matches : Dictionary<string, int>
 {
     public Matches Fill(IEnumerable<string> src)
     {
