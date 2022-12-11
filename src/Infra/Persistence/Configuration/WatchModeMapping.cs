@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Alerts.Entities.WatchModes;
 using SiteWatcher.Domain.Common.ValueObjects;
@@ -83,7 +82,7 @@ public sealed class RegexWatchMapping : IEntityTypeConfiguration<RegexWatch>
             .HasColumnType("varchar(512)")
             .IsRequired();
 
-        builder.Property<List<string>>("_matches")
+        builder.Property<Matches>("_matches")
             .HasConversion<RegexWatchMatchesValueConverter>()
             .HasColumnType("text")
             .HasColumnName(nameof(RegexWatch.Matches));
