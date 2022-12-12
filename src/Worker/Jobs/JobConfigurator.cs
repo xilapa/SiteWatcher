@@ -26,6 +26,11 @@ public static class JobConfigurator
                      opts.AddTrigger(opt => opt
                      .ForJob(WatchAlertsJob.Name)
                      .WithCronSchedule(fireWatchAlertsCron));
+
+                    // Run on worker startup
+                    opts.AddTrigger(opt => opt
+                     .ForJob(WatchAlertsJob.Name)
+                     .StartNow());
                  })
             // Wait to jobs to end gracefully on shutdown request
             .AddQuartzHostedService(opts => opts.WaitForJobsToComplete = true);
