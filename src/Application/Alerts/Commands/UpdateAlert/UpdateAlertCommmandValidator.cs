@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 
+// TODO: simplify validation removing FluentValidation
 public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommmand>
 {
     public UpdateAlertCommmandValidator()
@@ -101,9 +103,9 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.RegexPattern)))
             .MaximumLength(512)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.RegexPattern)))
-            .When(cmmd => cmmd.WatchMode is not null
-                            && WatchModes.Regex.Equals(cmmd.WatchMode.NewValue)
-                            && cmmd.RegexPattern is not null);
+            .IsValidRegex()
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RegexPattern)))
+            .When(cmmd => cmmd.RegexPattern?.NewValue != null);
 
         RuleFor(cmmd => cmmd.NotifyOnDisappearance)
             .NotEmpty()

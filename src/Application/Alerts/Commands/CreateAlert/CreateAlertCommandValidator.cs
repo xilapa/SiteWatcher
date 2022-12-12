@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
@@ -66,6 +67,8 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.RegexPattern)))
             .MaximumLength(512)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.RegexPattern)))
+            .IsValidRegex()
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RegexPattern)))
             .When(cmmd => WatchModes.Regex.Equals(cmmd.WatchMode));
 
         RuleFor(cmmd => cmmd.NotifyOnDisappearance)
