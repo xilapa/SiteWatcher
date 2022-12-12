@@ -120,7 +120,8 @@
       "regexPattern": "Patrón de regex",
       "regexPatternPlaceholder": "[^.]*Palabra[^.]*\\.?",
       "notifyOnDisappearance": "Notificar sobre la desaparición de coincidencias de regex",
-      "watchModeRegexInvalid": "Regex debe tener entre 1 o 512 caracteres. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares."
+      "watchModeRegexInvalid": "Regex debe tener entre 1 o 512 caracteres. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares.",
+      "watchModeRegexExplanation": "Las expresiones regulares en SiteWatcher son globales, multilínea y no distinguen entre mayúsculas y minúsculas. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares."
     },
     "list": {
       "site": "Sitio",

@@ -74,7 +74,8 @@ html {
     --sw-dark-6: #666666;
 
     /* sizes */
-    --sw-default-text-size: 20px;
+    --sw-default-text-size: 1.2rem;
+    --sw-default-text-size-small: 1rem;
     --sw-title1-font-size: 2rem;
     --sw-button-font-size: 1rem;
     --sw-link-text-font-size: 0.9rem;
@@ -252,6 +253,14 @@ html {
     font-size: var(--sw-default-text-size);
     color: var(--sw-foreground-1);
     cursor: default;
+}
+
+.sw-g-text-foreground-small {
+    font-size: var(--sw-default-text-size-small);
+    color: var(--sw-link-text-muted-1);
+    cursor: default;
+    margin-bottom: 10px;
+    line-height: 1.25rem;
 }
 
 .sw-g-link-text-muted {
