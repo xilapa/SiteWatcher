@@ -39,20 +39,18 @@ public sealed class WatchAlertsJob : IJob
     public async Task Execute(IJobExecutionContext context)
     {
         var frequencies = GetAlertFrequenciesToWatch();
-        var message = new WatchAlertsMessage(frequencies);
 
         _logger.LogInformation("{Date} - Watch Alerts Started: {Frequencies}", DateTime.UtcNow, frequencies);
 
         using var transaction = _context.Database.BeginTransaction(_capPublisher, autoCommit: false);
 
-        await GenerateNotifications(message, context.CancellationToken);
+        await GenerateNotifications(frequencies, context.CancellationToken);
 
         await _context.SaveChangesAsync(CancellationToken.None);
 
         await transaction.CommitAsync(CancellationToken.None);
 
-        var messageJson = JsonSerializer.Serialize(message);
-        _logger.LogInformation("{Date} Message consumed: {Message}", DateTime.UtcNow, messageJson);
+        _logger.LogInformation("{Date} - Watch Alerts Finished: {Frequencies}", DateTime.UtcNow, frequencies);
     }
 
     private static IEnumerable<Frequencies> GetAlertFrequenciesToWatch()
@@ -73,10 +71,8 @@ public sealed class WatchAlertsJob : IJob
     }
 
     // TODO: generate notification and generate notifications should be an use case of the application
-    private async Task GenerateNotifications(WatchAlertsMessage message, CancellationToken cancellationToken)
+    private async Task GenerateNotifications(IEnumerable<Frequencies> frequencies, CancellationToken cancellationToken)
     {
-        var frequencies = message.Frequencies;
-
         var usersWithAlerts = _context.Users
             .Include(u => u.Alerts.Where(_ => frequencies.Contains(_.Frequency)))
             .ThenInclude(a => a.WatchMode)
