@@ -120,7 +120,7 @@
       "regexPattern": "Regex Pattern",
       "regexPatternPlaceholder": "[^.]*Word[^.]*\\.?",
       "notifyOnDisappearance": "Notify on regex match disappearance",
-      "watchModeRegexInvalid": "Regex must have between 1 or 512 characters. It should not start with / (backslash) and not end it with /gmi or any variation of other regex flags."
+      "watchModeRegexInvalid": "Regex must have between 1 or 512 characters. It should not start nor end with / (backslash) and not end it with 'gmi' or any variation of other regex flags."
     },
     "list": {
       "site": "Site",
