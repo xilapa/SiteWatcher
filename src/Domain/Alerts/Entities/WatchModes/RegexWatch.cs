@@ -29,7 +29,7 @@ public class RegexWatch : WatchMode
         if (updateAlertInput.NotifyOnDisappearance == null && updateAlertInput.RegexPattern == null)
             return;
 
-        if (updateAlertInput.NotifyOnDisappearance != null)
+        if (updateAlertInput.NotifyOnDisappearance?.NewValue  != null)
             NotifyOnDisappearance = updateAlertInput.NotifyOnDisappearance.NewValue;
 
         if (updateAlertInput.RegexPattern?.NewValue != null)
