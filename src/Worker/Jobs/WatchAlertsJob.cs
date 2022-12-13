@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Text.Json;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -49,6 +48,8 @@ public sealed class WatchAlertsJob : IJob
         await _context.SaveChangesAsync(CancellationToken.None);
 
         await transaction.CommitAsync(CancellationToken.None);
+
+        _httpClient.Dispose();
 
         _logger.LogInformation("{Date} - Watch Alerts Finished: {Frequencies}", DateTime.UtcNow, frequencies);
     }
