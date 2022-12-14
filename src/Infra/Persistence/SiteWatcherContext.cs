@@ -14,7 +14,6 @@ using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra.Extensions;
-using SiteWatcher.Infra.Persistence.CompiledModels;
 
 namespace SiteWatcher.Infra;
 
@@ -34,7 +33,7 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder
-            .UseModel(SiteWatcherContextModel.Instance)
+            // .UseModel(SiteWatcherContextModel.Instance)
             .UseNpgsql(
                 _appSettings.ConnectionString,
                 opts => opts.MigrationsHistoryTable("EfMigrations", "sw"));
