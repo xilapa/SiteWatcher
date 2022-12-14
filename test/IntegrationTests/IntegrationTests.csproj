@@ -13,18 +13,18 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.11" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.11" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-        <PackageReference Include="Moq" Version="4.18.2" />
+        <PackageReference Include="Moq" Version="4.18.3" />
         <PackageReference Include="ReflectionMagic" Version="4.1.0" />
-        <PackageReference Include="Roslynator.Analyzers" Version="4.1.2">
+        <PackageReference Include="Roslynator.Analyzers" Version="4.2.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.1.2">
+        <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.2.0">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
-        <PackageReference Include="Testcontainers" Version="2.2.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1" />
+        <PackageReference Include="Testcontainers" Version="2.3.0" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

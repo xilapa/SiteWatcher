@@ -79,7 +79,7 @@ public static class SetupHealthChecks
             );
             opts.SetEvaluationTimeInSeconds(15 * 60);
         })
-        .AddPostgreSqlStorage(workerSettings.DbConnectionString);
+        .AddInMemoryStorage();
 
         return services;
     }
