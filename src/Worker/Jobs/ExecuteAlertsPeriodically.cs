@@ -1,9 +1,10 @@
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Quartz;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Infra;
@@ -11,33 +12,44 @@ using SiteWatcher.Worker.Messaging;
 
 namespace SiteWatcher.Worker.Jobs;
 
-public sealed class WatchAlertsJob : IJob
+public sealed class ExecuteAlertsPeriodically : BackgroundService
 {
-    private readonly ILogger<WatchAlertsJob> _logger;
+    private readonly ILogger<ExecuteAlertsPeriodically> _logger;
     private readonly SiteWatcherContext _context;
     private readonly ICapPublisher _capPublisher;
     private readonly ExecuteAlertsCommandHandler _handler;
+    private readonly PeriodicTimer _timer;
 
-    public static string Name => nameof(WatchAlertsJob);
-
-    public WatchAlertsJob(ILogger<WatchAlertsJob> logger, SiteWatcherContext context, ICapPublisher capPublisher,
-        ExecuteAlertsCommandHandler handler)
+    public ExecuteAlertsPeriodically(ILogger<ExecuteAlertsPeriodically> logger, SiteWatcherContext context, ICapPublisher capPublisher,
+        ExecuteAlertsCommandHandler handler, IAppSettings settings)
     {
         _logger = logger;
         _context = context;
         _capPublisher = capPublisher;
         _handler = handler;
+
+        _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromHours(2));
     }
 
-    public async Task Execute(IJobExecutionContext context)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
+         Task.Run(async () =>
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await ExecuteAlerts(stoppingToken);
+                await _timer.WaitForNextTickAsync(stoppingToken);
+            }
+        }, stoppingToken);
+
+    private async Task ExecuteAlerts(CancellationToken ct)
     {
-        var frequencies = Enum.GetValues<Frequencies>();
+        var frequencies = GetAlertFrequenciesForCurrentHour();
 
         _logger.LogInformation("{Date} - Watch Alerts Started: {Frequencies}", DateTime.UtcNow, frequencies);
 
         using var transaction = _context.Database.BeginTransaction(_capPublisher, autoCommit: false);
 
-        var notifications = await _handler.Handle(new ExecuteAlertsCommand(frequencies), context.CancellationToken);
+        var notifications = await _handler.Handle(new ExecuteAlertsCommand(frequencies), ct);
 
         foreach (var n in (notifications as ValueResult<List<NotificationToSend>>)!.Value)
         {
@@ -48,7 +60,7 @@ public sealed class WatchAlertsJob : IJob
                 [MessageHeaders.MessageIdKey] = n.EmailNotification!.EmailId.ToString()!
             };
             var emailNotifMessage = new EmailNotificationMessage(n.EmailNotification!);
-            await _capPublisher.PublishAsync(RoutingKeys.EmailNotification, emailNotifMessage, headers!, context.CancellationToken);
+            await _capPublisher.PublishAsync(RoutingKeys.EmailNotification, emailNotifMessage, headers!, ct);
         }
 
         await _context.SaveChangesAsync(CancellationToken.None);
@@ -58,7 +70,7 @@ public sealed class WatchAlertsJob : IJob
         _logger.LogInformation("{Date} - Watch Alerts Finished: {Frequencies}", DateTime.UtcNow, frequencies);
     }
 
-    private static IEnumerable<Frequencies> GetAlertFrequenciesToWatch()
+    private static IEnumerable<Frequencies> GetAlertFrequenciesForCurrentHour()
     {
         var alertFrequenciesToWatch = new List<Frequencies>();
 

@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Quartz;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -30,29 +29,7 @@ public static class JobConfigurator
         if (!settings.EnableJobs)
             return serviceCollection;
 
-        var fireWatchAlertsCron = env.IsDevelopment()
-            ? "0 * * * * ?" // every minute
-            : "0 0 */2 * * ?"; // every two hours
-
-        serviceCollection
-            .AddQuartz(opts =>
-                 {
-                     opts.UseMicrosoftDependencyInjectionJobFactory();
-
-                     opts.AddJob<WatchAlertsJob>(opt => opt.WithIdentity(WatchAlertsJob.Name));
-
-                     // Fire the job every two hours
-                     opts.AddTrigger(opt => opt
-                     .ForJob(WatchAlertsJob.Name)
-                     .WithCronSchedule(fireWatchAlertsCron));
-
-                     // Run on worker startup
-                     opts.AddTrigger(opt => opt
-                      .ForJob(WatchAlertsJob.Name)
-                      .StartNow());
-                 })
-            // Wait to jobs to end gracefully on shutdown request
-            .AddQuartzHostedService(opts => opts.WaitForJobsToComplete = true);
+        serviceCollection.AddHostedService<ExecuteAlertsPeriodically>();
 
         return serviceCollection;
     }
