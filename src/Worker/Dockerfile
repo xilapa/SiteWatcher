@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 LABEL version="0.0.1" mantainer="xilapa"
 WORKDIR /app
 
@@ -8,12 +8,15 @@ COPY src/Application ./src/Application
 COPY src/Domain ./src/Domain
 COPY src/Infra ./src/Infra/
 
+#https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/#pgo
+ENV DOTNET_ReadyToRun=0
+
 # Build and publish a release
 RUN dotnet restore "src/Worker/Worker.csproj"
 RUN dotnet publish "src/Worker/Worker.csproj" -c Release -o out --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 

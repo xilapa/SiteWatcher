@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 LABEL version="0.0.1" mantainer="xilapa"
 WORKDIR /app
 
@@ -12,13 +12,16 @@ COPY src/WebAPI ./src/WebAPI/
 #COPY test/IntegrationTests ./test/IntegrationTests
 #COPY *.sln .
 
+#https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/#pgo
+ENV DOTNET_ReadyToRun=0
+
 RUN dotnet restore "src/WebAPI/WebAPI.csproj"
 
 # Build and publish a release
 RUN dotnet publish "src/WebAPI/WebAPI.csproj" -c Release -o out --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
