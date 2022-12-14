@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Entities.Notifications;
-using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Alerts.ValueObjects;
@@ -20,14 +20,14 @@ public class Alert : BaseModel<AlertId>
     protected Alert()
     { }
 
-    public Alert(UserId userId, string name, Frequencies frequency, DateTime currentDate, Site site, WatchMode watchMode)
+    public Alert(UserId userId, string name, Frequencies frequency, DateTime currentDate, Site site, Rule rule)
         : base(new AlertId(), currentDate)
     {
         UserId = userId;
         Name = name;
         Frequency = frequency;
         Site = site;
-        WatchMode = watchMode;
+        Rule = rule;
         GenerateSearchField();
         AddDomainEvent(new AlertsChangedEvent(UserId));
     }
@@ -38,7 +38,7 @@ public class Alert : BaseModel<AlertId>
     public Frequencies Frequency { get; private set; }
     public DateTime? LastVerification { get; private set; }
     public Site Site { get; private set; } = null!;
-    public WatchMode WatchMode { get; private set; } = null!;
+    public Rule Rule { get; private set; } = null!;
 
     private List<Notification>? _notifications;
     public IReadOnlyCollection<Notification> Notifications => _notifications ?? new List<Notification>();
@@ -77,9 +77,9 @@ public class Alert : BaseModel<AlertId>
         }
 
         // TODO: remove these verifications after tests
-        if (updateInput.WatchMode is not null || updateInput.Term is not null
+        if (updateInput.Rule is not null || updateInput.Term is not null
             || updateInput.RegexPattern is not null || updateInput.NotifyOnDisappearance is not null)
-            UpdateWatchMode(updateInput, updateDate);
+            UpdateRule(updateInput, updateDate);
 
         if (regenerateSearchField) GenerateSearchField();
 
@@ -102,27 +102,27 @@ public class Alert : BaseModel<AlertId>
         Site = new Site(newSiteUri!, newSiteName!);
     }
 
-    private void UpdateWatchMode(UpdateAlertInput updateInput, DateTime updateDate)
+    private void UpdateRule(UpdateAlertInput updateInput, DateTime updateDate)
     {
-        var currentWatchMode = GetWatchModeEnumByType(WatchMode);
+        var currentRule = GetRuleEnumByType(Rule);
 
-        // If the current watch mode is really new, then recreate it
-        if (updateInput.WatchMode is not null && !currentWatchMode!.Value.Equals(updateInput.WatchMode.NewValue))
+        // If the current rule is really new, then recreate it
+        if (updateInput.Rule is not null && !currentRule!.Value.Equals(updateInput.Rule.NewValue))
         {
-            // Create the event before the WatchMode's Id is set to zero
-            AddDomainEvent(new AlertWatchModeChangedEvent(WatchMode.Id));
-            WatchMode = AlertFactory.CreateWatchMode(updateInput, updateDate);
+            // Create the event before the rule's Id is set to zero
+            AddDomainEvent(new AlertRuleChangedEvent(Rule.Id));
+            Rule = AlertFactory.CreateRule(updateInput, updateDate);
             return;
         }
 
-        // Update term watchMode
+        // Update term rule
         // TODO: move this null check to the TermWatch update method
-        if (currentWatchMode.Equals(WatchModes.Term) && updateInput.Term is not null)
-            (WatchMode as TermWatch)!.Update(updateInput);
+        if (currentRule.Equals(Rules.Term) && updateInput.Term is not null)
+            (Rule as TermRule)!.Update(updateInput);
 
-        // Update regex watchMode
-        if (currentWatchMode.Equals(WatchModes.Regex))
-            (WatchMode as RegexWatch)!.Update(updateInput);
+        // Update regex rule
+        if (currentRule.Equals(Rules.Regex))
+            (Rule as RegexRule)!.Update(updateInput);
 
         // any changes doesn't have field to update, so just ignore it
     }
@@ -165,9 +165,9 @@ public class Alert : BaseModel<AlertId>
         SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
     }
 
-    public async Task<AlertToNotify?> VerifySiteHtml(Stream html, DateTime currentTime)
+    public async Task<AlertToNotify?> ExecuteRule(Stream html, DateTime currentTime)
     {
-        var notifyUser = await WatchMode.VerifySite(html);
+        var notifyUser = await Rule.Execute(html);
         LastVerification = currentTime;
 
         AlertToNotify? alertToNotify = null;

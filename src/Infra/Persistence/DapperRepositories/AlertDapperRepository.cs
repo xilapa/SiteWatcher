@@ -91,7 +91,7 @@ public sealed class AlertDetailsDto
 {
     public int Id { get; set; }
     public string SiteUri { get; set; } = null!;
-    public int WatchModeId { get; set; }
+    public int RuleId { get; set; }
     public string? Term { get; set; }
     public string? RegexPattern { get; set; }
     public bool? NotifyOnDisappearance { get; set; }
@@ -102,7 +102,7 @@ public sealed class AlertDetailsDto
         Id = idHasher.HashId(Id),
         SiteUri = SiteUri,
         // TODO: remove this Id
-        WatchModeId = idHasher.HashId(WatchModeId),
+        RuleId = idHasher.HashId(RuleId),
         Term = Term,
         RegexPattern = RegexPattern,
         NotifyOnDisappearance = NotifyOnDisappearance
@@ -119,7 +119,7 @@ public sealed class SimpleAlertViewDto
     // TODO: Count notifications sent
     public int NotificationsSent { get; set; }
     public string? SiteName { get; set; }
-    public char WatchMode { get; set; }
+    public char Rule { get; set; }
 
     public SimpleAlertView ToSimpleAlertView(IIdHasher idHasher) =>
     new ()
@@ -131,7 +131,7 @@ public sealed class SimpleAlertViewDto
         LastVerification = LastVerification,
         NotificationsSent = 0,
         SiteName = SiteName,
-        WatchMode = Utils.GetWatchModeEnumByTableDiscriminator(WatchMode)!.Value
+        Rule = Utils.GetRuleEnumByTableDiscriminator(Rule)!.Value
     };
 }
 #endregion

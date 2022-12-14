@@ -14,8 +14,8 @@ public sealed class AlertToNotify
         SiteUri = alert.Site.Uri.ToString();
         SiteName = alert.Site.Name;
         FrequencyString = LocalizedMessages.FrequencyString(userLanguage, alert.Frequency);
-        var watchMode = GetWatchModeEnumByType(alert.WatchMode);
-        WatchModeString = LocalizedMessages.WatchModeString(userLanguage, watchMode!.Value);
+        var rule = GetRuleEnumByType(alert.Rule);
+        RuleString = LocalizedMessages.RuleString(userLanguage, rule!.Value);
         NotificationId = notificationId;
     }
 
@@ -23,6 +23,6 @@ public sealed class AlertToNotify
     public string SiteUri { get; }
     public string SiteName { get; }
     public string FrequencyString { get; }
-    public string WatchModeString { get; }
+    public string RuleString { get; }
     public NotificationId NotificationId { get; }
 }

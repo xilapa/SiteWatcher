@@ -29,16 +29,16 @@ public sealed class SearchAlertsTestsBase : BaseTestFixture
 
         #region Xilapa alerts
 
-        XilapaWhiteShirt = await AppFactory.CreateAlert<SimpleAlertView>("white shirt", WatchModes.AnyChanges,
+        XilapaWhiteShirt = await AppFactory.CreateAlert<SimpleAlertView>("white shirt", Rules.AnyChanges,
             Users.Xilapa.Id, new DateTime(2020,09,15,18, 32,43,DateTimeKind.Utc),
             "cloth store", "http://clothstore.com");
-        XilapaBlueShirt = await AppFactory.CreateAlert<SimpleAlertView>("blue shirt", WatchModes.AnyChanges,
+        XilapaBlueShirt = await AppFactory.CreateAlert<SimpleAlertView>("blue shirt", Rules.AnyChanges,
             Users.Xilapa.Id, new DateTime(2021,10,15,18, 31,55,DateTimeKind.Utc),
             "cloth store", "http://clothstore.com");
-        XilapaSmartphone = await AppFactory.CreateAlert<SimpleAlertView>("smartphone", WatchModes.AnyChanges,
+        XilapaSmartphone = await AppFactory.CreateAlert<SimpleAlertView>("smartphone", Rules.AnyChanges,
             Users.Xilapa.Id, new DateTime(2021,10,15,18, 31,55,DateTimeKind.Utc),
             "eletroshop", "http://eletroshop.com");
-        XilapaBlueMousepad = await AppFactory.CreateAlert<SimpleAlertView>("blue mousepad", WatchModes.AnyChanges,
+        XilapaBlueMousepad = await AppFactory.CreateAlert<SimpleAlertView>("blue mousepad", Rules.AnyChanges,
             Users.Xilapa.Id, new DateTime(2021,10,16,18, 31,55,DateTimeKind.Utc),
             "cheap things", "http://cheapthings.com");
 
@@ -46,13 +46,13 @@ public sealed class SearchAlertsTestsBase : BaseTestFixture
 
         #region Xulipa alerts
 
-        XulipaWhiteCap = await AppFactory.CreateAlert<SimpleAlertView>("white cap", WatchModes.AnyChanges,
+        XulipaWhiteCap = await AppFactory.CreateAlert<SimpleAlertView>("white cap", Rules.AnyChanges,
             Users.Xulipa.Id, new DateTime(2020,09,15,19, 32,43,DateTimeKind.Utc),
             "cloth store", "http://clothstore.com");
-        XulipaBlueShorts = await AppFactory.CreateAlert<SimpleAlertView>("blue shorts", WatchModes.AnyChanges,
+        XulipaBlueShorts = await AppFactory.CreateAlert<SimpleAlertView>("blue shorts", Rules.AnyChanges,
             Users.Xulipa.Id, new DateTime(2021,10,17,18, 31,55,DateTimeKind.Utc),
             "the bazar", "http://thebazar.com");
-        XulipaAletorio = await AppFactory.CreateAlert<SimpleAlertView>("carroça do vigário", WatchModes.AnyChanges,
+        XulipaAletorio = await AppFactory.CreateAlert<SimpleAlertView>("carroça do vigário", Rules.AnyChanges,
             Users.Xulipa.Id, new DateTime(2021,10,18,18, 31,55,DateTimeKind.Utc),
             "site aleatório", "http://umlinkdiferente.com");
 

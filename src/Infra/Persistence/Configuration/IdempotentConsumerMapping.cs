@@ -8,7 +8,7 @@ public class IdempotentConsumerMapping : IEntityTypeConfiguration<IdempotentCons
 {
     public void Configure(EntityTypeBuilder<IdempotentConsumer> builder)
     {
-        builder.ToTable("IdempotentConsumers", schema: "worker");
+        builder.ToTable("IdempotentConsumers", schema: SiteWatcherContext.Schema);
 
         builder.HasKey(i => new { i.MessageId, i.Consumer });
 

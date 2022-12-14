@@ -30,7 +30,7 @@ public class AutoMapperVsManualMapping
                 LastVerification = DateTime.Now.AddDays(-index),
                 NotificationsSent = 12,
                 SiteName = $"Site name {index}",
-                WatchMode = index % 2 == 0 ? 'A' : 'T'
+                Rule = index % 2 == 0 ? 'A' : 'T'
             });
         }
 
@@ -48,8 +48,8 @@ public class AutoMapperVsManualMapping
         {
             cfg.CreateMap(typeof(PaginatedList<>), typeof(PaginatedList<>));
             cfg.CreateMap<SimpleAlertViewDto, SimpleAlertView>()
-                .ForMember(opt => opt.WatchMode, opt =>
-                    opt.MapFrom(src => Utils.GetWatchModeEnumByTableDiscriminator(src.WatchMode)))
+                .ForMember(opt => opt.Rule, opt =>
+                    opt.MapFrom(src => Utils.GetRuleEnumByTableDiscriminator(src.Rule)))
                 .AfterMap<HashIdMapping>();
         });
 

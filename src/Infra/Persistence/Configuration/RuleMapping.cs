@@ -1,25 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
-public class WatchModeMapping : BaseModelMapping<WatchMode, WatchModeId>
+public class RuleMapping : BaseModelMapping<Rule, RuleId>
 {
-    public override void Configure(EntityTypeBuilder<WatchMode> builder)
+    public override void Configure(EntityTypeBuilder<Rule> builder)
     {
         base.Configure(builder);
 
-        builder.ToTable("WatchModes");
+        builder.ToTable("Rules");
 
         builder.Property<AlertId>(nameof(AlertId));
 
         builder.HasIndex(nameof(AlertId));
 
         builder.Property(a => a.Id)
-            .HasConversion<WatchModeId.EfCoreValueConverter>()
-            .HasValueGeneratorFactory<WatchModeIdValueGeneratorFactory>()
+            .HasConversion<RuleId.EfCoreValueConverter>()
+            .HasValueGeneratorFactory<RuleIdValueGeneratorFactory>()
             .HasColumnType("integer")
             .ValueGeneratedOnAdd()
             .UseIdentityColumn();
@@ -28,29 +28,29 @@ public class WatchModeMapping : BaseModelMapping<WatchMode, WatchModeId>
             .HasColumnType("boolean")
             .IsRequired();
 
-        builder.HasDiscriminator<char>(nameof(WatchMode))
-            .HasValue<AnyChangesWatch>('A')
-            .HasValue<TermWatch>('T')
-            .HasValue<RegexWatch>('R');
+        builder.HasDiscriminator<char>(nameof(Rule))
+            .HasValue<AnyChangesRule>('A')
+            .HasValue<TermRule>('T')
+            .HasValue<RegexRule>('R');
 
-        builder.Property(nameof(WatchMode))
+        builder.Property(nameof(Rule))
             .HasColumnType("char")
             .IsRequired();
     }
 }
 
-public class AnyChangesWatchMapping : IEntityTypeConfiguration<AnyChangesWatch>
+public class AnyChangesRuleMapping : IEntityTypeConfiguration<AnyChangesRule>
 {
-    public void Configure(EntityTypeBuilder<AnyChangesWatch> builder)
+    public void Configure(EntityTypeBuilder<AnyChangesRule> builder)
     {
         builder.Property(a => a.HtmlHash)
             .HasColumnType("varchar(64)");
     }
 }
 
-public class TermWatchMapping : IEntityTypeConfiguration<TermWatch>
+public class TermRuleMapping : IEntityTypeConfiguration<TermRule>
 {
-    public void Configure(EntityTypeBuilder<TermWatch> builder)
+    public void Configure(EntityTypeBuilder<TermRule> builder)
     {
         builder.Property(t => t.Term)
             .HasColumnType("varchar(64)");
@@ -65,14 +65,14 @@ public class TermWatchMapping : IEntityTypeConfiguration<TermWatch>
             });
 
         builder.Metadata
-            .FindNavigation(nameof(TermWatch.Occurrences))!
+            .FindNavigation(nameof(TermRule.Occurrences))!
             .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }
 
-public sealed class RegexWatchMapping : IEntityTypeConfiguration<RegexWatch>
+public sealed class RegexRuleMapping : IEntityTypeConfiguration<RegexRule>
 {
-    public void Configure(EntityTypeBuilder<RegexWatch> builder)
+    public void Configure(EntityTypeBuilder<RegexRule> builder)
     {
         builder.Property(r => r.NotifyOnDisappearance)
             .HasColumnType("boolean")
@@ -83,8 +83,8 @@ public sealed class RegexWatchMapping : IEntityTypeConfiguration<RegexWatch>
             .IsRequired();
 
         builder.Property<Matches>("_matches")
-            .HasConversion<RegexWatchMatchesValueConverter>()
+            .HasConversion<RegexRuleMatchesValueConverter>()
             .HasColumnType("text")
-            .HasColumnName(nameof(RegexWatch.Matches));
+            .HasColumnName(nameof(RegexRule.Matches));
     }
 }

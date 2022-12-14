@@ -96,7 +96,7 @@
       "twelveHours": "Cada doce horas",
       "twentyFourHours": "Cada veinticuatro horas"
     },
-    "watchMode": {
+    "rule": {
       "anyChanges": "Algún cambio",
       "term": "Término",
       "regex": "Regex"
@@ -113,15 +113,15 @@
       "siteUri": "Sitio URL",
       "siteUriPlaceHolder": "Escriba la URL del sitio que comienza con http...",
       "invalidSiteUri": "La URL del sitio no es válida",
-      "watchMode": "Tipo de monitoreo",
+      "rule": "Regla de seguimiento",
       "term": "Plazo a monitorear",
       "termPlaceholder": "Escriba un término para disparar la alerta",
       "save": "Guardar",
       "regexPattern": "Patrón de regex",
       "regexPatternPlaceholder": "[^.]*Palabra[^.]*\\.?",
       "notifyOnDisappearance": "Notificar sobre la desaparición de coincidencias de regex",
-      "watchModeRegexInvalid": "Regex debe tener entre 1 o 512 caracteres. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares.",
-      "watchModeRegexExplanation": "Las expresiones regulares en SiteWatcher son globales, multilínea y no distinguen entre mayúsculas y minúsculas. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares."
+      "regexInvalid": "Regex debe tener entre 1 o 512 caracteres. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares.",
+      "regexExplanation": "Las expresiones regulares en SiteWatcher son globales, multilínea y no distinguen entre mayúsculas y minúsculas. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares."
     },
     "list": {
       "site": "Sitio",
@@ -132,7 +132,7 @@
       "notificationsSent": "Notificaciones enviadas",
       "notificationsSentMobile": "Notificaciones",
       "frequencyMobile": "Frecuencia",
-      "watchModeMobile": "Tipo",
+      "ruleMobile": "Regla",
       "notifyOnDisappearance": "Notificar sobre la desaparición",
       "lastVerification": "Última verificación",
       "sent": "enviada(s)"

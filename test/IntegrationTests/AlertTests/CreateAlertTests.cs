@@ -33,7 +33,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)),
                 ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.SiteName)),
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)),
-                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode))
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule))
             }
         };
 
@@ -45,7 +45,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                WatchMode = WatchModes.AnyChanges
+                Rule = Rules.AnyChanges
             },
             HttpStatusCode.Created,
             new DetailedAlertView
@@ -54,9 +54,9 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                     Name = "Test Alert1",
                     Frequency = Frequencies.TwentyFourHours,
                     Site = new SiteView("store site","https://store.site.io/"),
-                    WatchMode = new DetailedWatchModeView
+                    Rule = new DetailedRuleView
                     {
-                        WatchMode = WatchModes.AnyChanges
+                        Rule = Rules.AnyChanges
                     }
                 },
             null! // errors
@@ -70,7 +70,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                WatchMode = WatchModes.Term,
+                Rule = Rules.Term,
                 Term = "lookup term"
             },
             HttpStatusCode.Created,
@@ -80,9 +80,9 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                     Name = "Test Alert2",
                     Frequency = Frequencies.TwentyFourHours,
                     Site = new SiteView("store site", "https://store.site.io/"),
-                    WatchMode = new DetailedWatchModeView
+                    Rule = new DetailedRuleView
                     {
-                        WatchMode = WatchModes.Term,
+                        Rule = Rules.Term,
                         Term = "lookup term"
                     }
                 },
@@ -115,7 +115,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
             (await AppFactory.WithDbContext(ctx =>
             {
                 return ctx.Alerts
-                    .Include(a => a.WatchMode)
+                    .Include(a => a.Rule)
                     .FirstOrDefaultAsync(a => a.Name == command.Name);
             })).Should().BeNull();
 
@@ -132,7 +132,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
         var alertFromDatabase = await AppFactory.WithDbContext(ctx =>
         {
             return ctx.Alerts
-                .Include(a => a.WatchMode)
+                .Include(a => a.Rule)
                 .FirstOrDefaultAsync(a => a.Name == command.Name);
         });
 

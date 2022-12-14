@@ -17,7 +17,7 @@ public sealed class CreateAlertCommandValidatorTests
                 Frequency = default,
                 SiteName = "ab",
                 SiteUri = "invalid-uri",
-                WatchMode = default
+                Rule = default
             },
             new[]
             {
@@ -25,7 +25,7 @@ public sealed class CreateAlertCommandValidatorTests
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)),
                 ApplicationErrors.ValueBellowMinimumLength(nameof(CreateAlertCommand.SiteName)),
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)),
-                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode))
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule))
             }
         };
 
@@ -37,7 +37,7 @@ public sealed class CreateAlertCommandValidatorTests
                 Frequency = (Frequencies) 989,
                 SiteName = "abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1",
                 SiteUri = "https://valid-uri.io",
-                WatchMode = WatchModes.Term,
+                Rule = Rules.Term,
                 Term = "ab"
             },
             new[]
@@ -57,7 +57,7 @@ public sealed class CreateAlertCommandValidatorTests
                 Frequency = Frequencies.EightHours,
                 SiteName = "abcd",
                 SiteUri = "https://valid-uri.io",
-                WatchMode = WatchModes.Term,
+                Rule = Rules.Term,
                 Term = "abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1"
             },
             new[]
@@ -74,12 +74,12 @@ public sealed class CreateAlertCommandValidatorTests
                 Frequency = Frequencies.EightHours,
                 SiteName = "abcd",
                 SiteUri = "https://valid-uri.io",
-                WatchMode = (WatchModes) 989,
+                Rule = (Rules) 989,
                 Term = "abcd"
             },
             new[]
             {
-                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode))
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule))
             }
         };
     }

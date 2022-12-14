@@ -21,7 +21,7 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
 {
     private readonly IAppSettings _appSettings;
     private readonly IMediator? _mediator;
-    public const string Schema = "siteWatcher_webApi";
+    public const string Schema = "sw";
 
     public SiteWatcherContext(IAppSettings appSettings, IMediator? mediator)
     {

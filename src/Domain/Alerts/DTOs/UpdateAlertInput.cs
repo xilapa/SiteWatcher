@@ -7,7 +7,7 @@ namespace SiteWatcher.Domain.Alerts.DTOs;
 public sealed class UpdateAlertInput
 {
     public UpdateAlertInput(AlertId alertId, UpdateInfo<string>? name, UpdateInfo<Frequencies>? frequency,
-        UpdateInfo<string>? siteName, UpdateInfo<string>? siteUri, UpdateInfo<WatchModes>? watchMode,
+        UpdateInfo<string>? siteName, UpdateInfo<string>? siteUri, UpdateInfo<Rules>? rule,
         UpdateInfo<string>? term, UpdateInfo<bool>? notifyOnDisappearance, UpdateInfo<string>? regexPattern
     )
     {
@@ -16,7 +16,7 @@ public sealed class UpdateAlertInput
         Frequency = frequency;
         SiteName = siteName;
         SiteUri = siteUri;
-        WatchMode = watchMode;
+        Rule = rule;
         Term = term;
         NotifyOnDisappearance = notifyOnDisappearance;
         RegexPattern = regexPattern;
@@ -27,7 +27,7 @@ public sealed class UpdateAlertInput
     public UpdateInfo<Frequencies>? Frequency { get; set; }
     public UpdateInfo<string>? SiteName { get; set; }
     public UpdateInfo<string>? SiteUri { get; set; }
-    public UpdateInfo<WatchModes>? WatchMode { get; set; }
+    public UpdateInfo<Rules>? Rule { get; set; }
     public UpdateInfo<string>? Term { get; set; }
     public UpdateInfo<bool>? NotifyOnDisappearance { get; set; }
     public UpdateInfo<string>? RegexPattern { get; set; }

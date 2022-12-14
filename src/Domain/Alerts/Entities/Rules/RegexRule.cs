@@ -2,17 +2,17 @@ using System.Text.RegularExpressions;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Common;
 
-namespace SiteWatcher.Domain.Alerts.Entities.WatchModes;
+namespace SiteWatcher.Domain.Alerts.Entities.Rules;
 
-public class RegexWatch : WatchMode
+public class RegexRule : Rule
 {
-    protected RegexWatch()
+    protected RegexRule()
     {
         RegexPattern = string.Empty;
         _matches = new Matches();
     }
 
-    public RegexWatch(string regexPattern, bool notifyOnDisappearance, DateTime currentDate) : base(currentDate)
+    public RegexRule(string regexPattern, bool notifyOnDisappearance, DateTime currentDate) : base(currentDate)
     {
         RegexPattern = regexPattern;
         NotifyOnDisappearance = notifyOnDisappearance;
@@ -36,7 +36,7 @@ public class RegexWatch : WatchMode
             RegexPattern = updateAlertInput.RegexPattern.NewValue;
     }
 
-    public override async Task<bool> VerifySite(Stream html)
+    public override async Task<bool> Execute(Stream html)
     {
         var htmlExtractedText = await HtmlUtils.ExtractText(html);
         await html.DisposeAsync();

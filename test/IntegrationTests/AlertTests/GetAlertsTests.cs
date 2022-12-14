@@ -34,17 +34,17 @@ public sealed class GetAlertsTestsBase : BaseTestFixture
         AppFactory.CurrentTime = StartingTime;
         for (var i = 0; i < 60; i++)
         {
-            var watchMode = i > 9 ? WatchModes.Term : WatchModes.AnyChanges;
+            var rule = i > 9 ? Rules.Term : Rules.AnyChanges;
             AppFactory.CurrentTime = AppFactory.CurrentTime.AddMinutes(5);
 
             // xilapa'll have odd alert ids
             var alertXilapa = await AppFactory
-                .CreateAlert<SimpleAlertView>($"alert{(2 * (i + 1)) - 1}", watchMode, Users.Xilapa.Id);
+                .CreateAlert<SimpleAlertView>($"alert{(2 * (i + 1)) - 1}", rule, Users.Xilapa.Id);
             XilapaAlerts[i] = alertXilapa;
 
             // xulipa'll have even alert ids
             var alertXulipa = await AppFactory
-                .CreateAlert<SimpleAlertView>($"alert{2 * (i + 1)}", watchMode, Users.Xulipa.Id);
+                .CreateAlert<SimpleAlertView>($"alert{2 * (i + 1)}", rule, Users.Xulipa.Id);
             XulipaAlerts[i] = alertXulipa;
         }
     }
@@ -242,7 +242,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
         var alertToMap = await AppFactory.WithDbContext(ctx =>
             ctx.Alerts
-                .Include(a => a.WatchMode)
+                .Include(a => a.Rule)
                 .FirstAsync(a => a.Id == new AlertId(alertId)));
 
         var expected = await AppFactory.WithServiceProvider(provider =>

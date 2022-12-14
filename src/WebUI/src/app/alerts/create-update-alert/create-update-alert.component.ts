@@ -5,14 +5,14 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
 import { MessageService } from "primeng/api";
 import { finalize, Subscription } from "rxjs";
-import { watchModeRegexValidator } from "src/app/common/validators/watch-mode-regex.validator";
+import { regexRuleValidator } from "src/app/common/validators/watch-mode-regex.validator";
 import { uriValidator } from "../../common/validators/uri.validator";
-import { watchModeTermValidator } from "../../common/validators/watch-mode-term.validator";
+import { termRuleValidator } from "../../common/validators/watch-mode-term.validator";
 import { DropdownOption } from "../../core/interfaces/dropdown-option";
 import { utils } from "../../core/utils/utils";
 import { AlertUtils, CreateUpdateAlertModel, DetailedAlertView } from "../common/alert";
 import { EAlertFrequency } from "../common/e-alert-frequency";
-import { EWatchMode } from '../common/e-watch-mode';
+import { Rules } from '../common/e-watch-mode';
 import { AlertService } from "../service/alert.service";
 
 @Component({
@@ -26,19 +26,19 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
     inputFormName: AbstractControl | null;
     inputFormSiteName: AbstractControl | null;
     inputFormSiteUri: AbstractControl | null;
-    inputFormWatchModeTerm: AbstractControl | null;
-    inputFormWatchModeRegexPattern: AbstractControl | null;
-    inputFormWatchModeNotifyOnDisappearance: AbstractControl | null;
+    inputFormTermRule: AbstractControl | null;
+    inputFormRegexRulePattern: AbstractControl | null;
+    inputFormRegexRuleNotifyOnDisappearance: AbstractControl | null;
     frequencyOptions: DropdownOption<number>[];
-    watchModeOptions: DropdownOption<number>[];
+    ruleOptions: DropdownOption<number>[];
     notifyOnDisappearanceOptions: DropdownOption<boolean>[];
-    termWatchModeSelected = false;
-    regexWatchModeSelected = false;
+    termRuleSelected = false;
+    regexRuleSelected = false;
     pageTitleTranslationKey: string;
     doingRequest: boolean;
     dataChanged = false;
     private activePage: string;
-    private watchModeSub: Subscription | undefined;
+    private ruleSub: Subscription | undefined;
     private createUpdateAlertFormSub: Subscription;
 
     // update
@@ -61,7 +61,7 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
     }
 
     ngOnDestroy(): void {
-        this.watchModeSub?.unsubscribe();
+        this.ruleSub?.unsubscribe();
         this.createUpdateAlertFormSub?.unsubscribe();
     }
 
@@ -80,11 +80,11 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
             this.alertInitialValues = this.alertService.getLoadedAlert(alertId);
             if (!this.alertInitialValues) this.router.navigateByUrl('/dash');
 
-            if (this.alertInitialValues?.WatchMode.WatchMode == EWatchMode.Term)
-                this.termWatchModeSelected = true;
+            if (this.alertInitialValues?.Rule.Rule == Rules.Term)
+                this.termRuleSelected = true;
 
-            if (this.alertInitialValues?.WatchMode.WatchMode == EWatchMode.Regex)
-                this.regexWatchModeSelected = true;
+            if (this.alertInitialValues?.Rule.Rule == Rules.Regex)
+                this.regexRuleSelected = true;
         }
 
         if (this.activePage == 'create') {
@@ -92,7 +92,7 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
                 Name: '',
                 Frequency: EAlertFrequency.TwoHours,
                 Site: { Name: '', Uri: '' },
-                WatchMode: { WatchMode: EWatchMode.AnyChanges }
+                Rule: { Rule: Rules.AnyChanges, NotifyOnDisappearance: true }
             }
         }
 
@@ -104,30 +104,30 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
                 frequency: [this.alertCurrentValues?.Frequency ?? EAlertFrequency.TwoHours, [Validators.required]],
                 siteName: [this.alertCurrentValues?.Site.Name, [Validators.required, Validators.minLength(3), Validators.maxLength(64)]],
                 siteUri: [this.alertCurrentValues?.Site.Uri, [Validators.required, uriValidator]],
-                watchMode: [this.alertCurrentValues?.WatchMode.WatchMode ?? EWatchMode.AnyChanges, [Validators.required]],
-                term: [this.alertCurrentValues?.WatchMode.Term, watchModeTermValidator],
-                regexPattern: [this.alertCurrentValues?.WatchMode.RegexPattern, watchModeRegexValidator],
-                notifyOnDisappearance: [this.alertCurrentValues?.WatchMode.NotifyOnDisappearance ?? true]
+                rule: [this.alertCurrentValues?.Rule.Rule ?? Rules.AnyChanges, [Validators.required]],
+                term: [this.alertCurrentValues?.Rule.Term, termRuleValidator],
+                regexPattern: [this.alertCurrentValues?.Rule.RegexPattern, regexRuleValidator],
+                notifyOnDisappearance: [this.alertCurrentValues?.Rule.NotifyOnDisappearance ?? true]
             }
         );
 
         this.inputFormName = this.createUpdateAlertForm.get('name');
         this.inputFormSiteName = this.createUpdateAlertForm.get('siteName');
         this.inputFormSiteUri = this.createUpdateAlertForm.get('siteUri');
-        this.inputFormWatchModeTerm = this.createUpdateAlertForm.get('term');
-        this.inputFormWatchModeRegexPattern = this.createUpdateAlertForm.get('regexPattern');
-        this.inputFormWatchModeNotifyOnDisappearance = this.createUpdateAlertForm.get('notifyOnDisappearance');
+        this.inputFormTermRule = this.createUpdateAlertForm.get('term');
+        this.inputFormRegexRulePattern = this.createUpdateAlertForm.get('regexPattern');
+        this.inputFormRegexRuleNotifyOnDisappearance = this.createUpdateAlertForm.get('notifyOnDisappearance');
 
-        this.watchModeSub = this.createUpdateAlertForm.get('watchMode')?.valueChanges
-            .subscribe((watchMode: EWatchMode) => {
-                this.termWatchModeSelected = EWatchMode.Term == watchMode;
-                if (!this.termWatchModeSelected)
-                    this.inputFormWatchModeTerm?.reset();
+        this.ruleSub = this.createUpdateAlertForm.get('rule')?.valueChanges
+            .subscribe((rule: Rules) => {
+                this.termRuleSelected = Rules.Term == rule;
+                if (!this.termRuleSelected)
+                    this.inputFormTermRule?.reset();
 
-                this.regexWatchModeSelected = EWatchMode.Regex == watchMode;
-                if (!this.regexWatchModeSelected) {
-                    this.inputFormWatchModeRegexPattern?.reset();
-                    this.inputFormWatchModeNotifyOnDisappearance?.reset();
+                this.regexRuleSelected = Rules.Regex == rule;
+                if (!this.regexRuleSelected) {
+                    this.inputFormRegexRulePattern?.reset();
+                    this.inputFormRegexRuleNotifyOnDisappearance?.reset();
                 }
             });
 
@@ -193,10 +193,10 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
             },
         ];
 
-        this.watchModeOptions = [
-            { Display: this.transloco.translate("alert.watchMode.anyChanges"), Value: EWatchMode.AnyChanges },
-            { Display: this.transloco.translate("alert.watchMode.term"), Value: EWatchMode.Term },
-            { Display: this.transloco.translate("alert.watchMode.regex"), Value: EWatchMode.Regex }
+        this.ruleOptions = [
+            { Display: this.transloco.translate("alert.rule.anyChanges"), Value: Rules.AnyChanges },
+            { Display: this.transloco.translate("alert.rule.term"), Value: Rules.Term },
+            { Display: this.transloco.translate("alert.rule.regex"), Value: Rules.Regex }
         ]
 
         this.notifyOnDisappearanceOptions = [
@@ -210,9 +210,9 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
             this.alertInitialValues?.Frequency != this.createUpdateAlertForm.get('frequency')?.value ||
             this.alertInitialValues?.Site.Name != this.inputFormSiteName?.value?.trim() ||
             this.alertInitialValues?.Site.Uri != this.inputFormSiteUri?.value?.trim() ||
-            this.alertInitialValues?.WatchMode.WatchMode != this.createUpdateAlertForm.get('watchMode')?.value ||
-            this.alertInitialValues?.WatchMode.Term != this.inputFormWatchModeTerm?.value?.trim() ||
-            this.alertInitialValues?.WatchMode.RegexPattern != this.inputFormWatchModeRegexPattern?.value?.trim() ||
-            this.alertInitialValues?.WatchMode.NotifyOnDisappearance != this.inputFormWatchModeNotifyOnDisappearance?.value
+            this.alertInitialValues?.Rule.Rule != this.createUpdateAlertForm.get('rule')?.value ||
+            this.alertInitialValues?.Rule.Term != this.inputFormTermRule?.value?.trim() ||
+            this.alertInitialValues?.Rule.RegexPattern != this.inputFormRegexRulePattern?.value?.trim() ||
+            this.alertInitialValues?.Rule.NotifyOnDisappearance != this.inputFormRegexRuleNotifyOnDisappearance?.value
     }
 }

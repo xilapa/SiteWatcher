@@ -5,7 +5,7 @@ using SiteWatcher.Infra;
 
 namespace Infra.Persistence.Migrations
 {
-    public partial class alertsearchfieldtrigramindex : Migration
+    public partial class alert_search_trigram_index_at_sw_schema : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

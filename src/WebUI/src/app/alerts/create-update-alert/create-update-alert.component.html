@@ -66,59 +66,59 @@
                 </sw-inline-input-error-msg>
             </div>
 
-            <!--watch mode-->
+            <!--rule-->
             <div class="form-group">
-                <label for="watchMode"
-                       class="sw-g-text-foreground-1">{{ t('alert.createUpdate.watchMode') }}</label>
+                <label for="rule"
+                       class="sw-g-text-foreground-1">{{ t('alert.createUpdate.rule') }}</label>
                 <div class="form-input">
-                    <p-dropdown id="watchMode"
-                                [options]="watchModeOptions"
+                    <p-dropdown id="rule"
+                                [options]="ruleOptions"
                                 optionLabel="Display"
                                 optionValue="Value"
-                                formControlName="watchMode">
+                                formControlName="rule">
                     </p-dropdown>
                 </div>
             </div>
 
             <!--term-->
-            <div *ngIf="termWatchModeSelected" class="form-group input-after-dropdown-padding">
+            <div *ngIf="termRuleSelected" class="form-group input-after-dropdown-padding">
                 <label for="term" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.term') }}</label>
                 <div class="form-input">
                     <input
                             class="sw-input-color"
                             id="term" type="text" pInputText
                             [placeholder]="t('alert.createUpdate.termPlaceholder')" formControlName="term"
-                            [class.invalid-input]="inputFormWatchModeTerm?.touched
-                                && inputFormWatchModeTerm?.dirty
-                                && inputFormWatchModeTerm?.invalid">
+                            [class.invalid-input]="inputFormTermRule?.touched
+                                && inputFormTermRule?.dirty
+                                && inputFormTermRule?.invalid">
                 </div>
                 <sw-inline-input-error-msg
-                        [show_if]="inputFormWatchModeTerm?.touched && inputFormWatchModeTerm?.dirty && inputFormWatchModeTerm?.invalid"
+                        [show_if]="inputFormTermRule?.touched && inputFormTermRule?.dirty && inputFormTermRule?.invalid"
                         [message]="t('common.invalidStringLength')">
                 </sw-inline-input-error-msg>
             </div>
 
             <!--regex pattern-->
-            <div *ngIf="regexWatchModeSelected" class="form-group input-after-dropdown-padding">
+            <div *ngIf="regexRuleSelected" class="form-group input-after-dropdown-padding">
                 <label for="regexPattern" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.regexPattern') }}</label>
-                <div class="sw-g-text-foreground-small">{{ t('alert.createUpdate.watchModeRegexExplanation') }}</div>
+                <div class="sw-g-text-foreground-small">{{ t('alert.createUpdate.regexExplanation') }}</div>
                 <div class="form-input">
                     <input
                             class="sw-input-color"
                             id="regexPattern" type="text" pInputText
                             [placeholder]="t('alert.createUpdate.regexPatternPlaceholder')" formControlName="regexPattern"
-                            [class.invalid-input]="inputFormWatchModeRegexPattern?.touched
-                                && inputFormWatchModeRegexPattern?.dirty
-                                && inputFormWatchModeRegexPattern?.invalid">
+                            [class.invalid-input]="inputFormRegexRulePattern?.touched
+                                && inputFormRegexRulePattern?.dirty
+                                && inputFormRegexRulePattern?.invalid">
                 </div>
                 <sw-inline-input-error-msg
-                        [show_if]="inputFormWatchModeRegexPattern?.touched && inputFormWatchModeRegexPattern?.dirty && inputFormWatchModeRegexPattern?.invalid"
-                        [message]="t('alert.createUpdate.watchModeRegexInvalid')">
+                        [show_if]="inputFormRegexRulePattern?.touched && inputFormRegexRulePattern?.dirty && inputFormRegexRulePattern?.invalid"
+                        [message]="t('alert.createUpdate.regexInvalid')">
                 </sw-inline-input-error-msg>
             </div>
 
             <!--regex - NotifyOnDisappearance -->
-            <div *ngIf="regexWatchModeSelected" class="form-group">
+            <div *ngIf="regexRuleSelected" class="form-group">
                 <label for="notifyOnDisappearance" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.notifyOnDisappearance') }}</label>
                 <div class="form-input">
                     <p-dropdown id="notifyOnDisappearance"

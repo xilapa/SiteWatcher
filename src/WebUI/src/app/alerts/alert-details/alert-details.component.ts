@@ -5,7 +5,7 @@ import { MessageService } from "primeng/api";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 import { utils } from "../../core/utils/utils";
 import { DetailedAlertView } from "../common/alert";
-import { EWatchMode } from "../common/e-watch-mode";
+import { Rules } from "../common/e-watch-mode";
 import { AlertService } from "../service/alert.service";
 
 @Component({
@@ -16,7 +16,7 @@ import { AlertService } from "../service/alert.service";
 export class AlertDetailsComponent implements OnInit {
 
     alert: DetailedAlertView;
-    watchModeEnum = EWatchMode;
+    rules = Rules;
 
     constructor(private readonly dialogConfig: DynamicDialogConfig,
                 private readonly dialogRef: DynamicDialogRef,

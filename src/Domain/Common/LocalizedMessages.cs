@@ -97,7 +97,7 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.RuleString}}
                           </li>
                           <br>
                           {% endfor %}
@@ -112,7 +112,7 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
                           </li>
                           <br>
                           {% endfor %}
@@ -134,7 +134,7 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
                           </li>
                           <br>
                           {% endfor %}
@@ -149,7 +149,7 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
                           </li>
                           <br>
                           {% endfor %}
@@ -171,7 +171,7 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
                           </li>
                           <br>
                           {% endfor %}
@@ -186,7 +186,7 @@ public static class LocalizedMessages
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.WatchModeString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
                           </li>
                           <br>
                           {% endfor %}
@@ -200,29 +200,29 @@ public static class LocalizedMessages
         };
     }
 
-    public static string WatchModeString(Language language, WatchModes watchMode)
+    public static string RuleString(Language language, Rules rule)
     {
         return language switch
         {
-            Language.English => watchMode switch
+            Language.English => rule switch
             {
-                WatchModes.AnyChanges => "Monitoring type: Any Changes",
-                WatchModes.Term => "Monitoring type: Term",
-                WatchModes.Regex => "Monitoring type: Regex Pattern",
+                Rules.AnyChanges => "Monitoring rule: Any Changes",
+                Rules.Term => "Monitoring rule: Term",
+                Rules.Regex => "Monitoring rule: Regex Pattern",
                 _ => throw new NotImplementedException()
             },
-            Language.Spanish => watchMode switch
+            Language.Spanish => rule switch
             {
-                WatchModes.AnyChanges => "Tipo de monitoreo: Algún cambio",
-                WatchModes.Term => "Tipo de monitoreo: Algún cambio",
-                WatchModes.Regex => "Tipo de monitoreo: Patrón de regex",
+                Rules.AnyChanges => "Regla de monitoreo: Algún cambio",
+                Rules.Term => "Regla de monitoreo: Algún cambio",
+                Rules.Regex => "Regla de monitoreo: Patrón de regex",
                 _ => throw new NotImplementedException()
             },
-            Language.BrazilianPortuguese => watchMode switch
+            Language.BrazilianPortuguese => rule switch
             {
-                WatchModes.AnyChanges => "Tipo de monitoramento: Quaisquer mudanças",
-                WatchModes.Term => "Tipo de monitoramento: Termo",
-                WatchModes.Regex => "Tipo de monitoramento: Padrão de regex",
+                Rules.AnyChanges => "Regra de monitoramento: Quaisquer mudanças",
+                Rules.Term => "Regra de monitoramento: Termo",
+                Rules.Regex => "Regra de monitoramento: Padrão de regex",
                 _ => throw new NotImplementedException()
             },
             _ => throw new NotImplementedException()

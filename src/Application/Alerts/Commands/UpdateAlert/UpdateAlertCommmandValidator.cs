@@ -16,7 +16,7 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
                             cmmd.Frequency is null &&
                             cmmd.SiteName is null &&
                             cmmd.SiteUri is null &&
-                            cmmd.WatchMode is null &&
+                            cmmd.Rule is null &&
                             cmmd.Term is null &&
                             cmmd.RegexPattern is null &&
                             cmmd.NotifyOnDisappearance is null))
@@ -61,24 +61,24 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.SiteUri)))
             .When(cmmd => cmmd.SiteUri is not null);
 
-        RuleFor(cmmd => cmmd.WatchMode!.NewValue)
+        RuleFor(cmmd => cmmd.Rule!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
-            .NotEqual(default(WatchModes))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.WatchMode)))
-            .Must(wm => Enum.IsDefined(typeof(WatchModes), (int) wm))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.WatchMode)))
-            .When(cmmd => cmmd.WatchMode is not null);
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Rule)))
+            .NotEqual(default(Rules))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Rule)))
+            .Must(wm => Enum.IsDefined(typeof(Rules), (int) wm))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule)))
+            .When(cmmd => cmmd.Rule is not null);
 
-        // Term watch validation
-        RuleFor(cmmd => cmmd.Term)
+        // Term rule validation
+        RuleFor<Domain.Common.DTOs.UpdateInfo<string>>(cmmd => cmmd.Term)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
-            .When(cmmd => cmmd.WatchMode is not null
-                        && WatchModes.Term.Equals(cmmd.WatchMode.NewValue));
+            .When(cmmd => cmmd.Rule is not null
+                        && Rules.Term.Equals(cmmd.Rule.NewValue));
 
-        RuleFor(cmmd => cmmd.Term!.NewValue)
+        RuleFor<string>(cmmd => cmmd.Term!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
@@ -86,16 +86,17 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateAlertCommmand.Term)))
             .MaximumLength(64)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(UpdateAlertCommmand.Term)))
-            .When(cmmd => cmmd.WatchMode is not null
-                          && WatchModes.Term.Equals(cmmd.WatchMode.NewValue)
+            .When(cmmd => cmmd.Rule is not null
+                          && Rules.Term.Equals(cmmd.Rule.NewValue)
                           && cmmd.Term is not null);
 
-        // Regex watch validation
-        RuleFor(cmmd => cmmd.RegexPattern)
+        // Regex rule validation
+        // TODO: validate if all regex rule fields are sent, to avoid null exception
+        RuleFor<Domain.Common.DTOs.UpdateInfo<string>>(cmmd => cmmd.RegexPattern)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.RegexPattern)))
-            .When(cmmd => cmmd.WatchMode is not null
-                            && WatchModes.Regex.Equals(cmmd.WatchMode.NewValue));
+            .When(cmmd => cmmd.Rule is not null
+                            && Rules.Regex.Equals(cmmd.Rule.NewValue));
 
         RuleFor(cmmd => cmmd.RegexPattern!.NewValue)
             .Cascade(CascadeMode.Stop)
@@ -107,10 +108,10 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RegexPattern)))
             .When(cmmd => cmmd.RegexPattern?.NewValue != null);
 
-        RuleFor(cmmd => cmmd.NotifyOnDisappearance)
+        RuleFor<Domain.Common.DTOs.UpdateInfo<bool>>(cmmd => cmmd.NotifyOnDisappearance)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
-            .When(cmmd => cmmd.WatchMode is not null
-                            && WatchModes.Regex.Equals(cmmd.WatchMode.NewValue));
+            .When(cmmd => cmmd.Rule is not null
+                            && Rules.Regex.Equals(cmmd.Rule.NewValue));
     }
 }

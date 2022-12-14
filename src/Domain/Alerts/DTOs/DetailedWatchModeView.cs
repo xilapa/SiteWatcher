@@ -1,27 +1,27 @@
-﻿using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+﻿using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.DTOs;
 
 //TODO: move to detailed alert view
-public sealed class DetailedWatchModeView
+public sealed class DetailedRuleView
 {
-    public WatchModes? WatchMode { get; set; }
+    public Rules? Rule { get; set; }
     public string? Term { get; set; }
     public string? RegexPattern { get; set; }
     public bool? NotifyOnDisappearance { get; set; }
 
     // TODO: remove this operator
-    public static implicit operator DetailedWatchModeView(WatchMode watchMode)
+    public static implicit operator DetailedRuleView(Rule rule)
     {
-        var watchModeType = Utils.GetWatchModeEnumByType(watchMode);
-        return new DetailedWatchModeView
+        var ruleType = Utils.GetRuleEnumByType(rule);
+        return new DetailedRuleView
         {
-            WatchMode = watchModeType,
-            Term = watchModeType == WatchModes.Term ? (watchMode as TermWatch)!.Term : null,
-            RegexPattern = watchModeType == WatchModes.Regex ? (watchMode as RegexWatch)!.RegexPattern : null,
-            NotifyOnDisappearance = watchModeType == WatchModes.Regex ? (watchMode as RegexWatch)!.NotifyOnDisappearance : null
+            Rule = ruleType,
+            Term = ruleType == Rules.Term ? (rule as TermRule)!.Term : null,
+            RegexPattern = ruleType == Rules.Regex ? (rule as RegexRule)!.RegexPattern : null,
+            NotifyOnDisappearance = ruleType == Rules.Regex ? (rule as RegexRule)!.NotifyOnDisappearance : null
         };
     }
 }

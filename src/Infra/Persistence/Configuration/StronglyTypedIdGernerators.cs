@@ -25,17 +25,17 @@ public class AlertIdValueGeneratorFactory : ValueGeneratorFactory
 }
 #endregion
 
-#region WatchModeId
-internal class WatchModeIdGenerator : StrongIdIntGenerator<WatchModeId>
+#region RuleId
+internal class RuleIdGenerator : StrongIdIntGenerator<RuleId>
 {
-    public override WatchModeId Next(EntityEntry entry) => new(-1);
+    public override RuleId Next(EntityEntry entry) => new(-1);
 }
 
-public class WatchModeIdValueGeneratorFactory : ValueGeneratorFactory
+public class RuleIdValueGeneratorFactory : ValueGeneratorFactory
 {
     public override ValueGenerator Create(IProperty property, IEntityType entityType)
     {
-        return new WatchModeIdGenerator();
+        return new RuleIdGenerator();
     }
 }
 #endregion

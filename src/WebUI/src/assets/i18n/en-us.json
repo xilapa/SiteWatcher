@@ -96,7 +96,7 @@
       "twelveHours": "Every twelve hours",
       "twentyFourHours": "Every twenty four hours"
     },
-    "watchMode": {
+    "rule": {
       "anyChanges": "Any changes",
       "term": "Term",
       "regex": "Regex"
@@ -113,15 +113,15 @@
       "siteUri": "Site URL",
       "siteUriPlaceHolder": "Type the site URL starting with http...",
       "invalidSiteUri": "The site url is invalid",
-      "watchMode": "Monitoring type",
+      "rule": "Monitoring rule",
       "term": "Term to be monitored",
       "termPlaceholder": "Type a term to fire the alert",
       "save": "Save",
       "regexPattern": "Regex Pattern",
       "regexPatternPlaceholder": "[^.]*Word[^.]*\\.?",
       "notifyOnDisappearance": "Notify on regex match disappearance",
-      "watchModeRegexInvalid": "Regex must have between 1 or 512 characters. It should not start nor end with / (backslash) and not end it with 'gmi' or any variation of other regex flags.",
-      "watchModeRegexExplanation": "Regex at SiteWatcher are global, multi-line and case insensitive. It should not start nor end with / (backslash) and not end it with 'gmi' or any variation of other regex flags."
+      "regexInvalid": "Regex must have between 1 or 512 characters. It should not start nor end with / (backslash) and not end it with 'gmi' or any variation of other regex flags.",
+      "regexExplanation": "Regex at SiteWatcher are global, multi-line and case insensitive. It should not start nor end with / (backslash) and not end it with 'gmi' or any variation of other regex flags."
     },
     "list": {
       "site": "Site",
@@ -132,7 +132,7 @@
       "notificationsSent": "Notifications sent",
       "notificationsSentMobile": "Notifications",
       "frequencyMobile": "Frequency",
-      "watchModeMobile": "Type",
+      "ruleMobile": "Rule",
       "notifyOnDisappearance": "Notify on disappearance",
       "lastVerification": "Last verification",
       "sent": "sent"

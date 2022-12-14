@@ -20,5 +20,5 @@ public class SqliteDapperQueries : DapperQueries
     public override string DeleteUserAlert { get; }
 
     private static string RemoveSchema(string query) =>
-        query.Replace(@"""siteWatcher_webApi"".", "");
+        query.Replace(@"""sw"".", "");
 }

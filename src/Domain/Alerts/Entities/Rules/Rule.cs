@@ -1,15 +1,15 @@
 ﻿using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.ValueObjects;
 
-namespace SiteWatcher.Domain.Alerts.Entities.WatchModes;
+namespace SiteWatcher.Domain.Alerts.Entities.Rules;
 
-public abstract class WatchMode : BaseModel<WatchModeId>
+public abstract class Rule : BaseModel<RuleId>
 {
     // ctor for EF
-    protected WatchMode()
+    protected Rule()
     { }
 
-    protected WatchMode(DateTime currentDate) : base(new WatchModeId(), currentDate)
+    protected Rule(DateTime currentDate) : base(new RuleId(), currentDate)
     {
         FirstWatchDone = false;
     }
@@ -21,5 +21,5 @@ public abstract class WatchMode : BaseModel<WatchModeId>
     /// </summary>
     /// <param name="html">The hmtl webpage as stream</param>
     /// <returns></returns>
-    public abstract Task<bool> VerifySite(Stream html);
+    public abstract Task<bool> Execute(Stream html);
 }

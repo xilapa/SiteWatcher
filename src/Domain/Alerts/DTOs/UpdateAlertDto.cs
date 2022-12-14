@@ -1,4 +1,4 @@
-﻿using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+﻿using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common.ValueObjects;
 
@@ -13,5 +13,5 @@ public sealed class UpdateAlertDto
     public Frequencies Frequency { get; set; }
     public string SiteName { get; set; } = null!;
     public Uri SiteUri { get; set; } = null!;
-    public WatchMode WatchMode { get; set; } = null!;
+    public Rule Rule { get; set; } = null!;
 }

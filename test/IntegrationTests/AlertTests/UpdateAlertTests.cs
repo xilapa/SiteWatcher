@@ -26,10 +26,10 @@ public sealed class UpdateAlertTestsBase : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        XilapaAlert = await AppFactory.CreateAlert<DetailedAlertView>("Xilapa alert", WatchModes.AnyChanges,
+        XilapaAlert = await AppFactory.CreateAlert<DetailedAlertView>("Xilapa alert", Rules.AnyChanges,
             Users.Xilapa.Id); // Id = 1
 
-        XulipaAlert = await AppFactory.CreateAlert("Xulipa alert", WatchModes.AnyChanges,
+        XulipaAlert = await AppFactory.CreateAlert("Xulipa alert", Rules.AnyChanges,
             Users.Xulipa.Id, AppFactory.CurrentTime.AddDays(-1)); // Id = 2
     }
 }
@@ -54,7 +54,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwentyFourHours},
-                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.Term},
+                Rule = new UpdateInfo<Rules> {NewValue = Rules.Term},
                 Term = new UpdateInfo<string> {NewValue = "new term"}
             }
         };
@@ -68,7 +68,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name2"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated2.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwentyFourHours},
-                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.Term},
+                Rule = new UpdateInfo<Rules> {NewValue = Rules.Term},
                 Term = new UpdateInfo<string> {NewValue = "new term2"}
             }
         };
@@ -82,7 +82,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name3"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated3.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwoHours},
-                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.AnyChanges}
+                Rule = new UpdateInfo<Rules> {NewValue = Rules.AnyChanges}
             }
         };
 
@@ -95,7 +95,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name4"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated4.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
-                WatchMode = new UpdateInfo<WatchModes> {NewValue = WatchModes.AnyChanges},
+                Rule = new UpdateInfo<Rules> {NewValue = Rules.AnyChanges},
                 Term = new UpdateInfo<string> {NewValue = "new term4"}
             }
         };
@@ -122,10 +122,10 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
         detailedAlert.Site.Uri.Should().StartWith(updateCommand.SiteUri!.NewValue);
         detailedAlert.CreatedAt.Should().Be(_fixture.XilapaAlert.CreatedAt);
         detailedAlert.Frequency.Should().Be(updateCommand.Frequency!.NewValue);
-        detailedAlert.WatchMode!.WatchMode.Should().Be(updateCommand.WatchMode!.NewValue);
-        detailedAlert.WatchMode.Term
+        detailedAlert.Rule!.Rule.Should().Be(updateCommand.Rule!.NewValue);
+        detailedAlert.Rule.Term
             .Should()
-            .Be(WatchModes.Term.Equals(updateCommand.WatchMode!.NewValue) ? updateCommand.Term!.NewValue : null);
+            .Be(Rules.Term.Equals(updateCommand.Rule!.NewValue) ? updateCommand.Term!.NewValue : null);
 
         // Checking alert update date on db
         (await AppFactory.WithDbContext(async ctx =>
@@ -136,7 +136,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
         // Checking that Xulipa alert has not changed
         var xulipaAlert = await AppFactory.WithDbContext(async ctx =>
             await ctx.Alerts
-                .Include(a => a.WatchMode)
+                .Include(a => a.Rule)
                 .AsSplitQuery()
                 .SingleAsync(a => a.Id == new AlertId(2)));
 

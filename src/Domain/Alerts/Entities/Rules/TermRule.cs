@@ -2,17 +2,17 @@
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Common;
 
-namespace SiteWatcher.Domain.Alerts.Entities.WatchModes;
+namespace SiteWatcher.Domain.Alerts.Entities.Rules;
 
-public class TermWatch : WatchMode
+public class TermRule : Rule
 {
     // ctor for EF
-    protected TermWatch() : base()
+    protected TermRule() : base()
     {
         _occurrences = new List<TermOccurrence>();
     }
 
-    public TermWatch(string term, DateTime currentDate) : base(currentDate)
+    public TermRule(string term, DateTime currentDate) : base(currentDate)
     {
         Term = term;
         _occurrences = new List<TermOccurrence>();
@@ -23,7 +23,7 @@ public class TermWatch : WatchMode
         Term = updateAlertInput.Term!.NewValue!;
     }
 
-    public override async Task<bool> VerifySite(Stream html)
+    public override async Task<bool> Execute(Stream html)
     {
         var htmlExtractedText = await HtmlUtils.ExtractText(html);
         await html.DisposeAsync();

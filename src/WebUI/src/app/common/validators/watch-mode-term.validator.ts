@@ -1,21 +1,21 @@
-﻿import {AbstractControl, ValidationErrors} from "@angular/forms";
-import {EWatchMode} from "../../alerts/common/e-watch-mode";
+﻿import { AbstractControl, ValidationErrors } from "@angular/forms";
+import { Rules } from "../../alerts/common/e-watch-mode";
 
-export const watchModeTermValidator = (control: AbstractControl) :  ValidationErrors | null => {
-    const watchMode = (control.parent?.get('watchMode')?.value as EWatchMode);
-    const isTermWatch = watchMode == EWatchMode.Term;
+export const termRuleValidator = (control: AbstractControl) :  ValidationErrors | null => {
+    const rule = (control.parent?.get('rule')?.value as Rules);
+    const isTermWatch = rule == Rules.Term;
 
     if(!isTermWatch)
         return null;
 
     if(!control.value)
-        return { watchModeTermValidator: true };
+        return { termRuleValidator: true };
 
     if (control.value && control.value.trim().length == 0)
-        return { watchModeTermValidator: true };
+        return { termRuleValidator: true };
 
     if(control.value.length < 3 || control.value.length > 64)
-        return { watchModeTermValidator: true };
+        return { termRuleValidator: true };
 
     return null;
 }

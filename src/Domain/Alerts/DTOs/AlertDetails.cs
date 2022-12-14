@@ -1,5 +1,5 @@
 ﻿using SiteWatcher.Common.Services;
-using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 
 namespace SiteWatcher.Domain.Alerts.DTOs;
 
@@ -12,15 +12,15 @@ public class AlertDetails
     {
         Id = idHasher.HashId(alert.Id.Value);
         SiteUri = alert.Site.Uri.ToString();
-        WatchModeId = idHasher.HashId(alert.WatchMode.Id.Value);
-        Term = (alert.WatchMode as TermWatch)?.Term;
-        RegexPattern = (alert.WatchMode as RegexWatch)?.RegexPattern;
-        NotifyOnDisappearance = (alert.WatchMode as RegexWatch)?.NotifyOnDisappearance;
+        RuleId = idHasher.HashId(alert.Rule.Id.Value);
+        Term = (alert.Rule as TermRule)?.Term;
+        RegexPattern = (alert.Rule as RegexRule)?.RegexPattern;
+        NotifyOnDisappearance = (alert.Rule as RegexRule)?.NotifyOnDisappearance;
     }
 
     public string Id { get; set; } = null!;
     public string SiteUri { get; set; } = null!;
-    public string WatchModeId { get; set; } = null!;
+    public string RuleId { get; set; } = null!;
     public string? Term { get; set; }
     public string? RegexPattern { get; set; }
     public bool? NotifyOnDisappearance { get; set; }

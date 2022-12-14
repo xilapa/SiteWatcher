@@ -76,7 +76,7 @@ public sealed class WatchAlertsJob : IJob
     {
         var usersWithAlerts = _context.Users
             .Include(u => u.Alerts.Where(_ => frequencies.Contains(_.Frequency)))
-            .ThenInclude(a => a.WatchMode)
+            .ThenInclude(a => a.Rule)
             .AsAsyncEnumerable();
 
         var parallelOptions = new ParallelOptions
@@ -119,7 +119,7 @@ public sealed class WatchAlertsJob : IJob
             }
 
             // TODO: create a wrapper for date, to make tests possible
-            var alertToNotify = await alert.VerifySiteHtml(htmlStream, DateTime.UtcNow);
+            var alertToNotify = await alert.ExecuteRule(htmlStream, DateTime.UtcNow);
             if (alertToNotify != null)
                 alertsToNotifySuccess.Add(alertToNotify);
         }

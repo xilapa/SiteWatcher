@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Alerts;
-using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
@@ -53,9 +53,9 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
                     .IsRequired();
             });
 
-        builder.HasOne(a => a.WatchMode)
+        builder.HasOne(a => a.Rule)
             .WithOne()
-            .HasForeignKey(nameof(WatchMode),nameof(AlertId));
+            .HasForeignKey(nameof(Rule),nameof(AlertId));
 
         builder.Property(a => a.SearchField)
             .HasColumnType("varchar(640)")

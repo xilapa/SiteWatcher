@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace SiteWatcher.Application.Common.Validation;
 
-public static class Rules
+public static class FluentValidationRules
 {
     public static IRuleBuilderOptions<T, string> HasOnlyLetters<T>(this IRuleBuilder<T, string> ruleBuilder) =>
         ruleBuilder.Matches("^[A-Za-z ]*$");

@@ -78,36 +78,36 @@
                     </div>
                 </div>
 
-                <!-- watch mode group-->
+                <!-- rule group-->
                 <div class="alert-detail-group">
                     <div class="alert-detail-group-row-name">
                         <i class="pi pi-bolt"></i>
-                        {{t('alert.createUpdate.watchMode')}}
+                        {{t('alert.createUpdate.rule')}}
                     </div>
                     <div class="alert-detail-group-row-content">
-                        {{t(alert.WatchModeTranslationKey ?? '')}}
+                        {{t(alert.RuleTranslationKey ?? '')}}
                     </div>
-                    <!-- term watch mode -->
+                    <!-- term rule -->
                     <div class="alert-detail-group-row-content"
-                         *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Term && alert.FullyLoaded">
-                        {{'"' + (alert.WatchMode.Term ?? '') + '"'}}
-                    </div>
-
-                    <!-- regex watch mode -->
-                    <div class="alert-detail-group-row-content"
-                        *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Regex && alert.FullyLoaded">
-                        {{'"' + (alert.WatchMode.RegexPattern ?? '') + '"'}}
+                         *ngIf="alert.Rule.Rule == rules.Term && alert.FullyLoaded">
+                        {{'"' + (alert.Rule.Term ?? '') + '"'}}
                     </div>
 
+                    <!-- regex rule -->
                     <div class="alert-detail-group-row-content"
-                    *ngIf="alert.WatchMode.WatchMode == watchModeEnum.Regex && alert.FullyLoaded">
+                        *ngIf="alert.Rule.Rule == rules.Regex && alert.FullyLoaded">
+                        {{'"' + (alert.Rule.RegexPattern ?? '') + '"'}}
+                    </div>
+
+                    <div class="alert-detail-group-row-content"
+                    *ngIf="alert.Rule.Rule == rules.Regex && alert.FullyLoaded">
                     {{t('alert.common.notifyOnDisappearance') +": "+ t(alert.NotifyOnDisappearanceTranslationKey ?? '')}}
                     </div>
 
                     <!-- loading -->
                     <div class="alert-detail-group-row-content loading-text"
-                        *ngIf="(alert.WatchMode.WatchMode == watchModeEnum.Term
-                                || alert.WatchMode.WatchMode == watchModeEnum.Regex) && !alert.FullyLoaded">
+                        *ngIf="(alert.Rule.Rule == rules.Term
+                                || alert.Rule.Rule == rules.Regex) && !alert.FullyLoaded">
                         {{t('common.loading')}}
                     </div>
                 </div>

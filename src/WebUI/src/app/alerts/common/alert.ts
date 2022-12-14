@@ -1,12 +1,12 @@
 ﻿import { AlertFrequencyUtils, EAlertFrequency } from "./e-alert-frequency";
-import { EWatchMode, WatchModeUtils } from "./e-watch-mode";
+import { Rules, RuleUtils } from "./e-watch-mode";
 
 export interface CreateUpdateAlertModel {
     name: string,
     frequency: EAlertFrequency,
     siteName: string,
     siteUri: string,
-    watchMode: EWatchMode,
+    rule: Rules,
     term: string | undefined,
     regexPattern: string | undefined,
     notifyOnDisappearance: boolean | undefined
@@ -21,7 +21,7 @@ export interface DetailedAlertViewApi {
     LastVerification: Date | undefined,
     NotificationsSent: number,
     Site: SiteViewApi,
-    WatchMode: DetailedWatchModeViewApi
+    Rule: DetailedRuleViewApi
 }
 
 export interface SiteViewApi {
@@ -29,8 +29,8 @@ export interface SiteViewApi {
     Uri: string
 }
 
-export interface DetailedWatchModeViewApi {
-    WatchMode: EWatchMode,
+export interface DetailedRuleViewApi {
+    Rule: Rules,
     Term: string | undefined,
     RegexPattern: string | undefined,
     NotifyOnDisappearance: boolean | undefined
@@ -44,13 +44,13 @@ export interface SimpleAlertViewApi {
     LastVerification: Date | undefined,
     NotificationsSent: number,
     SiteName: string,
-    WatchMode: EWatchMode
+    Rule: Rules
 }
 
 export interface AlertDetailsApi {
     Id: string,
     SiteUri: string,
-    WatchModeId: string,
+    RuleId: string,
     Term?: string,
     RegexPattern?: string,
     NotifyOnDisappearance?: boolean
@@ -67,7 +67,7 @@ export interface UpdateAlertData {
     Frequency?: UpdateInfo<EAlertFrequency>,
     SiteName?: UpdateInfo<string>,
     SiteUri?: UpdateInfo<string>,
-    WatchMode?: UpdateInfo<EWatchMode>,
+    Rule?: UpdateInfo<Rules>,
     Term?: UpdateInfo<string>,
     RegexPattern?: UpdateInfo<string>,
     NotifyOnDisappearance?: UpdateInfo<boolean>,
@@ -83,10 +83,10 @@ export interface DetailedAlertView {
     LastVerification?: Date,
     NotificationsSent?: number,
     Site: SiteView,
-    WatchMode: DetailedWatchModeView,
+    Rule: DetailedRuleView,
     FullyLoaded?: boolean,
     FrequencyTranslationKey?: string,
-    WatchModeTranslationKey?: string,
+    RuleTranslationKey?: string,
     LocalizedDateString?: string,
     NotifyOnDisappearanceTranslationKey?: string
 }
@@ -96,9 +96,9 @@ export interface SiteView {
     Uri?: string | undefined
 }
 
-export interface DetailedWatchModeView {
+export interface DetailedRuleView {
     Id?: string | undefined,
-    WatchMode: EWatchMode,
+    Rule: Rules,
     Term?: string | undefined,
     RegexPattern?: string | undefined,
     NotifyOnDisappearance?: boolean | undefined
@@ -117,13 +117,13 @@ export class AlertUtils {
             LastVerification: apiView.LastVerification ? new Date(apiView.LastVerification) : undefined,
             NotificationsSent: apiView.NotificationsSent,
             Site: apiView.Site,
-            WatchMode: apiView.WatchMode,
+            Rule: apiView.Rule,
             FullyLoaded: true,
             FrequencyTranslationKey: AlertFrequencyUtils.getFrequencyTranslationKey(apiView.Frequency),
-            WatchModeTranslationKey: WatchModeUtils.getWatchModeTranslationKey(apiView.WatchMode.WatchMode),
+            RuleTranslationKey: RuleUtils.getRuleTranslationKey(apiView.Rule.Rule),
             LocalizedDateString: createdAt.toLocaleDateString(currentLocale) + ' '
                 + createdAt.toLocaleTimeString(currentLocale),
-            NotifyOnDisappearanceTranslationKey: WatchModeUtils.getNotifyOnDisappearanceTranslationKey(apiView.WatchMode.NotifyOnDisappearance)
+            NotifyOnDisappearanceTranslationKey: RuleUtils.getNotifyOnDisappearanceTranslationKey(apiView.Rule.NotifyOnDisappearance)
         }
     }
 
@@ -137,10 +137,10 @@ export class AlertUtils {
             LastVerification: simpleApiView.LastVerification ? new Date(simpleApiView.LastVerification) : undefined,
             NotificationsSent: simpleApiView.NotificationsSent,
             Site: { Name: simpleApiView.SiteName },
-            WatchMode: { WatchMode: simpleApiView.WatchMode },
+            Rule: { Rule: simpleApiView.Rule },
             FullyLoaded: false,
             FrequencyTranslationKey: AlertFrequencyUtils.getFrequencyTranslationKey(simpleApiView.Frequency),
-            WatchModeTranslationKey: WatchModeUtils.getWatchModeTranslationKey(simpleApiView.WatchMode),
+            RuleTranslationKey: RuleUtils.getRuleTranslationKey(simpleApiView.Rule),
             LocalizedDateString: createdAt.toLocaleDateString(currentLocale) + ' '
                 + createdAt.toLocaleTimeString(currentLocale)
         }
@@ -148,11 +148,11 @@ export class AlertUtils {
 
     public static PopulateAlertDetails(apiDetails: AlertDetailsApi, detailedAlert: DetailedAlertView): DetailedAlertView {
         detailedAlert.Site.Uri = apiDetails.SiteUri;
-        detailedAlert.WatchMode.Id = apiDetails.WatchModeId;
-        detailedAlert.WatchMode.Term = apiDetails.Term;
-        detailedAlert.WatchMode.RegexPattern = apiDetails.RegexPattern;
-        detailedAlert.WatchMode.NotifyOnDisappearance = apiDetails.NotifyOnDisappearance;
-        detailedAlert.NotifyOnDisappearanceTranslationKey = WatchModeUtils.getNotifyOnDisappearanceTranslationKey(apiDetails.NotifyOnDisappearance)
+        detailedAlert.Rule.Id = apiDetails.RuleId;
+        detailedAlert.Rule.Term = apiDetails.Term;
+        detailedAlert.Rule.RegexPattern = apiDetails.RegexPattern;
+        detailedAlert.Rule.NotifyOnDisappearance = apiDetails.NotifyOnDisappearance;
+        detailedAlert.NotifyOnDisappearanceTranslationKey = RuleUtils.getNotifyOnDisappearanceTranslationKey(apiDetails.NotifyOnDisappearance)
         detailedAlert.FullyLoaded = true;
         return detailedAlert;
     }
@@ -172,18 +172,20 @@ export class AlertUtils {
         if (rawValues.siteUri != initialValues.Site.Uri)
             updateAlertData.SiteUri = { NewValue: rawValues.siteUri }
 
-        if (rawValues.watchMode != initialValues.WatchMode.WatchMode)
-            updateAlertData.WatchMode = { NewValue: rawValues.watchMode }
+        if (rawValues.rule != initialValues.Rule.Rule)
+            updateAlertData.Rule = { NewValue: rawValues.rule }
 
-        if (rawValues.term != initialValues.WatchMode.Term && rawValues.watchMode == EWatchMode.Term)
+        if (rawValues.term != initialValues.Rule.Term && rawValues.rule == Rules.Term)
             updateAlertData.Term = { NewValue: rawValues.term }
 
-        if (rawValues.regexPattern != initialValues.WatchMode.RegexPattern && rawValues.watchMode == EWatchMode.Regex)
-            updateAlertData.RegexPattern = { NewValue: rawValues.regexPattern }
-
-        if (rawValues.notifyOnDisappearance != initialValues.WatchMode.NotifyOnDisappearance && rawValues.watchMode == EWatchMode.Regex)
+        // includes all fields of a rule
+        if (rawValues.rule == Rules.Regex)
+        {
             updateAlertData.NotifyOnDisappearance = { NewValue: rawValues.notifyOnDisappearance }
 
+            if(rawValues.regexPattern != initialValues.Rule.RegexPattern)
+                updateAlertData.RegexPattern = { NewValue: rawValues.regexPattern }
+        }
         return updateAlertData;
     }
 }

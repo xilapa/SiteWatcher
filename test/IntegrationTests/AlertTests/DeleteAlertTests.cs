@@ -28,7 +28,7 @@ public sealed class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsB
         // Arrange
         const string alertName = "testAlert";
         var alertCreated = await AppFactory
-            .CreateAlert<SimpleAlertView>(alertName, WatchModes.AnyChanges, Users.Xulipa.Id);
+            .CreateAlert<SimpleAlertView>(alertName, Rules.AnyChanges, Users.Xulipa.Id);
 
         (await AlertExists(alertName)).Should().BeTrue();
 
@@ -53,7 +53,7 @@ public sealed class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsB
         // Arrange
         const string alertName = "testAlertNotDeleted";
         var alertCreated = await AppFactory
-            .CreateAlert<SimpleAlertView>(alertName, WatchModes.AnyChanges, Users.Xulipa.Id);
+            .CreateAlert<SimpleAlertView>(alertName, Rules.AnyChanges, Users.Xulipa.Id);
 
         (await AlertExists(alertName)).Should().BeTrue();
 

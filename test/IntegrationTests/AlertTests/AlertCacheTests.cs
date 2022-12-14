@@ -36,7 +36,7 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
                 Name = "alert1",
                 CreatedAt = DateTime.UtcNow,
                 SiteName = "siteName1",
-                WatchMode = WatchModes.Term
+                Rule = Rules.Term
             },
             new()
             {
@@ -45,7 +45,7 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
                 Name = "alert2",
                 CreatedAt = DateTime.UtcNow,
                 SiteName = "siteName2",
-                WatchMode = WatchModes.AnyChanges
+                Rule = Rules.AnyChanges
             },
             new()
             {
@@ -54,7 +54,7 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
                 Name = "alert3",
                 CreatedAt = DateTime.UtcNow.AddMinutes(6),
                 SiteName = "siteName3",
-                WatchMode = WatchModes.Term
+                Rule = Rules.Term
             }
         };
     }
@@ -62,7 +62,7 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        var alertToUpdate = await AppFactory.CreateAlert("alert", WatchModes.Term, Users.Xilapa.Id);
+        var alertToUpdate = await AppFactory.CreateAlert("alert", Rules.Term, Users.Xilapa.Id);
         AlertToUpdateId = alertToUpdate.Id;
     }
 
@@ -150,7 +150,7 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         {
             Frequency = Frequencies.EightHours,
             Name = "name",
-            WatchMode = WatchModes.AnyChanges,
+            Rule = Rules.AnyChanges,
             SiteName = "site",
             SiteUri = "http://site.test.io"
         };

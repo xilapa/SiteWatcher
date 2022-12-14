@@ -1,24 +1,24 @@
 ﻿using System.Security.Cryptography;
 using SiteWatcher.Domain.Common;
 
-namespace SiteWatcher.Domain.Alerts.Entities.WatchModes;
+namespace SiteWatcher.Domain.Alerts.Entities.Rules;
 
-public class AnyChangesWatch : WatchMode
+public class AnyChangesRule : Rule
 {
     // ctor for EF
-    protected AnyChangesWatch() : base()
+    protected AnyChangesRule() : base()
     {
         HtmlHash = string.Empty;
     }
 
-    public AnyChangesWatch(DateTime currentDate) : base(currentDate)
+    public AnyChangesRule(DateTime currentDate) : base(currentDate)
     {
         HtmlHash = string.Empty;
     }
 
     public string HtmlHash { get; private set; }
 
-    public override async Task<bool> VerifySite(Stream html)
+    public override async Task<bool> Execute(Stream html)
     {
         var shaHasher = SHA256.Create();
         var hashedBytes = await shaHasher.ComputeHashAsync(html);

@@ -10,14 +10,14 @@ public class DapperQueries : IDapperQueries
             SELECT 
                 u.""Id"", u.""Active"", u.""Name"", u.""Email"", u.""EmailConfirmed"", u.""Language"", u.""Theme""
             FROM 
-                ""siteWatcher_webApi"".""Users"" AS u
+                ""sw"".""Users"" AS u
             WHERE
                 u.""GoogleId"" = @googleId ";
 
     public virtual string DeleteActiveUserById => @"
             DELETE 
             FROM 
-                ""siteWatcher_webApi"".""Users"" AS u
+                ""sw"".""Users"" AS u
             WHERE
                 u.""Id"" = @userId AND u.""Active"" ";
 
@@ -25,7 +25,7 @@ public class DapperQueries : IDapperQueries
             SELECT 
                 COUNT(a.""Id"") 
             FROM 
-                ""siteWatcher_webApi"".""Alerts"" a
+                ""sw"".""Alerts"" a
             WHERE
                 a.""UserId"" = @userId;
 
@@ -36,10 +36,10 @@ public class DapperQueries : IDapperQueries
                 a.""Frequency"",
                 a.""LastVerification"",
                 a.""Site_Name"" SiteName,
-                wm.""WatchMode""
+                wm.""Rule""
             FROM 
-            ""siteWatcher_webApi"".""Alerts"" a
-                INNER JOIN ""siteWatcher_webApi"".""WatchModes"" wm 
+            ""sw"".""Alerts"" a
+                INNER JOIN ""sw"".""Rules"" wm 
                     ON a.""Id"" = wm.""AlertId""
             WHERE
                 a.""Id"" > @lastAlertId
@@ -52,13 +52,13 @@ public class DapperQueries : IDapperQueries
             SELECT
                 a.""Id"",
                 a.""Site_Uri"" SiteUri,
-                wm.""Id"" WatchModeId,
+                wm.""Id"" RuleId,
                 wm.""Term"",
                 wm.""RegexPattern"",
                 wm.""NotifyOnDisappearance""
             FROM 
-            ""siteWatcher_webApi"".""Alerts"" a
-                INNER JOIN ""siteWatcher_webApi"".""WatchModes"" wm 
+            ""sw"".""Alerts"" a
+                INNER JOIN ""sw"".""Rules"" wm 
                 ON a.""Id"" = wm.""AlertId""
             WHERE
                 a.""Id"" = @alertId
@@ -67,7 +67,7 @@ public class DapperQueries : IDapperQueries
     public virtual string DeleteUserAlert => @"
             DELETE 
             FROM 
-	            ""siteWatcher_webApi"".""Alerts""
+	            ""sw"".""Alerts""
             WHERE	
                 ""Id"" = @alertId
                 AND ""UserId"" =  @userId";
@@ -96,10 +96,10 @@ public class DapperQueries : IDapperQueries
                 a.""Frequency"",
                 a.""LastVerification"",
                 a.""Site_Name"" SiteName,
-                wm.""WatchMode""
+                wm.""Rule""
             FROM 
-                ""siteWatcher_webApi"".""Alerts"" a
-                    INNER JOIN ""siteWatcher_webApi"".""WatchModes"" wm 
+                ""sw"".""Alerts"" a
+                    INNER JOIN ""sw"".""Rules"" wm 
                         ON a.""Id"" = wm.""AlertId""
             WHERE
                 a.""UserId"" = @userId

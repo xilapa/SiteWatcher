@@ -1,7 +1,7 @@
 ﻿using System.Buffers.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Domain.Common;
@@ -15,17 +15,17 @@ public static class Utils
     private const byte SlashByte = (byte)'/';
     private const byte DefaultByte = default!;
     private const char HyphenChar = '-';
-    private static readonly Dictionary<Type, WatchModes> WatchModesTypeDictionary = new()
+    private static readonly Dictionary<Type, Rules> RulesTypeDictionary = new()
     {
-        {typeof(AnyChangesWatch), WatchModes.AnyChanges},
-        {typeof(TermWatch), WatchModes.Term},
-        {typeof(RegexWatch), WatchModes.Regex}
+        {typeof(AnyChangesRule), Rules.AnyChanges},
+        {typeof(TermRule), Rules.Term},
+        {typeof(RegexRule), Rules.Regex}
     };
-    private static readonly Dictionary<char, WatchModes> WatchModesDiscriminatorDictionary = new()
+    private static readonly Dictionary<char, Rules> RulesDiscriminatorDictionary = new()
     {
-        {'A', WatchModes.AnyChanges},
-        {'T', WatchModes.Term},
-        {'R', WatchModes.Regex}
+        {'A', Rules.AnyChanges},
+        {'T', Rules.Term},
+        {'R', Rules.Regex}
     };
 
     public static string GenerateSafeRandomBase64String()
@@ -81,9 +81,9 @@ public static class Utils
         return token[firstDotIdx..(firstDotIdx + secondDotIdx)];
     }
 
-    public static WatchModes? GetWatchModeEnumByType(WatchMode watchMode) =>
-        WatchModesTypeDictionary[watchMode.GetType()];
+    public static Rules? GetRuleEnumByType(Rule rule) =>
+        RulesTypeDictionary[rule.GetType()];
 
-    public static WatchModes? GetWatchModeEnumByTableDiscriminator(char discriminator) =>
-        WatchModesDiscriminatorDictionary[discriminator];
+    public static Rules? GetRuleEnumByTableDiscriminator(char discriminator) =>
+        RulesDiscriminatorDictionary[discriminator];
 }

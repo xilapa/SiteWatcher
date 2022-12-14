@@ -1,6 +1,6 @@
 ﻿namespace SiteWatcher.Domain.Alerts.Enums;
 
-public enum WatchModes
+public enum Rules
 {
     AnyChanges = 1,
     Term,

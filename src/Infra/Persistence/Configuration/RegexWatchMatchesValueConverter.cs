@@ -1,12 +1,12 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
-public sealed class RegexWatchMatchesValueConverter : ValueConverter<Matches, string>
+public sealed class RegexRuleMatchesValueConverter : ValueConverter<Matches, string>
 {
-    public RegexWatchMatchesValueConverter() : base(
+    public RegexRuleMatchesValueConverter() : base(
         matches => JsonSerializer.Serialize(matches, (JsonSerializerOptions)null!),
         json => JsonSerializer.Deserialize<Matches>(json, (JsonSerializerOptions)null!)!)
     { }

@@ -12,20 +12,20 @@ using SiteWatcher.Infra;
 namespace Infra.Persistence.Migrations
 {
     [DbContext(typeof(SiteWatcherContext))]
-    [Migration("20220724155949_alert search field trigram index")]
-    partial class alertsearchfieldtrigramindex
+    [Migration("20221214003545_watchMode_to_rule_and_changed_schema")]
+    partial class watchMode_to_rule_and_changed_schema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("siteWatcher_webApi")
-                .HasAnnotation("ProductVersion", "6.0.7")
+                .HasDefaultSchema("sw")
+                .HasAnnotation("ProductVersion", "6.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Alert", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Alert", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,10 +63,33 @@ namespace Infra.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Alerts", "siteWatcher_webApi");
+                    b.ToTable("Alerts", "sw");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Notifications.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AlertId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<Guid?>("EmailId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlertId");
+
+                    b.HasIndex("EmailId");
+
+                    b.ToTable("Notifications", "sw");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.Rule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,7 +112,7 @@ namespace Infra.Persistence.Migrations
                     b.Property<DateTime>("LastUpdatedAt")
                         .HasColumnType("timestamptz");
 
-                    b.Property<char>("WatchMode")
+                    b.Property<char>("Rule")
                         .HasColumnType("char");
 
                     b.HasKey("Id");
@@ -97,12 +120,58 @@ namespace Infra.Persistence.Migrations
                     b.HasIndex("AlertId")
                         .IsUnique();
 
-                    b.ToTable("WatchModes", "siteWatcher_webApi");
+                    b.ToTable("Rules", "sw");
 
-                    b.HasDiscriminator<char>("WatchMode");
+                    b.HasDiscriminator<char>("Rule");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.User", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Common.ValueObjects.IdempotentConsumer", b =>
+                {
+                    b.Property<string>("MessageId")
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Consumer")
+                        .HasColumnType("varchar(128)");
+
+                    b.HasKey("MessageId", "Consumer");
+
+                    b.ToTable("IdempotentConsumers", "sw");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Emails.Email", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DateSent")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Recipient")
+                        .IsRequired()
+                        .HasColumnType("varchar(385)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Emails", "sw");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -147,22 +216,42 @@ namespace Infra.Persistence.Migrations
 
                     b.HasIndex(new[] { "SecurityStamp" }, "IX_User_SecurityStamp");
 
-                    b.ToTable("Users", "siteWatcher_webApi");
+                    b.ToTable("Users", "sw");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.AnyChangesWatch", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.AnyChangesRule", b =>
                 {
-                    b.HasBaseType("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode");
+                    b.HasBaseType("SiteWatcher.Domain.Alerts.Entities.Rules.Rule");
 
-                    b.Property<string>("HtmlText")
-                        .HasColumnType("text");
+                    b.Property<string>("HtmlHash")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)");
 
                     b.HasDiscriminator().HasValue('A');
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.TermWatch", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.RegexRule", b =>
                 {
-                    b.HasBaseType("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode");
+                    b.HasBaseType("SiteWatcher.Domain.Alerts.Entities.Rules.Rule");
+
+                    b.Property<bool>("NotifyOnDisappearance")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RegexPattern")
+                        .IsRequired()
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<string>("_matches")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("Matches");
+
+                    b.HasDiscriminator().HasValue('R');
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.TermRule", b =>
+                {
+                    b.HasBaseType("SiteWatcher.Domain.Alerts.Entities.Rules.Rule");
 
                     b.Property<string>("Term")
                         .IsRequired()
@@ -171,15 +260,15 @@ namespace Infra.Persistence.Migrations
                     b.HasDiscriminator().HasValue('T');
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Alert", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Alert", b =>
                 {
-                    b.HasOne("SiteWatcher.Domain.Models.User", null)
-                        .WithMany()
+                    b.HasOne("SiteWatcher.Domain.Users.User", "User")
+                        .WithMany("Alerts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("SiteWatcher.Domain.Models.Alerts.Site", "Site", b1 =>
+                    b.OwnsOne("SiteWatcher.Domain.Alerts.ValueObjects.Site", "Site", b1 =>
                         {
                             b1.Property<int>("AlertId")
                                 .HasColumnType("integer");
@@ -194,7 +283,7 @@ namespace Infra.Persistence.Migrations
 
                             b1.HasKey("AlertId");
 
-                            b1.ToTable("Alerts", "siteWatcher_webApi");
+                            b1.ToTable("Alerts", "sw");
 
                             b1.WithOwner()
                                 .HasForeignKey("AlertId");
@@ -202,22 +291,50 @@ namespace Infra.Persistence.Migrations
 
                     b.Navigation("Site")
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Notifications.Notification", b =>
                 {
-                    b.HasOne("SiteWatcher.Domain.Models.Alerts.Alert", null)
-                        .WithOne("WatchMode")
-                        .HasForeignKey("SiteWatcher.Domain.Models.Alerts.WatchModes.WatchMode", "AlertId")
+                    b.HasOne("SiteWatcher.Domain.Alerts.Alert", "Alert")
+                        .WithMany("Notifications")
+                        .HasForeignKey("AlertId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SiteWatcher.Domain.Emails.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId");
+
+                    b.Navigation("Alert");
+
+                    b.Navigation("Email");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.Rule", b =>
+                {
+                    b.HasOne("SiteWatcher.Domain.Alerts.Alert", null)
+                        .WithOne("Rule")
+                        .HasForeignKey("SiteWatcher.Domain.Alerts.Entities.Rules.Rule", "AlertId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.WatchModes.TermWatch", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Emails.Email", b =>
                 {
-                    b.OwnsMany("SiteWatcher.Domain.Models.Alerts.WatchModes.TermOccurrence", "Occurrences", b1 =>
+                    b.HasOne("SiteWatcher.Domain.Users.User", null)
+                        .WithMany("Emails")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.TermRule", b =>
+                {
+                    b.OwnsMany("SiteWatcher.Domain.Alerts.Entities.Rules.TermOccurrence", "Occurrences", b1 =>
                         {
-                            b1.Property<int>("TermWatchId")
+                            b1.Property<int>("TermRuleId")
                                 .HasColumnType("integer");
 
                             b1.Property<int>("Id")
@@ -230,21 +347,30 @@ namespace Infra.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("varchar(512)");
 
-                            b1.HasKey("TermWatchId", "Id");
+                            b1.HasKey("TermRuleId", "Id");
 
-                            b1.ToTable("TermOccurrences", "siteWatcher_webApi");
+                            b1.ToTable("TermOccurrences", "sw");
 
                             b1.WithOwner()
-                                .HasForeignKey("TermWatchId");
+                                .HasForeignKey("TermRuleId");
                         });
 
                     b.Navigation("Occurrences");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Models.Alerts.Alert", b =>
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Alert", b =>
                 {
-                    b.Navigation("WatchMode")
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Rule")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Users.User", b =>
+                {
+                    b.Navigation("Alerts");
+
+                    b.Navigation("Emails");
                 });
 #pragma warning restore 612, 618
         }

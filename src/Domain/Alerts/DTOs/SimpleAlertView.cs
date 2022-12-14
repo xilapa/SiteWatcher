@@ -18,7 +18,7 @@ public class SimpleAlertView
         LastVerification = alert.LastVerification;
         NotificationsSent = 0;
         SiteName = alert.Site.Name;
-        WatchMode = Utils.GetWatchModeEnumByType(alert.WatchMode)!.Value;
+        Rule = Utils.GetRuleEnumByType(alert.Rule)!.Value;
     }
 
     public string? Id { get; set; }
@@ -29,7 +29,7 @@ public class SimpleAlertView
     // TODO: Count notifications sent
     public int NotificationsSent { get; set; }
     public string? SiteName { get; set; }
-    public WatchModes WatchMode { get; set; }
+    public Rules Rule { get; set; }
 
     public static SimpleAlertView FromAlert(Alert alert, IIdHasher idHasher) =>
         new(alert, idHasher);

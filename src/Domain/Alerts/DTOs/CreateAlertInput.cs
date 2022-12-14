@@ -5,14 +5,14 @@ namespace SiteWatcher.Domain.Alerts.DTOs;
 public sealed class CreateAlertInput
 {
     public CreateAlertInput(string name, Frequencies frequency, string siteName,
-     string siteUri, WatchModes watchMode, string? term, bool? notifyOnDisappearance,
+     string siteUri, Rules rule, string? term, bool? notifyOnDisappearance,
      string? regexPattern)
     {
         Name = name;
         Frequency = frequency;
         SiteName = siteName;
         SiteUri = siteUri;
-        WatchMode = watchMode;
+        Rule = rule;
         Term = term;
         NotifyOnDisappearance = notifyOnDisappearance;
         RegexPattern = regexPattern;
@@ -25,7 +25,7 @@ public sealed class CreateAlertInput
     public Frequencies Frequency { get; set; }
     public string SiteName { get; set; } = null!;
     public string SiteUri { get; set; } = null!;
-    public WatchModes WatchMode { get; set; }
+    public Rules Rule { get; set; }
 
     // Term watch
     public string? Term { get; set; }

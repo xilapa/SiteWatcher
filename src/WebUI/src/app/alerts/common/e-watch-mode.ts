@@ -1,18 +1,18 @@
-﻿export enum EWatchMode{
+﻿export enum Rules{
     AnyChanges = 1,
     Term,
     Regex
 }
 
-export class WatchModeUtils{
-    public static getWatchModeTranslationKey(watchMode: EWatchMode): string{
-        switch (watchMode) {
-            case EWatchMode.AnyChanges:
-                return "alert.watchMode.anyChanges"
-            case EWatchMode.Term:
-                return "alert.watchMode.term"
-            case EWatchMode.Regex:
-                return "alert.watchMode.regex"
+export class RuleUtils{
+    public static getRuleTranslationKey(rule: Rules): string{
+        switch (rule) {
+            case Rules.AnyChanges:
+                return "alert.rule.anyChanges"
+            case Rules.Term:
+                return "alert.rule.term"
+            case Rules.Regex:
+                return "alert.rule.regex"
         }
     }
 

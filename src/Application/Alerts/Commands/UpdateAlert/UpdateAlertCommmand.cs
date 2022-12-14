@@ -19,7 +19,7 @@ public class UpdateAlertCommmand : IRequest<CommandResult>
     public UpdateInfo<Frequencies>? Frequency { get; set; }
     public UpdateInfo<string>? SiteName { get; set; }
     public UpdateInfo<string>? SiteUri { get; set; }
-    public UpdateInfo<WatchModes>? WatchMode { get; set; }
+    public UpdateInfo<Rules>? Rule { get; set; }
 
     // Term watch
     public UpdateInfo<string>? Term { get; set; }
@@ -37,7 +37,7 @@ public class UpdateAlertCommmand : IRequest<CommandResult>
             Frequency,
             SiteName,
             SiteUri,
-            WatchMode,
+            Rule,
             Term,
             NotifyOnDisappearance,
             RegexPattern

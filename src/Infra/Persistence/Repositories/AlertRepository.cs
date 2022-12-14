@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.DTOs;
-using SiteWatcher.Domain.Alerts.Entities.WatchModes;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.ValueObjects;
 
@@ -27,7 +27,7 @@ public class AlertRepository : Repository<Alert>, IAlertRepository
                     Frequency = alert.Frequency,
                     SiteName = alert.Site.Name,
                     SiteUri = alert.Site.Uri,
-                    WatchMode = alert.WatchMode
+                    Rule = alert.Rule
                 })
                 .AsSplitQuery()
                 .SingleOrDefault()
@@ -49,15 +49,15 @@ public class AlertRepository : Repository<Alert>, IAlertRepository
             return null!;
 
         var alert = Alert.GetModelForUpdate(updateAlertDto);
-        // Attach alert and site, because the watch mode is already tracked
+        // Attach alert and site, because the rule is already tracked
         Context.Attach(alert);
         return alert;
     }
 
-    public void DeleteWatchMode(WatchModeId watchModeId)
+    public void DeleteRule(RuleId ruleId)
     {
-        var watchMode = Context.ChangeTracker.Entries<WatchMode>()
-            .Single(w => w.Entity.Id == watchModeId);
-        watchMode.State = EntityState.Deleted;
+        var rule = Context.ChangeTracker.Entries<Rule>()
+            .Single(w => w.Entity.Id == ruleId);
+        rule.State = EntityState.Deleted;
     }
 }

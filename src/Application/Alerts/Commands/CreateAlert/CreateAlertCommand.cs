@@ -15,7 +15,7 @@ public class CreateAlertCommand : IRequest<DetailedAlertView>
     public Frequencies Frequency { get; set; }
     public string SiteName { get; set; } = null!;
     public string SiteUri { get; set; } = null!;
-    public WatchModes WatchMode { get; set; }
+    public Rules Rule { get; set; }
 
     // Term watch
     public string? Term { get; set; }
@@ -29,7 +29,7 @@ public class CreateAlertCommand : IRequest<DetailedAlertView>
             command.Frequency,
             command.SiteName,
             command.SiteUri,
-            command.WatchMode,
+            command.Rule,
             command.Term,
             command.NotifyOnDisappearance,
             command.RegexPattern);

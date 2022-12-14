@@ -6,7 +6,7 @@ namespace SiteWatcher.Domain.Alerts.DTOs;
 public class DetailedAlertView
 {
     public DetailedAlertView(string id, string name, DateTime createdAt, Frequencies frequency,
-        DateTime? lastVerification, int notificationsSent, SiteView site, DetailedWatchModeView watchMode)
+        DateTime? lastVerification, int notificationsSent, SiteView site, DetailedRuleView rule)
     {
         Id = id;
         Name = name;
@@ -15,7 +15,7 @@ public class DetailedAlertView
         LastVerification = lastVerification;
         NotificationsSent = notificationsSent;
         Site = site;
-        WatchMode = watchMode;
+        Rule = rule;
     }
 
     public DetailedAlertView(Alert alert, IIdHasher idHasher)
@@ -27,7 +27,7 @@ public class DetailedAlertView
         LastVerification = alert.LastVerification;
         NotificationsSent = 0;
         Site = alert.Site;
-        WatchMode = alert.WatchMode;
+        Rule = alert.Rule;
     }
 
     public DetailedAlertView()
@@ -40,7 +40,7 @@ public class DetailedAlertView
     public DateTime? LastVerification { get; set; }
     public int NotificationsSent { get; set; }
     public SiteView? Site { get; set; }
-    public DetailedWatchModeView? WatchMode { get; set; }
+    public DetailedRuleView? Rule { get; set; }
 
     public static DetailedAlertView FromAlert(Alert alert, IIdHasher idHasher) =>
         new(alert, idHasher);

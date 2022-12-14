@@ -60,6 +60,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
         email.DateSent = DateTime.UtcNow;
 
         // TODO: create flag to disable email sending
+        // TODO: set error message on email
         return await _emailService.SendEmailAsync(message.Subject, message.Body, message.Recipients, cancellationToken);
     }
 }
