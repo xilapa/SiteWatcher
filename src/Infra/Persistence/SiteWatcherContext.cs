@@ -34,7 +34,9 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
         base.OnConfiguring(optionsBuilder);
         optionsBuilder
             // .UseModel(SiteWatcherContextModel.Instance)
-            .UseNpgsql(_appSettings.ConnectionString);
+            .UseNpgsql(
+                _appSettings.ConnectionString,
+                opts => opts.MigrationsHistoryTable("EfMigrations", "sw"));
         if (_appSettings.IsDevelopment)
         {
             optionsBuilder
