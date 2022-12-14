@@ -14,7 +14,7 @@ namespace SiteWatcher.Infra.Authorization.GoogleAuth;
 
 public class GoogleAuthService : IGoogleAuthService
 {
-    private readonly HttpClient _httpClient;
+    private readonly System.Net.Http.HttpClient _httpClient;
     private readonly IGoogleSettings _googleSettings;
     private readonly ILogger<GoogleAuthService> _logger;
 

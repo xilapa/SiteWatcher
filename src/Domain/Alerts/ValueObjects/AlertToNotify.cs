@@ -8,7 +8,7 @@ namespace SiteWatcher.Domain.Alerts.ValueObjects;
 // TODO: Try to remove this
 public sealed class AlertToNotify
 {
-    public AlertToNotify(Alert alert, NotificationId notificationId, Language userLanguage)
+    public AlertToNotify(Alert alert, NotificationId notificationId, NotificationType type, Language userLanguage)
     {
         Name = alert.Name;
         SiteUri = alert.Site.Uri.ToString();
@@ -16,6 +16,7 @@ public sealed class AlertToNotify
         FrequencyString = LocalizedMessages.FrequencyString(userLanguage, alert.Frequency);
         var rule = GetRuleEnumByType(alert.Rule);
         RuleString = LocalizedMessages.RuleString(userLanguage, rule!.Value);
+        Type = type;
         NotificationId = notificationId;
     }
 
@@ -25,4 +26,11 @@ public sealed class AlertToNotify
     public string FrequencyString { get; }
     public string RuleString { get; }
     public NotificationId NotificationId { get; }
+    public NotificationType Type { get; set; }
+}
+
+public enum NotificationType
+{
+    Sucess = 1,
+    Error
 }

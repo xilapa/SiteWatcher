@@ -10,8 +10,8 @@ public static class HttpRetryPolicies
 {
     public static IAsyncPolicy<HttpResponseMessage> AnyErrorRetryWithTimeout(ILogger logger,
         string uri, string requestBody) =>
-        AnyErrorRetryPolicy(logger, uri, requestBody)
-            .WrapAsync(TimeoutPolicy());
+            TimeoutPolicy()
+                .WrapAsync(AnyErrorRetryPolicy(logger, uri, requestBody));
 
     public static IAsyncPolicy<HttpResponseMessage> AnyErrorRetryPolicy(ILogger logger,
         string uri, string requestBody) =>
@@ -36,8 +36,8 @@ public static class HttpRetryPolicies
 
     public static IAsyncPolicy<HttpResponseMessage> TransientErrorsRetryWithTimeout(ILogger logger,
         string uri, string requestBody) =>
-        TransientErrorsRetryPolicy(logger, uri, requestBody)
-            .WrapAsync(TimeoutPolicy());
+        TimeoutPolicy()
+            .WrapAsync(TransientErrorsRetryPolicy(logger, uri, requestBody));
 
     public static IAsyncPolicy<HttpResponseMessage> TransientErrorsRetryPolicy(ILogger logger,
         string uri, string requestBody) =>

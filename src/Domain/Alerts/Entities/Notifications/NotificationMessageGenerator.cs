@@ -14,13 +14,15 @@ public static class NotificationMessageGenerator
     public static string GetSubject(Language language) =>
          LocalizedMessages.AlertNotificationMessageSubject(language);
 
-    public static async Task<string> GetBody(User user, List<AlertToNotify> successes, List<AlertToNotify> errors, string siteWatcherUri)
+    public static async Task<string> GetBody(User user, List<AlertToNotify> alertToNotify, string siteWatcherUri)
     {
         // Get the message template and the data to fill the template
         var messageTemplate = LocalizedMessages.AlertNotificationMessageTemplate(user.Language);
         var messageData = new AlertNotificationMessageData(
-            user.Name, successes,
-            errors, siteWatcherUri
+            user.Name,
+            alertToNotify.Where(_ => NotificationType.Sucess.Equals(_.Type)),
+            alertToNotify.Where(_ => NotificationType.Error.Equals(_.Type)),
+            siteWatcherUri
             );
 
         // Fill the template using Fluid

@@ -51,7 +51,6 @@ var host = new HostBuilder()
             .SetupJobs(workerSettings, hostContext.HostingEnvironment)
             .SetupMessaging(workerSettings, rabbitMqSettings)
             .SetupConsumers()
-            .AddHttpClient()
             .SetupEmail(emailSettings);
     })
     .Build();

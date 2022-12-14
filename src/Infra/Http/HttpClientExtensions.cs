@@ -10,9 +10,9 @@ using System.IO;
 
 namespace SiteWatcher.Infra.Http;
 
-public static class HttpClientExtensions
+internal static class HttpClientExtensions
 {
-    public static async Task<T?> PostAsync<T>(this HttpClient httpClient, string uri,
+    internal static async Task<T?> PostAsync<T>(this System.Net.Http.HttpClient httpClient, string uri,
         object requestBody, ILogger logger,
         Func<ILogger, string, string, IAsyncPolicy<HttpResponseMessage>> policyFunc,
         CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ public static class HttpClientExtensions
         return result;
     }
 
-    public static async Task<(Stream html, bool success)> GetStreamAsyncWithRetries(this HttpClient httpClient,
+    internal static async Task<Stream?> GetStreamAsyncWithRetries(this System.Net.Http.HttpClient httpClient,
     Uri uri, ILogger logger,
     Func<ILogger, string, string, IAsyncPolicy<HttpResponseMessage>> policyFunc,
     CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ public static class HttpClientExtensions
                 .ExecuteAsync(() => httpClient.GetAsync(uri, cancellationToken));
 
             if (!httpResponse.IsSuccessStatusCode)
-                return (Stream.Null, false);
+                return Stream.Null;
 
             using var content = httpResponse.Content;
             using var htmlResult = await content.ReadAsStreamAsync(cancellationToken);
@@ -53,11 +53,11 @@ public static class HttpClientExtensions
             var memoryStream = new MemoryStream();
             await htmlResult.CopyToAsync(memoryStream, cancellationToken);
             memoryStream.Position = 0;
-            return (memoryStream, true);
+            return memoryStream;
         }
         catch
         {
-            return (Stream.Null, false);
+            return Stream.Null;
         }
     }
 }

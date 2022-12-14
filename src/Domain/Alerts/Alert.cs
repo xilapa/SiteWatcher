@@ -165,25 +165,29 @@ public class Alert : BaseModel<AlertId>
         SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
     }
 
-    public async Task<AlertToNotify?> ExecuteRule(Stream html, DateTime currentTime)
+    public async Task<AlertToNotify?> ExecuteRule(Stream? html, DateTime currentTime)
     {
+        // when stream is null the site can't be fetched
+        if(html == Stream.Null || html == null)
+            return GenerateAlertToNotify(NotificationType.Error, currentTime);
+
         var notifyUser = await Rule.Execute(html);
         LastVerification = currentTime;
 
         AlertToNotify? alertToNotify = null;
 
         if (notifyUser)
-            alertToNotify = GenerateAlertToNotify(currentTime);
+            alertToNotify = GenerateAlertToNotify(NotificationType.Sucess, currentTime);
 
         return alertToNotify;
     }
 
-    public AlertToNotify GenerateAlertToNotify(DateTime currentTime)
+    public AlertToNotify GenerateAlertToNotify(NotificationType type, DateTime currentTime)
     {
         var notification = new Notification(currentTime);
         _notifications ??= new List<Notification>();
         _notifications.Add(notification);
-        return new AlertToNotify(this, notification.Id, User.Language);
+        return new AlertToNotify(this, notification.Id, type, User.Language);
     }
 
     /// <summary>
@@ -191,12 +195,10 @@ public class Alert : BaseModel<AlertId>
     /// </summary>
     /// <param name="email">The email to be set on the notifications</param>
     /// <param name="notificationIds">The list of notifications Ids</param>
-    /// <returns>True if the email was set on any notification, False if there is no notification with the Ids passed</returns>
-    public bool SetEmail(Email email, IEnumerable<NotificationId> notificationIds)
+    public void SetEmail(Email email, IEnumerable<NotificationId> notificationIds)
     {
         var notification = _notifications?.SingleOrDefault(n => notificationIds.Contains(n.Id));
-        if (notification == null) return false;
+        if (notification == null) return;
         notification.SetEmail(email);
-        return true;
     }
 }

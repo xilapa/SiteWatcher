@@ -38,6 +38,11 @@ public class Session : ISession
         AuthTokenPayload = authenticated ? httpContextAccessor.HttpContext.GetAuthTokenPayload() : string.Empty;
     }
 
+    public Session()
+    {
+        AuthTokenPayload = string.Empty;
+    }
+
     public virtual DateTime Now => DateTime.UtcNow;
     public UserId? UserId { get; }
     public string? Email { get; }

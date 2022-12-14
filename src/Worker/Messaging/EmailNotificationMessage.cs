@@ -4,11 +4,11 @@ namespace SiteWatcher.Worker.Messaging;
 
 public sealed class EmailNotificationMessage
 {
-    public EmailNotificationMessage(string subject, string body, params MailRecipient[] recipients)
+    public EmailNotificationMessage(MailMessage mailMessage)
     {
-        Subject = subject;
-        Body = body;
-        Recipients = recipients;
+        Subject = mailMessage.Subject;
+        Body = mailMessage.Body!;
+        Recipients = mailMessage.Recipients;
     }
 
     public string Subject{ get; set; }
