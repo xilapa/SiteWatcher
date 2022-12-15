@@ -1,5 +1,6 @@
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
@@ -14,21 +15,17 @@ namespace SiteWatcher.Worker.Jobs;
 
 public sealed class ExecuteAlertsPeriodically : BackgroundService
 {
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ExecuteAlertsPeriodically> _logger;
-    private readonly SiteWatcherContext _context;
     private readonly ICapPublisher _capPublisher;
-    private readonly ExecuteAlertsCommandHandler _handler;
     private readonly PeriodicTimer _timer;
 
-    public ExecuteAlertsPeriodically(ILogger<ExecuteAlertsPeriodically> logger, SiteWatcherContext context, ICapPublisher capPublisher,
-        ExecuteAlertsCommandHandler handler, IAppSettings settings)
+    public ExecuteAlertsPeriodically(IServiceScopeFactory scopeProvider, ILogger<ExecuteAlertsPeriodically> logger, ICapPublisher capPublisher, IAppSettings settings)
     {
+        _scopeFactory = scopeProvider;
         _logger = logger;
-        _context = context;
         _capPublisher = capPublisher;
-        _handler = handler;
-
-        _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromHours(2));
+        _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromHours(1));
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
@@ -36,20 +33,23 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await ExecuteAlerts(stoppingToken);
+                await using var scope = _scopeFactory.CreateAsyncScope();
+                await using var ctx = scope.ServiceProvider.GetRequiredService<SiteWatcherContext>();
+                var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
+                await ExecuteAlerts(ctx, handler, stoppingToken);
                 await _timer.WaitForNextTickAsync(stoppingToken);
             }
         }, stoppingToken);
 
-    private async Task ExecuteAlerts(CancellationToken ct)
+    private async Task ExecuteAlerts(SiteWatcherContext ctx, ExecuteAlertsCommandHandler handler, CancellationToken ct)
     {
         var frequencies = GetAlertFrequenciesForCurrentHour();
 
         _logger.LogInformation("{Date} - Watch Alerts Started: {Frequencies}", DateTime.UtcNow, frequencies);
 
-        using var transaction = _context.Database.BeginTransaction(_capPublisher, autoCommit: false);
+        using var transaction = ctx.Database.BeginTransaction(_capPublisher, autoCommit: false);
 
-        var notifications = await _handler.Handle(new ExecuteAlertsCommand(frequencies), ct);
+        var notifications = await handler.Handle(new ExecuteAlertsCommand(frequencies), ct);
 
         foreach (var n in (notifications as ValueResult<List<NotificationToSend>>)!.Value)
         {
@@ -57,13 +57,14 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
             // Use the email id as the message id
             var headers = new Dictionary<string, string>
             {
-                [MessageHeaders.MessageIdKey] = n.EmailNotification!.EmailId.ToString()!
+                [MessageHeaders.MessageIdKey] = n.EmailNotification!.EmailId.ToString()!,
+                ["content-type"] = "application/json"
             };
             var emailNotifMessage = new EmailNotificationMessage(n.EmailNotification!);
             await _capPublisher.PublishAsync(RoutingKeys.EmailNotification, emailNotifMessage, headers!, ct);
         }
 
-        await _context.SaveChangesAsync(CancellationToken.None);
+        await ctx.SaveChangesAsync(CancellationToken.None);
 
         await transaction.CommitAsync(CancellationToken.None);
 

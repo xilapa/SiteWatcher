@@ -4,6 +4,10 @@ namespace SiteWatcher.Worker.Messaging;
 
 public sealed class EmailNotificationMessage
 {
+    // ctor for json serializer
+    public EmailNotificationMessage()
+    { }
+
     public EmailNotificationMessage(MailMessage mailMessage)
     {
         Subject = mailMessage.Subject;
