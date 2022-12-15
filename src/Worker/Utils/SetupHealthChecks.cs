@@ -1,4 +1,3 @@
-using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
@@ -44,7 +43,6 @@ public static class SetupHealthChecks
         new HealthCheckOptions
         {
             Predicate = hc => hc.Tags.Count == 0,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
         // Full dependencies check endpoint
@@ -52,35 +50,8 @@ public static class SetupHealthChecks
         new HealthCheckOptions
         {
             Predicate = hc => hc.Tags.Count != 0,
-            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
-        endpointBuilder.MapHealthChecksUI(opts => opts.UIPath = healthCheckSettings.UiPath);
         return endpointBuilder;
-    }
-
-    // TODO: remove UI and use grafana with prometheus
-    public static IServiceCollection ConfigureHealthChecksUI(this IServiceCollection services, IConfiguration configuration)
-    {
-        var workerSettings = configuration.Get<WorkerSettings>();
-        var healthCheckSettings = configuration.Get<HealthCheckSettings>();
-
-        services.AddHealthChecksUI(opts =>
-        {
-            opts.SetApiMaxActiveRequests(1);
-            opts.MaximumHistoryEntriesPerEndpoint(100);
-            opts.AddHealthCheckEndpoint(
-                "Worker - Simple Connect",
-                $"{healthCheckSettings.BaseHost}/{healthCheckSettings.BasePath}"
-            );
-            opts.AddHealthCheckEndpoint(
-                "Worker - Full dependency chek",
-                $"{healthCheckSettings.BaseHost}/{healthCheckSettings.FullCheckPath}"
-            );
-            opts.SetEvaluationTimeInSeconds(15 * 60);
-        })
-        .AddInMemoryStorage();
-
-        return services;
     }
 }

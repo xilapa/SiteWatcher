@@ -29,8 +29,7 @@ var host = new HostBuilder()
                 .BuildServiceProvider()
                 .GetRequiredService<IConfiguration>();
 
-            services.ConfigureHealthChecks(configuration)
-                .ConfigureHealthChecksUI(configuration);
+            services.ConfigureHealthChecks(configuration);
         });
 
         webBuilder.Configure((context, app) =>
@@ -47,11 +46,11 @@ var host = new HostBuilder()
 
         serviceCollection
             .Configure<WorkerSettings>(hostContext.Configuration)
-            .SetupPersistence(workerSettings, hostContext.HostingEnvironment)
-            .SetupJobs(workerSettings, hostContext.HostingEnvironment)
-            .SetupMessaging(workerSettings, rabbitMqSettings)
+            .SetupPersistence(workerSettings!, hostContext.HostingEnvironment)
+            .SetupJobs(workerSettings!, hostContext.HostingEnvironment)
+            .SetupMessaging(workerSettings!, rabbitMqSettings!)
             .SetupConsumers()
-            .SetupEmail(emailSettings);
+            .SetupEmail(emailSettings!);
     })
     .Build();
 
