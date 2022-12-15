@@ -61,5 +61,5 @@ public static class HttpRetryPolicies
                 });
 
     public static IAsyncPolicy TimeoutPolicy() =>
-        Policy.TimeoutAsync(TimeSpan.FromSeconds(5));
+        Policy.TimeoutAsync(TimeSpan.FromSeconds(15));
 }
