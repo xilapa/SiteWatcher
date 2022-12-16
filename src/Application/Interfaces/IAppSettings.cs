@@ -14,4 +14,7 @@ public interface IAppSettings
     string ApiKey { get; set; }
     string IdHasherSalt { get; set; }
     int MinimumHashedIdLength { get; set; }
+    string MessageIdKey { get; }
+    public bool InMemoryStorageAndQueue { get; set; }
+    public string EmailNotificationRoutingKey { get; set; }
 }

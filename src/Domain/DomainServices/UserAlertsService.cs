@@ -67,10 +67,10 @@ public sealed class NotificationToSend
 public interface IUserAlertsService
 {
     /// <summary>
-    /// Executes all user alerts.
+    /// Executes all user alerts. If there are no notification for the user, null is returned.
     /// </summary>
     /// <param name="user">User with the alerts and rules loaded</param>
-    /// <param name="htmlStreams">A dictionary with html streams by alertId</param>
+    /// <param name="htmlStreams">A dictionary with html streams by alertId for the user alerts</param>
     /// <param name="currentTime">Current time</param>
     /// <returns>The notification to send</returns>
     Task<NotificationToSend?> ExecuteAlerts(User user, Dictionary<AlertId, Stream?> htmlStreams, DateTime currentTime, string siteWatcherUri);

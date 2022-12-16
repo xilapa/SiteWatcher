@@ -18,37 +18,9 @@ public class WorkerSettings
     public string DbConnectionString { get; set; } = null!;
 }
 
-public class RabbitMqSettings : IRabbitMqSettings
-{
-    [ConfigurationKeyName("RabbitMq_Host")]
-    public string Host { get; set; } = null!;
-
-    [ConfigurationKeyName("RabbitMq_VirtualHost")]
-    public string VirtualHost { get; set; } = null!;
-
-    [ConfigurationKeyName("RabbitMq_UserName")]
-    public string UserName { get; set; } = null!;
-
-    [ConfigurationKeyName("RabbitMq_Password")]
-    public string Password { get; set; } = null!;
-
-    [ConfigurationKeyName("RabbitMq_Port")]
-    public int Port { get; set; }
-}
-
-public static class Exchanges
-{
-    public const string SiteWatcher = "site-watcher";
-}
-
 public static class RoutingKeys
 {
     public const string EmailNotification = "site-watcher.worker.notifications.email";
-}
-
-public static class MessageHeaders
-{
-    public const string MessageIdKey = "message-id";
 }
 
 public class WorkerAppSettings : IAppSettings
@@ -65,6 +37,10 @@ public class WorkerAppSettings : IAppSettings
     public string ApiKey { get; set; } = null!;
     public string IdHasherSalt { get; set; } = null!;
     public int MinimumHashedIdLength { get; set; }
+    string IAppSettings.MessageIdKey => MessageIdKey;
+    public const string MessageIdKey = "message-id";
+    public bool InMemoryStorageAndQueue { get; set; }
+    public string EmailNotificationRoutingKey { get; set; } = null!;
 }
 
 public class EmailSettings : IEmailSettings

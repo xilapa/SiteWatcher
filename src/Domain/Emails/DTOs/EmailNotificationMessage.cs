@@ -1,6 +1,4 @@
-using SiteWatcher.Domain.Emails;
-
-namespace SiteWatcher.Worker.Messaging;
+namespace SiteWatcher.Domain.Emails.DTOs;
 
 public sealed class EmailNotificationMessage
 {

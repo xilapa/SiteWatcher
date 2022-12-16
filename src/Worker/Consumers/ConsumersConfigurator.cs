@@ -4,7 +4,7 @@ namespace SiteWatcher.Worker.Consumers;
 
 public static class ConsumersConfigurator
 {
-    public static IServiceCollection SetupConsumers(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddConsumers(this IServiceCollection serviceCollection)
     {
         serviceCollection
             .AddTransient<IEmailNotificationConsumer, EmailNotificationConsumer>();

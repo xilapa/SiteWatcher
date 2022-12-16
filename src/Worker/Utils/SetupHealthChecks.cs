@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Infra.HealthChecks;
+using SiteWatcher.Infra.Messaging;
 
 namespace SiteWatcher.Worker.Utils;
 
@@ -18,15 +19,15 @@ public static class SetupHealthChecks
         services.AddHealthChecks()
             .AddCheck(
                 "Database",
-                new PostgresConnectionHealthCheck(workerSettings.DbConnectionString),
+                new PostgresConnectionHealthCheck(workerSettings!.DbConnectionString),
                 tags: new[] { HealthCheckSettings.TagDatabase }
             )
             .AddCheck("EmailHost",
-                 new EmailHealthCheck(emailSettings),
+                 new EmailHealthCheck(emailSettings!),
                 tags: new[] { HealthCheckSettings.TagEmailHost }
             )
             .AddCheck("RabbitMq",
-                new RabbitMqHealthCheck(rabbitMqSettins),
+                new RabbitMqHealthCheck(rabbitMqSettins!),
                 tags: new[] { HealthCheckSettings.TagRabbitMq });
 
         services.AddHealthChecks();
@@ -39,7 +40,7 @@ public static class SetupHealthChecks
         var healthCheckSettings = configuration.Get<HealthCheckSettings>();
 
         // Simple connect endpoint
-        endpointBuilder.MapHealthChecks(healthCheckSettings.BasePath,
+        endpointBuilder.MapHealthChecks(healthCheckSettings!.BasePath,
         new HealthCheckOptions
         {
             Predicate = hc => hc.Tags.Count == 0,

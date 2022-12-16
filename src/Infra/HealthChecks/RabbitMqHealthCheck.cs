@@ -1,17 +1,17 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
+using SiteWatcher.Infra.Messaging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Infra.HealthChecks;
 
 public sealed class RabbitMqHealthCheck : IHealthCheck
 {
-    private readonly IRabbitMqSettings _settings;
+    private readonly RabbitMqSettings _settings;
 
-    public RabbitMqHealthCheck(IRabbitMqSettings settings)
+    public RabbitMqHealthCheck(RabbitMqSettings settings)
     {
         _settings = settings;
     }

@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Emails.DTOs;
 using SiteWatcher.Infra;
-using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
 
 namespace SiteWatcher.Worker.Consumers;
@@ -30,7 +30,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
     [CapSubscribe(RoutingKeys.EmailNotification, Group = RoutingKeys.EmailNotification)]
     public async Task Consume(EmailNotificationMessage message, [FromCap] CapHeader capHeader, CancellationToken cancellationToken)
     {
-        var messageId = capHeader[MessageHeaders.MessageIdKey]!;
+        var messageId = capHeader[WorkerAppSettings.MessageIdKey]!;
         var hasBeenProcessed = await _context.HasBeenProcessed(messageId, nameof(EmailNotificationConsumer));
         if (hasBeenProcessed)
         {

@@ -1,11 +1,10 @@
-using System.Threading.Channels;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.DomainServices;
-using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
@@ -32,14 +31,16 @@ public sealed class ExecuteAlertsCommandHandler
     private readonly IUserAlertsService _userAlertsService;
     private readonly ISession _session;
     private readonly IAppSettings _appSettings;
+    private readonly IPublishService _pubService;
 
-    public ExecuteAlertsCommandHandler(IUserRepository userRepository, IHttpClient httpClient, IUserAlertsService userAlertsService, ISession session, IAppSettings appSettings)
+    public ExecuteAlertsCommandHandler(IUserRepository userRepository, IHttpClient httpClient, IUserAlertsService userAlertsService, ISession session, IAppSettings appSettings, IPublishService pubService)
     {
         _userRepository = userRepository;
         _httpClient = httpClient;
         _userAlertsService = userAlertsService;
         _session = session;
         _appSettings = appSettings;
+        _pubService = pubService;
     }
 
     public async Task<CommandResult> Handle(ExecuteAlertsCommand cmmd, CancellationToken ct)
@@ -47,76 +48,60 @@ public sealed class ExecuteAlertsCommandHandler
         if (Enumerable.Empty<Frequencies>().Equals(cmmd.Frequencies))
             return CommandResult.Empty();
 
-        var usersWithAlerts = _userRepository.GetUserWithAlertsAsync(cmmd.Frequencies, ct);
-
-        // get the user site streams in parallel and send to a channel to generate one notification at a time
-        var streamsChan = Channel
-            .CreateBounded<(User, Dictionary<AlertId, Stream?>)>(
-                new BoundedChannelOptions(1)
-                {
-                    FullMode = BoundedChannelFullMode.Wait,
-                    SingleReader = true
-                });
-
-        // channel to send the notifications back
-        var notificationsChan = Channel
-            .CreateBounded<List<NotificationToSend>>(
-                new BoundedChannelOptions(1)
-                {
-                    FullMode = BoundedChannelFullMode.Wait,
-                    SingleReader = true,
-                    SingleWriter = true
-                });
-
-        // run a task to consume the items from the streamsChan one by one
-        _ = Task.Run(async () =>
+        try
         {
-            var notifications = new List<NotificationToSend>();
-            await foreach (var userAlerts in streamsChan.Reader.ReadAllAsync(ct))
-            {
-                var notif = await _userAlertsService
-                    .ExecuteAlerts(userAlerts.Item1, userAlerts.Item2, _session.Now, _appSettings.FrontEndUrl);
-                if(notif != null)
-                    notifications.Add(notif);
-            }
-            await notificationsChan.Writer.WriteAsync(notifications);
-            notificationsChan.Writer.Complete();
-        })
-        .ContinueWith(task =>
-            {
-                if (task.Exception is not null)
-                    throw task.Exception;
-            },ct);
-
-        var parallelOptions = new ParallelOptions
+            await _pubService.WithPublisher((pub) => ExecuteAlertsLoop(cmmd.Frequencies, pub, ct), ct);
+        }
+        catch
         {
-            CancellationToken = ct,
-            MaxDegreeOfParallelism = 2
-        };
-        await Parallel.ForEachAsync(
-            usersWithAlerts,
-            parallelOptions,
-            (user, ct) => GetUserSiteStreams(user, streamsChan.Writer, ct)
-        );
+            return CommandResult.FromValue(false);
+        }
 
-        streamsChan.Writer.Complete();
-
-        // read the notifications from the background task
-        var notifications = await notificationsChan.Reader.ReadAsync(ct);
-
-        return CommandResult.FromValue(notifications);
+        return CommandResult.FromValue(true);
     }
 
-    private async ValueTask GetUserSiteStreams(User user, ChannelWriter<(User, Dictionary<AlertId, Stream?>)> chan, CancellationToken ct)
+    private async Task ExecuteAlertsLoop(IEnumerable<Frequencies> freqs, IPublisher publisher, CancellationToken ct)
     {
-        var streamsDict = new Dictionary<AlertId, Stream?>(user.Alerts.Count);
-        foreach (var alert in user.Alerts)
+        var loop = true;
+        DateTime? lastCreatedDate = null;
+        while(loop)
         {
-            // HttpClient is thread safe
-            // https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-6.0#thread-safety
-            var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
-            streamsDict.Add(alert.Id, htmlStream);
+            var usersWithAlerts = (await _userRepository
+                .GetUserWithAlertsAsync(freqs, 50, lastCreatedDate, ct))
+                .ToArray();
+
+            if (usersWithAlerts.Length == 0)
+            {
+                loop = false;
+                continue;
+            }
+
+            lastCreatedDate = usersWithAlerts[^1].CreatedAt;
+
+            foreach(var user in usersWithAlerts)
+            {
+                var streamsDict = new Dictionary<AlertId, Stream?>(user.Alerts.Count);
+                foreach (var alert in user.Alerts)
+                {
+                    // HttpClient is thread safe
+                    // https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-6.0#thread-safety
+                    var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
+                    streamsDict.Add(alert.Id, htmlStream);
+                }
+                var notif = await _userAlertsService
+                    .ExecuteAlerts(user, streamsDict, _session.Now, _appSettings.FrontEndUrl);
+
+                if(notif == null) continue;
+
+                // Publish the email message on the bus
+                // Use the email id as the message id
+                var headers = new Dictionary<string, string>
+                {
+                    [_appSettings.MessageIdKey] = notif.EmailNotification!.EmailId.ToString()!,
+                };
+
+                await publisher.PublishAsync(_appSettings.EmailNotificationRoutingKey, notif.EmailNotification, headers, ct);
+            }
         }
-        await chan.WriteAsync((user, streamsDict), ct);
     }
 }

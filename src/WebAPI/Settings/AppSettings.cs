@@ -24,4 +24,11 @@ public class AppSettings : IAppSettings
     public string ApiKey { get; set; } = null!;
     public string IdHasherSalt { get; set; } = null!;
     public int MinimumHashedIdLength { get; set; }
+
+    string IAppSettings.MessageIdKey => MessageIdKey;
+
+    public bool InMemoryStorageAndQueue { get; set; }
+    public string EmailNotificationRoutingKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public const string MessageIdKey = "message-id";
 }

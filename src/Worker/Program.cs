@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Infra;
+using SiteWatcher.Infra.Messaging;
 using SiteWatcher.Worker;
 using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
-using SiteWatcher.Worker.Messaging;
 using SiteWatcher.Worker.Persistence;
 using SiteWatcher.Worker.Utils;
 
@@ -44,12 +46,21 @@ var host = new HostBuilder()
         var rabbitMqSettings = hostContext.Configuration.Get<RabbitMqSettings>();
         var emailSettings = hostContext.Configuration.Get<EmailSettings>();
 
+        var appSettings = new WorkerAppSettings
+        {
+            IsDevelopment = hostContext.HostingEnvironment.IsDevelopment(),
+            ConnectionString = workerSettings!.DbConnectionString,
+            InMemoryStorageAndQueue = workerSettings.UseInMemoryStorageAndQueue,
+            EmailNotificationRoutingKey = RoutingKeys.EmailNotification
+        };
+
         serviceCollection
+            .AddSingleton<IAppSettings>(appSettings)
             .Configure<WorkerSettings>(hostContext.Configuration)
-            .SetupPersistence(workerSettings!, hostContext.HostingEnvironment)
-            .SetupJobs(workerSettings!, hostContext.HostingEnvironment)
-            .SetupMessaging(workerSettings!, rabbitMqSettings!)
-            .SetupConsumers()
+            .SetupPersistence(appSettings)
+            .SetupJobs(workerSettings)
+            .SetupMessaging(rabbitMqSettings!, appSettings)
+            .AddConsumers()
             .SetupEmail(emailSettings!);
     })
     .Build();

@@ -21,11 +21,16 @@ public class UserRepository : Repository<User>, IUserRepository
         return (await Context.Users.FirstOrDefaultAsync(predicate, cancellationToken: cancellationToken))!;
     }
 
-    public IAsyncEnumerable<User> GetUserWithAlertsAsync(IEnumerable<Frequencies> frequencies, CancellationToken ct) =>
-         Context
+    public async Task<IEnumerable<User>> GetUserWithAlertsAsync(IEnumerable<Frequencies> frequencies, int take, DateTime? lastCreatedAt, CancellationToken ct) =>
+         await Context
             .Users
-            .Where(u => u.Active && u.EmailConfirmed)
+            .OrderBy(_ => _.CreatedAt)
+            .Where(u =>
+                u.Active
+                && u.EmailConfirmed
+                && (!lastCreatedAt.HasValue || (lastCreatedAt.HasValue! && u.CreatedAt > lastCreatedAt)))
             .Include(u => u.Alerts.Where(_ => frequencies.Contains(_.Frequency)))
             .ThenInclude(a => a.Rule)
-            .AsAsyncEnumerable();
+            .Take(take)
+            .ToArrayAsync(ct);
 }

@@ -42,4 +42,9 @@ public class TestAppSettings : IAppSettings
     public string ApiKey { get; set; }
     public string IdHasherSalt { get; set; }
     public int MinimumHashedIdLength { get; set; }
+
+    public string MessageIdKey { get; set; }
+
+    public bool InMemoryStorageAndQueue  { get; set; }
+    public string EmailNotificationRoutingKey { get; set; }
 }
