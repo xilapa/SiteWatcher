@@ -1,4 +1,3 @@
-using System.Text.Json;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -47,8 +46,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
 
         await _context.MarkMessageAsConsumed(messageId, nameof(EmailNotificationConsumer));
         await transaction.CommitAsync(CancellationToken.None);
-        var messageJson = JsonSerializer.Serialize(message);
-        _logger.LogInformation("{Date} Message consumed: {Message}", DateTime.UtcNow, messageJson);
+        _logger.LogInformation("{Date} Message consumed: {MessageId}", DateTime.UtcNow, messageId);
     }
 
     private async Task<string?> SendEmailNotification(EmailNotificationMessage message, string messageId, CancellationToken cancellationToken)
