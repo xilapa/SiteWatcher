@@ -1,6 +1,7 @@
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails.DTOs;
@@ -14,13 +15,15 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
     private readonly ILogger<EmailNotificationConsumer> _logger;
     private readonly SiteWatcherContext _context;
     private readonly IEmailServiceSingleton _emailService;
+    private readonly IEmailSettings _emailSettings;
 
     public EmailNotificationConsumer(ILogger<EmailNotificationConsumer> logger, SiteWatcherContext context,
-     IEmailServiceSingleton emailService)
+     IEmailServiceSingleton emailService, IEmailSettings emailSettings)
     {
         _logger = logger;
         _context = context;
         _emailService = emailService;
+        _emailSettings = emailSettings;
     }
 
     // CAP uses this attribute to create a queue and bind it with a routing key.
@@ -47,6 +50,8 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
         await _context.MarkMessageAsConsumed(messageId, nameof(EmailNotificationConsumer));
         await transaction.CommitAsync(CancellationToken.None);
         _logger.LogInformation("{Date} Message consumed: {MessageId}", DateTime.UtcNow, messageId);
+
+        await Task.Delay(TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds), cancellationToken);
     }
 
     private async Task<string?> SendEmailNotification(EmailNotificationMessage message, string messageId, CancellationToken cancellationToken)

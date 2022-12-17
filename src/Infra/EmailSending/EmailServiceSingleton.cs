@@ -36,7 +36,6 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
         {
             var smtpClient = await GetSmtpClient(cancellationToken);
             await smtpClient.SendAsync(msg, cancellationToken);
-            await Task.Delay(TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds), cancellationToken);
             return null;
         }
         catch (Exception e)
@@ -47,8 +46,8 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
             _smtpClient = null;
 
             return string.IsNullOrEmpty(e.Message) ?
-                $"Error sending the email: {e.InnerException?.Message ?? "No inner exception message"}" 
-                : e.Message;
+                $"Error sending the email: {e.InnerException?.Message ?? "No inner exception message"}"
+                : $"Error sending the email: {e.Message}";
         }
     }
 
