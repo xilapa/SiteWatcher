@@ -1,6 +1,10 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build-env
 LABEL version="0.0.1" mantainer="xilapa"
 WORKDIR /app
+
+# install cultures on alpine
+RUN apk add --no-cache icu-libs icu-data-full
+ENV DOTNET_SYSTEM_GLOBALIZTION_INVARIANT=false
 
 # Copy project files
 COPY src/Application ./src/Application
@@ -21,7 +25,7 @@ RUN dotnet restore "src/WebAPI/WebAPI.csproj"
 RUN dotnet publish "src/WebAPI/WebAPI.csproj" -c Release -o out --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine
 WORKDIR /app
 COPY --from=build-env /app/out .
 
