@@ -21,7 +21,7 @@ public sealed class HttpClient : IHttpClient, IDisposable
     }
 
     public Task<Stream?> GetStreamAsync(Uri uri, CancellationToken ct) =>
-        _client.GetStreamAsyncWithRetries(uri, _logger, AnyErrorRetryWithTimeout, ct);
+        _client.GetStreamAsyncWithRetries(uri, _logger, TransientErrorsRetryWithTimeout, ct);
 
     public void Dispose() => _client.Dispose();
 }
