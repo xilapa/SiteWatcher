@@ -1,6 +1,6 @@
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Entities.Notifications;
 using SiteWatcher.Domain.Alerts.ValueObjects;
-using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Emails.Repositories;
 using SiteWatcher.Domain.Users;
@@ -9,20 +9,21 @@ namespace SiteWatcher.Domain.DomainServices;
 
 public sealed class UserAlertsService : IUserAlertsService
 {
+    private readonly IHttpClient _httpClient;
     private readonly IEmailRepository _emailRepository;
 
-    public UserAlertsService(IEmailRepository emailRepository)
+    public UserAlertsService(IHttpClient httpClient, IEmailRepository emailRepository)
     {
+        _httpClient = httpClient;
         _emailRepository = emailRepository;
     }
 
-    public async Task<NotificationToSend?> ExecuteAlerts(User user, Dictionary<AlertId, Stream?> htmlStreams, DateTime currentTime, string siteWatcherUri)
+    public async Task<NotificationToSend?> ExecuteAlerts(User user, DateTime currentTime, string siteWatcherUri, CancellationToken ct)
     {
         var alertsToNotify = new List<AlertToNotify>();
         foreach (var alert in user.Alerts)
         {
-            var exists = htmlStreams.TryGetValue(alert.Id, out var htmlStream);
-            if(!exists) continue;
+            var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
             var alertToNotify = await alert.ExecuteRule(htmlStream, currentTime);
             if (alertToNotify != null)
                 alertsToNotify.Add(alertToNotify);
@@ -70,8 +71,7 @@ public interface IUserAlertsService
     /// Executes all user alerts. If there are no notification for the user, null is returned.
     /// </summary>
     /// <param name="user">User with the alerts and rules loaded</param>
-    /// <param name="htmlStreams">A dictionary with html streams by alertId for the user alerts</param>
     /// <param name="currentTime">Current time</param>
     /// <returns>The notification to send</returns>
-    Task<NotificationToSend?> ExecuteAlerts(User user, Dictionary<AlertId, Stream?> htmlStreams, DateTime currentTime, string siteWatcherUri);
+    Task<NotificationToSend?> ExecuteAlerts(User user, DateTime currentTime, string siteWatcherUri, CancellationToken ct);
 }

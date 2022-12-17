@@ -1,9 +1,7 @@
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common.Services;
-using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Domain.Users.Repositories;
 
@@ -27,16 +25,14 @@ public sealed class ExecuteAlertsCommand
 public sealed class ExecuteAlertsCommandHandler
 {
     private readonly IUserRepository _userRepository;
-    private readonly IHttpClient _httpClient;
     private readonly IUserAlertsService _userAlertsService;
     private readonly ISession _session;
     private readonly IAppSettings _appSettings;
     private readonly IPublishService _pubService;
 
-    public ExecuteAlertsCommandHandler(IUserRepository userRepository, IHttpClient httpClient, IUserAlertsService userAlertsService, ISession session, IAppSettings appSettings, IPublishService pubService)
+    public ExecuteAlertsCommandHandler(IUserRepository userRepository, IUserAlertsService userAlertsService, ISession session, IAppSettings appSettings, IPublishService pubService)
     {
         _userRepository = userRepository;
-        _httpClient = httpClient;
         _userAlertsService = userAlertsService;
         _session = session;
         _appSettings = appSettings;
@@ -80,16 +76,8 @@ public sealed class ExecuteAlertsCommandHandler
 
             foreach(var user in usersWithAlerts)
             {
-                var streamsDict = new Dictionary<AlertId, Stream?>(user.Alerts.Count);
-                foreach (var alert in user.Alerts)
-                {
-                    // HttpClient is thread safe
-                    // https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-6.0#thread-safety
-                    var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
-                    streamsDict.Add(alert.Id, htmlStream);
-                }
                 var notif = await _userAlertsService
-                    .ExecuteAlerts(user, streamsDict, _session.Now, _appSettings.FrontEndUrl);
+                    .ExecuteAlerts(user,_session.Now, _appSettings.FrontEndUrl, ct);
 
                 if(notif == null) continue;
 
