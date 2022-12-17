@@ -4,7 +4,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>0d9fea6b-08af-480a-9317-a52518f3f7d7</UserSecretsId>
-		<TieredPGO>true</TieredPGO>
+		<!-- <TieredPGO>true</TieredPGO> -->
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />

@@ -13,7 +13,7 @@ COPY src/WebAPI ./src/WebAPI/
 #COPY *.sln .
 
 #https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/#pgo
-ENV DOTNET_ReadyToRun=0
+# ENV DOTNET_ReadyToRun=0
 
 RUN dotnet restore "src/WebAPI/WebAPI.csproj"
 

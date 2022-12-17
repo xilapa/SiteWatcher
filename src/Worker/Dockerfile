@@ -9,7 +9,7 @@ COPY src/Domain ./src/Domain
 COPY src/Infra ./src/Infra/
 
 #https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/#pgo
-ENV DOTNET_ReadyToRun=0
+# ENV DOTNET_ReadyToRun=0
 
 # Build and publish a release
 RUN dotnet restore "src/Worker/Worker.csproj"

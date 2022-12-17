@@ -4,7 +4,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GenerateRuntimeConfigurationFiles>True</GenerateRuntimeConfigurationFiles>
-		<TieredPGO>true</TieredPGO>
+		<!-- <TieredPGO>true</TieredPGO> -->
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Dapper" Version="2.0.123" />
