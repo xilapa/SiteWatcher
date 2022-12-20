@@ -24,6 +24,7 @@ public sealed class UserAlertsService : IUserAlertsService
         foreach (var alert in user.Alerts)
         {
             var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
+            // TODO: Execute rule should return the notification, the notification should have more data on it
             var alertToNotify = await alert.ExecuteRule(htmlStream, currentTime);
             if (alertToNotify != null)
                 alertsToNotify.Add(alertToNotify);
@@ -31,6 +32,7 @@ public sealed class UserAlertsService : IUserAlertsService
         if(alertsToNotify.Count == 0)
             return null;
 
+        // TODO: GenerateMailMessage should use the notification
         var mailMsg = await GenerateMailMessage(user, siteWatcherUri, alertsToNotify);
         return new NotificationToSend
         {
@@ -53,8 +55,9 @@ public sealed class UserAlertsService : IUserAlertsService
         _emailRepository.Add(email);
 
         // correlate the notifications with the email entity
+        var notificationIds = alertsToNotify.Select(_ => _.NotificationId).ToArray();
         foreach(var alert in user.Alerts)
-            alert.SetEmail(email, alertsToNotify.Select(_ => _.NotificationId));
+            alert.SetEmail(email, notificationIds);
 
         return emailMsg;
     }
