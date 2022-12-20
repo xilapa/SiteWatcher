@@ -72,13 +72,13 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .When(cmmd => cmmd.Rule is not null);
 
         // Term rule validation
-        RuleFor<Domain.Common.DTOs.UpdateInfo<string>>(cmmd => cmmd.Term)
+        RuleFor(cmmd => cmmd.Term)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
             .When(cmmd => cmmd.Rule is not null
                         && Rules.Term.Equals(cmmd.Rule.NewValue));
 
-        RuleFor<string>(cmmd => cmmd.Term!.NewValue)
+        RuleFor(cmmd => cmmd.Term!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
@@ -92,7 +92,7 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
 
         // Regex rule validation
         // TODO: validate if all regex rule fields are sent, to avoid null exception
-        RuleFor<Domain.Common.DTOs.UpdateInfo<string>>(cmmd => cmmd.RegexPattern)
+        RuleFor(cmmd => cmmd.RegexPattern)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.RegexPattern)))
             .When(cmmd => cmmd.Rule is not null
@@ -108,8 +108,14 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RegexPattern)))
             .When(cmmd => cmmd.RegexPattern?.NewValue != null);
 
-        RuleFor<Domain.Common.DTOs.UpdateInfo<bool>>(cmmd => cmmd.NotifyOnDisappearance)
-            .NotEmpty()
+        RuleFor(cmmd => cmmd.NotifyOnDisappearance)
+            .Must(updateNotifyOnDis => updateNotifyOnDis != null)
+            .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
+            .When(cmmd => cmmd.Rule is not null
+                            && Rules.Regex.Equals(cmmd.Rule.NewValue));
+
+        RuleFor(cmmd => cmmd.NotifyOnDisappearance!.NewValue)
+            .Must(updateNotifyOnDis => updateNotifyOnDis != null)
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
             .When(cmmd => cmmd.Rule is not null
                             && Rules.Regex.Equals(cmmd.Rule.NewValue));

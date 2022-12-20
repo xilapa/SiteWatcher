@@ -128,6 +128,8 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
                 if (!this.regexRuleSelected) {
                     this.inputFormRegexRulePattern?.reset();
                     this.inputFormRegexRuleNotifyOnDisappearance?.reset();
+                }else{
+                    this.inputFormRegexRuleNotifyOnDisappearance?.setValue(true)
                 }
             });
 
