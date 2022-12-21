@@ -6,7 +6,8 @@
     "unexpectedError": "Error inesperado",
     "yes": "Sí",
     "no": "No",
-    "invalidStringLength": "The value must have between three or sixty four characters"
+    "invalidStringLength": "The value must have between three or sixty four characters",
+    "privacyPolicy": "Política de Privacidad"
   },
   "home": {
     "auth": {
@@ -137,6 +138,12 @@
       "lastVerification": "Última verificación",
       "sent": "enviada(s)"
     }
+  },
+  "about": {
+    "title": "Sobre",
+    "motivation1": "SiteWatcher es un proyecto nacido con fines de estudio, quería construir un sistema para aprender sobre colas de mensajes, caché distribuida, DDD y patrones arquitectónicos. Nunca antes había construido un sistema desde cero, así que quería esta experiencia.",
+    "motivation2": "Todavía estoy aprendiendo muchas cosas con él, y tengo una extensa lista de tareas que quiero mejorar o aprender a aplicar aquí.",
+    "motivation3": "La motivación además de los propósitos de estudio es que no me gusta cuando descubro que me quedé sin agua cuando necesito agua. La compañía de agua de mi ciudad no tiene un servicio de alerta por correo electrónico para notificar sobre el mantenimiento o cualquier otra interrupción en el suministro de agua. Así que tuve la idea de crear un servicio que monitoree los sitios web de otros y me envíe alertas por correo electrónico basadas en una regla, entonces nació SiteWatcher.",
+    "giveStarGithub": "Dar una estrella en "
   }
-
 }

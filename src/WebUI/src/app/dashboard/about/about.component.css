@@ -1,0 +1,25 @@
+.content{
+    display: flex;
+    flex-direction: column;
+    margin-top: 6px;
+    padding: 0 16px 0 16px;
+    width: 60vw;
+    max-width: 650px;
+    align-items: center;
+}
+
+.content p{
+    margin: 8px 0 8px 0;
+}
+
+@media screen and (max-width: 600px) {
+    .content {
+        width: 90vw;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .content {
+        width: 75vw;
+    }
+}

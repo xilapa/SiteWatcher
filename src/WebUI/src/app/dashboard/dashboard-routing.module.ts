@@ -1,7 +1,8 @@
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-import {AuthGuard} from '../core/guards/auth.guard';
-import {DashboardComponent} from './dashboard.component';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from '../core/guards/auth.guard';
+import { AboutComponent } from './about/about.component';
+import { DashboardComponent } from './dashboard.component';
 
 
 const dashRoutes: Routes = [
@@ -22,6 +23,9 @@ const dashRoutes: Routes = [
                 {
                     path: 'alert',
                     loadChildren: () => import('../alerts/create-update-alert/create-update-alert.module').then(m => m.CreateUpdateAlertModule)
+                },
+                {
+                    path: 'about', component: AboutComponent
                 }
             ]
     },

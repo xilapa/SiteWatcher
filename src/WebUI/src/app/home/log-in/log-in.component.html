@@ -1,13 +1,14 @@
-<ng-container *transloco="let t; read: 'home.login'">
+<ng-container *transloco="let t;">
 <div class="login-box">
     <div class="sw-g-title-foreground-1">
-        {{ t("title")}}
+        {{ t("home.login.title")}}
     </div>
     <div class="links">
         <button pButton type="button" class="p-button-outlined" (click)="login()">
-            <i class="pi pi-google sw-g-mr-5"></i> {{ t("continueGoogle")}}
+            <i class="pi pi-google sw-g-mr-5"></i> {{ t("home.login.continueGoogle")}}
         </button>
-        <a class="sw-g-link-text-muted" (click)="register()">{{ t("registerGoogle")}}</a>
+        <a class="sw-g-link-text-muted" (click)="register()">{{ t("home.login.registerGoogle")}}</a>
+        <a class="sw-g-link-text-muted" routerLink="/security/privacy" target="_blank">{{ t("common.privacyPolicy")}}</a>
     </div>
 </div>
 </ng-container>

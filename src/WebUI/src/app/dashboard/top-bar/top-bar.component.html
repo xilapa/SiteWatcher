@@ -48,7 +48,7 @@
             <div class="options">
                 <span routerLink="/dash/settings" (click)="settingsBar.toggle()">{{t('settings')}}</span>
                 <span (click)="logout()">{{t('logout')}}</span>
-                <span>{{t('about')}}</span>
+                <span routerLink="/dash/about" (click)="settingsBar.toggle()">{{t('about')}}</span>
             </div>
         </div>
     </sw-side-bar>

@@ -6,7 +6,8 @@
     "unexpectedError": "Unexpected error",
     "yes": "Yes",
     "no": "No",
-    "invalidStringLength": "The value must have between three or sixty four characters"
+    "invalidStringLength": "The value must have between three or sixty four characters",
+    "privacyPolicy": "Privacy Policy"
   },
   "home": {
     "auth": {
@@ -137,5 +138,12 @@
       "lastVerification": "Last verification",
       "sent": "sent"
     }
+  },
+  "about": {
+    "title": "About",
+    "motivation1": "SiteWatcher is a project born for study purposes, I wanted to build a system to learn about message queues, distributed cache, DDD, and architectural patterns. I have never before built a system from scratch, so I wanted this experience.",
+    "motivation2": "I'm still learning a lot of things with it, and I have an extensive to-do list of things I want to improve or learn to apply here.",
+    "motivation3": "The motivation besides the study purposes is that I don't like when I only discover that I ran out of water when I need water. My city water company doesn't have an email alert service to notify about maintenance or any other interruption in the water supply. So I have the idea to make a service that monitors others' websites and sends me email alerts based on a rule, then SiteWatcher was born.",
+    "giveStarGithub": "Give a star on "
   }
 }

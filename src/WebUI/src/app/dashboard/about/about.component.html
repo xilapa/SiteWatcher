@@ -1,0 +1,14 @@
+<ng-container *transloco="let t">
+    <sw-base-page-layout pageTitletranslationKey="about.title">
+
+        <div class="content">
+            <p>{{ t("about.motivation1")}}</p>
+            <p>{{ t("about.motivation2")}}</p>
+            <p>{{ t("about.motivation3")}}</p>
+            <br>
+            <div>{{ t("about.giveStarGithub")}}<a href="https://github.com/xilapa/SiteWatcher" target="_blank">Github</a></div>
+            <br>
+            <a routerLink="/security/privacy" target="_blank">{{ t("common.privacyPolicy")}}</a>
+        </div>
+    </sw-base-page-layout>
+</ng-container>

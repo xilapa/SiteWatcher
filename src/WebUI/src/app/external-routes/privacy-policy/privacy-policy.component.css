@@ -1,0 +1,40 @@
+.content{
+    margin: 50px;
+}
+
+h1 {
+    font-size: x-large;
+    margin: 30px 0 30px 0;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: larger;
+    margin: 20px 0 20px 0;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: large;
+    margin: 20px 0 20px 0;
+    font-weight: 400;
+}
+
+p {
+    margin: 8px 0 8px 0;
+    font-weight: 200;
+}
+
+ul {
+    list-style-type: disc;
+    margin: 8px 0 8px 50px;
+    font-weight: 200;
+}
+
+li {
+    margin: 8px 0 8px 0;
+}
+
+strong {
+    font-weight: 600;
+}
