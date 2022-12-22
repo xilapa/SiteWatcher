@@ -16,7 +16,7 @@ public class SimpleAlertView
         CreatedAt = alert.CreatedAt;
         Frequency = alert.Frequency;
         LastVerification = alert.LastVerification;
-        NotificationsSent = 0;
+        NotificationsSent = alert.Notifications.Count;
         SiteName = alert.Site.Name;
         Rule = Utils.GetRuleEnumByType(alert.Rule)!.Value;
     }
@@ -26,7 +26,6 @@ public class SimpleAlertView
     public DateTime CreatedAt { get; set; }
     public Frequencies Frequency { get; set; }
     public DateTime? LastVerification { get; set; }
-    // TODO: Count notifications sent
     public int NotificationsSent { get; set; }
     public string? SiteName { get; set; }
     public Rules Rule { get; set; }

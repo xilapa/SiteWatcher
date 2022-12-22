@@ -36,14 +36,19 @@ public class DapperQueries : IDapperQueries
                 a.""Frequency"",
                 a.""LastVerification"",
                 a.""Site_Name"" SiteName,
-                wm.""Rule""
+                r.""Rule"",
+                COUNT(n.""Id"") NotificationsSent
             FROM 
             ""sw"".""Alerts"" a
-                INNER JOIN ""sw"".""Rules"" wm 
-                    ON a.""Id"" = wm.""AlertId""
+                INNER JOIN ""sw"".""Rules"" r 
+                    ON a.""Id"" = r.""AlertId""
+                LEFT JOIN ""sw"".""Notifications"" n
+                    ON a.""Id"" = n.""AlertId""
             WHERE
                 a.""Id"" > @lastAlertId
                 AND a.""UserId"" = @userId
+            GROUP BY
+            	1,2,3,4,5,6,7
             ORDER BY 
                 a.""Id""
             LIMIT @take";
@@ -52,14 +57,14 @@ public class DapperQueries : IDapperQueries
             SELECT
                 a.""Id"",
                 a.""Site_Uri"" SiteUri,
-                wm.""Id"" RuleId,
-                wm.""Term"",
-                wm.""RegexPattern"",
-                wm.""NotifyOnDisappearance""
+                r.""Id"" RuleId,
+                r.""Term"",
+                r.""RegexPattern"",
+                r.""NotifyOnDisappearance""
             FROM 
             ""sw"".""Alerts"" a
-                INNER JOIN ""sw"".""Rules"" wm 
-                ON a.""Id"" = wm.""AlertId""
+                INNER JOIN ""sw"".""Rules"" r 
+                ON a.""Id"" = r.""AlertId""
             WHERE
                 a.""Id"" = @alertId
                 AND a.""UserId"" = @userId";
