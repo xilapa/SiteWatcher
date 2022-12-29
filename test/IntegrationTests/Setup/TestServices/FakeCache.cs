@@ -89,6 +89,11 @@ public class FakeCache : ICache
         Cache.Remove(keyToRemove);
         return Task.CompletedTask;
     }
+
+    public Task DeleteKeysWith(string partialKey)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public struct FakeCacheEntry

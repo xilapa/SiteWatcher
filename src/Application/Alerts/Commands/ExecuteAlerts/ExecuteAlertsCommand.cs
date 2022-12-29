@@ -1,6 +1,7 @@
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Domain.Users.Repositories;
@@ -29,14 +30,17 @@ public sealed class ExecuteAlertsCommandHandler
     private readonly ISession _session;
     private readonly IAppSettings _appSettings;
     private readonly IPublishService _pubService;
+    private readonly ICache _cache;
 
-    public ExecuteAlertsCommandHandler(IUserRepository userRepository, IUserAlertsService userAlertsService, ISession session, IAppSettings appSettings, IPublishService pubService)
+    public ExecuteAlertsCommandHandler(IUserRepository userRepository, IUserAlertsService userAlertsService,
+            ISession session, IAppSettings appSettings, IPublishService pubService, ICache cache)
     {
         _userRepository = userRepository;
         _userAlertsService = userAlertsService;
         _session = session;
         _appSettings = appSettings;
         _pubService = pubService;
+        _cache = cache;
     }
 
     public async Task<CommandResult> Handle(ExecuteAlertsCommand cmmd, CancellationToken ct)
@@ -47,6 +51,7 @@ public sealed class ExecuteAlertsCommandHandler
         try
         {
             await _pubService.WithPublisher((pub) => ExecuteAlertsLoop(cmmd.Frequencies, pub, ct), ct);
+            await _cache.DeleteKeysWith(CacheKeys.AlertsKeyPrefix);
         }
         catch
         {

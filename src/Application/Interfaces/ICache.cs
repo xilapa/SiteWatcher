@@ -28,4 +28,10 @@ public interface ICache
     Task SaveHashAsync(string key, string fieldName, object fieldValue, TimeSpan expiration);
     Task<string?> GetHashFieldAsStringAsync(string key, string fieldName);
     Task DeleteKeyAsync(string key);
+
+    /// <summary>
+    /// Remove keys which contains the partial key.
+    /// </summary>
+    /// <param name="partialKey">partial key used to get the keys to be removed from cache</param>
+    Task DeleteKeysWith(string partialKey);
 }

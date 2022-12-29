@@ -51,7 +51,8 @@ var host = new HostBuilder()
             IsDevelopment = hostContext.HostingEnvironment.IsDevelopment(),
             ConnectionString = workerSettings!.DbConnectionString,
             InMemoryStorageAndQueue = workerSettings.UseInMemoryStorageAndQueue,
-            EmailNotificationRoutingKey = RoutingKeys.EmailNotification
+            EmailNotificationRoutingKey = RoutingKeys.EmailNotification,
+            RedisConnectionString = workerSettings.RedisConnectionString
         };
 
         serviceCollection
@@ -61,7 +62,8 @@ var host = new HostBuilder()
             .SetupJobs(workerSettings)
             .SetupMessaging(rabbitMqSettings!, appSettings)
             .AddConsumers()
-            .SetupEmail(emailSettings!);
+            .SetupEmail(emailSettings!)
+            .AddRedisCache(appSettings);
     })
     .Build();
 

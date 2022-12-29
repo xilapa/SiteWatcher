@@ -16,6 +16,8 @@ public class WorkerSettings
 
     [ConfigurationKeyName("Worker_DbConnectionString")]
     public string DbConnectionString { get; set; } = null!;
+
+    public string RedisConnectionString { get; set; } = null!;
 }
 
 public static class RoutingKeys

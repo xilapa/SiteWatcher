@@ -60,4 +60,14 @@ public class RedisCache : ICache
 
     public async Task DeleteKeyAsync(string key) =>
         await _connectionMultiplexer.GetDatabase().KeyDeleteAsync(key);
+
+    public async Task DeleteKeysWith(string partialKey)
+    {
+        var db = _connectionMultiplexer.GetDatabase();
+        foreach(var server in _connectionMultiplexer.GetServers())
+        {
+            await foreach (var key in server.KeysAsync(pattern: $"*{partialKey}*", pageSize: 500))
+                await db.KeyDeleteAsync(key);
+        }
+    }
 }
