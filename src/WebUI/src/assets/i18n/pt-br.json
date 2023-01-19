@@ -90,6 +90,7 @@
     }
   },
   "alert": {
+    "noAlerts": "Você ainda não cadastrou nenhum alerta. Clique no botão '+', no canto direito, para criar um novo alerta.",
     "frequency": {
       "twoHours": "A cada duas horas",
       "fourHours": "A cada quatro horas",

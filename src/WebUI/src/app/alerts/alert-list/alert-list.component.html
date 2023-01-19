@@ -1,9 +1,14 @@
-<div class="alert-list-wrapper">
-    <div class="alert-list"
-         infiniteScroll [infiniteScrollDistance]="2"
-         [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
-        <ng-container *ngFor="let alert of alerts">
-            <sw-alert-item [alert]="alert" (click)="seeDetails(alert)"></sw-alert-item>
-        </ng-container>
+<ng-container *transloco="let t; read: 'alert'">
+    <div class="alert-list-wrapper">
+        <div class="alert-list"
+             infiniteScroll [infiniteScrollDistance]="2"
+             [infiniteScrollThrottle]="50" (scrolled)="onScroll()">
+            <ng-container *ngFor="let alert of alerts">
+                <sw-alert-item [alert]="alert" (click)="seeDetails(alert)"></sw-alert-item>
+            </ng-container>
+            <div class ="no-alerts" *ngIf="alerts?.length == 0">
+                {{t('noAlerts')}}
+            </div>
+        </div>
     </div>
-</div>
+</ng-container>

@@ -1,10 +1,10 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AlertService} from "../service/alert.service";
-import {DetailedAlertView} from "../common/alert";
-import {DeviceService} from "../../core/device/device.service";
-import {first, Subscription} from "rxjs";
-import {DialogService} from "primeng/dynamicdialog";
-import {AlertDetailsComponent} from "../alert-details/alert-details.component";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DialogService } from "primeng/dynamicdialog";
+import { first, Subscription } from "rxjs";
+import { DeviceService } from "../../core/device/device.service";
+import { AlertDetailsComponent } from "../alert-details/alert-details.component";
+import { DetailedAlertView } from "../common/alert";
+import { AlertService } from "../service/alert.service";
 
 @Component({
     templateUrl: './alert-list.component.html',

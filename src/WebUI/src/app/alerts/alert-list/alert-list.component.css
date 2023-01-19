@@ -10,6 +10,15 @@
     max-width: fit-content;
 }
 
+.no-alerts{
+    display: flex;
+    justify-content: center;
+    margin: 100px 0 10px 0;
+    font-size: larger;
+    max-width: 400px;
+    line-height: 35px;
+}
+
 @media screen and (max-width: 1250px) {
     .alert-list{
         width: 80%;

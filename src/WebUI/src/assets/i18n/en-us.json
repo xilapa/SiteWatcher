@@ -90,6 +90,7 @@
     }
   },
   "alert": {
+    "noAlerts": "You haven't registered any alert yet. Click on the '+' button, in the right corner, to create a new alert.",
     "frequency": {
       "twoHours": "Every two hours",
       "fourHours": "Every four hours",
