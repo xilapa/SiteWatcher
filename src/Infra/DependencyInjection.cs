@@ -59,7 +59,7 @@ public static class DependencyInjection
     public static IServiceCollection AddRedisCache(this IServiceCollection services, IAppSettings appSettings)
     {
         var configOptions = ConfigurationOptions.Parse(appSettings.RedisConnectionString);
-        configOptions.AbortOnConnectFail = false;
+        configOptions.AbortOnConnectFail = true;
         configOptions.ConnectRetry = 3;
         configOptions.ConnectTimeout = 2_000;
         configOptions.ReconnectRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(5).Milliseconds, TimeSpan.FromSeconds(20).Milliseconds);
