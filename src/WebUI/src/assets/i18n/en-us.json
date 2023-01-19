@@ -125,9 +125,9 @@
       "regexInvalid": "Regex must have between 1 or 512 characters. It should not start nor end with / (backslash) and not end it with 'gmi' or any variation of other regex flags.",
       "regexExplanation": "Regex at SiteWatcher are global, multi-line and case insensitive. It should not start nor end with / (backslash) and not end it with 'gmi' or any variation of other regex flags.",
       "ruleExplanation": "The rule used to fire the alert when watching the site.",
-      "anyChangesExplanation": "Fires the alert when any change on site html occurs.",
-      "termExplanation": "Fires the alert when the number of occurrences of the given term on site html changes. E.g. If the term is 'car' and the current count of 'car' term on site html is four, if this count increase or decrease, you'll be notified.",
-      "regexIntroExplanation": "Fires the alert when a new regex match occurs on site html. The alert doesn't fire if the same match still there.",
+      "anyChangesExplanation": "Triggers the alert when any change on site html occurs.",
+      "termExplanation": "Triggers the alert when the number of occurrences of the given term on site html changes. E.g. If the term is 'car' and the current count of 'car' term on site html is four, if this count increase or decrease, you'll be notified.",
+      "regexIntroExplanation": "Triggers the alert when a new regex match occurs in the website's html. The alert does not trigger if the same match is still there after the first trigger. Only new matches trigger the alert.",
       "regexMatchDisappearance": "Notify if the regex match on site html disappear between site checks."
     },
     "list": {

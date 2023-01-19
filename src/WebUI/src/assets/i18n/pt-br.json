@@ -124,11 +124,11 @@
       "notifyOnDisappearance": "Notificar quando um match do regex desaparecer",
       "regexInvalid": "Regex deve ter entre 1 e 512 caracteres. Não deve começar nem terminar com / (barra invertida) e não deve terminar com 'gmi' ou qualquer outra variação de flags regex",
       "regexExplanation": "Regex no SiteWatcher são globais, multilinhas e não diferenciam maiúsculas de minúsculas. Não deve começar nem terminar com / (barra invertida) e não deve terminar com 'gmi' ou qualquer outra variação de flags regex.",
-      "ruleExplanation": "A regra usada para disparar o alerta ao assistir o site.",
+      "ruleExplanation": "A regra usada para disparar o alerta ao observar o site.",
       "anyChangesExplanation": "Dispara o alerta quando ocorre alguma alteração no html do site.",
-      "termExplanation": "Dispara o alerta quando o número de ocorrências do termo especificado no html do site muda. Por exemplo. Se o termo for 'car' e a contagem atual do termo 'car' no html do site for quatro, se essa contagem aumentar ou diminuir, você será notificado.",
-      "regexIntroExplanation": "Dispara o alerta quando ocorre uma nova correspondência de regex no html do site. O alerta não dispara se a mesma correspondência ainda estiver lá.",
-      "regexMatchDisappearance": "Notifique si la coincidencia de expresiones regulares en el html del sitio desaparece entre las comprobaciones del sitio."
+      "termExplanation": "Dispara o alerta quando o número de ocorrências no html do site de um dado termo mudar. Por exemplo. Se o termo for 'carro' e a contagem atual do termo 'carro' no html do site for quatro, se essa contagem aumentar ou diminuir, você será notificado.",
+      "regexIntroExplanation": "Dispara o alerta quando ocorre uma nova correspondência de regex no html do site. O alerta não dispara se a mesma correspondência ainda estiver lá depois do primeiro disparo. Apenas novas correspondências disparam o alerta.",
+      "regexMatchDisappearance": "Informe se a correspondência de regex no html do site desaparece entre as verificações do site."
     },
     "list": {
       "site": "Site",

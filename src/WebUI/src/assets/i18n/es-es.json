@@ -127,7 +127,7 @@
       "ruleExplanation": "La regla solía disparar la alerta al mirar el sitio.",
       "anyChangesExplanation": "Activa la alerta cuando se produce algún cambio en el html del sitio.",
       "termExplanation": "Activa la alerta cuando cambia el número de ocurrencias del término dado en el html del sitio. P.ej. Si el término es 'automóvil' y el conteo actual del término 'automóvil' en el html del sitio es cuatro, si este conteo aumenta o disminuye, se le notificará.",
-      "regexIntroExplanation": "Activa la alerta cuando se produce una nueva coincidencia de expresiones regulares en el html del sitio. La alerta no se dispara si la misma coincidencia sigue ahí.",
+      "regexIntroExplanation": "Activa la alerta cuando se produce una nueva coincidencia de expresiones regulares en el html del sitio web. La alerta no se activa si la misma coincidencia sigue ahí después de la primera activación. Solo las nuevas coincidencias activan la alerta.",
       "regexMatchDisappearance": "Notifique si la coincidencia de expresiones regulares en el html del sitio desaparece entre las comprobaciones del sitio."
     },
     "list": {
