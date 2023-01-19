@@ -34,6 +34,7 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
     notifyOnDisappearanceOptions: DropdownOption<boolean>[];
     termRuleSelected = false;
     regexRuleSelected = false;
+    anyChangesSelected = false;
     pageTitleTranslationKey: string;
     doingRequest: boolean;
     dataChanged = false;
@@ -85,6 +86,9 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
 
             if (this.alertInitialValues?.Rule.Rule == Rules.Regex)
                 this.regexRuleSelected = true;
+
+            if (this.alertInitialValues?.Rule.Rule == Rules.AnyChanges)
+                this.anyChangesSelected = true;
         }
 
         if (this.activePage == 'create') {
@@ -94,6 +98,7 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
                 Site: { Name: '', Uri: '' },
                 Rule: { Rule: Rules.AnyChanges, NotifyOnDisappearance: true }
             }
+            this.anyChangesSelected = true;
         }
 
         this.alertCurrentValues = this.alertInitialValues;
@@ -131,6 +136,8 @@ export class CreateUpdateAlertComponent implements OnInit, OnDestroy, AfterViewC
                 }else{
                     this.inputFormRegexRuleNotifyOnDisappearance?.setValue(true)
                 }
+
+                this.anyChangesSelected = Rules.AnyChanges == rule;
             });
 
         this.createUpdateAlertFormSub = this.createUpdateAlertForm.valueChanges.subscribe(() => this.checkIfDataChanged());

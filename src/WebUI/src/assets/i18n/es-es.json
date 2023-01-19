@@ -122,7 +122,12 @@
       "regexPatternPlaceholder": "[^.]*Palabra[^.]*\\.?",
       "notifyOnDisappearance": "Notificar sobre la desaparición de coincidencias de regex",
       "regexInvalid": "Regex debe tener entre 1 o 512 caracteres. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares.",
-      "regexExplanation": "Las expresiones regulares en SiteWatcher son globales, multilínea y no distinguen entre mayúsculas y minúsculas. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares."
+      "regexExplanation": "Las expresiones regulares en SiteWatcher son globales, multilínea y no distinguen entre mayúsculas y minúsculas. No debe comenzar nem terminar con / (barra invertida) y no debe terminar con 'gmi' o cualquier variación de otras banderas de expresiones regulares.",
+      "ruleExplanation": "La regla solía disparar la alerta al mirar el sitio.",
+      "anyChangesExplanation": "Activa la alerta cuando se produce algún cambio en el html del sitio.",
+      "termExplanation": "Activa la alerta cuando cambia el número de ocurrencias del término dado en el html del sitio. P.ej. Si el término es 'automóvil' y el conteo actual del término 'automóvil' en el html del sitio es cuatro, si este conteo aumenta o disminuye, se le notificará.",
+      "regexIntroExplanation": "Activa la alerta cuando se produce una nueva coincidencia de expresiones regulares en el html del sitio. La alerta no se dispara si la misma coincidencia sigue ahí.",
+      "regexMatchDisappearance": "Notifique si la coincidencia de expresiones regulares en el html del sitio desaparece entre las comprobaciones del sitio."
     },
     "list": {
       "site": "Sitio",

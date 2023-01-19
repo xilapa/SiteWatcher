@@ -6,28 +6,22 @@
             <div class="form-group">
                 <label for="name" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.name') }}</label>
                 <div class="form-input">
-                    <input
-                            class="sw-input-color"
-                            id="name" type="text" pInputText
-                            [placeholder]="t('alert.createUpdate.namePlaceHolder')" formControlName="name"
-                            [class.invalid-input]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid">
+                    <input class="sw-input-color" id="name" type="text" pInputText
+                        [placeholder]="t('alert.createUpdate.namePlaceHolder')" formControlName="name"
+                        [class.invalid-input]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid">
                 </div>
                 <sw-inline-input-error-msg
-                        [show_if]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid"
-                        [message]="t('common.invalidStringLength')">
+                    [show_if]="inputFormName?.touched && inputFormName?.dirty && inputFormName?.invalid"
+                    [message]="t('common.invalidStringLength')">
                 </sw-inline-input-error-msg>
             </div>
 
             <!--alert frequency-->
             <div class="form-group">
-                <label for="frequency"
-                       class="sw-g-text-foreground-1">{{ t('alert.createUpdate.frequency') }}</label>
+                <label for="frequency" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.frequency') }}</label>
                 <div class="form-input">
-                    <p-dropdown id="frequency"
-                                [options]="frequencyOptions"
-                                optionLabel="Display"
-                                optionValue="Value"
-                                formControlName="frequency">
+                    <p-dropdown id="frequency" [options]="frequencyOptions" optionLabel="Display" optionValue="Value"
+                        formControlName="frequency">
                     </p-dropdown>
                 </div>
             </div>
@@ -36,16 +30,14 @@
             <div class="form-group input-after-dropdown-padding">
                 <label for="siteName" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.siteName') }}</label>
                 <div class="form-input">
-                    <input
-                            class="sw-input-color"
-                            id="siteName" type="text" pInputText
-                            [placeholder]="t('alert.createUpdate.siteNamePlaceHolder')" formControlName="siteName"
-                            [class.invalid-input]="inputFormSiteName?.touched
+                    <input class="sw-input-color" id="siteName" type="text" pInputText
+                        [placeholder]="t('alert.createUpdate.siteNamePlaceHolder')" formControlName="siteName"
+                        [class.invalid-input]="inputFormSiteName?.touched
                                 && inputFormSiteName?.dirty && inputFormSiteName?.invalid">
                 </div>
                 <sw-inline-input-error-msg
-                        [show_if]="inputFormSiteName?.touched && inputFormSiteName?.dirty && inputFormSiteName?.invalid"
-                        [message]="t('common.invalidStringLength')">
+                    [show_if]="inputFormSiteName?.touched && inputFormSiteName?.dirty && inputFormSiteName?.invalid"
+                    [message]="t('common.invalidStringLength')">
                 </sw-inline-input-error-msg>
             </div>
 
@@ -53,86 +45,92 @@
             <div class="form-group">
                 <label for="siteUri" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.siteUri') }}</label>
                 <div class="form-input">
-                    <input
-                            class="sw-input-color"
-                            id="siteUri" type="text" pInputText
-                            [placeholder]="t('alert.createUpdate.siteUriPlaceHolder')" formControlName="siteUri"
-                            [class.invalid-input]="inputFormSiteUri?.touched &&
+                    <input class="sw-input-color" id="siteUri" type="text" pInputText
+                        [placeholder]="t('alert.createUpdate.siteUriPlaceHolder')" formControlName="siteUri"
+                        [class.invalid-input]="inputFormSiteUri?.touched &&
                                 inputFormSiteUri?.dirty && inputFormSiteUri?.invalid">
                 </div>
                 <sw-inline-input-error-msg
-                        [show_if]="inputFormSiteUri?.touched && inputFormSiteUri?.dirty && inputFormSiteUri?.invalid"
-                        [message]="t('alert.createUpdate.invalidSiteUri')">
+                    [show_if]="inputFormSiteUri?.touched && inputFormSiteUri?.dirty && inputFormSiteUri?.invalid"
+                    [message]="t('alert.createUpdate.invalidSiteUri')">
                 </sw-inline-input-error-msg>
             </div>
 
             <!--rule-->
             <div class="form-group">
-                <label for="rule"
-                       class="sw-g-text-foreground-1">{{ t('alert.createUpdate.rule') }}</label>
+                <label for="rule" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.rule') }}</label>
+                <div class="sw-g-text-foreground-small">{{ t('alert.createUpdate.ruleExplanation') }}</div>
+
                 <div class="form-input">
-                    <p-dropdown id="rule"
-                                [options]="ruleOptions"
-                                optionLabel="Display"
-                                optionValue="Value"
-                                formControlName="rule">
+                    <p-dropdown id="rule" [options]="ruleOptions" optionLabel="Display" optionValue="Value"
+                        formControlName="rule">
                     </p-dropdown>
                 </div>
+            </div>
+
+            <!-- any changes -->
+            <div *ngIf="anyChangesSelected" class="sw-g-text-foreground-small">
+                {{ t('alert.createUpdate.anyChangesExplanation') }}
             </div>
 
             <!--term-->
             <div *ngIf="termRuleSelected" class="form-group input-after-dropdown-padding">
                 <label for="term" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.term') }}</label>
+                <div class="sw-g-text-foreground-small">
+                    {{ t('alert.createUpdate.termExplanation') }}
+                </div>
                 <div class="form-input">
-                    <input
-                            class="sw-input-color"
-                            id="term" type="text" pInputText
-                            [placeholder]="t('alert.createUpdate.termPlaceholder')" formControlName="term"
-                            [class.invalid-input]="inputFormTermRule?.touched
+                    <input class="sw-input-color" id="term" type="text" pInputText
+                        [placeholder]="t('alert.createUpdate.termPlaceholder')" formControlName="term"
+                        [class.invalid-input]="inputFormTermRule?.touched
                                 && inputFormTermRule?.dirty
                                 && inputFormTermRule?.invalid">
                 </div>
                 <sw-inline-input-error-msg
-                        [show_if]="inputFormTermRule?.touched && inputFormTermRule?.dirty && inputFormTermRule?.invalid"
-                        [message]="t('common.invalidStringLength')">
+                    [show_if]="inputFormTermRule?.touched && inputFormTermRule?.dirty && inputFormTermRule?.invalid"
+                    [message]="t('common.invalidStringLength')">
                 </sw-inline-input-error-msg>
             </div>
 
             <!--regex pattern-->
             <div *ngIf="regexRuleSelected" class="form-group input-after-dropdown-padding">
-                <label for="regexPattern" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.regexPattern') }}</label>
-                <div class="sw-g-text-foreground-small">{{ t('alert.createUpdate.regexExplanation') }}</div>
+                <label for="regexPattern" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.regexPattern')}}</label>
+                <div class="sw-g-text-foreground-small">
+                    {{ t('alert.createUpdate.regexIntroExplanation') }}
+                </div>
+                <div class="sw-g-text-foreground-small">
+                    {{ t('alert.createUpdate.regexExplanation') }}
+                </div>
                 <div class="form-input">
-                    <input
-                            class="sw-input-color"
-                            id="regexPattern" type="text" pInputText
-                            [placeholder]="t('alert.createUpdate.regexPatternPlaceholder')" formControlName="regexPattern"
-                            [class.invalid-input]="inputFormRegexRulePattern?.touched
+                    <input class="sw-input-color" id="regexPattern" type="text" pInputText
+                        [placeholder]="t('alert.createUpdate.regexPatternPlaceholder')" formControlName="regexPattern"
+                        [class.invalid-input]="inputFormRegexRulePattern?.touched
                                 && inputFormRegexRulePattern?.dirty
                                 && inputFormRegexRulePattern?.invalid">
                 </div>
                 <sw-inline-input-error-msg
-                        [show_if]="inputFormRegexRulePattern?.touched && inputFormRegexRulePattern?.dirty && inputFormRegexRulePattern?.invalid"
-                        [message]="t('alert.createUpdate.regexInvalid')">
+                    [show_if]="inputFormRegexRulePattern?.touched && inputFormRegexRulePattern?.dirty && inputFormRegexRulePattern?.invalid"
+                    [message]="t('alert.createUpdate.regexInvalid')">
                 </sw-inline-input-error-msg>
             </div>
 
             <!--regex - NotifyOnDisappearance -->
             <div *ngIf="regexRuleSelected" class="form-group">
-                <label for="notifyOnDisappearance" class="sw-g-text-foreground-1">{{ t('alert.createUpdate.notifyOnDisappearance') }}</label>
+                <label for="notifyOnDisappearance" class="sw-g-text-foreground-1">{{
+                    t('alert.createUpdate.notifyOnDisappearance') }}</label>
                 <div class="form-input">
-                    <p-dropdown id="notifyOnDisappearance"
-                                [options]="notifyOnDisappearanceOptions"
-                                optionLabel="Display"
-                                optionValue="Value"
-                                formControlName="notifyOnDisappearance">
+                    <p-dropdown id="notifyOnDisappearance" [options]="notifyOnDisappearanceOptions"
+                        optionLabel="Display" optionValue="Value" formControlName="notifyOnDisappearance">
                     </p-dropdown>
+                </div>
+                <div class="sw-g-text-foreground-small">
+                    {{ t('alert.createUpdate.regexMatchDisappearance') }}
                 </div>
             </div>
 
             <!-- submit button -->
             <button type="submit" pButton [label]="t('alert.createUpdate.save')"
-                    [disabled]="createUpdateAlertForm.invalid || doingRequest || !dataChanged"></button>
+                [disabled]="createUpdateAlertForm.invalid || doingRequest || !dataChanged"></button>
         </form>
     </sw-base-page-layout>
 </ng-container>
