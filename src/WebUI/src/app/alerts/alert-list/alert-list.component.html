@@ -6,7 +6,7 @@
             <ng-container *ngFor="let alert of alerts">
                 <sw-alert-item [alert]="alert" (click)="seeDetails(alert)"></sw-alert-item>
             </ng-container>
-            <div class ="no-alerts" *ngIf="alerts?.length == 0">
+            <div class ="no-alerts" *ngIf="alerts?.length == 0 && !isSearchResults">
                 {{t('noAlerts')}}
             </div>
         </div>
