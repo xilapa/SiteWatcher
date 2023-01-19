@@ -1,4 +1,4 @@
-using FluentValidation.AspNetCore;
+using FluentValidation;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application;
@@ -16,12 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 var appSettings = builder.Services.AddSettings(builder.Configuration, builder.Environment);
 
 builder.Services.AddControllers()
-    .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null)
-    .AddFluentValidation(opts =>
-    {
-        opts.AutomaticValidationEnabled = false;
-        opts.RegisterValidatorsFromAssemblyContaining<RegisterUserCommand>();
-    });
+    .AddJsonOptions(opts => opts.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterUserCommand>();
 
 builder.Services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInvalidFilter = true);
 
