@@ -22,7 +22,7 @@ export class AlertListComponent implements OnInit, OnDestroy {
     private clearSearchResultsSub: Subscription;
     private detailsCloseSub: Subscription;
     private searchStartedSub: Subscription;
-    private isSearchResults = false;
+    public isSearchResults = false;
 
     constructor(private readonly alertService: AlertService,
                 private readonly dialogService: DialogService,
