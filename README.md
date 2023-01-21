@@ -15,7 +15,7 @@ Frontend: [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?pro
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=site-watcher-front-end&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=site-watcher-front-end)
 
-<p align="center"><a href="#Motivation">Motivation</a> • <a href="#Summary">Summary</a> • <a href="#Summary">Features</a> • <a href="#Summary">Backend libraries used</a> • <a href="#Summary">Backend architecture</a> • <a href="#Tecnologies">Next steps</a></p>
+<p align="center"><a href="#Motivation">Motivation</a> • <a href="#Summary">Summary</a> • <a href="#Features">Features</a> • <a href="#Technologies">Technologies</a> • <a href="#Backend-architecture">Backend architecture</a> • <a href="#Next-steps">Next steps</a></p>
 
 ## Motivation
 How often do you run out of water when the water treatment station is under maintenance? And you simply didn't know about that? 
@@ -40,34 +40,47 @@ You can choose the monitoring rate between 2 and 24 hours;
 - **We don't spam your email box**: all alerts are grouped by the monitoring rate and you only receive one email about all alerts that have been triggered with that rate. Also, SiteWatcher uses **outbox pattern** and **idempotent consumers** to send the alert email without the chance to duplicate the email.
 - **You have the control**: you can disconnect all your devices from SiteWatcher with one click.
 
-## Backend libraries used
+## Technologies
 
 This project is currently using:
-- Angular 13;
-- NET 7;
-- EF Core 7;
-- Swagger;
-- PostgreSQL;
-- Dapper;
-- FluentValidation;
-- MediatR;
-- Redis;
-- BenchmarkDotNet;
-- Roslynator;
-- StronglyTypedId;
-- ~~AutoMapper~~ [Why I removed](https://github.com/xilapa/SiteWatcher/pull/83);
-- MailKit;
-- xUnit;
-- Polly;
-- FluentAssertions;
-- Moq;
-- ReflectionMagic;
-- HashIds;
-- Testcontainers;
-- RabbitMQ;
-- CAP;
-- Fluid;
-- AngleSharp;
+<table border="0">
+<tr>
+    <td> Angular 13 </td>
+    <td> .NET 7 </td>
+    <td> EF Core 7 </td>
+    <td> Swagger </td>
+    <td> PostgreSQL </td>
+    <td> Dapper </td>
+</tr>
+<tr>
+    <td> FluentValidation </td>
+    <td> MediatR </td>
+    <td> Redis </td>
+    <td> BenchmarkDotNet </td>
+    <td> Roslynator </td>
+    <td> StronglyTypedId </td>
+</tr>
+<tr>
+    <td> MailKit </td>
+    <td> xUnit </td>
+    <td> Polly </td>
+    <td> FluentAssertions </td>
+    <td> Moq </td>
+    <td> ReflectionMagic </td>
+</tr>
+<tr>
+    <td> HashIds </td>
+    <td> Testcontainers </td>
+    <td> RabbitMQ </td>
+    <td> CAP </td>
+    <td> Fluid </td>
+    <td> AngleSharp </td>
+</tr>
+</table>
+
+### Removed
+~~AutoMapper~~ [Reason](https://github.com/xilapa/SiteWatcher/pull/83)
+
 
 ## Backend architecture
 The WebAPI backend is an onion layered architecture tending to the an hexagonal architecture. Also, one of the next steps, is to have a complete hexagonal architecture, moving all business rules, caching and validations inside the application layer.
