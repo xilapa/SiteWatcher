@@ -71,6 +71,7 @@ This project is currently using:
 
 ## Backend architecture
 The WebAPI backend is an onion layered architecture tending to the an hexagonal architecture. Also, one of the next steps, is to have a complete hexagonal architecture, moving all business rules, caching and validations inside the application layer.
+
 [![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/onion.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/onion.png)
 
 The actual architecture makes use of DDD, with aggregates being responsible for the business logic and dealing with their entities and value objects.
@@ -85,6 +86,7 @@ It's good to notice from the domain representation, that the Notification entity
 In some parts the design is based on the [Jason Taylor Clean Architecture template](https://github.com/jasontaylordev/CleanArchitecture "Jason Taylor Clean Architecture template"), his approach using MediatR to send Domain Events is very clean and well done.
 
 To be able to "watch" the user-defined websites periodically, Sitewatcher has a worker that crawls websites and sends notification emails. Here's how it works:
+[![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/worker.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/worker.png)
                 
 1. It reads the database from time to time, matching the possible frequencies available to get the alerts;
 2. Try crawling the site using a retry policy to avoid transient errors;
@@ -93,7 +95,6 @@ To be able to "watch" the user-defined websites periodically, Sitewatcher has a 
 
 The email sending makes use of a queue to not overflow the maximum email sending rate, and to have better control to recover from failures.             
 
-[![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/worker.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/worker.png)
 
 ## Next steps
 - Improve the intelligent search using an algorithm like the Levenshtein distance, removing some search business rules from the database;
