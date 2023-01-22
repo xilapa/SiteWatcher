@@ -2,3 +2,4 @@ ignore:
   - "**/Migrations"
   - "**/test"
   - "**/CompiledModels"
+  - "**/IntegrationTests"
