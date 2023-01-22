@@ -1,0 +1,19 @@
+name: back - codecov
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Test
+    runs-on: [self-hosted, Linux]
+    steps:
+    - uses: actions/checkout@master
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
+    - name: Test
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: Upload coverage to codecov
+      uses: codecov/codecov-action@v3
