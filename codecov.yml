@@ -1,3 +1,4 @@
 ignore:
-  - "**/Migrations/*"
-  - "**/test/**/*"
+  - "**/Migrations"
+  - "**/test"
+  - "**/CompiledModels"
