@@ -13,7 +13,7 @@
 		<PackageReference Include="DotNetCore.CAP.PostgreSql" Version="7.0.2" />
 		<PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="7.0.2" />
 		<PackageReference Include="Hashids.net" Version="1.6.1" />
-		<PackageReference Include="MailKit" Version="3.4.3" />
+		<PackageReference Include="MailKit" Version="3.5.0" />
 		<PackageReference Include="MediatR" Version="11.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="7.0.2" />
