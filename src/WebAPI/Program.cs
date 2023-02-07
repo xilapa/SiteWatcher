@@ -5,7 +5,6 @@ using SiteWatcher.Application;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
-using SiteWatcher.Infra.Authorization.Middleware;
 using SiteWatcher.WebAPI.Extensions;
 using DependencyInjection = SiteWatcher.Infra.DependencyInjection;
 
@@ -81,10 +80,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseAuthentication();
-// Session is instantiated first on authz handlers (AuthService) before the authz occurs
-// This middleware ensures that the session has the correct auth info on authz handlers
-// And through the request
-app.UseMiddleware<MultipleJwtsMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
