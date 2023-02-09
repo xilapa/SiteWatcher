@@ -1,23 +1,34 @@
-﻿using System;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.GoogleAuth;
 using SiteWatcher.Infra.Authorization.Handlers;
-using SiteWatcher.Infra.Authorization.Middleware;
 
 namespace SiteWatcher.Infra.Authorization;
 
 public static class Auth
 {
-    public static IServiceCollection ConfigureAuth(this IServiceCollection services, IAppSettings appSettings)
+    public static IServiceCollection ConfigureAuth(this IServiceCollection services, IAppSettings appSettings, IConfiguration configuration)
     {
-        services.AddAuthentication(AuthenticationDefaults.Schemes.Login)
-            .AddJwtBearer(AuthenticationDefaults.Schemes.Login, opts =>
+        var googleSettings = configuration.Get<GoogleSettings>();
+        services.AddAuthentication()
+            .AddCookie(AuthenticationDefaults.Schemas.Cookie)
+            .AddGoogle(AuthenticationDefaults.Schemas.Google, opts =>
+            {
+                opts.SignInScheme = AuthenticationDefaults.Schemas.Cookie;
+                opts.ClientId = googleSettings.ClientId;
+                opts.ClientSecret = googleSettings.ClientSecret;
+                opts.ClaimActions.MapJsonKey(AuthenticationDefaults.ClaimTypes.ProfilePicUrl, AuthenticationDefaults.Google.ProfilePicture);
+                opts.ClaimActions.MapJsonKey(ClaimTypes.Locality, AuthenticationDefaults.Google.Locale);
+            })
+            .AddJwtBearer(AuthenticationDefaults.Schemas.Login, opts =>
             {
                 opts.MapInboundClaims = false;
                 opts.TokenValidationParameters = new TokenValidationParameters
@@ -32,7 +43,7 @@ public static class Auth
                     IssuerSigningKey = new SymmetricSecurityKey(appSettings.AuthKey)
                 };
             })
-            .AddJwtBearer(AuthenticationDefaults.Schemes.Register, opts =>
+            .AddJwtBearer(AuthenticationDefaults.Schemas.Register, opts =>
             {
                 opts.MapInboundClaims = false;
                 opts.TokenValidationParameters = new TokenValidationParameters
@@ -48,11 +59,11 @@ public static class Auth
                 };
             });
 
-        // Bind the token issuer to the authentication scheme
-        MultipleJwtsMiddleware.RegisterIssuer(AuthenticationDefaults.Issuers.Login,
-            AuthenticationDefaults.Schemes.Login);
-        MultipleJwtsMiddleware.RegisterIssuer(AuthenticationDefaults.Issuers.Register,
-            AuthenticationDefaults.Schemes.Register);
+        // // Bind the token issuer to the authentication scheme
+        // MultipleJwtsMiddleware.RegisterIssuer(AuthenticationDefaults.Issuers.Login,
+        //     AuthenticationDefaults.Schemas.Login);
+        // MultipleJwtsMiddleware.RegisterIssuer(AuthenticationDefaults.Issuers.Register,
+        //     AuthenticationDefaults.Schemas.Register);
 
         services.AddAuthorization(opts =>
         {
@@ -72,7 +83,6 @@ public static class Auth
         });
 
         services.AddScoped<IAuthService,AuthService>();
-        services.AddScoped<IGoogleAuthService,GoogleAuthService>();
 
         services.AddScoped<IAuthorizationHandler, ValidAuthDataHandler>();
         services.AddScoped<IAuthorizationHandler, ValidRegisterDataHandler>();

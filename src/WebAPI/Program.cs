@@ -38,7 +38,7 @@ DependencyInjection.AddSession(builder.Services)
     .AddFireAndForgetService()
     .AddIdHasher();
 
-builder.Services.ConfigureAuth(appSettings);
+builder.Services.ConfigureAuth(appSettings, builder.Configuration);
 
 builder.Services.AddHttpClient();
 

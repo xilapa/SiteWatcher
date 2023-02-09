@@ -1,15 +1,14 @@
-using System.Security.Claims;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 
-namespace SiteWatcher.Common.Services;
+namespace SiteWatcher.Domain.Common.Services;
 
 public interface IAuthService
 {
     string GenerateLoginToken(UserViewModel user);
     string GenerateLoginToken(User user);
-    string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId);
+    string GenerateRegisterToken(string googleId, string name, string email, string locale);
 
     /// <summary>
     /// Invalidate the current user

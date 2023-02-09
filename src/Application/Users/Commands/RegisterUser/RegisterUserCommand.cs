@@ -1,8 +1,8 @@
 using MediatR;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
-using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.Exceptions;
+using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;

@@ -1,6 +1,7 @@
+using Microsoft.Extensions.Configuration;
 using SiteWatcher.Application.Interfaces;
 
-namespace SiteWatcher.WebAPI.Settings;
+namespace SiteWatcher.Infra.Authorization.GoogleAuth;
 
 public class GoogleSettings : IGoogleSettings
 {

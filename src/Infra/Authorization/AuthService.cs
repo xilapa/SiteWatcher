@@ -11,12 +11,12 @@ using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Enums;
 using SiteWatcher.Domain.Common.Extensions;
+using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.Authorization.Constants;
-using SiteWatcher.Infra.Authorization.Extensions;
 
 namespace SiteWatcher.Infra.Authorization;
 
@@ -69,18 +69,12 @@ public class AuthService : IAuthService
         return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
     }
 
-    public string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId)
+    public string GenerateRegisterToken(string googleId, string name, string email, string locale)
     {
-        var tokenClaimsEnumerated = tokenClaims as Claim[] ?? tokenClaims.ToArray();
-        var locale = tokenClaimsEnumerated
-            .DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-US"))
-            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale)?.Value
-            .Split("-").First();
-
         var claims = new[]
         {
-            tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Name),
-            tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email),
+            new Claim(AuthenticationDefaults.ClaimTypes.Name, name),
+            new Claim(AuthenticationDefaults.ClaimTypes.Email, email),
             new(AuthenticationDefaults.ClaimTypes.Language, ((int) locale!.GetEnumValue<Language>()).ToString()),
             new(AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
         };

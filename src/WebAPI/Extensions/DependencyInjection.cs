@@ -1,4 +1,5 @@
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Infra.Authorization.GoogleAuth;
 using SiteWatcher.WebAPI.Settings;
 
 namespace SiteWatcher.WebAPI.Extensions;
@@ -10,7 +11,7 @@ public static class DependencyInjection
         var appSettings = new AppSettings(env);
         configuration.Bind(appSettings);
         services.AddSingleton<IAppSettings>(_ => appSettings);
-        services.AddSingleton<IGoogleSettings>(f => f.GetRequiredService<IConfiguration>().Get<GoogleSettings>());
+        services.Configure<GoogleSettings>(configuration);
         services.AddSingleton<IEmailSettings>(f => f.GetRequiredService<IConfiguration>().Get<EmailSettings>());
         return appSettings;
     }
