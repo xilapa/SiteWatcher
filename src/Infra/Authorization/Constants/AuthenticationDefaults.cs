@@ -6,6 +6,8 @@ public static class AuthenticationDefaults
     public const string State = "state";
     public const string GoogleAuthClient = nameof(GoogleAuthClient);
 
+    public const string CookieName = "ca";
+
     public static class ClaimTypes
     {
         public const string Id = "id";

@@ -19,7 +19,8 @@ public static class Auth
     {
         var googleSettings = configuration.Get<GoogleSettings>();
         services.AddAuthentication()
-            .AddCookie(AuthenticationDefaults.Schemas.Cookie)
+            .AddCookie(AuthenticationDefaults.Schemas.Cookie,
+                opt => opt.Cookie.Name = AuthenticationDefaults.CookieName)
             .AddGoogle(AuthenticationDefaults.Schemas.Google, opts =>
             {
                 opts.SignInScheme = AuthenticationDefaults.Schemas.Cookie;
