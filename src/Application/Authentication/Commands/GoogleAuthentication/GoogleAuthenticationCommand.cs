@@ -39,7 +39,7 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
         if (!request.IsValid())
             return new AuthenticationResult(AuthTask.Error, string.Empty, message: ApplicationErrors.GOOGLE_AUTH_ERROR);
 
-        var user = await _userDapperRepository.GetUserAsync(request.GoogleId!, cancellationToken);
+        var user = await _userDapperRepository.GetUserByGoogleIdAsync(request.GoogleId!, cancellationToken);
 
         // User exists and is active
         if (user?.Active is true)
