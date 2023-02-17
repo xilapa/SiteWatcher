@@ -14,26 +14,25 @@ using SiteWatcher.Infra.Authorization.Constants;
 namespace SiteWatcher.WebAPI.Controllers;
 
 [ApiController]
-[Route("google-auth")]
-public class GoogleAuthController : ControllerBase
+[Route("auth")]
+public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IMediator _mediator;
     private readonly IAppSettings _appSettings;
     private readonly ITimeLimitedDataProtector _protector;
-    private const string _returnUrlParameter = "returnUrl";
 
-    public GoogleAuthController(IAuthService authService, IMediator mediator, IAppSettings appSettings, IDataProtectionProvider protectionProvider)
+    public AuthController(IAuthService authService, IMediator mediator, IAppSettings appSettings, IDataProtectionProvider protectionProvider)
     {
         _authService = authService;
         _mediator = mediator;
         _appSettings = appSettings;
-        _protector = protectionProvider.CreateProtector(nameof(GoogleAuthController)).ToTimeLimitedDataProtector();
+        _protector = protectionProvider.CreateProtector(nameof(AuthController)).ToTimeLimitedDataProtector();
     }
 
     [HttpGet]
     [AllowAnonymous]
-    [Route("auth/{schema:required}")]
+    [Route("start/{schema:required}")]
     public IActionResult StartAuth([FromRoute] string schema)
     {
         var callBackUrl = schema switch
