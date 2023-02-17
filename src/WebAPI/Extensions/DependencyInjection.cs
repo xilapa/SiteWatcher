@@ -11,7 +11,7 @@ public static class DependencyInjection
         var appSettings = new AppSettings(env);
         configuration.Bind(appSettings);
         services.AddSingleton<IAppSettings>(_ => appSettings);
-        services.Configure<GoogleSettings>(configuration);
+        // services.Configure<GoogleSettings>(configuration); // TODO: remove
         services.AddSingleton<IEmailSettings>(f => f.GetRequiredService<IConfiguration>().Get<EmailSettings>());
         return appSettings;
     }

@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 
@@ -68,7 +68,7 @@ public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, Co
         if (AlertId.Empty.Equals(updateInfo.AlertId) || updateInfo.AlertId.Value == 0)
             return CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
 
-        var alert = await _alertRepository.GetAlertForUpdate(updateInfo.AlertId, _session.UserId!.Value);
+        var alert = await _alertRepository.GetAlertForUpdate(updateInfo.AlertId, _session.UserId);
         if (alert is null)
             return CommandResult.FromError(ApplicationErrors.ALERT_DO_NOT_EXIST);
 

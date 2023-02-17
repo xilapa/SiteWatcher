@@ -3,6 +3,7 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
@@ -49,7 +50,8 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Comma
         user.Update(request.ToInputModel(), _session.Now);
         await _uow.SaveChangesAsync(cancellationToken);
 
-        var newToken = _authService.GenerateLoginToken(user);
+        // TODO: update user should update session and return new data, not create a new token
+        var newToken = "_authService.GenerateLoginToken(user)";
         await _authService.WhiteListTokenForCurrentUser(newToken);
 
         return CommandResult.FromValue(new UpdateUserResult(newToken, !user.EmailConfirmed));

@@ -16,9 +16,9 @@ public class GoogleAuthenticationCommand : IRequest<AuthenticationResult>
 
     public bool IsValid()
     {
-        if(string.IsNullOrEmpty(GoogleId)) return false;
-        if(string.IsNullOrEmpty(Email)) return false;
-        if(string.IsNullOrEmpty(Locale)) return false;
+        if (string.IsNullOrEmpty(GoogleId)) return false;
+        if (string.IsNullOrEmpty(Email)) return false;
+        if (string.IsNullOrEmpty(Locale)) return false;
         return true;
     }
 }
@@ -37,26 +37,27 @@ public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenti
     public async Task<AuthenticationResult> Handle(GoogleAuthenticationCommand request, CancellationToken cancellationToken)
     {
         if (!request.IsValid())
-            return new AuthenticationResult(AuthTask.Error, string.Empty, message: ApplicationErrors.GOOGLE_AUTH_ERROR);
+            return new AuthenticationResult(string.Empty, error: ApplicationErrors.GOOGLE_AUTH_ERROR);
 
         var user = await _userDapperRepository.GetUserByGoogleIdAsync(request.GoogleId!, cancellationToken);
+        string token;
 
         // User exists and is active
         if (user?.Active is true)
         {
-            var loginToken = _authService.GenerateLoginToken(user);
-            await _authService.WhiteListToken(user.Id, loginToken);
-            return new AuthenticationResult(AuthTask.Login, loginToken, request.ProfilePicUrl);
+            token = await _authService.CreateLoginAuthSession(user, request.ProfilePicUrl);
+            return new AuthenticationResult(token);
         }
 
         // User does not exists
-        if(user is null)
+        if (user is null)
         {
-            var registerToken = _authService.GenerateRegisterToken(request.GoogleId!, request.Name!, request.Email!, request.Locale!);
-            return new AuthenticationResult(AuthTask.Register, registerToken, request.ProfilePicUrl);
+            token = await _authService.CreateRegisterAuthSession(request.GoogleId!, request.Name!, request.Email!, request.Locale!, request.ProfilePicUrl);
+            return new AuthenticationResult(token);
         }
 
         // User exists but is deactivated
-        return new AuthenticationResult(AuthTask.Activate, user.Id.Value.ToString());
+        token = await _authService.CreateActivateAuthSession(user);
+        return new AuthenticationResult(token);
     }
 }

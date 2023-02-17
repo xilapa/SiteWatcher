@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -18,9 +19,21 @@ public static class Auth
     public static IServiceCollection ConfigureAuth(this IServiceCollection services, IAppSettings appSettings, IConfiguration configuration)
     {
         var googleSettings = configuration.Get<GoogleSettings>();
-        services.AddAuthentication()
+        services.AddAuthentication(AuthenticationDefaults.Schemas.Cookie)
             .AddCookie(AuthenticationDefaults.Schemas.Cookie,
-                opt => opt.Cookie.Name = AuthenticationDefaults.CookieName)
+                opt =>
+                {
+                    opt.Cookie.Name = AuthenticationDefaults.CookieName;
+                    opt.Cookie.HttpOnly = true;
+                    opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    opt.Cookie.IsEssential = true;
+                    opt.Cookie.SameSite = SameSiteMode.None;
+                    opt.Events.OnRedirectToLogin = (context) =>
+                    {
+                        context.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    };
+                })
             .AddGoogle(AuthenticationDefaults.Schemas.Google, opts =>
             {
                 opts.SignInScheme = AuthenticationDefaults.Schemas.Cookie;
@@ -28,38 +41,7 @@ public static class Auth
                 opts.ClientSecret = googleSettings.ClientSecret;
                 opts.ClaimActions.MapJsonKey(AuthenticationDefaults.ClaimTypes.ProfilePicUrl, AuthenticationDefaults.Google.ProfilePicture);
                 opts.ClaimActions.MapJsonKey(ClaimTypes.Locality, AuthenticationDefaults.Google.Locale);
-            })
-            .AddJwtBearer(AuthenticationDefaults.Schemas.Login, opts =>
-            {
-                opts.MapInboundClaims = false;
-                opts.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.FromSeconds(0),
-                    ValidateAudience = false,
-                    ValidateIssuer = true,
-                    ValidIssuers = new []{ AuthenticationDefaults.Issuers.Login },
-                    RoleClaimType = AuthenticationDefaults.Roles,
-                    IssuerSigningKey = new SymmetricSecurityKey(appSettings.AuthKey)
-                };
-            })
-            .AddJwtBearer(AuthenticationDefaults.Schemas.Register, opts =>
-            {
-                opts.MapInboundClaims = false;
-                opts.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.FromSeconds(0),
-                    ValidateAudience = false,
-                    ValidateIssuer = true,
-                    ValidIssuers = new []{ AuthenticationDefaults.Issuers.Register },
-                    RoleClaimType = AuthenticationDefaults.Roles,
-                    IssuerSigningKey = new SymmetricSecurityKey(appSettings.RegisterKey)
-                };
             });
-
         // // Bind the token issuer to the authentication scheme
         // MultipleJwtsMiddleware.RegisterIssuer(AuthenticationDefaults.Issuers.Login,
         //     AuthenticationDefaults.Schemas.Login);
@@ -75,15 +57,18 @@ public static class Auth
             // authentication for routes that doesn't allow anonymous users
 
             // Only runs if no policy was specified on the authorize attribute
-            opts.DefaultPolicy = new AuthorizationPolicyBuilder()
-                .AddRequirements(new ValidAuthData())
-                .Build();
+            // opts.DefaultPolicy = new AuthorizationPolicyBuilder()
+            //     .AddRequirements(new ValidAuthData())
+            //     .Build();
 
-            opts.AddPolicy(Policies.ValidRegisterData,
-                policy => policy.AddRequirements(new ValidRegisterData()));
+            // opts.AddPolicy(Policies.ValidRegisterData,
+            //     policy => policy.AddRequirements(new ValidRegisterData()));
+            opts.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
         });
 
-        services.AddScoped<IAuthService,AuthService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         services.AddScoped<IAuthorizationHandler, ValidAuthDataHandler>();
         services.AddScoped<IAuthorizationHandler, ValidRegisterDataHandler>();

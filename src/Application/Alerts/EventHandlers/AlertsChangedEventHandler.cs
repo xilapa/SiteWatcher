@@ -2,6 +2,7 @@
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.Services;
 
 namespace SiteWatcher.Application.Alerts.EventHandlers;
 

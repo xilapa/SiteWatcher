@@ -1,7 +1,5 @@
-using System;
 using System.Text.Json;
-using System.Threading.Tasks;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Common.Services;
 using StackExchange.Redis;
 
 namespace SiteWatcher.Infra.Cache;

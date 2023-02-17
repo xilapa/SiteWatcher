@@ -3,6 +3,7 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
@@ -13,7 +14,7 @@ public class GetUserAlertsCommand : IRequest<CommandResult>, ICacheable
     public int Take { get; set; } = 10;
 
     public string GetKey(ISession session) =>
-        CacheKeys.UserAlerts(session.UserId!.Value);
+        CacheKeys.UserAlerts(session.UserId);
 
     public string HashFieldName =>
         $"Take:{Take}-LastId:{LastAlertId}";
@@ -43,7 +44,7 @@ public class GetUserAlertsCommandHandler : IRequestHandler<GetUserAlertsCommand,
         var lastAlertId = string.IsNullOrEmpty(request.LastAlertId) ? 0 : _idHasher.DecodeId(request.LastAlertId);
 
         var paginatedListAlerts = await _alertDapperRepository
-            .GetUserAlerts(_session.UserId!.Value, take, lastAlertId, cancellationToken);
+            .GetUserAlerts(_session.UserId, take, lastAlertId, cancellationToken);
 
         return CommandResult.FromValue(paginatedListAlerts);
     }

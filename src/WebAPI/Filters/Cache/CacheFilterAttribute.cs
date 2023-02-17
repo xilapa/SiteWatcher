@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SiteWatcher.Application.Interfaces;
-using ISession = SiteWatcher.Application.Interfaces.ISession;
+using SiteWatcher.Domain.Common.Services;
+using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.WebAPI.Filters.Cache;
 

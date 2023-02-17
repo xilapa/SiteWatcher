@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Dapper;
 using DotNetCore.CAP.Internal;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +9,10 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.Repositories;
-using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.EmailSending;

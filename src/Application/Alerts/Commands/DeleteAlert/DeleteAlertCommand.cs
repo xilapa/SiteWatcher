@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 
@@ -39,10 +39,10 @@ public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, Com
             return ReturnError();
 
         var deleted = await _alertDapperRepository
-            .DeleteUserAlert(alertId, _session.UserId!.Value, cancellationToken);
+            .DeleteUserAlert(alertId, _session.UserId, cancellationToken);
 
         if (deleted)
-            await _mediator.Publish(new AlertsChangedEvent(_session.UserId.Value), CancellationToken.None);
+            await _mediator.Publish(new AlertsChangedEvent(_session.UserId), CancellationToken.None);
 
         return deleted ? CommandResult.Empty() : ReturnError();
     }

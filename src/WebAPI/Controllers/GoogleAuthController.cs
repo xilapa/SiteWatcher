@@ -1,47 +1,40 @@
 using System.Security.Claims;
+using System.Text;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using SiteWatcher.Application.Authentication.Commands.Authenticate;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
 [ApiController]
-[AllowAnonymous]
 [Route("google-auth")]
 public class GoogleAuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IMediator _mediator;
+    private readonly IAppSettings _appSettings;
+    private readonly ITimeLimitedDataProtector _protector;
+    private const string _returnUrlParameter = "returnUrl";
 
-    public GoogleAuthController(IAuthService authService, IMediator mediator)
+    public GoogleAuthController(IAuthService authService, IMediator mediator, IAppSettings appSettings, IDataProtectionProvider protectionProvider)
     {
         _authService = authService;
         _mediator = mediator;
+        _appSettings = appSettings;
+        _protector = protectionProvider.CreateProtector(nameof(GoogleAuthController)).ToTimeLimitedDataProtector();
     }
 
-    // [HttpGet]
-    // [Route("login")]
-    // [Route("register")]
-    // public async Task<IActionResult> StartAuth()
-    // {
-    //     var state = await _authService.GenerateLoginState(_googleSettings.StateValue);
-    //     var authUrl = $"{_googleSettings.AuthEndpoint}?" +
-    //                   $"scope={HttpUtility.UrlEncode(_googleSettings.Scopes)}" +
-    //                   $"&response_type=code&include_granted_scopes=false&state={state}" +
-    //                   $"&redirect_uri={HttpUtility.UrlEncode(_googleSettings.RedirectUri)}" +
-    //                   $"&client_id={_googleSettings.ClientId}";
-    //     return Redirect(authUrl);
-    // }
-
-    private const string _returnUrlParameter = "returnUrl";
-
     [HttpGet]
+    [AllowAnonymous]
     [Route("auth/{schema:required}")]
-    public IActionResult StartAuth([FromRoute] string schema, [FromQuery] string returnUrl)
+    public IActionResult StartAuth([FromRoute] string schema)
     {
         var callBackUrl = schema switch
         {
@@ -53,35 +46,90 @@ public class GoogleAuthController : ControllerBase
 
         var authProp = new AuthenticationProperties
         {
-            RedirectUri = callBackUrl,
-            Items = { { _returnUrlParameter, returnUrl } }
+            RedirectUri = callBackUrl
         };
         return Challenge(authProp, schema);
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [Route("google-callback")]
     public async Task<IActionResult> GoogleAuthCallBack(CancellationToken ct)
     {
-        var authRes = await HttpContext.AuthenticateAsync(AuthenticationDefaults.Schemas.Google);
-
-        // remove google auth cookie
-        await HttpContext.SignOutAsync(AuthenticationDefaults.Schemas.Cookie);
+        var authRes = await HttpContext.AuthenticateAsync(AuthenticationDefaults.Schemas.Cookie);
 
         if (!authRes.Succeeded) return BadRequest();
 
-        var locale = authRes.Principal.FindFirstValue(ClaimTypes.Locality);
-        if (!string.IsNullOrEmpty(locale)) locale = locale.Split('-').First();
-
-        var authCommand = new GoogleAuthenticationCommand {
+        var authCommand = new GoogleAuthenticationCommand
+        {
             GoogleId = authRes.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
             ProfilePicUrl = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.ProfilePicUrl),
             Email = authRes.Principal.FindFirstValue(ClaimTypes.Email),
             Name = authRes.Principal.FindFirstValue(ClaimTypes.Name),
-            Locale =  locale ?? "en",
+            Locale = authRes.Principal.FindFirstValue(ClaimTypes.Locality),
         };
 
         var commandResult = await _mediator.Send(authCommand, ct);
-        return Ok(commandResult);
+
+        if (!commandResult.Success)
+            return BadRequest(commandResult.Error);
+
+        // signin user with the auth session token
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, commandResult.Token) };
+        var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemas.Cookie);
+
+        var authProps = new AuthenticationProperties
+        {
+            IsPersistent = true,
+            AllowRefresh = false,
+            // ExpiresUtc = DateTime.UtcNow.AddSeconds(30)
+        };
+        await HttpContext.SignInAsync(AuthenticationDefaults.Schemas.Cookie,
+            new ClaimsPrincipal(claimsIdentity),
+            authProps);
+
+        var protectedToken = _protector
+            .Protect(commandResult.Token, TimeSpan.FromSeconds(30));
+
+        var base64Token = Convert.ToBase64String(Encoding.UTF8.GetBytes(protectedToken));
+
+        return Redirect(_appSettings.FrontEndUrl + "/?token=" + base64Token);
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("session")]
+    public async Task<IActionResult> CreateSession([FromBody] AuthenticateCommand command)
+    {
+        var bytes = Convert.FromBase64String(command.Token);
+        var token = Encoding.UTF8.GetString(bytes);
+        try
+        {
+            command.Token = _protector.Unprotect(token);
+        }
+        catch
+        {
+            return BadRequest();
+        }
+
+        if (string.IsNullOrEmpty(command.Token)) return BadRequest();
+        var res = await _mediator.Send(command);
+
+        // signin user with the auth session token
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, res.UserId) };
+        var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemas.Cookie);
+
+        var authProps = new AuthenticationProperties
+        {
+            IsPersistent = true,
+            AllowRefresh = false,
+            // ExpiresUtc = DateTime.UtcNow.AddSeconds(30)
+        };
+        await HttpContext.SignInAsync(AuthenticationDefaults.Schemas.Cookie,
+            new ClaimsPrincipal(claimsIdentity),
+            authProps);
+
+        res.UserId = null;
+        return Ok(res);
     }
 }

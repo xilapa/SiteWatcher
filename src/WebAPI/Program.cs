@@ -40,7 +40,9 @@ DependencyInjection.AddSession(builder.Services)
 
 builder.Services.ConfigureAuth(appSettings, builder.Configuration);
 
-builder.Services.AddHttpClient();
+builder.Services
+    .AddHttpClient()
+    .AddDataProtection();
 
 builder.Services.AddCors(options => {
     options.AddPolicy(name: appSettings.CorsPolicy,
@@ -49,6 +51,7 @@ builder.Services.AddCors(options => {
             policyBuilder.WithOrigins(appSettings.FrontEndUrl);
             policyBuilder.AllowAnyHeader();
             policyBuilder.WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE");
+            policyBuilder.AllowCredentials();
         });
 });
 
@@ -84,7 +87,8 @@ app.UseAuthentication();
 // Session is instantiated first on authz handlers (AuthService) before the authz occurs
 // This middleware ensures that the session has the correct auth info on authz handlers
 // And through the request
-app.UseMiddleware<MultipleJwtsMiddleware>();
+// app.UseMiddleware<MultipleJwtsMiddleware>();
+app.UseMiddleware<CustomSessionMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

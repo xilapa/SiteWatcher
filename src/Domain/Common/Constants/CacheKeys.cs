@@ -4,6 +4,8 @@ namespace SiteWatcher.Domain.Common.Constants;
 
 public static class CacheKeys
 {
+    public static string UserSession(UserId userId) => $"User_{userId}";
+    public static string UserSession(string userId) => $"User_{userId}";
     public static string InvalidUser(UserId userId) => $"InvalidUser_{userId}";
     public static string UserAlerts(UserId userId) => $"{AlertsKeyPrefix}_{userId}";
     public static string UserAlertSearch(UserId userId) => $"{AlertsKeyPrefix}Search_{userId}";

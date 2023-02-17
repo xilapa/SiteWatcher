@@ -1,11 +1,11 @@
 ﻿using MediatR;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
@@ -53,7 +53,7 @@ public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, Det
 
     public async Task<DetailedAlertView> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
     {
-        var alert = AlertFactory.Create(request, _session.UserId!.Value, _session.Now);
+        var alert = AlertFactory.Create(request, _session.UserId, _session.Now);
         _alertRepository.Add(alert);
         await _uow.SaveChangesAsync(cancellationToken);
         return DetailedAlertView.FromAlert(alert, _idHasher);

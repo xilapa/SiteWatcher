@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Domain.Common;
 
@@ -72,18 +73,20 @@ public static class Utils
         return chars.ToString();
     }
 
-    public static string GetTokenPayload(string token)
-    {
-        var tokenSpan = token.AsSpan();
-        var firstDotIdx = tokenSpan.IndexOf('.') + 1;
-        var secondDotIdx = tokenSpan[firstDotIdx..].IndexOf('.');
-
-        return token[firstDotIdx..(firstDotIdx + secondDotIdx)];
-    }
-
     public static Rules? GetRuleEnumByType(Rule rule) =>
         RulesTypeDictionary[rule.GetType()];
 
     public static Rules? GetRuleEnumByTableDiscriminator(char discriminator) =>
         RulesDiscriminatorDictionary[discriminator];
+
+    public static Language GetLanguageFromLocale(string locale)
+    {
+        locale = locale.Split('-')[0].ToLower();
+        return locale switch {
+            "en" => Language.English,
+            "es" => Language.Spanish,
+            "pt" => Language.BrazilianPortuguese,
+            _ => Language.English
+        };
+    }
 }

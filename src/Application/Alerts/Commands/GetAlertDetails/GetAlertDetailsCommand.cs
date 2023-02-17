@@ -3,6 +3,7 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
@@ -18,7 +19,7 @@ public class GetAlertDetailsCommand : IRequest<AlertDetails?>, ICacheable
         $"AlertId:{AlertId}";
 
     public string GetKey(ISession session) =>
-        CacheKeys.UserAlerts(session.UserId!.Value);
+        CacheKeys.UserAlerts(session.UserId);
 }
 
 public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsCommand, AlertDetails?>
@@ -45,6 +46,6 @@ public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsComm
             return null;
 
         return await _alertDapperRepository
-            .GetAlertDetails(alertId, _session.UserId!.Value, cancellationToken);
+            .GetAlertDetails(alertId, _session.UserId, cancellationToken);
     }
 }

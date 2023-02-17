@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.Repositories;
 
@@ -30,6 +31,9 @@ public class SendReactivateAccountEmailCommandHandler : IRequestHandler<SendReac
         if(user is null)
             return Unit.Value;
 
+        // TODO: refact
+        // look for reactivate auth session, generate a jwt token and send email by email
+        // without domain events, using rabbitmq
         user.GenerateUserActivationToken(_session.Now);
         await _uow.SaveChangesAsync(CancellationToken.None);
         return Unit.Value;

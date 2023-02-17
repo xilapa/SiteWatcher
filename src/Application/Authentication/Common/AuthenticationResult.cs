@@ -2,24 +2,14 @@
 
 public class AuthenticationResult
 {
-    public AuthenticationResult(AuthTask task, string token, string? profilePicUrl = null, string message = null)
+    public AuthenticationResult(string token, string? error = null)
     {
-        Task = task;
         Token = token;
-        ProfilePicUrl = profilePicUrl ?? string.Empty;
-        Message = message ?? string.Empty;
+        Error = error ?? string.Empty;
+        Success = string.IsNullOrEmpty(error);
     }
 
-    public AuthTask Task { get; set; }
     public string Token { get; set; }
-    public string? ProfilePicUrl { get; set; }
-    public string Message { get; set; }
-}
-
-public enum AuthTask
-{
-    Register = 1,
-    Login,
-    Activate,
-    Error
+    public bool Success { get; }
+    public string Error { get; set; }
 }

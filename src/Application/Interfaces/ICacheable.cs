@@ -1,4 +1,6 @@
-﻿namespace SiteWatcher.Application.Interfaces;
+﻿using SiteWatcher.Domain.Authentication;
+
+namespace SiteWatcher.Application.Interfaces;
 
 public interface ICacheable
 {

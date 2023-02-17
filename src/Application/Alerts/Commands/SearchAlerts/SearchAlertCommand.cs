@@ -2,6 +2,7 @@
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Extensions;
 
@@ -13,7 +14,7 @@ public class SearchAlertCommand : IRequest<IEnumerable<SimpleAlertView>>, ICache
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
     public string HashFieldName => $"Term:{Term}";
     public string GetKey(ISession session) =>
-        CacheKeys.UserAlertSearch(session.UserId!.Value);
+        CacheKeys.UserAlertSearch(session.UserId);
 }
 
 public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEnumerable<SimpleAlertView>>
@@ -35,6 +36,6 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEn
             .Select(t => t.ToLowerCaseWithoutDiacritics()).ToArray();
 
         return await _alertDapperRepository
-            .SearchSimpleAlerts(searchTerms, _session.UserId!.Value, 10, cancellationToken);
+            .SearchSimpleAlerts(searchTerms, _session.UserId, 10, cancellationToken);
     }
 }

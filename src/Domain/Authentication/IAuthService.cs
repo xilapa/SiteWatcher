@@ -1,13 +1,11 @@
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Domain.Common.Services;
 
 public interface IAuthService
 {
-    string GenerateLoginToken(UserViewModel user);
-    string GenerateLoginToken(User user);
     string GenerateRegisterToken(string googleId, string name, string email, string locale);
 
     /// <summary>
@@ -18,7 +16,6 @@ public interface IAuthService
     Task InvalidateCurrentRegisterToken();
     Task<bool> IsRegisterTokenValid();
     Task<bool> UserCanLogin();
-    Task<string> GenerateLoginState(byte[] stateBytes);
     Task WhiteListToken(UserId userId, string token);
     Task WhiteListTokenForCurrentUser(string token);
 
@@ -39,4 +36,10 @@ public interface IAuthService
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<string> SetAccountActivationTokenExpiration(string token, UserId userId);
+
+    Task<string> CreateLoginAuthSession(UserViewModel user, string? profilePictureUrl = null);
+    Task<string> CreateRegisterAuthSession(string googleId, string name, string email, string locale, string? profilePictureUrl = null);
+    Task<string> CreateActivateAuthSession(UserViewModel user);
+
+    Task<SessionView> GenerateSession(string token);
 }

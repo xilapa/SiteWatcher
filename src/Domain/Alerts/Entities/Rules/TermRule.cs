@@ -28,7 +28,7 @@ public class TermRule : Rule
         var htmlExtractedText = await HtmlUtils.ExtractText(html);
         await html.DisposeAsync();
 
-        // TODO: save the term occurrence count and compare
+        // TODO: remove extra white space from html and save the occurrences to compare
         var matches = Regex.Matches(htmlExtractedText, Term, RegexOptions.IgnoreCase);
 
         // Save the ocurrences for future comparison

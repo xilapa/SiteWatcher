@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Users.Events;
 using SiteWatcher.Domain.Users.Repositories;
 
@@ -23,10 +23,10 @@ public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
 
     public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
-        var userDeleted = await _userRepository.DeleteActiveUserAsync(_session.UserId!.Value, cancellationToken);
+        var userDeleted = await _userRepository.DeleteActiveUserAsync(_session.UserId, cancellationToken);
         if (!userDeleted) return Unit.Value;
 
-        var accountDeletedEvent = new AccountDeletedEvent(_session.UserName!, _session.Email!, _session.Language!.Value);
+        var accountDeletedEvent = new AccountDeletedEvent(_session.Name, _session.Email, _session.Language);
         await _mediator.Publish(accountDeletedEvent, CancellationToken.None);
 
         return Unit.Value;
