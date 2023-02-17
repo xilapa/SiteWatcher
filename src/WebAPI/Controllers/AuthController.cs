@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Authentication.Commands.Authenticate;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Infra.Authorization.Constants;
 
@@ -113,6 +114,9 @@ public class AuthController : ControllerBase
 
         if (string.IsNullOrEmpty(command.Token)) return BadRequest();
         var res = await _mediator.Send(command);
+
+        if (res.Task == AuthTask.Error)
+            returb BadRequest();
 
         // signin user with the auth session token
         var claims = new[] { new Claim(ClaimTypes.NameIdentifier, res.UserId) };
