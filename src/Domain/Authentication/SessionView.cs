@@ -15,9 +15,10 @@ public sealed class SessionView
         ProfilePicUrl = authSession.ProfilePicUrl;
         SessionId = sessionId;
         ProfilePicUrl = authSession.ProfilePicUrl;
+        Theme = authSession.Theme;
     }
 
-    public SessionView(Session session, string sessionId, string? profilePicUrl = null)
+    public SessionView(Session session, string sessionId, Theme theme, string? profilePicUrl = null)
     {
         Task = AuthTask.Login;
         Name = session.Name;
@@ -26,6 +27,7 @@ public sealed class SessionView
         Language = session.Language;
         SessionId = sessionId;
         ProfilePicUrl = profilePicUrl;
+        Theme = theme;
     }
 
     public SessionView(AuthTask task)
@@ -40,5 +42,6 @@ public sealed class SessionView
     public string? Email { get; set; }
     public bool EmailConfirmed { get; set; }
     public Language? Language { get; set; }
+    public Theme? Theme { get; set; }
     public string? ProfilePicUrl { get; set; }
 }

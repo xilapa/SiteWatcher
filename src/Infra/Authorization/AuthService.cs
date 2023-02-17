@@ -226,7 +226,7 @@ public class AuthService : IAuthService
         session.AddSessionId(sessionId);
 
         await _cache.SaveAsync(sessionKey, session, TimeSpan.FromSeconds(LoginTokenExpiration));
-        return new SessionView(session, sessionId, authSession.ProfilePicUrl);
+        return new SessionView(session, sessionId, authSession.Theme!.Value, authSession.ProfilePicUrl);
     }
 
     private static readonly SessionView InvalidSession = new SessionView(AuthTask.Error);
