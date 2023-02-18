@@ -116,10 +116,10 @@ public class AuthController : ControllerBase
         var res = await _mediator.Send(command);
 
         if (res.Task == AuthTask.Error)
-            returb BadRequest();
+            return BadRequest();
 
         // signin user with the auth session token
-        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, res.UserId) };
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, res.UserId.ToString()) };
         var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemas.Cookie);
 
         var authProps = new AuthenticationProperties

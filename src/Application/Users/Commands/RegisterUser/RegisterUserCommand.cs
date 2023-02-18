@@ -21,7 +21,7 @@ public class RegisterUserCommand : IRequest<RegisterUserResult>
     public string? AuthEmail { get; set; }
 
     public RegisterUserInput ToInputModel(ISession session) =>
-        new (Name!, Email!, Language, Theme, session.GoogleId!, session.Email!);
+        new (Name!, Email!, Language, Theme, "session.GoogleId!", session.Email!);
 }
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
@@ -44,7 +44,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
     {
         var user = User.FromInputModel(request.ToInputModel(_session), _session.Now);
 
-        // TODO: remove this exception, to no rely on database for a business rule
+        // TODO: remove this exception, to not rely on database for a business rule
         try
         {
             _userRepository.Add(user);
