@@ -87,7 +87,7 @@ export class UserService {
         }
         if (user == null) return;
 
-        this.localStorage.setItem(this.userKey, user);
+        this.localStorage.setItem(this.userKey, JSON.stringify(user));
 
         this.userSubject.next(user);
     }
