@@ -1,13 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {Data} from 'src/app/core/shared-data/shared-data';
-import {ConfirmationService, MessageService} from 'primeng/api';
-import {UserService} from 'src/app/core/user/user.service';
-import {AuthService} from "../../core/auth/service/auth.service";
-import {EAuthTask} from "../../core/auth/service/auth-task";
-import {utils} from "../../core/utils/utils";
-import {TranslocoService} from "@ngneat/transloco";
-import {finalize} from "rxjs";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslocoService } from "@ngneat/transloco";
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { finalize } from "rxjs";
+import { Data } from 'src/app/core/shared-data/shared-data';
+import { UserService } from 'src/app/core/user/user.service';
+import { EAuthTask } from "../../core/auth/service/auth-task";
+import { AuthService } from "../../core/auth/service/auth.service";
+import { utils } from "../../core/utils/utils";
 
 @Component({
     selector: 'sw-auth',
@@ -30,11 +30,9 @@ export class AuthComponent implements OnInit {
             return;
         }
 
-        const state = url.searchParams.get('state') as string;
-        const code = url.searchParams.get('code') as string;
-        const scope = url.searchParams.get('scope') as string;
+        const token = url.searchParams.get('token') as string;
 
-        this.authService.authenticate(state, code, scope)
+        this.authService.authenticate(token)
             .subscribe({
                 next: (response) => {
                     if (response.Task == EAuthTask.Register) {
@@ -50,7 +48,8 @@ export class AuthComponent implements OnInit {
                     if (response.Task == EAuthTask.Activate) {
                         utils.openModal(this.confirmationService, this.translocoService,
                             'home.auth.reactivateUserTitle', 'home.auth.reactivateUserMessage',
-                            () => this.sendEmailToReactivateAccount(response.Token), () => this.router.navigateByUrl('/home')
+                            () => this.sendEmailToReactivateAccount(response.SessionId),
+                            () => this.router.navigateByUrl('/home')
                         );
                     }
                 },

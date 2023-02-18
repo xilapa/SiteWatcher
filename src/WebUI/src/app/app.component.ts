@@ -1,14 +1,14 @@
-import {DOCUMENT} from '@angular/common';
-import {Component, HostListener, Inject, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {AuthUtils} from './core/auth/auth.utils';
-import {ThemeService} from "./core/theme/theme.service";
-import {LangUtils} from "./core/lang/lang.utils";
-import {TranslocoService} from "@ngneat/transloco";
-import {UserService} from "./core/user/user.service";
-import {HttpClient} from "@angular/common/http";
-import {environment} from "../environments/environment";
-import {first} from "rxjs";
+import { DOCUMENT } from '@angular/common';
+import { HttpClient } from "@angular/common/http";
+import { Component, HostListener, Inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslocoService } from "@ngneat/transloco";
+import { first } from "rxjs";
+import { environment } from "../environments/environment";
+import { AuthUtils } from './core/auth/auth.utils';
+import { LangUtils } from "./core/lang/lang.utils";
+import { ThemeService } from "./core/theme/theme.service";
+import { UserService } from "./core/user/user.service";
 
 @Component({
     selector: 'sw-root',
@@ -35,7 +35,7 @@ export class AppComponent implements OnInit{
     // Listen to storage events to update the user email confirmed status
     @HostListener('window:storage', ['$event'])
     onStorageChange(ev: StorageEvent) {
-        this.userService.decodeAndNotify();
+        this.userService.notifyUserLogged();
     }
 
     ngOnInit(): void {

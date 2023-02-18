@@ -1,20 +1,20 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {invalidCharactersValidator} from "../../../common/validators/invalid-characters.validator";
-import {Location} from "@angular/common";
-import {DeviceService} from "../../../core/device/device.service";
-import {UserService} from "../../../core/user/user.service";
-import {User, UpdateUser} from "../../../core/interfaces";
-import {LanguageOptions} from "../../../home/register/language-options";
-import {LangUtils} from "../../../core/lang/lang.utils";
-import {ELanguage} from "../../../core/lang/language";
-import {TranslocoService} from "@ngneat/transloco";
-import {finalize, Observable, Subscription} from "rxjs";
-import {ThemeService} from "../../../core/theme/theme.service";
-import {ETheme} from "../../../core/theme/theme";
-import {MessageService} from "primeng/api";
-import {NavigationStart, Router} from "@angular/router";
-import {utils} from "../../../core/utils/utils";
+import { Location } from "@angular/common";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { NavigationStart, Router } from "@angular/router";
+import { TranslocoService } from "@ngneat/transloco";
+import { MessageService } from "primeng/api";
+import { finalize, Observable, Subscription } from "rxjs";
+import { invalidCharactersValidator } from "../../../common/validators/invalid-characters.validator";
+import { DeviceService } from "../../../core/device/device.service";
+import { UpdateUser, User } from "../../../core/interfaces";
+import { LangUtils } from "../../../core/lang/lang.utils";
+import { ELanguage } from "../../../core/lang/language";
+import { ETheme } from "../../../core/theme/theme";
+import { ThemeService } from "../../../core/theme/theme.service";
+import { UserService } from "../../../core/user/user.service";
+import { utils } from "../../../core/utils/utils";
+import { LanguageOptions } from "../../../home/register/language-options";
 
 @Component({
     selector: 'sw-profile-page',
@@ -117,7 +117,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
             .pipe(finalize(() => this.doingRequest = false))
             .subscribe({
                 next: (resp) => {
-                    this.userService.setToken(resp.Token);
+                    // this.userService.setToken(resp.Token);
 
                     this.initialUser = this.userService.getCurrentUser() as User;
                     this.darkThemeEnabledInitial = this.darkThemeEnabled = this.user.theme != ETheme.light;

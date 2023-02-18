@@ -1,18 +1,15 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {Data} from '../shared-data/shared-data';
-import {TokenService} from '../token/token.service';
-import jwt_decode from "jwt-decode";
-import {User, UpdateUser, UpdateUserResult, RegisterUserResult} from '../interfaces';
-import {UserRegister} from "../auth/user-register";
-import {ELanguage} from "../lang/language";
-import {AuthenticationResult} from "../auth/service/authentication-result";
-import {LocalStorageService} from "../local-storage/local-storage.service";
-import {Router} from "@angular/router";
-import {environment} from "../../../environments/environment";
-import {HttpClient} from "@angular/common/http";
-import {ETheme} from "../theme/theme";
-import {ThemeService} from "../theme/theme.service";
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { Router } from "@angular/router";
+import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from "../../../environments/environment";
+import { Session } from "../auth/service/session";
+import { UserRegister } from "../auth/user-register";
+import { RegisterUserResult, UpdateUser, UpdateUserResult, User } from '../interfaces';
+import { LocalStorageService } from "../local-storage/local-storage.service";
+import { Data } from '../shared-data/shared-data';
+import { ThemeService } from "../theme/theme.service";
+import { TokenService } from '../token/token.service';
 
 @Injectable({
     providedIn: 'root'
@@ -23,27 +20,20 @@ export class UserService {
                 private readonly localStorage: LocalStorageService,
                 private readonly httpClient: HttpClient,
                 private readonly router: Router) {
-        this.decodeAndNotify();
+        this.notifyUserLogged();
     }
 
     private readonly registerData = "register-data";
     private readonly profilePicKey = "profilePic";
     private readonly returnUrlKey = "returnUrl";
     private readonly emailConfirmedKey = "emailConfirmed";
+    private readonly userKey = "userKey";
     private readonly baseRoute = "user";
     private userSubject = new BehaviorSubject<User | null>(null);
 
-    public setUserData(userData: AuthenticationResult): void {
-        this.localStorage.removeItem(this.emailConfirmedKey);
-        this.saveProfilePicUrl(userData.ProfilePicUrl);
-        this.tokenService.setToken(userData.Token);
-        this.decodeAndNotify(userData.Token);
-    }
-
-    public setToken(token: string): void {
-        this.localStorage.removeItem(this.emailConfirmedKey);
-        this.tokenService.setToken(token);
-        this.decodeAndNotify(token);
+    public setUserData(session: Session): void {
+        this.tokenService.setToken(session.SessionId);
+        this.notifyUserLogged(session);
     }
 
     public getUser = (): Observable<User | null> =>
@@ -52,12 +42,12 @@ export class UserService {
     public getCurrentUser = (): User | null =>
         this.userSubject.getValue();
 
-    public setUserRegisterData(registerData: AuthenticationResult) {
-        this.saveProfilePicUrl(registerData.ProfilePicUrl);
-        this.tokenService.setRegisterToken(registerData.Token);
-        const userRegister = jwt_decode(registerData.Token) as UserRegister;
-        userRegister.language = parseInt(userRegister.language as any) as ELanguage;
-        Data.Share(this.registerData, userRegister);
+    public setUserRegisterData(registerData: Session) {
+        // this.saveProfilePicUrl(registerData.ProfilePicUrl);
+        // this.tokenService.setRegisterToken(registerData.Token);
+        // const userRegister = jwt_decode(registerData.Token) as UserRegister;
+        // userRegister.language = parseInt(userRegister.language as any) as ELanguage;
+        // Data.Share(this.registerData, userRegister);
     }
 
     private saveProfilePicUrl(picUrl: string | null): void {
@@ -79,23 +69,25 @@ export class UserService {
     public hasRegisterData = (): boolean =>
         !!this.tokenService.getRegisterToken() && !!Data.Get(this.registerData);
 
-    public decodeAndNotify(token: string | null = null): void {
-        if (!token || token == 'null' || token == 'undefined')
-            token = this.tokenService.getToken();
+    public notifyUserLogged(session: Session | null = null): void {
+        let user: User | null = null;
+        if (session == null)
+            user = this.localStorage.getItem(this.userKey);
+            
+        if (user == null && session != null) {
+            user = {
+                email: session.Email,
+                emailConfirmed: session.EmailConfirmed,
+                name: session.Name,
+                profilePic: session.ProfilePicUrl,
+                id: session.UserId,
+                language: session.Language,
+                theme: session.Theme
+            } as User;
+        }
+        if (user == null) return;
 
-        if (!token || token == 'null' || token == 'undefined')
-            return;
-
-        const user = jwt_decode(token) as User;
-        user.language = parseInt(user.language as any) as ELanguage;
-        user.theme = parseInt(user.theme as any) as ETheme;
-        user.profilePic = this.localStorage.getItem(this.profilePicKey);
-
-        const emailConfirmedValue = this.localStorage.getItem(this.emailConfirmedKey);
-        if (emailConfirmedValue)
-            user.emailConfirmed = JSON.parse(emailConfirmedValue);
-        else
-            user.emailConfirmed = JSON.parse((user as any)["email-confirmed"]);
+        this.localStorage.setItem(this.userKey, user);
 
         this.userSubject.next(user);
     }
@@ -162,7 +154,7 @@ export class UserService {
 
     emailConfirmed(): void {
         this.localStorage.setItem(this.emailConfirmedKey, 'true');
-        this.decodeAndNotify();
+        this.notifyUserLogged();
     }
 
     reactivateAccount(token: string) : Observable<any> {
