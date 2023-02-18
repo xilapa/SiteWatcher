@@ -19,7 +19,6 @@ public class AuthService : IAuthService
 {
     private readonly IAppSettings _appSettings;
     private readonly ICache _cache;
-    private readonly ISession _session;
 
     private const int AuthSessionExpiration = 30;
     private const int RegisterTokenExpiration = 15 * 60;
@@ -28,11 +27,10 @@ public class AuthService : IAuthService
     private const int AccountReactivationTokenExpiration = 24 * 60 * 60;
     private const int LoginStateExpiration = 15 * 60 * 60;
 
-    public AuthService(IAppSettings appSettings, ICache cache, ISession session)
+    public AuthService(IAppSettings appSettings, ICache cache)
     {
         _appSettings = appSettings;
         _cache = cache;
-        _session = session;
     }
 
     public string GenerateRegisterToken(string googleId, string name, string email, string locale)
@@ -82,7 +80,8 @@ public class AuthService : IAuthService
 
     public async Task InvalidateCurrenUser()
     {
-        var key = CacheKeys.InvalidUser(_session.UserId);
+        // TODO: re-implement this
+        var key = "CacheKeys.InvalidUser(_session.UserId)";
         var whiteListedTokens = await _cache.GetAsync<List<string>>(key) ?? new List<string>();
 
         // Remove the current token from whitelist
@@ -94,7 +93,8 @@ public class AuthService : IAuthService
 
     public async Task<bool> UserCanLogin()
     {
-        var key = CacheKeys.InvalidUser(_session.UserId);
+        // TODO: re-implement this
+        var key = "CacheKeys.InvalidUser(_session.UserId);";
         var whiteListedTokens = await _cache.GetAsync<List<string>>(key);
 
         // There is no whitelisted tokens, so the user was not invalidated
@@ -123,8 +123,9 @@ public class AuthService : IAuthService
         return Task.CompletedTask;
     }
 
+    // TODO: re-implement this
     public async Task WhiteListTokenForCurrentUser(string token) =>
-        await WhiteListToken(_session.UserId, token);
+        await WhiteListToken(UserId.Empty, token);
 
     public async Task InvalidateCurrentRegisterToken()
     {
