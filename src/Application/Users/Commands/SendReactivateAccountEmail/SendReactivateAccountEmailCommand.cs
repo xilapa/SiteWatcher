@@ -24,14 +24,13 @@ public class SendReactivateAccountEmailCommandHandler : IRequestHandler<SendReac
         _uow = uow;
     }
 
-    public async Task<Unit> Handle(SendReactivateAccountEmailCommand request, CancellationToken cancellationToken)
+    public async Task Handle(SendReactivateAccountEmailCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetAsync(u => u.Id == request.UserId && !u.Active, cancellationToken);
         if(user is null)
-            return Unit.Value;
+            return;
 
         user.GenerateUserActivationToken(_session.Now);
         await _uow.SaveChangesAsync(CancellationToken.None);
-        return Unit.Value;
     }
 }

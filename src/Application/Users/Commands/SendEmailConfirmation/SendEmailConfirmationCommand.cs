@@ -21,15 +21,14 @@ public class SendEmailConfirmationCommandHandler : IRequestHandler<SendEmailConf
         _uow = uow;
     }
 
-    public async Task<Unit> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
+    public async Task Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository
             .GetAsync(u => u.Id == _session.UserId && u.Active && !u.EmailConfirmed, cancellationToken);
         if(user is null)
-            return Unit.Value;
+            return;
 
         user.GenerateEmailConfirmationToken(_session.Now);
         await _uow.SaveChangesAsync(cancellationToken);
-        return Unit.Value;
     }
 }

@@ -21,15 +21,14 @@ public class DeactivateAccountCommandHandler : IRequestHandler<DeactivateAccount
         _session = session;
     }
 
-    public async Task<Unit> Handle(DeactivateAccountCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeactivateAccountCommand request, CancellationToken cancellationToken)
     {
         var user = await  _userRepository
             .GetAsync(u => u.Id == _session.UserId && u.Active, cancellationToken);
         if (user is null)
-            return Unit.Value;
+            return;
 
         user.Deactivate(_session.Now);
         await _uow.SaveChangesAsync(cancellationToken);
-        return Unit.Value;
     }
 }

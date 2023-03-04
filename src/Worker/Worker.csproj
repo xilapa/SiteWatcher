@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetCore.CAP" Version="7.0.2" />
-    <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="7.0.2" />
-    <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="7.0.2" />
-    <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="7.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="DotNetCore.CAP" Version="7.0.3" />
+    <PackageReference Include="DotNetCore.CAP.InMemoryStorage" Version="7.0.3" />
+    <PackageReference Include="DotNetCore.CAP.PostgreSql" Version="7.0.3" />
+    <PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="7.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
     <PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" Version="7.0.0" />
   </ItemGroup>

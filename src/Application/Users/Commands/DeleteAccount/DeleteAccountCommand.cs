@@ -21,14 +21,12 @@ public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
         _mediator = mediator;
     }
 
-    public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
         var userDeleted = await _userRepository.DeleteActiveUserAsync(_session.UserId!.Value, cancellationToken);
-        if (!userDeleted) return Unit.Value;
+        if (!userDeleted) return;
 
         var accountDeletedEvent = new AccountDeletedEvent(_session.UserName!, _session.Email!, _session.Language!.Value);
         await _mediator.Publish(accountDeletedEvent, CancellationToken.None);
-
-        return Unit.Value;
     }
 }
