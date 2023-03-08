@@ -1,6 +1,6 @@
-﻿namespace SiteWatcher.Application.Authentication.Common;
+﻿namespace SiteWatcher.Domain.Authentication;
 
-public class AuthenticationResult
+public sealed class AuthenticationResult
 {
     public AuthenticationResult(AuthTask task, string token, string? profilePicUrl)
     {
