@@ -1,61 +1,77 @@
-﻿using MediatR;
-using SiteWatcher.Application.Authentication.Common;
-using SiteWatcher.Application.Common.Commands;
+﻿using Domain.Authentication;
+using MediatR;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 
-public class GoogleAuthenticationCommand : IRequest<CommandResult>
+public class GoogleAuthenticationCommand : IRequest<AuthKeys>
 {
-    public string? State { get; set; }
-    public string? Code { get; set; }
-    public string? Scope { get; set; }
+    public string? GoogleId { get; set; }
+    public string? Email { get; set; }
+    public string? ProfilePicUrl { get; set; }
+    public string? Name { get; set; }
+    public string? Locale { get; set; }
+
+    public bool IsValid()
+    {
+        if (string.IsNullOrEmpty(GoogleId)) return false;
+        if (string.IsNullOrEmpty(Email)) return false;
+        return true;
+    }
+
+    public UserRegisterData ToRegisterData()
+    {
+        return new UserRegisterData
+        {
+            GoogleId = GoogleId!,
+            Email = Email!,
+            Name = Name,
+            Locale = Locale
+        };
+    }
 }
 
-public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenticationCommand, CommandResult>
+public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenticationCommand, AuthKeys>
 {
-    private readonly IGoogleAuthService _googleAuthService;
-    private readonly IUserDapperRepository _userDapperRepository;
+    private readonly IUserDapperRepository _userRepo;
     private readonly IAuthService _authService;
 
-    public GoogleAuthenticationCommandHandler(IGoogleAuthService googleAuthService, IUserDapperRepository userDapperRepository,
-    IAuthService authService)
+    public GoogleAuthenticationCommandHandler(IUserDapperRepository userRepo, IAuthService authService)
     {
-        _googleAuthService = googleAuthService;
-        _userDapperRepository = userDapperRepository;
+        _userRepo = userRepo;
         _authService = authService;
     }
 
-    public async Task<CommandResult> Handle(GoogleAuthenticationCommand request, CancellationToken cancellationToken)
+    public async Task<AuthKeys> Handle(GoogleAuthenticationCommand request, CancellationToken ct)
     {
-        var tokenResult = await _googleAuthService.ExchangeCode(request.Code!, cancellationToken);
-        if(!tokenResult.Success)
-            return CommandResult.FromError(ApplicationErrors.GOOGLE_AUTH_ERROR);
+        if (!request.IsValid()) return new AuthKeys(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
-        var user = await _userDapperRepository.GetUserAsync(tokenResult.GoogleId!, cancellationToken);
+        var user = await _userRepo.GetUserAsync(request.GoogleId!, ct);
 
+        AuthenticationResult authRes = null!;
         // User exists and is active
-        if (user?.Active is true)
+        if (user?.Active == true)
         {
             var loginToken = _authService.GenerateLoginToken(user);
             await _authService.WhiteListToken(user.Id, loginToken);
-            return CommandResult
-                .FromValue(new AuthenticationResult(AuthTask.Login, loginToken, tokenResult.ProfilePicUrl));
+            authRes = new AuthenticationResult(AuthTask.Login, loginToken, request.ProfilePicUrl);
         }
 
         // User does not exists
-        if(user is null)
+        if(user == null)
         {
-            var registerToken = _authService.GenerateRegisterToken(tokenResult.Claims, tokenResult.GoogleId!);
-            return CommandResult
-                .FromValue(new AuthenticationResult(AuthTask.Register, registerToken, tokenResult.ProfilePicUrl));
+            var registerToken = _authService.GenerateRegisterToken(request.ToRegisterData());
+            authRes = new AuthenticationResult(AuthTask.Register, registerToken, request.ProfilePicUrl);
         }
 
         // User exists but is deactivated
-        return CommandResult
-            .FromValue(new AuthenticationResult(AuthTask.Activate, user.Id.Value.ToString(), null));
+        if (user != null)
+            authRes = new AuthenticationResult(AuthTask.Activate, user.Id.ToString(), null);
+
+        // store auth result
+        return await _authService.StoreAuthenticationResult(authRes, ct);
     }
 }

@@ -1,42 +1,41 @@
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using Domain.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Enums;
-using SiteWatcher.Domain.Common.Extensions;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
-using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.Authorization.Constants;
-using SiteWatcher.Infra.Authorization.Extensions;
 
 namespace SiteWatcher.Infra.Authorization;
 
-public class AuthService : IAuthService
+public sealed class AuthService : IAuthService
 {
     private readonly IAppSettings _appSettings;
     private readonly ICache _cache;
     private readonly ISession _session;
+    private readonly ITimeLimitedDataProtector _protector;
 
     private const int RegisterTokenExpiration = 15 * 60;
     private const int LoginTokenExpiration = 8 * 60 * 60;
     private const int EmailConfirmationTokenExpiration = 24 * 60 * 60;
     private const int AccountReactivationTokenExpiration = 24 * 60 * 60;
     private const int LoginStateExpiration = 15 * 60 * 60;
+    private const int AuthResExpiration = 20;
 
-    public AuthService(IAppSettings appSettings, ICache cache, ISession session)
+    public AuthService(IAppSettings appSettings, ICache cache, ISession session, IDataProtectionProvider protectionProvider)
     {
         _appSettings = appSettings;
         _cache = cache;
         _session = session;
+        _protector = protectionProvider.CreateProtector(nameof(AuthService)).ToTimeLimitedDataProtector();
     }
 
     public string GenerateLoginToken(UserViewModel userVm)
@@ -69,20 +68,14 @@ public class AuthService : IAuthService
         return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
     }
 
-    public string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId)
+    public string GenerateRegisterToken(UserRegisterData user)
     {
-        var tokenClaimsEnumerated = tokenClaims as Claim[] ?? tokenClaims.ToArray();
-        var locale = tokenClaimsEnumerated
-            .DefaultIfEmpty(new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-US"))
-            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Locale)?.Value
-            .Split("-").First();
-
-        var claims = new[]
+        var claims = new Claim[]
         {
-            tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Name),
-            tokenClaimsEnumerated.GetClaimValue(AuthenticationDefaults.ClaimTypes.Email),
-            new(AuthenticationDefaults.ClaimTypes.Language, ((int) locale!.GetEnumValue<Language>()).ToString()),
-            new(AuthenticationDefaults.ClaimTypes.GoogleId, googleId)
+            new(AuthenticationDefaults.ClaimTypes.Name,user.Name ?? string.Empty),
+            new(AuthenticationDefaults.ClaimTypes.Email, user.Email),
+            new(AuthenticationDefaults.ClaimTypes.Language, user.Language().ToString()),
+            new(AuthenticationDefaults.ClaimTypes.GoogleId, user.GoogleId)
         };
 
         return GenerateToken(claims, TokenPurpose.Register, RegisterTokenExpiration);
@@ -207,5 +200,14 @@ public class AuthService : IAuthService
         await _cache.SaveStringAsync(token, userId.Value.ToString(),
             TimeSpan.FromSeconds(AccountReactivationTokenExpiration));
         return token;
+    }
+
+    public async Task<AuthKeys> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct)
+    {
+        var key = Utils.GenerateSafeRandomBase64String();
+        var securityToken = _protector.Protect(key, TimeSpan.FromSeconds(AuthResExpiration));
+        var authkeys = new AuthKeys(key, securityToken);
+        await _cache.SaveAsync(key, authRes, TimeSpan.FromSeconds(AuthResExpiration));
+        return authkeys;
     }
 }
