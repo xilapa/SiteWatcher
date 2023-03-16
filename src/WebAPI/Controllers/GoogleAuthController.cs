@@ -98,8 +98,7 @@ public class GoogleAuthController : ControllerBase
         await HttpContext.SignInAsync(AuthenticationDefaults.Schemes.Cookie, principal, cookieProps);
 
         // return the security token on redirect url to avoid XSRF
-        // TODO: front end auth url
-        var redirectUrl = $"{_appSettings.FrontEndUrl}/home/auth?token={authKeys.SecutriyToken}";
+        var redirectUrl = $"{_appSettings.FrontEndAuthUrl}?token={authKeys.SecutriyToken}";
         return Redirect(redirectUrl);
     }
 

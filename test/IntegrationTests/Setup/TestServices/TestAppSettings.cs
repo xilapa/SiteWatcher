@@ -23,6 +23,7 @@ public class TestAppSettings : IAppSettings
         ApiKeyName = "TestKey";
         ApiKey = "TestValue";
         FrontEndUrl = "https://xilapa.com";
+        FrontEndUrl = "https://xilapa.com/auth";
         IsDevelopment = true;
         ConnectionString = "TestConnectionString";
         RedisConnectionString = "RedisConnectionString";
@@ -37,6 +38,7 @@ public class TestAppSettings : IAppSettings
     public bool IsDevelopment { get; }
     public string ConnectionString { get; set; }
     public string FrontEndUrl { get; set; }
+    public string FrontEndAuthUrl { get; set; }
     public byte[] RegisterKey { get; set; }
     public byte[] AuthKey { get; set; }
     public string RedisConnectionString { get; set; }
