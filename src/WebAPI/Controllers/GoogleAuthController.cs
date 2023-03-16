@@ -1,30 +1,33 @@
+using System.Security.Claims;
 using System.Web;
+using Domain.Authentication;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
-using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
-using SiteWatcher.WebAPI.Extensions;
-using SiteWatcher.WebAPI.Filters;
+using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
 [ApiController]
-[AllowAnonymous]
 [Route("google-auth")]
 public class GoogleAuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IGoogleSettings _googleSettings;
     private readonly IMediator _mediator;
+    private readonly IAppSettings _appSettings;
 
-    public GoogleAuthController(IAuthService authService, IGoogleSettings googleSettings, IMediator mediator)
+    public GoogleAuthController(IAuthService authService, IGoogleSettings googleSettings, IMediator mediator,
+        IAppSettings appSettings)
     {
         _authService = authService;
         _googleSettings = googleSettings;
         _mediator = mediator;
+        _appSettings = appSettings;
     }
 
     [HttpGet]
@@ -41,11 +44,69 @@ public class GoogleAuthController : ControllerBase
         return Redirect(authUrl);
     }
 
-    [CommandValidationFilter]
-    [HttpPost("authenticate")]
-    public async Task<IActionResult> Authenticate(GoogleAuthenticationCommand command, CancellationToken cancellationToken)
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("start/{schema:required}")]
+    public IActionResult StartAuth([FromRoute] string schema)
     {
-        var commandResult = await _mediator.Send(command, cancellationToken);
-        return commandResult.ToActionResult<AuthenticationResult>();
+        var callBackUrl = schema switch
+        {
+            AuthenticationDefaults.Schemes.Google => Url.Action(nameof(GoogleAuthCallback)),
+            _ => string.Empty
+        };
+
+        if (string.IsNullOrEmpty(callBackUrl)) return BadRequest();
+
+        var authProp = new AuthenticationProperties { RedirectUri = callBackUrl };
+        return Challenge(authProp, schema);
+    }
+
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("google")]
+    public async Task<IActionResult> GoogleAuthCallback(CancellationToken ct)
+    {
+        var authRes = await HttpContext.AuthenticateAsync(AuthenticationDefaults.Schemes.Google);
+        if (!authRes.Succeeded) return Unauthorized();
+
+        var authCommand = new GoogleAuthenticationCommand
+        {
+            GoogleId = authRes.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
+            ProfilePicUrl = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.ProfilePicUrl),
+            Email = authRes.Principal.FindFirstValue(ClaimTypes.Email),
+            Name = authRes.Principal.FindFirstValue(ClaimTypes.Name),
+            Locale = authRes.Principal.FindFirstValue(ClaimTypes.Locality),
+        };
+
+        var authKeys = await _mediator.Send(authCommand, ct);
+        return await SetCookieAndRedirect(authKeys);
+    }
+
+    private async Task<IActionResult> SetCookieAndRedirect(AuthKeys authKeys)
+    {
+        if (!authKeys.Success()) return Unauthorized(authKeys.ErrorMessage);
+
+        // sign-in user with cookie using the key
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, authKeys.Key) };
+        var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemes.Cookie);
+        var cookieProps = new AuthenticationProperties
+        {
+            IsPersistent = false,
+            AllowRefresh = false
+        };
+        var principal = new ClaimsPrincipal(claimsIdentity);
+        await HttpContext.SignInAsync(AuthenticationDefaults.Schemes.Cookie, principal, cookieProps);
+
+        // return the security token on redirect url to avoid XSRF
+        // TODO: front end auth url
+        var redirectUrl = $"{_appSettings.FrontEndUrl}/home/auth?token={authKeys.SecutriyToken}";
+        return Redirect(redirectUrl);
+    }
+
+    [HttpPost]
+    [Route("exchange-key")]
+    public async Task<IActionResult> GetAuthResult([FromBody] string token)
+    {
+        throw new NotImplementedException();
     }
 }
