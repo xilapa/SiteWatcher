@@ -12,6 +12,7 @@ public class AppSettings : IAppSettings
     public bool IsDevelopment { get; }
     public string ConnectionString { get; set; }
     public string FrontEndUrl { get; set; } = null!;
+    public string FrontEndAuthUrl { get; set; } = null!;
     public byte[] RegisterKey { get; set; } = null!;
     public byte[] AuthKey { get; set; } = null!;
 
