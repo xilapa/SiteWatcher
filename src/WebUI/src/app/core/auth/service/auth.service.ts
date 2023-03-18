@@ -1,10 +1,9 @@
-import {DOCUMENT} from '@angular/common';
-import {HttpClient} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
-import {Observable, tap} from 'rxjs';
-import {environment} from 'src/environments/environment';
-import { EAuthTask } from './auth-task';
-import {AuthenticationResult} from "./authentication-result";
+import { DOCUMENT } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+import { AuthenticationResult } from "./authentication-result";
 
 @Injectable({
     providedIn: 'root'
@@ -20,17 +19,23 @@ export class AuthService {
     }
 
     public googleLogin(): void {
-        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/login`;
+        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google`;
     }
 
     public googleRegister(): void {
-        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/register`;
+        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google`;
     }
 
     public authenticate(state: string, code: string, scope: string): Observable<AuthenticationResult> {
         return this.httpClient.post<AuthenticationResult>(
             `${environment.baseApiUrl}/${this.baseRoute}/authenticate`,
             {state, code, scope})
+    }
+
+    public exchangeToken(token: string): Observable<AuthenticationResult> {
+        return this.httpClient.post<AuthenticationResult>(
+            `${environment.baseApiUrl}/${this.baseRoute}/exchange-token`,
+            {token})
     }
 }
 

@@ -103,7 +103,7 @@ public class GoogleAuthController : ControllerBase
     }
 
     [HttpPost]
-    [Route("exchange-key")]
+    [Route("exchange-token")]
     public async Task<IActionResult> GetAuthResult([FromBody] string token)
     {
         throw new NotImplementedException();
