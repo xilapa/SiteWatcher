@@ -10,7 +10,7 @@ import { AuthenticationResult } from "./authentication-result";
 })
 export class AuthService {
 
-    private readonly baseRoute = "google-auth";
+    private readonly baseRoute = "auth";
 
     constructor(
         @Inject(DOCUMENT) private readonly document: Document,

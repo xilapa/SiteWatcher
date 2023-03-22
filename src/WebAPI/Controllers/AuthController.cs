@@ -14,8 +14,8 @@ using SiteWatcher.Infra.Authorization.Constants;
 namespace SiteWatcher.WebAPI.Controllers;
 
 [ApiController]
-[Route("google-auth")]
-public class GoogleAuthController : ControllerBase
+[Route("auth")]
+public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IGoogleSettings _googleSettings;
@@ -23,7 +23,7 @@ public class GoogleAuthController : ControllerBase
     private readonly IAppSettings _appSettings;
     private const string key = nameof(key);
 
-    public GoogleAuthController(IAuthService authService, IGoogleSettings googleSettings, IMediator mediator,
+    public AuthController(IAuthService authService, IGoogleSettings googleSettings, IMediator mediator,
         IAppSettings appSettings)
     {
         _authService = authService;
