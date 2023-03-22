@@ -2,10 +2,9 @@
 using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
-using SiteWatcher.Application.Authentication.Common;
 using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Repositories;
@@ -14,13 +13,11 @@ namespace UnitTests.Commands;
 
 public sealed class GoogleAuthenticationCommandTests
 {
-    private readonly IGoogleAuthService _googleAuthService;
     private readonly IAuthService _authService;
     private const string RegisterToken = "REGISTER_TOKEN";
 
     public GoogleAuthenticationCommandTests()
     {
-        var googleAuthServiceMock = new Mock<IGoogleAuthService>();
         googleAuthServiceMock
             .Setup(_ => _.ExchangeCode(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new GoogleTokenResult("id", null, new List<Claim>()));
@@ -40,12 +37,12 @@ public sealed class GoogleAuthenticationCommandTests
         // Arrange
         var userDapperRepoMock = new Mock<IUserDapperRepository>();
         userDapperRepoMock
-            .Setup(_ => _.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(_ => _.GetUserByGoogleIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(null as UserViewModel);
 
-        var commandHandler = new GoogleAuthenticationCommandHandler(_googleAuthService, userDapperRepoMock.Object, _authService);
+        var commandHandler = new AuthenticationCommandHandler(_googleAuthService, userDapperRepoMock.Object, _authService);
 
-        var command = new GoogleAuthenticationCommand();
+        var command = new AuthenticationCommand();
 
         // Act
         var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;
@@ -66,12 +63,12 @@ public sealed class GoogleAuthenticationCommandTests
         };
         var userDapperRepoMock = new Mock<IUserDapperRepository>();
         userDapperRepoMock
-            .Setup(_ => _.GetUserAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(_ => _.GetUserByGoogleIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(userVm);
 
-        var commandHandler = new GoogleAuthenticationCommandHandler(_googleAuthService, userDapperRepoMock.Object, _authService);
+        var commandHandler = new AuthenticationCommandHandler(_googleAuthService, userDapperRepoMock.Object, _authService);
 
-        var command = new GoogleAuthenticationCommand();
+        var command = new AuthenticationCommand();
 
         // Act
         var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;

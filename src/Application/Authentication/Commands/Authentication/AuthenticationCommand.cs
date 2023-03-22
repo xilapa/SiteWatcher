@@ -7,7 +7,7 @@ using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 
-public class GoogleAuthenticationCommand : IRequest<AuthKeys>
+public class AuthenticationCommand : IRequest<AuthKeys>
 {
     public string? GoogleId { get; set; }
     public string? Email { get; set; }
@@ -34,22 +34,22 @@ public class GoogleAuthenticationCommand : IRequest<AuthKeys>
     }
 }
 
-public class GoogleAuthenticationCommandHandler : IRequestHandler<GoogleAuthenticationCommand, AuthKeys>
+public class AuthenticationCommandHandler : IRequestHandler<AuthenticationCommand, AuthKeys>
 {
     private readonly IUserDapperRepository _userRepo;
     private readonly IAuthService _authService;
 
-    public GoogleAuthenticationCommandHandler(IUserDapperRepository userRepo, IAuthService authService)
+    public AuthenticationCommandHandler(IUserDapperRepository userRepo, IAuthService authService)
     {
         _userRepo = userRepo;
         _authService = authService;
     }
 
-    public async Task<AuthKeys> Handle(GoogleAuthenticationCommand request, CancellationToken ct)
+    public async Task<AuthKeys> Handle(AuthenticationCommand request, CancellationToken ct)
     {
         if (!request.IsValid()) return new AuthKeys(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
-        var user = await _userRepo.GetUserAsync(request.GoogleId!, ct);
+        var user = await _userRepo.GetUserByGoogleIdAsync(request.GoogleId!, ct);
 
         AuthenticationResult authRes = null!;
         // User exists and is active

@@ -19,7 +19,7 @@ public class UserDapperRepository : IUserDapperRepository
         _dapperQueries = dapperQueries;
     }
 
-    public async Task<UserViewModel?> GetUserAsync(string googleId, CancellationToken cancellationToken)
+    public async Task<UserViewModel?> GetUserByGoogleIdAsync(string googleId, CancellationToken cancellationToken)
     {
         var commandDefinition = new CommandDefinition(_dapperQueries.GetUserByGoogleId, new {googleId},
             cancellationToken: cancellationToken);

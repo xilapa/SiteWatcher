@@ -50,13 +50,13 @@ public class AuthController : ControllerBase
         var authRes = await HttpContext.AuthenticateAsync(AuthenticationDefaults.Schemes.Google);
         if (!authRes.Succeeded) return Unauthorized();
 
-        var authCommand = new GoogleAuthenticationCommand
+        var authCommand = new AuthenticationCommand
         {
             GoogleId = authRes.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
             ProfilePicUrl = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.ProfilePicUrl),
             Email = authRes.Principal.FindFirstValue(ClaimTypes.Email),
             Name = authRes.Principal.FindFirstValue(ClaimTypes.Name),
-            Locale = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.Locale),
+            Locale = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.Locale)
         };
 
         var authKeys = await _mediator.Send(authCommand, ct);
