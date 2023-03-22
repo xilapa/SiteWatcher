@@ -51,6 +51,7 @@ builder.Services.AddCors(options => {
             policyBuilder.WithOrigins(appSettings.FrontEndUrl);
             policyBuilder.AllowAnyHeader();
             policyBuilder.WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE");
+            policyBuilder.AllowCredentials();
         });
 });
 
