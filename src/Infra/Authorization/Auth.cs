@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
@@ -51,18 +50,18 @@ public static class Auth
             })
             .AddCookie(AuthenticationDefaults.Schemes.Cookie, opt =>
             {
-                // TODO: check if the commented code is nedded
                 opt.Cookie.Name = AuthenticationDefaults.Schemes.Cookie;
                 opt.Cookie.HttpOnly = true;
                 opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 opt.Cookie.IsEssential = true;
-                // opt.Cookie.SameSite = SameSiteMode.None;
+                opt.Cookie.SameSite = SameSiteMode.None;
                 opt.Events.OnRedirectToLogin = ctx =>
                 {
                     ctx.Response.StatusCode = 401;
                     return Task.CompletedTask;
                 };
-            }).AddGoogle(AuthenticationDefaults.Schemes.Google, opts =>
+            })
+            .AddGoogle(AuthenticationDefaults.Schemes.Google, opts =>
             {
                 opts.SignInScheme = AuthenticationDefaults.Schemes.Cookie;
                 opts.ClientId = googleSettings.ClientId;

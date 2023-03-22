@@ -35,7 +35,7 @@ export class AuthService {
     public exchangeToken(token: string): Observable<AuthenticationResult> {
         return this.httpClient.post<AuthenticationResult>(
             `${environment.baseApiUrl}/${this.baseRoute}/exchange-token`,
-            {token})
+            {token}, { withCredentials: true })
     }
 }
 

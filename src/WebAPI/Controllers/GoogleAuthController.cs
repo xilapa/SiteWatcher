@@ -20,6 +20,7 @@ public class GoogleAuthController : ControllerBase
     private readonly IGoogleSettings _googleSettings;
     private readonly IMediator _mediator;
     private readonly IAppSettings _appSettings;
+    private const string key = nameof(key);
 
     public GoogleAuthController(IAuthService authService, IGoogleSettings googleSettings, IMediator mediator,
         IAppSettings appSettings)
@@ -87,7 +88,7 @@ public class GoogleAuthController : ControllerBase
         if (!authKeys.Success()) return Unauthorized(authKeys.ErrorMessage);
 
         // sign-in user with cookie using the key
-        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, authKeys.Key) };
+        var claims = new[] { new Claim(key, authKeys.Key) };
         var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemes.Cookie);
         var cookieProps = new AuthenticationProperties
         {

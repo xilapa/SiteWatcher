@@ -25,16 +25,24 @@ export class AuthComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        const url = new URL(this.doc.location.href)
+        let routeHash = this.doc.location.hash
+        if (routeHash.indexOf('#') > -1) routeHash = routeHash.replace('#', '')
+        
+        const url = new URL(this.doc.location.origin + routeHash)
+
         const token = url.searchParams.get('token') as string
         if (token == null){
             this.router.navigateByUrl('/home')
             return
         }
-
         this.authService.exchangeToken(token)
             .subscribe({
                 next: (response) => {
+                    if (!response) {
+                        utils.toastError(null, this.messageService,
+                            this.translocoService)
+                        this.router.navigateByUrl('/home');
+                    }
                     if (response.Task == EAuthTask.Register) {
                         this.userService.setUserRegisterData(response);
                         this.router.navigateByUrl('/home/register');
