@@ -1,8 +1,8 @@
 ﻿using Domain.Authentication;
 using MediatR;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;

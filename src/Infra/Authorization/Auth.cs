@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Handlers;
