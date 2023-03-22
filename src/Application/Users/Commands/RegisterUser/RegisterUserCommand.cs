@@ -16,8 +16,6 @@ public class RegisterUserCommand : IRequest<RegisterUserResult>
     public string? Email { get; set; }
     public Language Language { get; set; }
     public Theme Theme { get; set; }
-    public string? GoogleId { get; set; }
-    public string? AuthEmail { get; set; }
 
     public RegisterUserInput ToInputModel(ISession session) =>
         new (Name!, Email!, Language, Theme, session.GoogleId!, session.Email!);
