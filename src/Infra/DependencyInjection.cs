@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using Dapper;
 using DotNetCore.CAP.Internal;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
@@ -56,7 +55,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddRedisCache(this IServiceCollection services, IAppSettings appSettings)
+    public static IConnectionMultiplexer AddRedisCache(this IServiceCollection services, IAppSettings appSettings)
     {
         var configOptions = ConfigurationOptions.Parse(appSettings.RedisConnectionString);
         configOptions.AbortOnConnectFail = true;
@@ -64,9 +63,10 @@ public static class DependencyInjection
         configOptions.ConnectTimeout = 2_000;
         configOptions.ReconnectRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(5).Milliseconds, TimeSpan.FromSeconds(20).Milliseconds);
 
-        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(configOptions));
+        var multiplexer = ConnectionMultiplexer.Connect(configOptions);
+        services.AddSingleton<IConnectionMultiplexer>(multiplexer);
         services.AddSingleton<ICache, RedisCache>();
-        return services;
+        return multiplexer;
     }
 
     public static IServiceCollection AddSession(this IServiceCollection services)
@@ -176,5 +176,14 @@ public static class DependencyInjection
             ExchangeType.Topic,
             durable: true,
             autoDelete: false);
+    }
+
+    public static IServiceCollection SetupDataProtection(this IServiceCollection services, IConnectionMultiplexer redisMultiplexer)
+    {
+        services
+            .AddDataProtection()
+            .PersistKeysToStackExchangeRedis(redisMultiplexer);
+
+        return services;
     }
 }
