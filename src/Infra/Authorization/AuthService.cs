@@ -210,4 +210,11 @@ public sealed class AuthService : IAuthService
         await _cache.SaveAsync(key, authRes, TimeSpan.FromSeconds(AuthResExpiration));
         return authkeys;
     }
+
+    public async Task<AuthenticationResult?> GetAuthenticationResult(string key, string token, CancellationToken ct)
+    {
+        var decodeToken = _protector.Unprotect(token);
+        if (!key.Equals(decodeToken)) return null;
+        return await _cache.GetAndRemoveAsync<AuthenticationResult?>(key,ct);
+    }
 }

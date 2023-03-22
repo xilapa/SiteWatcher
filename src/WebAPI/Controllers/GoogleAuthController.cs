@@ -106,8 +106,11 @@ public class GoogleAuthController : ControllerBase
 
     [HttpPost]
     [Route("exchange-token")]
-    public async Task<IActionResult> GetAuthResult([FromBody] string token)
+    public async Task<IActionResult> ExchangeToken([FromBody] ExchangeTokenCommand command, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        command.Key = HttpContext.User.Claims.FirstOrDefault(c => c.Type == key)?.Value;
+        var authRes = await _mediator.Send(command, ct);
+        if (authRes == null) return Unauthorized();
+        return Ok(authRes);
     }
 }
