@@ -7,7 +7,6 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
-using SiteWatcher.Infra.Authorization.GoogleAuth;
 using SiteWatcher.Infra.Authorization.Handlers;
 using SiteWatcher.Infra.Authorization.Middleware;
 
@@ -96,7 +95,6 @@ public static class Auth
         });
 
         services.AddScoped<IAuthService,AuthService>();
-        services.AddScoped<IGoogleAuthService,GoogleAuthService>();
 
         services.AddScoped<IAuthorizationHandler, ValidAuthDataHandler>();
         services.AddScoped<IAuthorizationHandler, ValidRegisterDataHandler>();

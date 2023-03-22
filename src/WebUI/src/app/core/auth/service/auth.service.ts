@@ -26,12 +26,6 @@ export class AuthService {
         this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google`;
     }
 
-    public authenticate(state: string, code: string, scope: string): Observable<AuthenticationResult> {
-        return this.httpClient.post<AuthenticationResult>(
-            `${environment.baseApiUrl}/${this.baseRoute}/authenticate`,
-            {state, code, scope})
-    }
-
     public exchangeToken(token: string): Observable<AuthenticationResult> {
         return this.httpClient.post<AuthenticationResult>(
             `${environment.baseApiUrl}/${this.baseRoute}/exchange-token`,

@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Web;
 using Domain.Authentication;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Authentication.Commands.ExchangeToken;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Services;
 using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -17,33 +15,14 @@ namespace SiteWatcher.WebAPI.Controllers;
 [Route("auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
-    private readonly IGoogleSettings _googleSettings;
     private readonly IMediator _mediator;
     private readonly IAppSettings _appSettings;
     private const string key = nameof(key);
 
-    public AuthController(IAuthService authService, IGoogleSettings googleSettings, IMediator mediator,
-        IAppSettings appSettings)
+    public AuthController(IMediator mediator, IAppSettings appSettings)
     {
-        _authService = authService;
-        _googleSettings = googleSettings;
         _mediator = mediator;
         _appSettings = appSettings;
-    }
-
-    [HttpGet]
-    [Route("login")]
-    [Route("register")]
-    public async Task<IActionResult> StartAuth()
-    {
-        var state = await _authService.GenerateLoginState(_googleSettings.StateValue);
-        var authUrl = $"{_googleSettings.AuthEndpoint}?" +
-                      $"scope={HttpUtility.UrlEncode(_googleSettings.Scopes)}" +
-                      $"&response_type=code&include_granted_scopes=false&state={state}" +
-                      $"&redirect_uri={HttpUtility.UrlEncode(_googleSettings.RedirectUri)}" +
-                      $"&client_id={_googleSettings.ClientId}";
-        return Redirect(authUrl);
     }
 
     [HttpGet]

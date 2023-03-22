@@ -9,7 +9,6 @@ public class ExceptionDevResponse
     public string? StackTrace { get; set; }
     public InnerExceptionDevResponse? InnerException { get; set; }
 
-
     public static ExceptionDevResponse? From(Exception? exception, string traceId)
     {
         if(exception is null)
