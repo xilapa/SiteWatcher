@@ -46,6 +46,14 @@ public class RedisCache : ICache
         return @object;
     }
 
+    public async Task<T?> GetAndRemoveAsync<T>(string key, CancellationToken ct)
+    {
+        var objectJson = await _connectionMultiplexer.GetDatabase().StringGetDeleteAsync(key);
+        if (objectJson.IsNullOrEmpty) return default;
+        var @object = JsonSerializer.Deserialize<T>(objectJson!);
+        return @object;
+    }
+
     public async Task SaveHashAsync(string key, string fieldName, object fieldValue, TimeSpan expiration)
     {
         var objectJson = JsonSerializer.Serialize(fieldValue);
