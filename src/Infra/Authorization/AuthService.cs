@@ -74,7 +74,7 @@ public sealed class AuthService : IAuthService
         {
             new(AuthenticationDefaults.ClaimTypes.Name,user.Name ?? string.Empty),
             new(AuthenticationDefaults.ClaimTypes.Email, user.Email),
-            new(AuthenticationDefaults.ClaimTypes.Language, user.Language().ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int) user.Language()).ToString()),
             new(AuthenticationDefaults.ClaimTypes.GoogleId, user.GoogleId)
         };
 

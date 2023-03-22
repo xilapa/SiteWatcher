@@ -23,6 +23,7 @@ public static class AuthenticationDefaults
     {
         public const string Id = "sub";
         public const string Picture = "picture";
+        public const string Locale = "locale";
     }
 
     public static class Issuers

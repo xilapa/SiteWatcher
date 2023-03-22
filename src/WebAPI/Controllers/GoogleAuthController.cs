@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SiteWatcher.Application.Authentication.Commands.ExchangeToken;
 using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -76,7 +77,7 @@ public class GoogleAuthController : ControllerBase
             ProfilePicUrl = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.ProfilePicUrl),
             Email = authRes.Principal.FindFirstValue(ClaimTypes.Email),
             Name = authRes.Principal.FindFirstValue(ClaimTypes.Name),
-            Locale = authRes.Principal.FindFirstValue(ClaimTypes.Locality),
+            Locale = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.Locale),
         };
 
         var authKeys = await _mediator.Send(authCommand, ct);

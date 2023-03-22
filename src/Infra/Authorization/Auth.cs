@@ -69,7 +69,7 @@ public static class Auth
                 opts.ClaimActions.MapJsonKey(
                     AuthenticationDefaults.ClaimTypes.ProfilePicUrl, AuthenticationDefaults.Google.Picture
                     );
-                // opts.ClaimActions.MapJsonKey(ClaimTypes.Locality, AuthenticationDefaults.Google.Locale);
+                opts.ClaimActions.MapJsonKey(AuthenticationDefaults.ClaimTypes.Locale, AuthenticationDefaults.Google.Locale);
             });
 
         // Bind the token issuer to the authentication scheme
