@@ -4,8 +4,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SiteWatcher.Application.Authentication.Commands.Authentication;
 using SiteWatcher.Application.Authentication.Commands.ExchangeToken;
-using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra.Authorization.Constants;
 
