@@ -239,11 +239,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // deleted or used by another process.
         // https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
         if(_dbConnection is SqliteConnection) SqliteConnection.ClearAllPools();
-        if(_dbConnection is NpgsqlConnection) NpgsqlConnection.ClearAllPools();
+        if (_postgresContainer is not null) NpgsqlConnection.ClearAllPools();
 
         await context.Database.EnsureDeletedAsync();
         if(_dbConnection is not null) await _dbConnection.DisposeAsync();
-        if(_dbConnection is NpgsqlConnection) await _postgresContainer.DisposeAsync();
+        if (_postgresContainer is not null) await _postgresContainer.DisposeAsync();
+
         await base.DisposeAsync();
     }
 }
