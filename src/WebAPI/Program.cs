@@ -32,8 +32,8 @@ builder.Services.AddRepositories();
 builder.Services.AddDapperRepositories();
 builder.Services.AddApplication();
 
-var redisMultiplexer = builder.Services.AddRedisCache(appSettings);
-builder.Services.SetupDataProtection(redisMultiplexer);
+builder.Services.AddRedisCache(appSettings)
+    .SetupDataProtection(builder.Environment);
 
 DependencyInjection.AddSession(builder.Services)
     .AddEmailService()

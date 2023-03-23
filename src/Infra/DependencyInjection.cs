@@ -1,8 +1,10 @@
 using Dapper;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Savorboard.CAP.InMemoryMessageQueue;
@@ -55,7 +57,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IConnectionMultiplexer AddRedisCache(this IServiceCollection services, IAppSettings appSettings)
+    public static IServiceCollection AddRedisCache(this IServiceCollection services, IAppSettings appSettings)
     {
         var configOptions = ConfigurationOptions.Parse(appSettings.RedisConnectionString);
         configOptions.AbortOnConnectFail = true;
@@ -63,10 +65,9 @@ public static class DependencyInjection
         configOptions.ConnectTimeout = 2_000;
         configOptions.ReconnectRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(5).Milliseconds, TimeSpan.FromSeconds(20).Milliseconds);
 
-        var multiplexer = ConnectionMultiplexer.Connect(configOptions);
-        services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(configOptions));
         services.AddSingleton<ICache, RedisCache>();
-        return multiplexer;
+        return services;
     }
 
     public static IServiceCollection AddSession(this IServiceCollection services)
@@ -178,8 +179,15 @@ public static class DependencyInjection
             autoDelete: false);
     }
 
-    public static IServiceCollection SetupDataProtection(this IServiceCollection services, IConnectionMultiplexer redisMultiplexer)
+    public static IServiceCollection SetupDataProtection(this IServiceCollection services, IWebHostEnvironment env)
     {
+        if (env.IsDevelopment())
+        {
+            services.AddDataProtection();
+            return services;
+        }
+
+        var redisMultiplexer = services.BuildServiceProvider().GetRequiredService<IConnectionMultiplexer>();
         services
             .AddDataProtection()
             .PersistKeysToStackExchangeRedis(redisMultiplexer);
