@@ -1,8 +1,5 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,10 +14,12 @@ using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
+using Testcontainers.PostgreSql;
 using ISession = SiteWatcher.Application.Interfaces.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -32,7 +31,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private string _connectionString;
     private DbConnection? _dbConnection;
     private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
-    private TestcontainerDatabase _postgresContainer;
+    private PostgreSqlContainer? _postgresContainer;
     public DatabaseType DatabaseType { get; private set; }
 
     private readonly ILoggerFactory _loggerFactory;
@@ -89,16 +88,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 break;
             case DatabaseType.PostgresOnDocker:
                 DatabaseType = DatabaseType.PostgresOnDocker;
-                _postgresContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-                    .WithDatabase(new PostgreSqlTestcontainerConfiguration
-                    {
-                        Database = $"testDb{DateTime.Now.Ticks}",
-                        Username = "postgres",
-                        Password = "postgres"
-                    })
+                _postgresContainer = new PostgreSqlBuilder()
+                    .WithDatabase($"testDb{DateTime.Now.Ticks}")
                     .Build();
                 await _postgresContainer.StartAsync();
-                _connectionString = _postgresContainer.ConnectionString;
+                _connectionString = _postgresContainer.GetConnectionString();
                 _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _connectionString);
                 break;
             default:
