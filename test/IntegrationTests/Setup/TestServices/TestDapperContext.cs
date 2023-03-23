@@ -25,5 +25,4 @@ public class TestDapperContext : DapperContext
 
         return new SqliteConnection(_connectionString);
     }
-        
 }

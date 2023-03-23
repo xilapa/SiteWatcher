@@ -23,7 +23,7 @@ public class TestAppSettings : IAppSettings
         ApiKeyName = "TestKey";
         ApiKey = "TestValue";
         FrontEndUrl = "https://xilapa.com";
-        FrontEndUrl = "https://xilapa.com/auth";
+        FrontEndAuthUrl = "https://xilapa.com/auth";
         IsDevelopment = true;
         ConnectionString = "TestConnectionString";
         RedisConnectionString = "RedisConnectionString";
@@ -32,7 +32,6 @@ public class TestAppSettings : IAppSettings
         MessageIdKey = "message-id-testing";
         InMemoryStorageAndQueue = true;
         EmailNotificationRoutingKey = "email-notification-testing";
-
     }
 
     public bool IsDevelopment { get; }

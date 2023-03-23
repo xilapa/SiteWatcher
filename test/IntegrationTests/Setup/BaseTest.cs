@@ -74,7 +74,7 @@ public abstract class BaseTest
             urlStringBuilder.Append('?');
 
             var propertiesArray = queryParams.GetType().GetProperties();
-            for (int i = 0; i < propertiesArray.Length; i++)
+            for (var i = 0; i < propertiesArray.Length; i++)
             {
                 urlStringBuilder.Append(propertiesArray[i].Name);
                 urlStringBuilder.Append('=');

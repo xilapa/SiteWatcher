@@ -5,7 +5,7 @@ using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Users.Repositories;
 
-namespace SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
+namespace SiteWatcher.Application.Authentication.Commands.Authentication;
 
 public class AuthenticationCommand : IRequest<AuthKeys>
 {
@@ -68,7 +68,7 @@ public class AuthenticationCommandHandler : IRequestHandler<AuthenticationComman
         }
 
         // User exists but is deactivated
-        if (user != null)
+        if (user?.Active == false)
             authRes = new AuthenticationResult(AuthTask.Activate, user.Id.ToString(), null);
 
         // store auth result

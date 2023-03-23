@@ -6,7 +6,7 @@ using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
 using SiteWatcher.Common.Repositories;
-using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
