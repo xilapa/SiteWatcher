@@ -33,7 +33,7 @@ builder.Services.AddDapperRepositories();
 builder.Services.AddApplication();
 
 builder.Services.AddRedisCache(appSettings)
-    .SetupDataProtection(builder.Environment);
+    .SetupDataProtection(appSettings);
 
 DependencyInjection.AddSession(builder.Services)
     .AddEmailService()

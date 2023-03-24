@@ -179,9 +179,9 @@ public static class DependencyInjection
             autoDelete: false);
     }
 
-    public static IServiceCollection SetupDataProtection(this IServiceCollection services, IWebHostEnvironment env)
+    public static IServiceCollection SetupDataProtection(this IServiceCollection services, IAppSettings appSettings)
     {
-        if (env.IsDevelopment())
+        if (appSettings.DisableDataProtectionRedisStore)
         {
             services.AddDataProtection();
             return services;

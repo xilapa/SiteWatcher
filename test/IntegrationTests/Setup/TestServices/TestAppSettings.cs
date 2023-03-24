@@ -32,6 +32,7 @@ public class TestAppSettings : IAppSettings
         MessageIdKey = "message-id-testing";
         InMemoryStorageAndQueue = true;
         EmailNotificationRoutingKey = "email-notification-testing";
+        DisableDataProtectionRedisStore = true;
     }
 
     public bool IsDevelopment { get; }
@@ -50,4 +51,5 @@ public class TestAppSettings : IAppSettings
     public string MessageIdKey { get; set; }
     public bool InMemoryStorageAndQueue  { get; set; }
     public string EmailNotificationRoutingKey { get; set; }
+    public bool DisableDataProtectionRedisStore { get; set; }
 }

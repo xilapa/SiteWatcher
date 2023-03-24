@@ -44,6 +44,7 @@ public class WorkerAppSettings : IAppSettings
     public const string MessageIdKey = "message-id";
     public bool InMemoryStorageAndQueue { get; set; }
     public string EmailNotificationRoutingKey { get; set; } = null!;
+    public bool DisableDataProtectionRedisStore { get; set; }
 }
 
 public class EmailSettings : IEmailSettings

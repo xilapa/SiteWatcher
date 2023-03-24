@@ -18,4 +18,5 @@ public interface IAppSettings
     string MessageIdKey { get; }
     public bool InMemoryStorageAndQueue { get; set; }
     public string EmailNotificationRoutingKey { get; set; }
+    public bool DisableDataProtectionRedisStore { get; set; }
 }

@@ -28,5 +28,6 @@ public class AppSettings : IAppSettings
     string IAppSettings.MessageIdKey => MessageIdKey;
     public bool InMemoryStorageAndQueue { get; set; }
     public string EmailNotificationRoutingKey { get; set; }
+    public bool DisableDataProtectionRedisStore { get; set; }
     public const string MessageIdKey = "message-id";
 }
