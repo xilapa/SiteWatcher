@@ -1,11 +1,13 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
+using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -52,6 +54,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
         HttpClientFactoryMock = new Mock<IHttpClientFactory>();
+
+        var testSettings = new ConfigurationBuilder()
+            .AddJsonFile("testsettings.json")
+            .Build()
+            .Get<TestSettings>();
+
+        ApplyEnvironmentVariables(testSettings!);
 
         ConfigureTest(options).Wait();
 
@@ -107,6 +116,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             var value = prop.PropertyType == typeof(byte[])
                 ? Convert.ToBase64String((prop.GetValue(testSettings) as byte[])!)
                 : prop.GetValue(testSettings)!.ToString();
+            if(value == null) continue;
             Environment.SetEnvironmentVariable(prop.Name, value);
         }
     }
