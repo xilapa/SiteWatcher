@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Domain.Authentication;
-using Microsoft.AspNetCore.DataProtection;
+using Domain.Common.Services;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
@@ -21,7 +21,7 @@ public sealed class AuthService : IAuthService
     private readonly IAppSettings _appSettings;
     private readonly ICache _cache;
     private readonly ISession _session;
-    private readonly ITimeLimitedDataProtector _protector;
+    private readonly IDataProtectorService _protector;
 
     private const int RegisterTokenExpiration = 15 * 60;
     private const int LoginTokenExpiration = 8 * 60 * 60;
@@ -30,12 +30,13 @@ public sealed class AuthService : IAuthService
     private const int LoginStateExpiration = 15 * 60 * 60;
     private const int AuthResExpiration = 20;
 
-    public AuthService(IAppSettings appSettings, ICache cache, ISession session, IDataProtectionProvider protectionProvider)
+    public AuthService(IAppSettings appSettings, ICache cache, ISession session,
+        IDataProtectorService protector)
     {
         _appSettings = appSettings;
         _cache = cache;
         _session = session;
-        _protector = protectionProvider.CreateProtector(nameof(AuthService)).ToTimeLimitedDataProtector();
+        _protector = protector;
     }
 
     public string GenerateLoginToken(UserViewModel userVm)
@@ -46,8 +47,8 @@ public sealed class AuthService : IAuthService
             new(AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
             new(AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
             new(AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),
-            new(AuthenticationDefaults.ClaimTypes.Language, ((int) userVm.Language).ToString()),
-            new(AuthenticationDefaults.ClaimTypes.Theme, ((int) userVm.Theme).ToString())
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int)userVm.Language).ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Theme, ((int)userVm.Theme).ToString())
         };
 
         return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
@@ -61,8 +62,8 @@ public sealed class AuthService : IAuthService
             new(AuthenticationDefaults.ClaimTypes.Name, user.Name),
             new(AuthenticationDefaults.ClaimTypes.Email, user.Email),
             new(AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
-            new(AuthenticationDefaults.ClaimTypes.Language, ((int) user.Language).ToString()),
-            new(AuthenticationDefaults.ClaimTypes.Theme, ((int) user.Theme).ToString())
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Theme, ((int)user.Theme).ToString())
         };
 
         return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
@@ -72,9 +73,9 @@ public sealed class AuthService : IAuthService
     {
         var claims = new Claim[]
         {
-            new(AuthenticationDefaults.ClaimTypes.Name,user.Name ?? string.Empty),
+            new(AuthenticationDefaults.ClaimTypes.Name, user.Name ?? string.Empty),
             new(AuthenticationDefaults.ClaimTypes.Email, user.Email),
-            new(AuthenticationDefaults.ClaimTypes.Language, ((int) user.Language()).ToString()),
+            new(AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language()).ToString()),
             new(AuthenticationDefaults.ClaimTypes.GoogleId, user.GoogleId)
         };
 
@@ -189,7 +190,7 @@ public sealed class AuthService : IAuthService
     public async Task<UserId?> GetUserIdFromConfirmationToken(string token)
     {
         var userIdString = await _cache.GetAndRemoveStringAsync(token);
-        if(string.IsNullOrEmpty(userIdString))
+        if (string.IsNullOrEmpty(userIdString))
             return null;
         var userId = new UserId(new Guid(userIdString));
         return userId;
@@ -215,6 +216,6 @@ public sealed class AuthService : IAuthService
     {
         var decodeToken = _protector.Unprotect(token);
         if (!key.Equals(decodeToken)) return null;
-        return await _cache.GetAndRemoveAsync<AuthenticationResult?>(key,ct);
+        return await _cache.GetAndRemoveAsync<AuthenticationResult?>(key, ct);
     }
 }

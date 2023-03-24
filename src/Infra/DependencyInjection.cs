@@ -1,10 +1,9 @@
 using Dapper;
+using Domain.Common.Services;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Savorboard.CAP.InMemoryMessageQueue;
@@ -18,6 +17,7 @@ using SiteWatcher.Domain.Users.Repositories;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
+using SiteWatcher.Infra.DataProtection;
 using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.FireAndForget;
 using SiteWatcher.Infra.Messaging;
@@ -181,6 +181,7 @@ public static class DependencyInjection
 
     public static IServiceCollection SetupDataProtection(this IServiceCollection services, IAppSettings appSettings)
     {
+        // TODO: remove this
         if (appSettings.DisableDataProtectionRedisStore)
         {
             services.AddDataProtection();
@@ -191,6 +192,8 @@ public static class DependencyInjection
         services
             .AddDataProtection()
             .PersistKeysToStackExchangeRedis(redisMultiplexer);
+
+        services.AddSingleton<IDataProtectorService, DataProtectorService>();
 
         return services;
     }
