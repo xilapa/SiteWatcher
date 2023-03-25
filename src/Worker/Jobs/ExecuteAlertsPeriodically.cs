@@ -1,3 +1,5 @@
+using System.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -5,6 +7,7 @@ using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Infra;
 
 namespace SiteWatcher.Worker.Jobs;
 
@@ -28,7 +31,17 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
             {
                 await using var scope = _scopeFactory.CreateAsyncScope();
                 var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
+                
+                var context = scope.ServiceProvider.GetRequiredService<SiteWatcherContext>();
+                // Explicit closing and opening the db connection, along with pooling disabled
+                // on connection string, to reduce Neon db usage
+                var conn = context.Database.GetDbConnection();
+                if (conn.State != ConnectionState.Open)
+                    await context.Database.OpenConnectionAsync(stoppingToken);
+
                 await ExecuteAlerts(handler, stoppingToken);
+
+                await context.Database.CloseConnectionAsync();
                 await _timer.WaitForNextTickAsync(stoppingToken);
             }
         }, stoppingToken);
