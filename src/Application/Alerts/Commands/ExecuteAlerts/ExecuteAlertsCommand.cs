@@ -10,11 +10,6 @@ namespace SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 
 public sealed class ExecuteAlertsCommand
 {
-    public ExecuteAlertsCommand()
-    {
-        Frequencies = Enumerable.Empty<Frequencies>();
-    }
-
     public ExecuteAlertsCommand(IEnumerable<Frequencies> frequencies)
     {
         Frequencies = frequencies;
@@ -50,7 +45,7 @@ public sealed class ExecuteAlertsCommandHandler
 
         try
         {
-            await _pubService.WithPublisher((pub) => ExecuteAlertsLoop(cmmd.Frequencies, pub, ct), ct);
+            await _pubService.WithPublisher(pub => ExecuteAlertsLoop(cmmd.Frequencies, pub, ct), ct);
             await _cache.DeleteKeysWith(CacheKeys.AlertsKeyPrefix);
         }
         catch

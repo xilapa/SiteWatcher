@@ -18,7 +18,7 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
     {
         _scopeFactory = scopeProvider;
         _logger = logger;
-        _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(100) : TimeSpan.FromHours(1));
+        _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromHours(1));
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken) =>

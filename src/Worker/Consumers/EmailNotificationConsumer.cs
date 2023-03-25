@@ -40,7 +40,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
             return;
         }
 
-        using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         var error = await SendEmailNotification(message, messageId, cancellationToken);
         // If there is an error, throw an exception to fail the message consuming
