@@ -181,7 +181,8 @@ public static class DependencyInjection
 
     public static IServiceCollection SetupDataProtection(this IServiceCollection services, IAppSettings appSettings)
     {
-        // TODO: remove this
+        services.AddSingleton<IDataProtectorService, DataProtectorService>();
+
         if (appSettings.DisableDataProtectionRedisStore)
         {
             services.AddDataProtection();
@@ -192,8 +193,6 @@ public static class DependencyInjection
         services
             .AddDataProtection()
             .PersistKeysToStackExchangeRedis(redisMultiplexer);
-
-        services.AddSingleton<IDataProtectorService, DataProtectorService>();
 
         return services;
     }
