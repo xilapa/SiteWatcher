@@ -3,11 +3,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text.Json;
+using Domain.Common.Services;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using SiteWatcher.Application.Authentication.Commands.ExchangeToken;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Authorization.Constants;
@@ -20,6 +22,8 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
 {
     private readonly Mock<IAuthenticationService> _authServiceMock;
     internal const string XilapaProfilePic = "http://xilapa.io/profile.jpg";
+    private const string _key = "key";
+    internal string Unprotected = _key;
 
     public ExchangeTokenTestsBase()
     {
@@ -28,34 +32,56 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
 
     public override Action<CustomWebApplicationOptions> Options => opts =>
     {
-        // mock google cookie signin
+        // mock cookie auth
+        _authServiceMock
+            .Setup(s =>
+                s.AuthenticateAsync(It.IsAny<HttpContext>(), It.IsAny<string>()))
+            .ReturnsAsync(CreateAuthenticateResult);
+
+        opts.ReplaceService(typeof(IAuthenticationService), _authServiceMock.Object);
+
+        // mock data protection
+        var dataProtectorMock = new Mock<IDataProtectorService>();
+        dataProtectorMock
+            .Setup(d => d.Protect(It.IsAny<string>(), It.IsAny<TimeSpan>()))
+            .Returns(_key);
+
+        dataProtectorMock
+            .Setup(d => d.Unprotect(It.IsAny<string>()))
+            .Returns(Unprotect);
+
+        opts.ReplaceService(typeof(IDataProtectorService), dataProtectorMock.Object);
+
+        opts.DatabaseType = DatabaseType.SqliteOnDisk;
+    };
+
+    private string Unprotect() => Unprotected;
+
+    private AuthenticateResult CreateAuthenticateResult()
+    {
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, Users.Xilapa.GetGoogleId()), // GoogleId
             new Claim(AuthenticationDefaults.ClaimTypes.ProfilePicUrl, XilapaProfilePic),
             new Claim(ClaimTypes.Email, Users.Xilapa.Email),
-            new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-us")
+            new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-us"),
+            new Claim(_key, Unprotect()) // value used on exchange token
         };
         var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemes.Google);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
         var authTicket = new AuthenticationTicket(claimsPrincipal, AuthenticationDefaults.Schemes.Google);
-        var authenticateResult = AuthenticateResult.Success(authTicket);
-
-        _authServiceMock
-            .Setup(s => s.AuthenticateAsync(It.IsAny<HttpContext>(), AuthenticationDefaults.Schemes.Google))
-            .ReturnsAsync(authenticateResult);
-
-        opts.ReplaceService(typeof(IAuthenticationService), _authServiceMock.Object);
-
-        opts.DatabaseType = DatabaseType.SqliteOnDisk;
-    };
+        return AuthenticateResult.Success(authTicket);
+    }
 }
 
 public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase>
 {
+    private readonly ExchangeTokenTestsBase _fixture;
+
     public ExchangeTokenTests(ExchangeTokenTestsBase fixture) : base(fixture)
     {
+        _fixture = fixture;
         FakeCache.Cache.Clear();
     }
 
@@ -82,6 +108,31 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
         cachedAuthRes.Expiration.Should().Be(TimeSpan.FromSeconds(expectedExpiration!.Value));
 
         var authRes = JsonSerializer.Deserialize<AuthenticationResult>((cachedAuthRes.Value as string)!);
+        authRes!.Task.Should().Be(AuthTask.Login);
+        authRes.ProfilePicUrl.Should().Be(ExchangeTokenTestsBase.XilapaProfilePic);
+        authRes.Token.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ExchangeTokenWorks()
+    {
+        // arrange
+
+        // set the authRes on cache
+        await GetAsync("auth/google");
+
+        // set the authRes key as return of protector mock
+        _fixture.Unprotected = FakeCache.Cache.First().Key;
+
+        // get token from previous request
+        var exchangeTokenCmmd = new ExchangeTokenCommand { Token = _fixture.Unprotected };
+
+        // act
+        var res = await PostAsync("auth/exchange-token", exchangeTokenCmmd);
+
+        // assert
+        res.HttpResponse!.StatusCode.Should().Be(HttpStatusCode.OK);
+        var authRes = res.GetTyped<AuthenticationResult?>();
         authRes!.Task.Should().Be(AuthTask.Login);
         authRes.ProfilePicUrl.Should().Be(ExchangeTokenTestsBase.XilapaProfilePic);
         authRes.Token.Should().NotBeNull();
