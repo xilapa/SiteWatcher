@@ -23,10 +23,16 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
     internal const string XilapaProfilePic = "http://xilapa.io/profile.jpg";
     private const string _key = "key";
     internal string CookieKey = _key;
+    internal readonly int ExpectedAuthResExpiration;
 
     public ExchangeTokenTestsBase()
     {
         _authServiceMock = new Mock<IAuthenticationService>();
+        var authService = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
+        ExpectedAuthResExpiration = (authService
+            .GetType()
+            .GetField("AuthResExpiration", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(authService) as int?)!.Value;
     }
 
     public override Action<CustomWebApplicationOptions> Options => opts =>
@@ -76,12 +82,6 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
         // arrange
         var partialRedirectUri = $"{TestSettings.FrontEndAuthUrl}?token=";
 
-        var authService = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
-        var expectedExpiration = authService
-            .GetType()
-            .GetField("AuthResExpiration", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(authService) as int?;
-
         // act
         var res = await GetAsync("auth/google");
 
@@ -90,7 +90,7 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
         res.HttpResponse.Headers.Location!.AbsoluteUri.Should().Contain(partialRedirectUri);
 
         var cachedAuthRes = FakeCache.Cache.First().Value;
-        cachedAuthRes.Expiration.Should().Be(TimeSpan.FromSeconds(expectedExpiration!.Value));
+        cachedAuthRes.Expiration.Should().Be(TimeSpan.FromSeconds(_fixture.ExpectedAuthResExpiration));
 
         var authRes = JsonSerializer.Deserialize<AuthenticationResult>((cachedAuthRes.Value as string)!);
         authRes!.Task.Should().Be(AuthTask.Login);
@@ -98,25 +98,31 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
         authRes.Token.Should().NotBeNull();
     }
 
-    [Fact]
-    public async Task ExchangeTokenWorks()
+    [Theory]
+    [InlineData(false, HttpStatusCode.OK)]
+    [InlineData(true, HttpStatusCode.Unauthorized)]
+    public async Task ExchangeTokenWorks(bool delay, HttpStatusCode expectedHttpCode)
     {
         // arrange
 
         // get the auth res token
         var googleCallbackRes = await GetAsync("auth/google");
         var redirectUri = googleCallbackRes.HttpResponse!.Headers.Location!.AbsoluteUri;
-        var token = redirectUri[(redirectUri.IndexOf("=", StringComparison.Ordinal)+1)..];
+        var token = redirectUri[(redirectUri.IndexOf("=", StringComparison.Ordinal) + 1)..];
         var exchangeTokenCmmd = new ExchangeTokenCommand { Token = token };
 
         // set the cookie key claim
         _fixture.CookieKey = FakeCache.Cache.First().Key;
 
+        // token should not be valid after expiration
+        if (delay) await Task.Delay(TimeSpan.FromSeconds(_fixture.ExpectedAuthResExpiration));
+
         // act
         var res = await PostAsync("auth/exchange-token", exchangeTokenCmmd);
 
         // assert
-        res.HttpResponse!.StatusCode.Should().Be(HttpStatusCode.OK);
+        res.HttpResponse!.StatusCode.Should().Be(expectedHttpCode);
+        if (delay) return;
         var authRes = res.GetTyped<AuthenticationResult?>();
         authRes!.Task.Should().Be(AuthTask.Login);
         authRes.ProfilePicUrl.Should().Be(ExchangeTokenTestsBase.XilapaProfilePic);
