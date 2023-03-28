@@ -1,5 +1,4 @@
 using Dapper;
-using Domain.Common.Services;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +16,6 @@ using SiteWatcher.Domain.Users.Repositories;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
-using SiteWatcher.Infra.DataProtection;
 using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.FireAndForget;
 using SiteWatcher.Infra.Messaging;
@@ -181,8 +179,6 @@ public static class DependencyInjection
 
     public static IServiceCollection SetupDataProtection(this IServiceCollection services, IAppSettings appSettings)
     {
-        services.AddSingleton<IDataProtectorService, DataProtectorService>();
-
         if (appSettings.DisableDataProtectionRedisStore)
         {
             services.AddDataProtection();

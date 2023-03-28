@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Domain.Authentication;
-using Domain.Common.Services;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
@@ -21,7 +21,7 @@ public sealed class AuthService : IAuthService
     private readonly IAppSettings _appSettings;
     private readonly ICache _cache;
     private readonly ISession _session;
-    private readonly IDataProtectorService _protector;
+    private readonly ITimeLimitedDataProtector _protector;
 
     private const int RegisterTokenExpiration = 15 * 60;
     private const int LoginTokenExpiration = 8 * 60 * 60;
@@ -31,12 +31,12 @@ public sealed class AuthService : IAuthService
     private const int AuthResExpiration = 20;
 
     public AuthService(IAppSettings appSettings, ICache cache, ISession session,
-        IDataProtectorService protector)
+        IDataProtectionProvider protector)
     {
         _appSettings = appSettings;
         _cache = cache;
         _session = session;
-        _protector = protector;
+        _protector = protector.CreateProtector(nameof(AuthService)).ToTimeLimitedDataProtector();
     }
 
     public string GenerateLoginToken(UserViewModel userVm)
@@ -214,7 +214,16 @@ public sealed class AuthService : IAuthService
 
     public async Task<AuthenticationResult?> GetAuthenticationResult(string key, string token, CancellationToken ct)
     {
-        var decodeToken = _protector.Unprotect(token);
+        var decodeToken = string.Empty;
+        try
+        {
+            decodeToken = _protector.Unprotect(token);
+        }
+        catch
+        {
+            // swallow unprotect exceptions
+        }
+
         if (!key.Equals(decodeToken)) return null;
         return await _cache.GetAndRemoveAsync<AuthenticationResult?>(key, ct);
     }
