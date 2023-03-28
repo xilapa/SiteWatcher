@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text.Json;
-using Domain.Common.Services;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.AspNetCore.Authentication;
@@ -23,7 +22,7 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
     private readonly Mock<IAuthenticationService> _authServiceMock;
     internal const string XilapaProfilePic = "http://xilapa.io/profile.jpg";
     private const string _key = "key";
-    internal string Unprotected = _key;
+    internal string CookieKey = _key;
 
     public ExchangeTokenTestsBase()
     {
@@ -40,22 +39,8 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
 
         opts.ReplaceService(typeof(IAuthenticationService), _authServiceMock.Object);
 
-        // mock data protection
-        var dataProtectorMock = new Mock<IDataProtectorService>();
-        dataProtectorMock
-            .Setup(d => d.Protect(It.IsAny<string>(), It.IsAny<TimeSpan>()))
-            .Returns(_key);
-
-        dataProtectorMock
-            .Setup(d => d.Unprotect(It.IsAny<string>()))
-            .Returns(Unprotect);
-
-        opts.ReplaceService(typeof(IDataProtectorService), dataProtectorMock.Object);
-
         opts.DatabaseType = DatabaseType.SqliteOnDisk;
     };
-
-    private string Unprotect() => Unprotected;
 
     private AuthenticateResult CreateAuthenticateResult()
     {
@@ -65,7 +50,7 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
             new Claim(AuthenticationDefaults.ClaimTypes.ProfilePicUrl, XilapaProfilePic),
             new Claim(ClaimTypes.Email, Users.Xilapa.Email),
             new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-us"),
-            new Claim(_key, Unprotect()) // value used on exchange token
+            new Claim(_key, CookieKey) // value used on exchange token
         };
         var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemes.Google);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -118,14 +103,14 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
     {
         // arrange
 
-        // set the authRes on cache
-        await GetAsync("auth/google");
+        // get the auth res token
+        var googleCallbackRes = await GetAsync("auth/google");
+        var redirectUri = googleCallbackRes.HttpResponse!.Headers.Location!.AbsoluteUri;
+        var token = redirectUri[(redirectUri.IndexOf("=", StringComparison.Ordinal)+1)..];
+        var exchangeTokenCmmd = new ExchangeTokenCommand { Token = token };
 
-        // set the authRes key as return of protector mock
-        _fixture.Unprotected = FakeCache.Cache.First().Key;
-
-        // get token from previous request
-        var exchangeTokenCmmd = new ExchangeTokenCommand { Token = _fixture.Unprotected };
+        // set the cookie key claim
+        _fixture.CookieKey = FakeCache.Cache.First().Key;
 
         // act
         var res = await PostAsync("auth/exchange-token", exchangeTokenCmmd);
