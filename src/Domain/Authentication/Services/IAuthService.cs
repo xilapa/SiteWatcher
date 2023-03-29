@@ -15,14 +15,14 @@ public interface IAuthService
     /// <summary>
     /// Invalidate the current user
     /// </summary>
-    Task InvalidateCurrenUser();
+    Task InvalidateCurrenUser(ISession session);
 
-    Task InvalidateCurrentRegisterToken();
-    Task<bool> IsRegisterTokenValid();
-    Task<bool> UserCanLogin();
+    Task InvalidateCurrentRegisterToken(ISession session);
+    Task<bool> IsRegisterTokenValid(string authTokenPayload);
+    Task<bool> UserCanLogin(UserId? userId, string authTokenPayload);
     Task<string> GenerateLoginState(byte[] stateBytes);
     Task WhiteListToken(UserId userId, string token);
-    Task WhiteListTokenForCurrentUser(string token);
+    Task WhiteListTokenForCurrentUser(ISession session, string token);
 
     /// <summary>
     /// The token is saved on redis as key, and the user id is saved as value.
