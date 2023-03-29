@@ -1,8 +1,6 @@
-﻿using System.Security.Claims;
-using FluentAssertions;
+﻿using Domain.Authentication;
 using Moq;
-using SiteWatcher.Application.Authentication.Commands.GoogleAuthentication;
-using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Authentication.Commands.Authentication;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
@@ -11,24 +9,24 @@ using SiteWatcher.Domain.Users.Repositories;
 
 namespace UnitTests.Commands;
 
-public sealed class GoogleAuthenticationCommandTests
+public sealed class AuthenticationCommandTests
 {
-    private readonly IAuthService _authService;
-    private const string RegisterToken = "REGISTER_TOKEN";
+    private readonly Mock<IAuthService> _authServiceMock;
+    private const string RegisterToken = nameof(RegisterToken);
+    private const string GoogleId = nameof(GoogleId);
+    private const string Email = nameof(Email);
 
-    public GoogleAuthenticationCommandTests()
+    public AuthenticationCommandTests()
     {
-        googleAuthServiceMock
-            .Setup(_ => _.ExchangeCode(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new GoogleTokenResult("id", null, new List<Claim>()));
-        _googleAuthService = googleAuthServiceMock.Object;
+        _authServiceMock = new Mock<IAuthService>();
 
-        var authServiceMock = new Mock<IAuthService>();
-        authServiceMock
-            .Setup(_ => _.GenerateRegisterToken(It.IsAny<IEnumerable<Claim>>(), It.IsAny<string>()))
+        _authServiceMock
+            .Setup(a => a.GenerateRegisterToken(It.IsAny<UserRegisterData>()))
             .Returns(RegisterToken);
 
-        _authService = authServiceMock.Object;
+        _authServiceMock
+            .Setup(a => a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new AuthKeys(RegisterToken, RegisterToken));
     }
 
     [Fact]
@@ -40,16 +38,22 @@ public sealed class GoogleAuthenticationCommandTests
             .Setup(_ => _.GetUserByGoogleIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(null as UserViewModel);
 
-        var commandHandler = new AuthenticationCommandHandler(_googleAuthService, userDapperRepoMock.Object, _authService);
+        var commandHandler = new AuthenticationCommandHandler(userDapperRepoMock.Object, _authServiceMock.Object);
 
-        var command = new AuthenticationCommand();
+        var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email };
 
         // Act
-        var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;
+        await commandHandler.Handle(command, default);
 
         // Assert
-        result!.Value.Task.Should().Be(AuthTask.Register);
-        result.Value.Token.Should().Be(RegisterToken);
+        _authServiceMock
+            .Verify(a => a.GenerateRegisterToken(It.IsAny<UserRegisterData>()), Times.Once);
+        _authServiceMock
+            .Verify(a => a.GenerateLoginToken(It.IsAny<UserViewModel>()), Times.Never);
+        _authServiceMock
+            .Verify(a =>
+                    a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<CancellationToken>()),
+                Times.Once);
     }
 
     [Fact]
@@ -66,15 +70,22 @@ public sealed class GoogleAuthenticationCommandTests
             .Setup(_ => _.GetUserByGoogleIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(userVm);
 
-        var commandHandler = new AuthenticationCommandHandler(_googleAuthService, userDapperRepoMock.Object, _authService);
+        var commandHandler =
+            new AuthenticationCommandHandler(userDapperRepoMock.Object, _authServiceMock.Object);
 
-        var command = new AuthenticationCommand();
+        var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email };
 
         // Act
-        var result = await commandHandler.Handle(command, default) as ValueResult<AuthenticationResult>;
+        await commandHandler.Handle(command, default);
 
         // Assert
-        result!.Value.Task.Should().Be(AuthTask.Activate);
-        result.Value.Token.Should().Be(userVm.Id.ToString());
+        _authServiceMock
+            .Verify(a => a.GenerateRegisterToken(It.IsAny<UserRegisterData>()), Times.Never);
+        _authServiceMock
+            .Verify(a => a.GenerateLoginToken(It.IsAny<UserViewModel>()), Times.Never);
+        _authServiceMock
+            .Verify(a =>
+                    a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<CancellationToken>()),
+                Times.Once);
     }
 }
