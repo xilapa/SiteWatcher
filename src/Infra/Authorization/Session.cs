@@ -16,28 +16,46 @@ public class Session : ISession
 {
     public Session(IHttpContextAccessor httpContextAccessor)
     {
-        var claims = httpContextAccessor.HttpContext?.User.Claims;
-        if (claims is null)
+        var httpContext = httpContextAccessor.HttpContext;
+        // try get the value from httpcontext items
+        var claims = httpContext?.GetItem<Claim[]>(AuthenticationDefaults.ClaimsKey) ??
+                     httpContextAccessor.HttpContext?.User.Claims.ToArray();
+
+        if (claims == null)
         {
             AuthTokenPayload = string.Empty;
             return;
         }
-        var claimsEnumerated = claims as Claim[] ?? claims.ToArray();
-        var userIdString = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
-        Guid.TryParse(userIdString, out var userIdGuid);
-        UserId = new UserId(userIdGuid);
 
-        Email = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
-        GoogleId = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
-        UserName = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Name)?.Value;
+        // try get user if from httpcontext items
+        var userId = httpContext?.GetItem<UserId>(AuthenticationDefaults.UserIdKey);
 
-        var hasLang =
-            int.TryParse(Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Language)?.Value,
-                out var lang);
-        Language = hasLang ? (Language) lang : null;
+        if (userId == null)
+        {
+            var userIdString = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
+            Guid.TryParse(userIdString, out var userIdGuid);
+            UserId = new UserId(userIdGuid);
+        }
 
-        var authenticated = httpContextAccessor.HttpContext.User.Identity.IsAuthenticated;
-        AuthTokenPayload = authenticated ? httpContextAccessor.HttpContext.GetAuthTokenPayload() : string.Empty;
+        UserId = userId;
+
+        Email = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
+        GoogleId = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
+        UserName = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Name)?.Value;
+
+        var intLang = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Language)?.Value;
+        var hasLang = int.TryParse(intLang, out var lang);
+        Language = hasLang ? (Language)lang : null;
+
+        var authenticated = httpContext!.User.Identity!.IsAuthenticated;
+        if (!authenticated)
+        {
+            AuthTokenPayload = string.Empty;
+            return;
+        }
+
+        AuthTokenPayload = httpContext.GetItem<string>(AuthenticationDefaults.UserIdKey) ??
+                           httpContext.GetAuthTokenPayload();
     }
 
     public Session()

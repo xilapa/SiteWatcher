@@ -3,6 +3,9 @@ namespace SiteWatcher.Infra.Authorization.Constants;
 public static class AuthenticationDefaults
 {
     public const string Roles = "roles";
+    public const string AuthtokePayloadKey = nameof(AuthtokePayloadKey);
+    public const string UserIdKey = nameof(UserIdKey);
+    public const string ClaimsKey = nameof(ClaimsKey);
     public const string State = "state";
     public const string GoogleAuthClient = nameof(GoogleAuthClient);
 
