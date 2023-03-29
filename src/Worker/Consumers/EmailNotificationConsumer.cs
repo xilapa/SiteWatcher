@@ -1,3 +1,4 @@
+using System.Data;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -32,6 +33,12 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
     [CapSubscribe(RoutingKeys.EmailNotification, Group = RoutingKeys.EmailNotification)]
     public async Task Consume(EmailNotificationMessage message, [FromCap] CapHeader capHeader, CancellationToken cancellationToken)
     {
+        // Explicit closing and opening the db connection, along with pooling disabled
+        // on connection string, to reduce Neon db usage
+        var conn = _context.Database.GetDbConnection();
+        if (conn.State != ConnectionState.Open)
+            await _context.Database.OpenConnectionAsync(cancellationToken);
+        
         var messageId = capHeader[WorkerAppSettings.MessageIdKey]!;
         var hasBeenProcessed = await _context.HasBeenProcessed(messageId, nameof(EmailNotificationConsumer));
         if (hasBeenProcessed)
@@ -40,7 +47,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
             return;
         }
 
-        using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         var error = await SendEmailNotification(message, messageId, cancellationToken);
         // If there is an error, throw an exception to fail the message consuming
@@ -52,6 +59,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
         _logger.LogInformation("{Date} Message consumed: {MessageId}", DateTime.UtcNow, messageId);
 
         await Task.Delay(TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds), cancellationToken);
+        await _context.Database.CloseConnectionAsync();
     }
 
     private async Task<string?> SendEmailNotification(EmailNotificationMessage message, string messageId, CancellationToken cancellationToken)

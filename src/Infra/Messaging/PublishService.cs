@@ -1,8 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using DotNetCore.CAP;
-using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Domain.Common.Services;
 
 namespace SiteWatcher.Infra.Messaging;
@@ -20,7 +16,7 @@ public sealed class PublishService : IPublishService
 
     public async Task WithPublisher(Func<IPublisher, Task> func, CancellationToken ct)
     {
-        using var trx = _ctx.Database.BeginTransaction(_capPub, autoCommit: false);
+        await using var trx = await _ctx.Database.BeginTransactionAsync(_capPub, autoCommit: false);
 
         await func(new Publisher(_capPub));
 

@@ -7,5 +7,5 @@ public interface IPublishService
 
 public interface IPublisher
 {
-    Task PublishAsync(string routingKey, object message, Dictionary<string, string> headers,CancellationToken ct);
+    Task PublishAsync(string routingKey, object message, Dictionary<string, string> headers, CancellationToken ct);
 }
