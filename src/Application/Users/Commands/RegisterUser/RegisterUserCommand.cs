@@ -1,6 +1,6 @@
 using MediatR;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Exceptions;
 using SiteWatcher.Domain.Users;
@@ -53,7 +53,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         }
 
         var token = _authService.GenerateLoginToken(user);
-        await _authService.InvalidateCurrentRegisterToken();
+        await _authService.InvalidateCurrentRegisterToken(_session);
 
         return RegisterUserResult.Registered(token, !user.EmailConfirmed);
     }

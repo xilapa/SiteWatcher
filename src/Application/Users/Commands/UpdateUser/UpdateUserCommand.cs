@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
@@ -50,7 +50,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Comma
         await _uow.SaveChangesAsync(cancellationToken);
 
         var newToken = _authService.GenerateLoginToken(user);
-        await _authService.WhiteListTokenForCurrentUser(newToken);
+        await _authService.WhiteListTokenForCurrentUser(_session, newToken);
 
         return CommandResult.FromValue(new UpdateUserResult(newToken, !user.EmailConfirmed));
     }

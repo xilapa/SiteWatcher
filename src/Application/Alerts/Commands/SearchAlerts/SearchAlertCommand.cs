@@ -2,6 +2,7 @@
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Extensions;
 

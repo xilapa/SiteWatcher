@@ -1,7 +1,7 @@
 ﻿using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.Enums;
 
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Domain.Authentication;
 
 public interface ISession
 {
