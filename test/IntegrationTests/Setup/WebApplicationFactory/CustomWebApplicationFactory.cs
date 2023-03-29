@@ -22,7 +22,7 @@ using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
 using Testcontainers.PostgreSql;
-using ISession = SiteWatcher.Application.Interfaces.ISession;
+using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
