@@ -54,7 +54,7 @@ public class Session : ISession
             return;
         }
 
-        AuthTokenPayload = httpContext.GetItem<string>(AuthenticationDefaults.UserIdKey) ??
+        AuthTokenPayload = httpContext.GetItem<string>(AuthenticationDefaults.AuthtokenPayloadKey) ??
                            httpContext.GetAuthTokenPayload();
     }
 
