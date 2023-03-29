@@ -1,6 +1,8 @@
 ﻿using Domain.Authentication;
+using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Authentication.Commands.Authentication;
+using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
@@ -87,5 +89,22 @@ public sealed class AuthenticationCommandTests
             .Verify(a =>
                     a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<CancellationToken>()),
                 Times.Once);
+    }
+
+    [Fact]
+    public async Task InvalidAuthCommandReturnError()
+    {
+        // Arrange
+        var commandHandler = new AuthenticationCommandHandler(null!, _authServiceMock.Object);
+
+        var command = new AuthenticationCommand();
+
+        // Act
+        var res = await commandHandler.Handle(command, default);
+
+        // Assert
+        res.Key.Should().BeNull();
+        res.SecutriyToken.Should().BeNull();
+        res.ErrorMessage.Should().Be(ApplicationErrors.GOOGLE_AUTH_ERROR);
     }
 }
