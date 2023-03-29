@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Moq;
 using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.Authorization;
@@ -15,6 +16,7 @@ public sealed class AuthServiceTests
     private readonly int _loginTokenExpiration;
     private readonly UserId _userId;
     private const string WhitelistedTokenPayload = "WHITELISTED_TOKEN_PAYLOAD";
+    private readonly ISession _session;
 
     public AuthServiceTests()
     {
@@ -30,7 +32,7 @@ public sealed class AuthServiceTests
         sessionMock.Setup(s => s.UserId).Returns(_userId);
         sessionMock.Setup(s => s.AuthTokenPayload).Returns(WhitelistedTokenPayload);
 
-        _authService.AsDynamic()._session = sessionMock.Object;
+        _session = sessionMock.Object;
     }
 
     [Fact]
@@ -45,7 +47,7 @@ public sealed class AuthServiceTests
         _authService.AsDynamic()._cache = cacheMock.Object;
 
         // Act
-        await _authService.InvalidateCurrenUser();
+        await _authService.InvalidateCurrenUser(_session);
 
         // Assert
         cacheMock.Verify(c => c.GetAsync<List<string>>(key), Times.Once);
@@ -68,7 +70,7 @@ public sealed class AuthServiceTests
         _authService.AsDynamic()._cache = cacheMock.Object;
 
         // Act
-        await _authService.InvalidateCurrenUser();
+        await _authService.InvalidateCurrenUser(_session);
 
         // Assert
         cacheMock.Verify(c => c.GetAsync<List<string>>(key), Times.Once);
