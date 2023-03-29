@@ -228,7 +228,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         testSessionInstace.AsDynamic()._currentTime = CurrentTime;
 
-        authServiceInstance.AsDynamic()._session = testSessionInstace;
         return authServiceInstance;
     }
 

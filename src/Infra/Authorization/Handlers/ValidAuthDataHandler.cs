@@ -29,14 +29,16 @@ public class ValidAuthDataHandler : AuthorizationHandler<ValidAuthData>
         var validId = Guid.TryParse(userIdString, out var userIdGuid);
         if (!validId) return;
 
+        var userId = new UserId(userIdGuid);
+
         var authTokenPayload = _httpContext!.GetAuthTokenPayload();
 
-        var canLogin = await _authService.UserCanLogin(new UserId(userIdGuid), authTokenPayload);
+        var canLogin = await _authService.UserCanLogin(userId, authTokenPayload);
         if (canLogin)
         {
             context.Succeed(requirement);
             _httpContext!.Items.Add(AuthenticationDefaults.AuthtokenPayloadKey, authTokenPayload);
-            _httpContext!.Items.Add(AuthenticationDefaults.UserIdKey, validId);
+            _httpContext!.Items.Add(AuthenticationDefaults.UserIdKey, userId);
             _httpContext!.Items.Add(AuthenticationDefaults.ClaimsKey, claimsEnumerated);
         }
     }
