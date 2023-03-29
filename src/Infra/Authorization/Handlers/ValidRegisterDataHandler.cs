@@ -26,7 +26,7 @@ public class ValidRegisterDataHandler : AuthorizationHandler<ValidRegisterData>
         if (registerTokenValid)
         {
             context.Succeed(requirement);
-            _httpContext!.Items.Add(AuthenticationDefaults.AuthtokePayloadKey, authTokenPayload);
+            _httpContext!.Items.Add(AuthenticationDefaults.AuthtokenPayloadKey, authTokenPayload);
         }
     }
 }
