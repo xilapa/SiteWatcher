@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Users.Repositories;
 
@@ -20,7 +20,8 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, C
     private readonly ISession _session;
     private readonly IUnitOfWork _uow;
 
-    public ConfirmEmailCommandHandler(IAuthService authservice, IUserRepository userRepository, ISession session, IUnitOfWork uow)
+    public ConfirmEmailCommandHandler(IAuthService authservice, IUserRepository userRepository, ISession session,
+        IUnitOfWork uow)
     {
         _authservice = authservice;
         _userRepository = userRepository;
@@ -30,19 +31,20 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, C
 
     public async Task<CommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
-        if(request.Token == null)
+        if (request.Token == null)
             return ReturnError();
 
         var userId = await _authservice.GetUserIdFromConfirmationToken(request.Token);
-        if(userId is null)
+        if (userId is null)
             return ReturnError();
 
-        var user = await _userRepository.GetAsync(u => u.Id == userId && u.Active && !u.EmailConfirmed, cancellationToken);
-        if(user is null)
+        var user = await _userRepository.GetAsync(u => u.Id == userId && u.Active && !u.EmailConfirmed,
+            cancellationToken);
+        if (user is null)
             return ReturnError();
 
         var success = user.ConfirmEmail(request.Token, _session.Now);
-        if(!success)
+        if (!success)
             return ReturnError();
 
         await _uow.SaveChangesAsync(CancellationToken.None);

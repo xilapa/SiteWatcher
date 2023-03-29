@@ -1,12 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Extensions;
-using ISession = SiteWatcher.Application.Interfaces.ISession;
+using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.Infra.Authorization;
 
