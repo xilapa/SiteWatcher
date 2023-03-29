@@ -4,12 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Handlers;
-using SiteWatcher.Infra.Authorization.Middleware;
 
 namespace SiteWatcher.Infra.Authorization;
 
@@ -72,27 +70,28 @@ public static class Auth
                 opts.ClaimActions.MapJsonKey(AuthenticationDefaults.ClaimTypes.Locale, AuthenticationDefaults.Google.Locale);
             });
 
-        // Bind the token issuer to the authentication scheme
-        MultipleJwtsMiddleware.RegisterIssuer(AuthenticationDefaults.Issuers.Login,
-            AuthenticationDefaults.Schemes.Login);
-        MultipleJwtsMiddleware.RegisterIssuer(AuthenticationDefaults.Issuers.Register,
-            AuthenticationDefaults.Schemes.Register);
-
         services.AddAuthorization(opts =>
         {
-            // Do not set the AuthenticationSchemes on any policy, the MultipleJwtMiddleware will handle jwt
-            // authentication checking the issuer, if the user was not authenticated by the default scheme.
-            // If AuthenticationSchemes was set on a policy, the token will be validated twice
-            // Also, doesn't need to require authenticated users, since the MultipleJwtMiddleware always requires
-            // authentication for routes that doesn't allow anonymous users
-
             // Only runs if no policy was specified on the authorize attribute
             opts.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
                 .AddRequirements(new ValidAuthData())
+                .AddAuthenticationSchemes(AuthenticationDefaults.Schemes.Login)
                 .Build();
 
             opts.AddPolicy(Policies.ValidRegisterData,
-                policy => policy.AddRequirements(new ValidRegisterData()));
+                policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.AddRequirements(new ValidRegisterData());
+                    policy.AddAuthenticationSchemes(AuthenticationDefaults.Schemes.Register);
+                });
+
+            opts.AddPolicy(Policies.AuthCookie, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddAuthenticationSchemes(AuthenticationDefaults.Schemes.Cookie);
+            });
         });
 
         services.AddScoped<IAuthService,AuthService>();
