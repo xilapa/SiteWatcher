@@ -11,25 +11,25 @@ public sealed class AuthStartTest : BaseTest, IClassFixture<BaseTestFixture>
     { }
 
     [Theory]
-    [InlineData(AuthenticationDefaults.Schemes.Google, true)]
-    [InlineData("invalid", false)]
-    [InlineData("", false)]
-    [InlineData(null, false)]
-    public async Task StartAuthWorks(string? schema, bool redirects)
+    [InlineData(AuthenticationDefaults.Schemes.Google, HttpStatusCode.Redirect)]
+    [InlineData("invalid", HttpStatusCode.BadRequest)]
+    [InlineData("", HttpStatusCode.NotFound)]
+    [InlineData(null, HttpStatusCode.NotFound)]
+    public async Task StartAuthWorks(string? schema, HttpStatusCode expectedHttpCode)
     {
         // act
         var res = await GetAsync($"auth/start/{schema}");
 
         // assert
-        if (redirects)
+        if (HttpStatusCode.Redirect.Equals(expectedHttpCode))
         {
-            res.HttpResponse!.StatusCode.Should().Be(HttpStatusCode.Redirect);
+            res.HttpResponse!.StatusCode.Should().Be(expectedHttpCode);
             res.HttpResponse.Headers.Location.Should().NotBeNull();
             return;
         }
 
         res.HttpResponse!.StatusCode
             .Should()
-            .BeOneOf(HttpStatusCode.BadRequest, HttpStatusCode.Unauthorized);
+            .Be(expectedHttpCode);
     }
 }
