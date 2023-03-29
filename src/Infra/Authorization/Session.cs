@@ -8,6 +8,10 @@ using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.Infra.Authorization;
 
+// ISession can't be injected on ctor because IAuthService is used on Authz Handlers.
+// When AuthService is constructed to handle authorization, the HttpContext used to
+// construct Session doesn't have the User logged.
+// Session needs to be constructed after Authz Handlers.
 public class Session : ISession
 {
     public Session(IHttpContextAccessor httpContextAccessor)
