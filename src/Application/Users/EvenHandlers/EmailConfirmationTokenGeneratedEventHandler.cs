@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users.Events;
 

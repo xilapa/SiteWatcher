@@ -7,6 +7,7 @@ using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Authorization.Middleware;
 using SiteWatcher.WebAPI.Extensions;
+using SiteWatcher.WebAPI.Settings;
 using DependencyInjection = SiteWatcher.Infra.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,14 +32,16 @@ builder.Services.AddRepositories();
 builder.Services.AddDapperRepositories();
 builder.Services.AddApplication();
 
-builder.Services.AddRedisCache(appSettings);
+builder.Services.AddRedisCache(appSettings)
+    .SetupDataProtection(appSettings);
 
 DependencyInjection.AddSession(builder.Services)
     .AddEmailService()
     .AddFireAndForgetService()
     .AddIdHasher();
 
-builder.Services.ConfigureAuth(appSettings);
+var googleSettings = builder.Configuration.Get<GoogleSettings>();
+builder.Services.ConfigureAuth(appSettings, googleSettings!);
 
 builder.Services.AddHttpClient();
 
@@ -49,6 +52,7 @@ builder.Services.AddCors(options => {
             policyBuilder.WithOrigins(appSettings.FrontEndUrl);
             policyBuilder.AllowAnyHeader();
             policyBuilder.WithMethods("OPTIONS", "GET", "POST", "PUT", "DELETE");
+            policyBuilder.AllowCredentials();
         });
 });
 

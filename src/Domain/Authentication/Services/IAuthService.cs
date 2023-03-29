@@ -1,15 +1,16 @@
-using System.Security.Claims;
+using Domain.Authentication;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 
-namespace SiteWatcher.Common.Services;
+namespace SiteWatcher.Domain.Authentication.Services;
 
 public interface IAuthService
 {
     string GenerateLoginToken(UserViewModel user);
     string GenerateLoginToken(User user);
-    string GenerateRegisterToken(IEnumerable<Claim> tokenClaims, string googleId);
+    string GenerateRegisterToken(UserRegisterData user);
 
     /// <summary>
     /// Invalidate the current user
@@ -40,4 +41,7 @@ public interface IAuthService
     /// <param name="userId"></param>
     /// <returns></returns>
     Task<string> SetAccountActivationTokenExpiration(string token, UserId userId);
+
+    Task<AuthKeys> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct);
+    Task<AuthenticationResult?> GetAuthenticationResult(string key, string token, CancellationToken ct);
 }

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Threading.Tasks;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.Infra.Authorization.Middleware;
 
@@ -44,6 +43,15 @@ public class MultipleJwtsMiddleware
         // If the route allow anonymous users, then just continue
         if (context.GetEndpoint()?.Metadata.GetMetadata<IAllowAnonymous>() != null)
             return true;
+
+        // Check if the request has the auth cookie
+        var authCookie = context.Request.Cookies.ContainsKey(AuthenticationDefaults.Schemes.Cookie);
+        if (authCookie)
+        {
+            var cookieRes = await context.AuthenticateAsync(AuthenticationDefaults.Schemes.Cookie);
+            if(cookieRes.Succeeded) context.User = cookieRes.Principal;
+            return cookieRes.Succeeded;
+        }
 
         // If there is no auth token, then user is unauthorized
         var authHeader = context.Request.Headers.Authorization.ToString();

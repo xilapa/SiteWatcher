@@ -12,6 +12,7 @@ public class AppSettings : IAppSettings
     public bool IsDevelopment { get; }
     public string ConnectionString { get; set; }
     public string FrontEndUrl { get; set; } = null!;
+    public string FrontEndAuthUrl { get; set; } = null!;
     public byte[] RegisterKey { get; set; } = null!;
     public byte[] AuthKey { get; set; } = null!;
 
@@ -27,5 +28,6 @@ public class AppSettings : IAppSettings
     string IAppSettings.MessageIdKey => MessageIdKey;
     public bool InMemoryStorageAndQueue { get; set; }
     public string EmailNotificationRoutingKey { get; set; }
+    public bool DisableDataProtectionRedisStore { get; set; }
     public const string MessageIdKey = "message-id";
 }

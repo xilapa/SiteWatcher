@@ -10,8 +10,8 @@
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.10.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.4" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
         <PackageReference Include="Moq" Version="4.18.4" />
         <PackageReference Include="ReflectionMagic" Version="4.1.0" />
@@ -24,7 +24,8 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
-        <PackageReference Include="Testcontainers" Version="2.4.0" />
+        <PackageReference Include="Testcontainers" Version="3.0.0" />
+        <PackageReference Include="Testcontainers.PostgreSql" Version="3.0.0" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -42,6 +43,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\WebAPI\WebAPI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="testsettings.json" />
+      <Content Include="testsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

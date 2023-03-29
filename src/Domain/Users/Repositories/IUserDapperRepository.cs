@@ -5,6 +5,6 @@ namespace SiteWatcher.Domain.Users.Repositories;
 
 public interface IUserDapperRepository
 {
-    Task<UserViewModel?> GetUserAsync(string googleId, CancellationToken cancellationToken);
+    Task<UserViewModel?> GetUserByGoogleIdAsync(string googleId, CancellationToken cancellationToken);
     Task<bool> DeleteActiveUserAsync(UserId userId, CancellationToken cancellationToken);
 }

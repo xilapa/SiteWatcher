@@ -1,5 +1,5 @@
-﻿import {ConfirmationService, MessageService} from "primeng/api";
-import {TranslocoService} from "@ngneat/transloco";
+﻿import { TranslocoService } from "@ngneat/transloco";
+import { ConfirmationService, MessageService } from "primeng/api";
 
 export class utils {
     private static successToastLifeTime = 5000;
@@ -7,7 +7,7 @@ export class utils {
     public static toastError(errorResponse: any, messageService: MessageService, translocoService: TranslocoService) {
         const messages = errorResponse.error as string[];
         let translatedErrors;
-        if (!messages || messages.length === 0)
+        if (!messages || !messages.length || messages.length === 0)
             translatedErrors = translocoService.translate('common.unexpectedError');
         else
             translatedErrors = messages.map(m => translocoService.translate(m)).join('; ');

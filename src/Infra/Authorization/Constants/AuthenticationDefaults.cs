@@ -16,12 +16,14 @@ public static class AuthenticationDefaults
         public const string Locale = "locale";
         public const string Language = "language";
         public const string Theme = "theme";
+        public const string ProfilePicUrl = "profile-pic-url";
     }
 
     public static class Google
     {
         public const string Id = "sub";
         public const string Picture = "picture";
+        public const string Locale = "locale";
     }
 
     public static class Issuers
@@ -32,6 +34,8 @@ public static class AuthenticationDefaults
 
     public static class Schemes
     {
+        public const string Google = "google";
+        public const string Cookie = "cookie";
         public const string Login = "login-auth";
         public const string Register = "register-auth";
     }

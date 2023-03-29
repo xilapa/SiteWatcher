@@ -1,13 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {Data} from 'src/app/core/shared-data/shared-data';
-import {ConfirmationService, MessageService} from 'primeng/api';
-import {UserService} from 'src/app/core/user/user.service';
-import {AuthService} from "../../core/auth/service/auth.service";
-import {EAuthTask} from "../../core/auth/service/auth-task";
-import {utils} from "../../core/utils/utils";
-import {TranslocoService} from "@ngneat/transloco";
-import {finalize} from "rxjs";
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { TranslocoService } from "@ngneat/transloco";
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { finalize } from "rxjs";
+import { UserService } from 'src/app/core/user/user.service';
+import { EAuthTask } from "../../core/auth/service/auth-task";
+import { AuthService } from "../../core/auth/service/auth.service";
+import { utils } from "../../core/utils/utils";
 
 @Component({
     selector: 'sw-auth',
@@ -20,23 +20,29 @@ export class AuthComponent implements OnInit {
                 private readonly messageService: MessageService,
                 private readonly userService: UserService,
                 private readonly translocoService: TranslocoService,
-                private readonly confirmationService: ConfirmationService) {
+                private readonly confirmationService: ConfirmationService,
+                @Inject(DOCUMENT) private readonly doc: Document) {
     }
 
     ngOnInit(): void {
-        const url = Data.GetAndRemove('authURL') as URL;
-        if (url == null) {
-            this.router.navigateByUrl('/home');
-            return;
+        let routeHash = this.doc.location.hash
+        if (routeHash.indexOf('#') > -1) routeHash = routeHash.replace('#', '')
+        
+        const url = new URL(this.doc.location.origin + routeHash)
+
+        const token = url.searchParams.get('token') as string
+        if (token == null){
+            this.router.navigateByUrl('/home')
+            return
         }
-
-        const state = url.searchParams.get('state') as string;
-        const code = url.searchParams.get('code') as string;
-        const scope = url.searchParams.get('scope') as string;
-
-        this.authService.authenticate(state, code, scope)
+        this.authService.exchangeToken(token)
             .subscribe({
                 next: (response) => {
+                    if (!response) {
+                        utils.toastError(null, this.messageService,
+                            this.translocoService)
+                        this.router.navigateByUrl('/home');
+                    }
                     if (response.Task == EAuthTask.Register) {
                         this.userService.setUserRegisterData(response);
                         this.router.navigateByUrl('/home/register');

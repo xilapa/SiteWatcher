@@ -1,7 +1,7 @@
 using MediatR;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
-using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Exceptions;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
@@ -16,8 +16,6 @@ public class RegisterUserCommand : IRequest<RegisterUserResult>
     public string? Email { get; set; }
     public Language Language { get; set; }
     public Theme Theme { get; set; }
-    public string? GoogleId { get; set; }
-    public string? AuthEmail { get; set; }
 
     public RegisterUserInput ToInputModel(ISession session) =>
         new (Name!, Email!, Language, Theme, session.GoogleId!, session.Email!);
@@ -43,7 +41,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
     {
         var user = User.FromInputModel(request.ToInputModel(_session), _session.Now);
 
-        // TODO: remove this exception, to no rely on database for a business rule
+        // TODO: remove this exception, not rely on database for a business rule
         try
         {
             _userRepository.Add(user);

@@ -1,14 +1,13 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
-using DotNet.Testcontainers.Builders;
-using DotNet.Testcontainers.Configurations;
-using DotNet.Testcontainers.Containers;
+using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -17,10 +16,12 @@ using ReflectionMagic;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
+using Testcontainers.PostgreSql;
 using ISession = SiteWatcher.Application.Interfaces.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -32,7 +33,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private string _connectionString;
     private DbConnection? _dbConnection;
     private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
-    private TestcontainerDatabase _postgresContainer;
+    private PostgreSqlContainer? _postgresContainer;
     public DatabaseType DatabaseType { get; private set; }
 
     private readonly ILoggerFactory _loggerFactory;
@@ -53,6 +54,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
         HttpClientFactoryMock = new Mock<IHttpClientFactory>();
+
+        var testSettings = new ConfigurationBuilder()
+            .AddJsonFile("testsettings.json")
+            .Build()
+            .Get<TestSettings>();
+
+        ApplyEnvironmentVariables(testSettings!);
 
         ConfigureTest(options).Wait();
 
@@ -89,16 +97,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 break;
             case DatabaseType.PostgresOnDocker:
                 DatabaseType = DatabaseType.PostgresOnDocker;
-                _postgresContainer = new TestcontainersBuilder<PostgreSqlTestcontainer>()
-                    .WithDatabase(new PostgreSqlTestcontainerConfiguration
-                    {
-                        Database = $"testDb{DateTime.Now.Ticks}",
-                        Username = "postgres",
-                        Password = "postgres"
-                    })
+                _postgresContainer = new PostgreSqlBuilder()
+                    .WithDatabase($"testDb{DateTime.Now.Ticks}")
                     .Build();
                 await _postgresContainer.StartAsync();
-                _connectionString = _postgresContainer.ConnectionString;
+                _connectionString = _postgresContainer.GetConnectionString();
                 _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _connectionString);
                 break;
             default:
@@ -113,6 +116,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             var value = prop.PropertyType == typeof(byte[])
                 ? Convert.ToBase64String((prop.GetValue(testSettings) as byte[])!)
                 : prop.GetValue(testSettings)!.ToString();
+            if(value == null) continue;
             Environment.SetEnvironmentVariable(prop.Name, value);
         }
     }
@@ -245,11 +249,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // deleted or used by another process.
         // https://stackoverflow.com/questions/8511901/system-data-sqlite-close-not-releasing-database-file
         if(_dbConnection is SqliteConnection) SqliteConnection.ClearAllPools();
-        if(_dbConnection is NpgsqlConnection) NpgsqlConnection.ClearAllPools();
+        if (_postgresContainer is not null) NpgsqlConnection.ClearAllPools();
 
         await context.Database.EnsureDeletedAsync();
         if(_dbConnection is not null) await _dbConnection.DisposeAsync();
-        if(_dbConnection is NpgsqlConnection) await _postgresContainer.DisposeAsync();
+        if (_postgresContainer is not null) await _postgresContainer.DisposeAsync();
+
         await base.DisposeAsync();
     }
 }

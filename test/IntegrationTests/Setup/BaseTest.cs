@@ -1,13 +1,12 @@
 ﻿using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Domain.Authentication;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Users.DTOs;
-using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.IntegrationTests.Setup;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -21,13 +20,14 @@ public abstract class BaseTest
     protected Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
     public Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
+
     protected DateTime CurrentTime
     {
         get => _fixture.AppFactory.CurrentTime;
         set => _fixture.AppFactory.CurrentTime = value;
     }
+
     protected IAppSettings TestSettings => _fixture.AppFactory.TestSettings;
-    protected IGoogleSettings TestGoogleSettings => _fixture.AppFactory.TestGoogleSettings;
     protected ICustomWebApplicationFactory AppFactory => _fixture.AppFactory;
 
     protected BaseTest(BaseTestFixture fixture)
@@ -47,13 +47,14 @@ public abstract class BaseTest
 
     protected string SetRegisterToken(UserViewModel userViewModel)
     {
-        var claims = new Claim[]
+        var userRegisterData = new UserRegisterData
         {
-            new(AuthenticationDefaults.ClaimTypes.Name, userViewModel.Name),
-            new(AuthenticationDefaults.ClaimTypes.Email, userViewModel.Email),
-            new(AuthenticationDefaults.ClaimTypes.Locale, "en-US"),
+            GoogleId = userViewModel.GetGoogleId(),
+            Email = userViewModel.Email,
+            Name = userViewModel.Email,
+            Locale = "en-US"
         };
-        var token = _fixture.AppFactory.AuthServiceForTokens.GenerateRegisterToken(claims, userViewModel.GetGoogleId());
+        var token = _fixture.AppFactory.AuthServiceForTokens.GenerateRegisterToken(userRegisterData);
         _fixture.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return Utils.GetTokenPayload(token);
     }
@@ -73,7 +74,7 @@ public abstract class BaseTest
             urlStringBuilder.Append('?');
 
             var propertiesArray = queryParams.GetType().GetProperties();
-            for (int i = 0; i < propertiesArray.Length; i++)
+            for (var i = 0; i < propertiesArray.Length; i++)
             {
                 urlStringBuilder.Append(propertiesArray[i].Name);
                 urlStringBuilder.Append('=');

@@ -1,15 +1,27 @@
-using System.ComponentModel;
-
 namespace SiteWatcher.Domain.Users.Enums;
 
 public enum Language
 {
-    [Description("pt")]
     BrazilianPortuguese = 1,
-
-    [Description("en")]
     English = 2,
-
-    [Description("es")]
     Spanish = 3
+}
+
+public static class LanguageUtils
+{
+    public const string Pt = "pt";
+    public const string Es = "es";
+    public static Language FromLocaleString(string? locale)
+    {
+        if (string.IsNullOrEmpty(locale)) return Language.English;
+
+        var splitted = locale.ToLower().Split("-").First();
+
+        return splitted switch
+        {
+            Pt => Language.BrazilianPortuguese,
+            Es => Language.Spanish,
+            _ => Language.English
+        };
+    }
 }

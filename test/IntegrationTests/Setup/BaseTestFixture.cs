@@ -26,8 +26,8 @@ public class BaseTestFixture : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        Client?.CancelPendingRequests();
-        Client?.Dispose();
+        Client.CancelPendingRequests();
+        Client.Dispose();
         await AppFactory.DisposeAsync();
     }
 }

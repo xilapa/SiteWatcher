@@ -30,6 +30,7 @@ public class WorkerAppSettings : IAppSettings
     public bool IsDevelopment { get; set; }
     public string ConnectionString { get; set; } = null!;
     public string FrontEndUrl { get; set; } = null!;
+    public string FrontEndAuthUrl { get; set; } = null!;
     public byte[] RegisterKey { get; set; } = null!;
     public byte[] AuthKey { get; set; } = null!;
     public string RedisConnectionString { get; set; } = null!;
@@ -43,6 +44,7 @@ public class WorkerAppSettings : IAppSettings
     public const string MessageIdKey = "message-id";
     public bool InMemoryStorageAndQueue { get; set; }
     public string EmailNotificationRoutingKey { get; set; } = null!;
+    public bool DisableDataProtectionRedisStore { get; set; }
 }
 
 public class EmailSettings : IEmailSettings

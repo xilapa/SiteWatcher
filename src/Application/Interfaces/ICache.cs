@@ -25,6 +25,7 @@ public interface ICache
     Task<byte[]?> GetBytesAsync(string key);
     Task SaveAsync(string key, object? value, TimeSpan expiration);
     Task<T?> GetAsync<T>(string key);
+    Task<T?> GetAndRemoveAsync<T>(string key, CancellationToken ct);
     Task SaveHashAsync(string key, string fieldName, object fieldValue, TimeSpan expiration);
     Task<string?> GetHashFieldAsStringAsync(string key, string fieldName);
     Task DeleteKeyAsync(string key);

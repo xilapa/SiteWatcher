@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using Dapper;
 using DotNetCore.CAP.Internal;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
@@ -176,5 +175,21 @@ public static class DependencyInjection
             ExchangeType.Topic,
             durable: true,
             autoDelete: false);
+    }
+
+    public static IServiceCollection SetupDataProtection(this IServiceCollection services, IAppSettings appSettings)
+    {
+        if (appSettings.DisableDataProtectionRedisStore)
+        {
+            services.AddDataProtection();
+            return services;
+        }
+
+        var redisMultiplexer = services.BuildServiceProvider().GetRequiredService<IConnectionMultiplexer>();
+        services
+            .AddDataProtection()
+            .PersistKeysToStackExchangeRedis(redisMultiplexer);
+
+        return services;
     }
 }

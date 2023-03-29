@@ -65,6 +65,16 @@ public class FakeCache : ICache
         return Task.FromResult(@object);
     }
 
+    public Task<T?> GetAndRemoveAsync<T>(string key, CancellationToken ct)
+    {
+        var objectJson = Cache.TryGetValue(key, out var fakeCacheEntry) ?
+            fakeCacheEntry.Value.ToString() : null;
+        if (string.IsNullOrEmpty(objectJson)) return Task.FromResult<T?>(default);
+        var @object = JsonSerializer.Deserialize<T>(objectJson);
+        Cache.Remove(key);
+        return Task.FromResult(@object);
+    }
+
     public Task SaveHashAsync(string key, string fieldName, object fieldValue, TimeSpan expiration)
     {
         var objectJson = JsonSerializer.Serialize(fieldValue);
