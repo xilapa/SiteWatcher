@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Authentication.Commands.Authentication;
 using SiteWatcher.Application.Authentication.Commands.ExchangeToken;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -85,6 +86,7 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("exchange-token")]
+    [Authorize(Policy = Policies.AuthCookie)]
     public async Task<IActionResult> ExchangeToken([FromBody] ExchangeTokenCommand command, CancellationToken ct)
     {
         command.Key = HttpContext.User.Claims.FirstOrDefault(c => c.Type == key)?.Value;
