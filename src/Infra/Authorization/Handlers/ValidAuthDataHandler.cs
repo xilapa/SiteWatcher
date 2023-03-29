@@ -1,24 +1,39 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using SiteWatcher.Domain.Authentication.Services;
+using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Infra.Authorization.Constants;
+using SiteWatcher.Infra.Authorization.Extensions;
 
 namespace SiteWatcher.Infra.Authorization.Handlers;
 
 public class ValidAuthDataHandler : AuthorizationHandler<ValidAuthData>
 {
     private readonly IAuthService _authService;
+    private readonly IHttpContextAccessor _httpContext;
 
-    public ValidAuthDataHandler(IAuthService authService)
+    public ValidAuthDataHandler(IAuthService authService, IHttpContextAccessor httpContext)
     {
         _authService = authService;
+        _httpContext = httpContext;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ValidAuthData requirement)
     {
-        if (context is null)
-            return;
+        var claims = _httpContext.HttpContext?.User.Claims;
+        if (claims == null) return;
 
-        var canLogin = await _authService.UserCanLogin();
-        if(canLogin)
+        var claimsEnumerated = claims as Claim[] ?? claims.ToArray();
+        var userIdString = Array.Find(claimsEnumerated, c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
+        var validId = Guid.TryParse(userIdString, out var userIdGuid);
+        if (!validId) return;
+
+        var authTokenPayload = _httpContext.HttpContext!.GetAuthTokenPayload();
+
+        var canLogin = await _authService.UserCanLogin(new UserId(userIdGuid), authTokenPayload);
+        if (canLogin)
             context.Succeed(requirement);
+        // todo: store authTokenPayload, claims and UserId on httpContext items, so session can use the value
     }
 }
