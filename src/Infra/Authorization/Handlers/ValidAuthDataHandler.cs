@@ -11,17 +11,17 @@ namespace SiteWatcher.Infra.Authorization.Handlers;
 public class ValidAuthDataHandler : AuthorizationHandler<ValidAuthData>
 {
     private readonly IAuthService _authService;
-    private readonly IHttpContextAccessor _httpContext;
+    private readonly HttpContext? _httpContext;
 
     public ValidAuthDataHandler(IAuthService authService, IHttpContextAccessor httpContext)
     {
         _authService = authService;
-        _httpContext = httpContext;
+        _httpContext = httpContext.HttpContext;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ValidAuthData requirement)
     {
-        var claims = _httpContext.HttpContext?.User.Claims;
+        var claims = _httpContext?.User.Claims;
         if (claims == null) return;
 
         var claimsEnumerated = claims as Claim[] ?? claims.ToArray();
@@ -29,11 +29,15 @@ public class ValidAuthDataHandler : AuthorizationHandler<ValidAuthData>
         var validId = Guid.TryParse(userIdString, out var userIdGuid);
         if (!validId) return;
 
-        var authTokenPayload = _httpContext.HttpContext!.GetAuthTokenPayload();
+        var authTokenPayload = _httpContext!.GetAuthTokenPayload();
 
         var canLogin = await _authService.UserCanLogin(new UserId(userIdGuid), authTokenPayload);
         if (canLogin)
+        {
             context.Succeed(requirement);
-        // todo: store authTokenPayload, claims and UserId on httpContext items, so session can use the value
+            _httpContext!.Items.Add(AuthenticationDefaults.AuthtokePayloadKey, authTokenPayload);
+            _httpContext!.Items.Add(AuthenticationDefaults.UserIdKey, validId);
+            _httpContext!.Items.Add(AuthenticationDefaults.ClaimsKey, claimsEnumerated);
+        }
     }
 }
