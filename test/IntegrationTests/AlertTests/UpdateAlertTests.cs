@@ -81,8 +81,10 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert3"},
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name3"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated3.com"},
-                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwoHours},
-                Rule = new UpdateInfo<Rules> {NewValue = Rules.AnyChanges}
+                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
+                Rule = new UpdateInfo<Rules> {NewValue = Rules.Regex},
+                RegexPattern = new UpdateInfo<string> {NewValue = "[0-9]"},
+               NotifyOnDisappearance = new UpdateInfo<bool>(true)
             }
         };
 
@@ -95,8 +97,36 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name4"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated4.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
+                Rule = new UpdateInfo<Rules> {NewValue = Rules.Regex},
+                RegexPattern = new UpdateInfo<string> {NewValue = "hello"},
+                NotifyOnDisappearance = new UpdateInfo<bool>(false)
+            }
+        };
+
+        yield return new object[]
+        {
+            new UpdateAlertCommmand
+            {
+                AlertId = new IdHasher(new TestAppSettings()).HashId(1),
+                Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert5"},
+                SiteName = new UpdateInfo<string> {NewValue = "Updated site name5"},
+                SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated5.com"},
+                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwoHours},
+                Rule = new UpdateInfo<Rules> {NewValue = Rules.AnyChanges}
+            }
+        };
+
+        yield return new object[]
+        {
+            new UpdateAlertCommmand
+            {
+                AlertId = new IdHasher(new TestAppSettings()).HashId(1),
+                Name = new UpdateInfo<string> {NewValue = "XilapaUpdatedAlert6"},
+                SiteName = new UpdateInfo<string> {NewValue = "Updated site name6"},
+                SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated6.com"},
+                Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
                 Rule = new UpdateInfo<Rules> {NewValue = Rules.AnyChanges},
-                Term = new UpdateInfo<string> {NewValue = "new term4"}
+                Term = new UpdateInfo<string> {NewValue = "new term6"}
             }
         };
     }
@@ -123,9 +153,20 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
         detailedAlert.CreatedAt.Should().Be(_fixture.XilapaAlert.CreatedAt);
         detailedAlert.Frequency.Should().Be(updateCommand.Frequency!.NewValue);
         detailedAlert.Rule!.Rule.Should().Be(updateCommand.Rule!.NewValue);
+
+        // Term rule
         detailedAlert.Rule.Term
             .Should()
             .Be(Rules.Term.Equals(updateCommand.Rule!.NewValue) ? updateCommand.Term!.NewValue : null);
+
+        // Regex rule
+        detailedAlert.Rule.RegexPattern
+            .Should()
+            .Be(Rules.Regex.Equals(updateCommand.Rule!.NewValue) ? updateCommand.RegexPattern!.NewValue : null);
+
+        detailedAlert.Rule.NotifyOnDisappearance
+            .Should()
+            .Be(Rules.Regex.Equals(updateCommand.Rule!.NewValue) ? updateCommand.NotifyOnDisappearance!.NewValue : null);
 
         // Checking alert update date on db
         (await AppFactory.WithDbContext(async ctx =>
