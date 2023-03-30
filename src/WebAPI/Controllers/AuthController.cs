@@ -90,6 +90,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> ExchangeToken([FromBody] ExchangeTokenCommand command, CancellationToken ct)
     {
         command.Key = HttpContext.User.Claims.FirstOrDefault(c => c.Type == key)?.Value;
+        await HttpContext.SignOutAsync(AuthenticationDefaults.Schemes.Cookie);
         var authRes = await _mediator.Send(command, ct);
         if (authRes == null) return Unauthorized();
         return Ok(authRes);
