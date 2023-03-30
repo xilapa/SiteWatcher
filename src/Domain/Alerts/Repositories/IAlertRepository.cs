@@ -8,5 +8,4 @@ namespace SiteWatcher.Domain.Alerts.Repositories;
 public interface IAlertRepository : IRepository<Alert>
 {
     Task<Alert?> GetAlertForUpdate(AlertId alertId, UserId userId);
-    void DeleteRule(RuleId ruleId);
 }

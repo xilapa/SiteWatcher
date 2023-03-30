@@ -109,8 +109,6 @@ public class Alert : BaseModel<AlertId>
         // If the current rule is really new, then recreate it
         if (updateInput.Rule is not null && !currentRule!.Value.Equals(updateInput.Rule.NewValue))
         {
-            // Create the event before the rule's Id is set to zero
-            AddDomainEvent(new AlertRuleChangedEvent(Rule.Id));
             Rule = AlertFactory.CreateRule(updateInput, updateDate);
             return;
         }

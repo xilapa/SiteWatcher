@@ -1,12 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.DTOs;
-using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.ValueObjects;
 
@@ -52,12 +47,5 @@ public class AlertRepository : Repository<Alert>, IAlertRepository
         // Attach alert and site, because the rule is already tracked
         Context.Attach(alert);
         return alert;
-    }
-
-    public void DeleteRule(RuleId ruleId)
-    {
-        var rule = Context.ChangeTracker.Entries<Rule>()
-            .Single(w => w.Entity.Id == ruleId);
-        rule.State = EntityState.Deleted;
     }
 }
