@@ -8,11 +8,11 @@ using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Constants;
-using SiteWatcher.Domain.Common.Enums;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Infra.Authorization.Constants;
+using SiteWatcher.Infra.Authorization.Enums;
 
 namespace SiteWatcher.Infra.Authorization;
 

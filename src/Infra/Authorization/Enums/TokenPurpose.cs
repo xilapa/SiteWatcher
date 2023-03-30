@@ -1,4 +1,4 @@
-namespace SiteWatcher.Domain.Common.Enums;
+namespace SiteWatcher.Infra.Authorization.Enums;
 public enum TokenPurpose
 {
     Register,
