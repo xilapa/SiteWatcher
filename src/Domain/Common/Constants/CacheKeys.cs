@@ -8,4 +8,5 @@ public static class CacheKeys
     public static string UserAlerts(UserId userId) => $"{AlertsKeyPrefix}_{userId}";
     public static string UserAlertSearch(UserId userId) => $"{AlertsKeyPrefix}Search_{userId}";
     public static string AlertsKeyPrefix => "Alerts";
+    public static string UserInfo(UserId userId) => $"UserInfo_{userId}";
 }

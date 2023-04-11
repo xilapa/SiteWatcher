@@ -14,7 +14,9 @@ using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Infra.Authorization.Constants;
+using SiteWatcher.WebAPI.Filters.Cache;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -32,9 +34,10 @@ public class UserController : ControllerBase
     [HttpGet]
     [Route("{UserId}")]
     [Authorize]
-    public async Task<IActionResult> GetUserInfo([FromRoute]GetUserInfoCommand cmmd, CancellationToken ct)
+    [CacheFilter]
+    public async Task<IActionResult> GetUserInfo([FromRoute] GetUserInfoCommand command, CancellationToken ct)
     {
-        var res = await _mediator.Send(cmmd, ct);
+        var res = await _mediator.Send(command, ct);
         if (res == null) return NotFound();
         return Ok(res);
     }
@@ -75,7 +78,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UpdateUser(UpdateUserCommand command)
     {
         var commandResult = await _mediator.Send(command);
-        return commandResult.ToActionResult<UpdateUserResult>();
+        return commandResult.ToActionResult<UserViewModel>();
     }
 
     [Authorize]
