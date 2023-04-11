@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Extensions;
@@ -13,49 +12,36 @@ namespace SiteWatcher.Infra.Authorization;
 // Session needs to be constructed after Authz Handlers.
 public class Session : ISession
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
     public Session(IHttpContextAccessor httpContextAccessor)
     {
-        var httpContext = httpContextAccessor.HttpContext;
-        // try get the value from httpcontext items
-        var claims = httpContext?.GetItem<Claim[]>(AuthenticationDefaults.ClaimsKey) ??
-                     httpContextAccessor.HttpContext?.User.Claims.ToArray();
-
-        if (claims == null)
-        {
-            AuthTokenPayload = string.Empty;
-            return;
-        }
-
-        // try get user if from httpcontext items
-        var userId = httpContext?.GetItem<UserId>(AuthenticationDefaults.UserIdKey);
-
-        if (userId == null)
-        {
-            var userIdString = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
-            Guid.TryParse(userIdString, out var userIdGuid);
-            UserId = new UserId(userIdGuid);
-        }
-
-        UserId = userId;
-
-        var authenticated = httpContext!.User.Identity!.IsAuthenticated;
-        if (!authenticated)
-        {
-            AuthTokenPayload = string.Empty;
-            return;
-        }
-
-        AuthTokenPayload = httpContext.GetItem<string>(AuthenticationDefaults.AuthtokenPayloadKey) ??
-                           httpContext.GetAuthTokenPayload();
-    }
-
-    public Session()
-    {
-        AuthTokenPayload = string.Empty;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public virtual DateTime Now => DateTime.UtcNow;
-    public UserId? UserId { get; }
 
-    public string AuthTokenPayload { get; }
+    private UserId? _userId;
+    public UserId? UserId => GetUserId();
+
+    private UserId GetUserId()
+    {
+        if (_userId != null) return _userId.Value;
+        var httpContext = _httpContextAccessor.HttpContext;
+
+        // try get user from httpcontext items
+        _userId = httpContext?.GetItem<UserId>(AuthenticationDefaults.UserIdKey);
+        if (_userId != null) return _userId.Value;
+
+        var userIdString = httpContext?.User.Claims
+            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
+        Guid.TryParse(userIdString, out var userIdGuid);
+        _userId = new UserId(userIdGuid);
+        return _userId.Value;
+    }
+
+    public string AuthTokenPayload =>
+        _httpContextAccessor.HttpContext?.GetItem<string>(AuthenticationDefaults.AuthtokenPayloadKey) ??
+        _httpContextAccessor.HttpContext?.GetAuthTokenPayload() ??
+        string.Empty;
 }
