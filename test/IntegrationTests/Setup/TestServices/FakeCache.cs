@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Common.Services;
 
 namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 

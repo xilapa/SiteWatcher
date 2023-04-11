@@ -1,4 +1,4 @@
-namespace SiteWatcher.Application.Interfaces;
+namespace SiteWatcher.Domain.Common.Services;
 
 public interface ICache
 {
