@@ -5,6 +5,7 @@ using SiteWatcher.Application.Users.Commands.ActivateAccount;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
 using SiteWatcher.Application.Users.Commands.DeactivateAccount;
 using SiteWatcher.Application.Users.Commands.DeleteUser;
+using SiteWatcher.Application.Users.Commands.GetUserinfo;
 using SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
 using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
@@ -25,6 +26,16 @@ public class UserController : ControllerBase
     public UserController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpGet]
+    [Route("{UserId}")]
+    [Authorize]
+    public async Task<IActionResult> GetUserInfo([FromRoute]GetUserInfoCommand cmmd, CancellationToken ct)
+    {
+        var res = await _mediator.Send(cmmd, ct);
+        if (res == null) return NotFound();
+        return Ok(res);
     }
 
     [HttpPost]
