@@ -1,22 +1,18 @@
-import {Injectable} from '@angular/core';
 import {
-    HttpRequest,
-    HttpHandler,
+    HttpErrorResponse,
     HttpEvent,
+    HttpHandler,
     HttpInterceptor,
-    HttpErrorResponse
+    HttpRequest
 } from '@angular/common/http';
-import {Observable, tap} from 'rxjs';
-import {Router} from '@angular/router';
-import {UserService} from "../../user/user.service";
+import { Injectable } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { UserService } from "../../user/user.service";
 
 @Injectable()
 export class UnauthorizedInterceptor implements HttpInterceptor {
 
-    constructor(
-        private readonly router: Router,
-        private readonly userService: UserService
-    ) {
+    constructor(private readonly userService: UserService) {
     }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {

@@ -1,11 +1,10 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {DeviceService} from "../../../core/device/device.service";
-import {Observable, Subscription} from "rxjs";
-import {UserService} from "../../../core/user/user.service";
-import {User} from "../../../core/interfaces";
-import {ConfirmationService, MessageService} from "primeng/api";
-import {TranslocoService} from "@ngneat/transloco";
-import {utils} from "../../../core/utils/utils";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { TranslocoService } from "@ngneat/transloco";
+import { ConfirmationService, MessageService } from "primeng/api";
+import { Observable, Subscription } from "rxjs";
+import { DeviceService } from "../../../core/device/device.service";
+import { UserService } from "../../../core/user/user.service";
+import { utils } from "../../../core/utils/utils";
 
 @Component({
     selector: 'sw-security-page',
@@ -27,7 +26,7 @@ export class SecurityPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.mobileScreen$ = this.deviceService.isMobileScreen();
-        this.userSub = this.userService.getUser().subscribe(user => this.userEmailConfirmed = user?.emailConfirmed as boolean);
+        this.userSub = this.userService.getUser().subscribe(user => this.userEmailConfirmed = user?.EmailConfirmed as boolean);
     }
 
     ngOnDestroy() {

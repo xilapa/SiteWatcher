@@ -1,29 +1,31 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {Data} from '../shared-data/shared-data';
-import {TokenService} from '../token/token.service';
+import { HttpClient } from "@angular/common/http";
+import { Injectable, OnInit } from '@angular/core';
+import { Router } from "@angular/router";
 import jwt_decode from "jwt-decode";
-import {User, UpdateUser, UpdateUserResult, RegisterUserResult} from '../interfaces';
-import {UserRegister} from "../auth/user-register";
-import {ELanguage} from "../lang/language";
-import {AuthenticationResult} from "../auth/service/authentication-result";
-import {LocalStorageService} from "../local-storage/local-storage.service";
-import {Router} from "@angular/router";
-import {environment} from "../../../environments/environment";
-import {HttpClient} from "@angular/common/http";
-import {ETheme} from "../theme/theme";
-import {ThemeService} from "../theme/theme.service";
+import { BehaviorSubject, Observable, of, switchMap, tap } from 'rxjs';
+import { environment } from "../../../environments/environment";
+import { AuthenticationResult } from "../auth/service/authentication-result";
+import { UserRegister } from "../auth/user-register";
+import { RegisterUserResult, UpdateUser, UpdateUserResult, User } from '../interfaces';
+import { ELanguage } from "../lang/language";
+import { LocalStorageService } from "../local-storage/local-storage.service";
+import { Data } from '../shared-data/shared-data';
+import { ThemeService } from "../theme/theme.service";
+import { TokenService } from '../token/token.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class UserService {
+export class UserService implements OnInit  {
 
     constructor(private readonly tokenService: TokenService,
                 private readonly localStorage: LocalStorageService,
                 private readonly httpClient: HttpClient,
                 private readonly router: Router) {
-        this.decodeAndNotify();
+    }
+
+    ngOnInit(): void {
+        this.getUserInfoAndNotify().subscribe();
     }
 
     private readonly registerData = "register-data";
@@ -37,17 +39,19 @@ export class UserService {
         this.localStorage.removeItem(this.emailConfirmedKey);
         this.saveProfilePicUrl(userData.ProfilePicUrl);
         this.tokenService.setToken(userData.Token);
-        this.decodeAndNotify(userData.Token);
     }
 
     public setToken(token: string): void {
         this.localStorage.removeItem(this.emailConfirmedKey);
         this.tokenService.setToken(token);
-        this.decodeAndNotify(token);
     }
 
-    public getUser = (): Observable<User | null> =>
-        this.userSubject;
+    public getUser(): Observable<User | null> {
+        return this.userSubject.pipe(switchMap(u =>{
+            if (u) return of(u);
+            return this.getUserInfoAndNotify();
+        }))
+    }
 
     public getCurrentUser = (): User | null =>
         this.userSubject.getValue();
@@ -79,25 +83,19 @@ export class UserService {
     public hasRegisterData = (): boolean =>
         !!this.tokenService.getRegisterToken() && !!Data.Get(this.registerData);
 
-    public decodeAndNotify(token: string | null = null): void {
-        if (!token || token == 'null' || token == 'undefined')
-            token = this.tokenService.getToken();
+    public getUserInfoAndNotify() : Observable<User | null>{
+        const token = this.tokenService.getToken();
+        if (!token || token == 'null' || token == 'undefined') return of(null)
 
-        if (!token || token == 'null' || token == 'undefined')
-            return;
+        const userFromToken = jwt_decode(token) as Partial<User>; 
 
-        const user = jwt_decode(token) as User;
-        user.language = parseInt(user.language as any) as ELanguage;
-        user.theme = parseInt(user.theme as any) as ETheme;
-        user.profilePic = this.localStorage.getItem(this.profilePicKey);
+        return this.httpClient.get<User>(`${environment.baseApiUrl}/${this.baseRoute}/${userFromToken.Id}`)
+            .pipe(tap(u => {
+                if(!u) return
 
-        const emailConfirmedValue = this.localStorage.getItem(this.emailConfirmedKey);
-        if (emailConfirmedValue)
-            user.emailConfirmed = JSON.parse(emailConfirmedValue);
-        else
-            user.emailConfirmed = JSON.parse((user as any)["email-confirmed"]);
-
-        this.userSubject.next(user);
+                u.ProfilePic = this.localStorage.getItem(this.profilePicKey);
+                this.userSubject.next(u);
+            }));
     }
 
     public logout(userDeletedAccount: boolean = false): void {
@@ -160,9 +158,9 @@ export class UserService {
         return this.httpClient.put<any>(`${environment.baseApiUrl}/${this.baseRoute}/confirm-email`, {token});
     }
 
-    emailConfirmed(): void {
+    emailConfirmed(): Observable<any> {
         this.localStorage.setItem(this.emailConfirmedKey, 'true');
-        this.decodeAndNotify();
+        return this.getUserInfoAndNotify();
     }
 
     reactivateAccount(token: string) : Observable<any> {

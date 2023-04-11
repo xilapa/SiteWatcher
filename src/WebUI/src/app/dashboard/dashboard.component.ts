@@ -1,12 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {LangUtils} from "../core/lang/lang.utils";
-import {UserService} from "../core/user/user.service";
-import {TranslocoService} from "@ngneat/transloco";
-import {ELanguage} from "../core/lang/language";
-import {first, Subscription} from "rxjs";
-import {ThemeService} from "../core/theme/theme.service";
-import {NavigationEnd, Router} from "@angular/router";
-import {AlertService} from "../alerts/service/alert.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from "@angular/router";
+import { TranslocoService } from "@ngneat/transloco";
+import { Subscription } from "rxjs";
+import { AlertService } from "../alerts/service/alert.service";
+import { LangUtils } from "../core/lang/lang.utils";
+import { ELanguage } from "../core/lang/language";
+import { ThemeService } from "../core/theme/theme.service";
+import { UserService } from "../core/user/user.service";
 
 @Component({
     selector: 'sw-dashboard',
@@ -50,7 +50,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             .subscribe(user => {
                 if(!user) return;
                 this.translocoService
-                    .setActiveLang(LangUtils.getLangFileName(user?.language as ELanguage));
+                    .setActiveLang(LangUtils.getLangFileName(user?.Language as ELanguage));
             })
     }
 
