@@ -40,12 +40,7 @@ public sealed class AuthService : IAuthService
     {
         var claims = new Claim[]
         {
-            new(AuthenticationDefaults.ClaimTypes.Id, userVm.Id.ToString()),
-            new(AuthenticationDefaults.ClaimTypes.Name, userVm.Name),
-            new(AuthenticationDefaults.ClaimTypes.Email, userVm.Email),
-            new(AuthenticationDefaults.ClaimTypes.EmailConfirmed, userVm.EmailConfirmed.ToString().ToLower()),
-            new(AuthenticationDefaults.ClaimTypes.Language, ((int)userVm.Language).ToString()),
-            new(AuthenticationDefaults.ClaimTypes.Theme, ((int)userVm.Theme).ToString())
+            new(AuthenticationDefaults.ClaimTypes.Id, userVm.Id.ToString())
         };
 
         return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
@@ -56,11 +51,6 @@ public sealed class AuthService : IAuthService
         var claims = new Claim[]
         {
             new(AuthenticationDefaults.ClaimTypes.Id, user.Id.ToString()),
-            new(AuthenticationDefaults.ClaimTypes.Name, user.Name),
-            new(AuthenticationDefaults.ClaimTypes.Email, user.Email),
-            new(AuthenticationDefaults.ClaimTypes.EmailConfirmed, user.EmailConfirmed.ToString().ToLower()),
-            new(AuthenticationDefaults.ClaimTypes.Language, ((int)user.Language).ToString()),
-            new(AuthenticationDefaults.ClaimTypes.Theme, ((int)user.Theme).ToString())
         };
 
         return GenerateToken(claims, TokenPurpose.Login, LoginTokenExpiration);
