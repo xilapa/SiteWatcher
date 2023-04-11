@@ -11,9 +11,11 @@ public class SqliteDapperQueries : DapperQueries
         GetSimpleAlertViewListByUserId = RemoveSchema(base.GetSimpleAlertViewListByUserId);
         GetAlertDetails = RemoveSchema(base.GetAlertDetails);
         DeleteUserAlert = RemoveSchema(base.DeleteUserAlert);
+        GetUserById = RemoveSchema(base.GetUserById);
     }
 
     public override string GetUserByGoogleId { get; }
+    public override string GetUserById { get; }
     public override string DeleteActiveUserById { get; }
     public override string GetSimpleAlertViewListByUserId { get; }
     public override string GetAlertDetails { get; }

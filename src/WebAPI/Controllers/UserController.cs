@@ -14,6 +14,7 @@ using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Infra.Authorization.Constants;
 
 namespace SiteWatcher.WebAPI.Controllers;
 
@@ -44,6 +45,8 @@ public class UserController : ControllerBase
     [Authorize(Policy = Policies.ValidRegisterData)]
     public async Task<IActionResult> Register(RegisterUserCommand command)
     {
+        command.GoogleId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
+        command.AuthEmail = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
         RegisterUserResult commandResult = await _mediator.Send(command);
         return commandResult switch
         {

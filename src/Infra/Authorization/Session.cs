@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.Infra.Authorization.Extensions;
 using ISession = SiteWatcher.Domain.Authentication.ISession;
@@ -39,14 +38,6 @@ public class Session : ISession
 
         UserId = userId;
 
-        Email = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
-        GoogleId = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
-        UserName = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Name)?.Value;
-
-        var intLang = Array.Find(claims, c => c.Type == AuthenticationDefaults.ClaimTypes.Language)?.Value;
-        var hasLang = int.TryParse(intLang, out var lang);
-        Language = hasLang ? (Language)lang : null;
-
         var authenticated = httpContext!.User.Identity!.IsAuthenticated;
         if (!authenticated)
         {
@@ -65,9 +56,6 @@ public class Session : ISession
 
     public virtual DateTime Now => DateTime.UtcNow;
     public UserId? UserId { get; }
-    public string? Email { get; }
-    public string? GoogleId { get; }
-    public string? UserName { get; }
-    public Language? Language { get; }
+
     public string AuthTokenPayload { get; }
 }
