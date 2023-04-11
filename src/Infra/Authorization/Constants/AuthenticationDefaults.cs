@@ -9,14 +9,12 @@ public static class AuthenticationDefaults
 
     public static class ClaimTypes
     {
-        public const string Id = "id";
+        public const string Id = "Id";
         public const string Name = "name";
         public const string Email = "email";
-        public const string EmailConfirmed = "email-confirmed";
         public const string GoogleId = "googleId";
         public const string Locale = "locale";
         public const string Language = "language";
-        public const string Theme = "theme";
         public const string ProfilePicUrl = "profile-pic-url";
     }
 
