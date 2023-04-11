@@ -29,7 +29,7 @@ export class AppComponent implements OnInit{
     // Listen to storage events to update the user email confirmed status
     @HostListener('window:storage', ['$event'])
     onStorageChange(ev: StorageEvent) {
-        this.userService.decodeAndNotify();
+        this.userService.getUserInfoAndNotify().pipe(first()).subscribe();
     }
 
     ngOnInit(): void {

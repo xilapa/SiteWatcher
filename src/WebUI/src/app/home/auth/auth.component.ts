@@ -3,7 +3,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from "@ngneat/transloco";
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { finalize } from "rxjs";
+import { finalize, of, switchMap } from "rxjs";
 import { UserService } from 'src/app/core/user/user.service';
 import { EAuthTask } from "../../core/auth/service/auth-task";
 import { AuthService } from "../../core/auth/service/auth.service";
@@ -36,29 +36,38 @@ export class AuthComponent implements OnInit {
             return
         }
         this.authService.exchangeToken(token)
+            .pipe(switchMap(response => {
+                if (!response) {
+                    utils.toastError(null, this.messageService,
+                        this.translocoService)
+                    this.router.navigateByUrl('/home');
+                    of(undefined)
+                }
+                if (response.Task == EAuthTask.Register) {
+                    this.userService.setUserRegisterData(response);
+                    this.router.navigateByUrl('/home/register');
+                    of(undefined)
+                }
+
+                if (response.Task == EAuthTask.Login) {
+                    this.userService.setUserData(response);
+                    this.userService.redirecLoggedUser();
+                    return this.userService.getUserInfoAndNotify();
+                }
+
+                if (response.Task == EAuthTask.Activate) {
+                    utils.openModal(this.confirmationService, this.translocoService,
+                        'home.auth.reactivateUserTitle', 'home.auth.reactivateUserMessage',
+                        () => this.sendEmailToReactivateAccount(response.Token), () => this.router.navigateByUrl('/home')
+                    );
+                    of(undefined)
+                }
+
+                return of(undefined)
+            }))
             .subscribe({
                 next: (response) => {
-                    if (!response) {
-                        utils.toastError(null, this.messageService,
-                            this.translocoService)
-                        this.router.navigateByUrl('/home');
-                    }
-                    if (response.Task == EAuthTask.Register) {
-                        this.userService.setUserRegisterData(response);
-                        this.router.navigateByUrl('/home/register');
-                    }
-
-                    if (response.Task == EAuthTask.Login) {
-                        this.userService.setUserData(response);
-                        this.userService.redirecLoggedUser();
-                    }
-
-                    if (response.Task == EAuthTask.Activate) {
-                        utils.openModal(this.confirmationService, this.translocoService,
-                            'home.auth.reactivateUserTitle', 'home.auth.reactivateUserMessage',
-                            () => this.sendEmailToReactivateAccount(response.Token), () => this.router.navigateByUrl('/home')
-                        );
-                    }
+                    
                 },
                 error: (errorResponse) => {
                     utils.toastError(errorResponse, this.messageService,

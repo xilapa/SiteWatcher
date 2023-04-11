@@ -1,8 +1,8 @@
-import {Inject, Injectable} from '@angular/core';
-import {LocalStorageService} from "../local-storage/local-storage.service";
-import {DOCUMENT} from "@angular/common";
-import {ETheme} from "./theme";
-import {UserService} from '../user/user.service';
+import { DOCUMENT } from "@angular/common";
+import { Inject, Injectable } from '@angular/core';
+import { LocalStorageService } from "../local-storage/local-storage.service";
+import { UserService } from '../user/user.service';
+import { ETheme } from "./theme";
 
 @Injectable({
   providedIn: 'root'
@@ -27,10 +27,10 @@ export class ThemeService {
     let themeToRemove;
     if (!user)
       themeToLoad = this.localStorage.getItem(ThemeService.themeKey) as string;
-    if (user && user.theme === ETheme.dark) {
+    if (user && user.Theme === ETheme.dark) {
       themeToLoad = this.darkTheme;
       themeToRemove = this.lightTheme;
-    } else if (user && user.theme === ETheme.light) {
+    } else if (user && user.Theme === ETheme.light) {
       themeToLoad = this.lightTheme;
       themeToRemove = this.darkTheme;
     }

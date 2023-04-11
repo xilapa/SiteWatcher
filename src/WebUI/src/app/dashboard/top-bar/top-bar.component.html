@@ -38,13 +38,13 @@
         <div class="settings-side-bar-options">
             <div class="user-info" *ngIf="user$ | async as user">
                 <div class="user-pic" *ngIf="!profilePicError">
-                    <img [src]="user.profilePic" [alt]="t('profilePicAlt')"
+                    <img [src]="user.ProfilePic" [alt]="t('profilePicAlt')"
                          (error)="onProfilePicError()"/>
                 </div>
                 <div class="user-no-pic" *ngIf="profilePicError">
                     <i class="pi pi-user user-icon"></i>
                 </div>
-                <div class="user-name">{{user.name}}</div>
+                <div class="user-name">{{user.Name}}</div>
             </div>
             <div class="options">
                 <span routerLink="/dash/settings" (click)="settingsBar.toggle()">{{t('settings')}}</span>
