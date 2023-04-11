@@ -14,6 +14,14 @@ public class DapperQueries : IDapperQueries
             WHERE
                 u.""GoogleId"" = @googleId ";
 
+    public virtual string GetUserById => @"
+            SELECT 
+                u.""Id"", u.""Active"", u.""Name"", u.""Email"", u.""EmailConfirmed"", u.""Language"", u.""Theme""
+            FROM 
+                ""sw"".""Users"" AS u
+            WHERE
+                u.""Id"" = @id ";
+
     public virtual string DeleteActiveUserById => @"
             DELETE 
             FROM 
