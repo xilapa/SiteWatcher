@@ -1,17 +1,16 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MessageService} from 'primeng/api';
-import {invalidCharactersValidator} from 'src/app/common/validators/invalid-characters.validator';
-import {UserService} from 'src/app/core/user/user.service';
-import {TranslocoService} from "@ngneat/transloco";
-import {LangUtils} from "../../core/lang/lang.utils";
-import {Subscription} from "rxjs";
-import {LanguageOptions} from "./language-options";
-import {ELanguage} from "../../core/lang/language";
-import {UserRegister} from "../../core/auth/user-register";
-import {AuthService} from "../../core/auth/service/auth.service";
-import {ThemeService} from "../../core/theme/theme.service";
-import {utils} from "../../core/utils/utils";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TranslocoService } from "@ngneat/transloco";
+import { MessageService } from 'primeng/api';
+import { Subscription } from "rxjs";
+import { invalidCharactersValidator } from 'src/app/common/validators/invalid-characters.validator';
+import { UserService } from 'src/app/core/user/user.service';
+import { UserRegister } from "../../core/auth/user-register";
+import { LangUtils } from "../../core/lang/lang.utils";
+import { ELanguage } from "../../core/lang/language";
+import { ThemeService } from "../../core/theme/theme.service";
+import { utils } from "../../core/utils/utils";
+import { LanguageOptions } from "./language-options";
 
 @Component({
     selector: 'sw-register',
@@ -29,7 +28,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     constructor(
         private readonly formBuilder: FormBuilder,
-        private readonly authService: AuthService,
         private readonly userService: UserService,
         private readonly messageService: MessageService,
         private readonly translocoService: TranslocoService,

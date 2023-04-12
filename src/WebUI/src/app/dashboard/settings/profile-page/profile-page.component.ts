@@ -114,16 +114,13 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
         this.userService.update(updateData)
             .pipe(finalize(() => this.doingRequest = false))
             .subscribe({
-                next: (resp) => {
-                    this.userService.setToken(resp.Token);
-
+                next: (u) => {                   
                     this.initialUser = this.userService.getCurrentUser() as User;
                     this.darkThemeEnabledInitial = this.darkThemeEnabled = this.user.Theme != ETheme.light;
                     this.updateForm.updateValueAndValidity();
 
                     const toastMessage = `${this.translocoService.translate('settings.security.successMessage')}
-                    ${resp.ConfirmationEmailSend ?
-                            this.translocoService.translate('settings.security.successMessageEmailSent') : ''}`;
+                    ${u.ConfirmationEmailSent ? this.translocoService.translate('settings.security.successMessageEmailSent') : ''}`;
 
                     utils.toastSuccess(this.messageService, this.translocoService, toastMessage);
                 },
