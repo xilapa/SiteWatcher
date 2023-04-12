@@ -87,9 +87,7 @@ export class UserService implements OnInit  {
         const token = this.tokenService.getToken();
         if (!token || token == 'null' || token == 'undefined') return of(null)
 
-        const userFromToken = jwt_decode(token) as Partial<User>; 
-
-        return this.httpClient.get<User>(`${environment.baseApiUrl}/${this.baseRoute}/${userFromToken.Id}`)
+        return this.httpClient.get<User>(`${environment.baseApiUrl}/${this.baseRoute}`)
             .pipe(tap(u => {
                 if(!u) return
 
@@ -121,8 +119,11 @@ export class UserService implements OnInit  {
     }
 
     public update(updateData: UpdateUser): Observable<UpdateUserResult> {
-        return this.httpClient.put<UpdateUserResult>(
-            `${environment.baseApiUrl}/${this.baseRoute}`, updateData)
+        return this.httpClient.put<UpdateUserResult>(`${environment.baseApiUrl}/${this.baseRoute}`, updateData)
+        .pipe(tap(res => {
+            if (!res) return;
+            this.userSubject.next(res.User);
+        }))
     }
 
     public setReturnUrl(url: string): void {

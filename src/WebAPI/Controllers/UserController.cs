@@ -32,7 +32,6 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{UserId}")]
     [Authorize]
     [CacheFilter(ResponseCache: false)]
     public async Task<IActionResult> GetUserInfo([FromRoute] GetUserInfoCommand command, CancellationToken ct)
@@ -78,7 +77,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UpdateUser(UpdateUserCommand command)
     {
         var commandResult = await _mediator.Send(command);
-        return commandResult.ToActionResult<UserViewModel>();
+        return commandResult.ToActionResult<UpdateUserResult>();
     }
 
     [Authorize]
