@@ -80,14 +80,14 @@ public class FakeCache : ICache
     {
         var objectJson = JsonSerializer.Serialize(fieldValue);
         var fakeEntry = new FakeCacheEntry(objectJson, expiration);
-        var joinedkey = $"{key}:{fieldName};";
+        var joinedkey = $"{key}:{fieldName}";
         Cache.TryAdd(joinedkey, fakeEntry);
         return  Task.CompletedTask;
     }
 
     public Task<string?> GetHashFieldAsStringAsync(string key, string fieldName)
     {
-        var joinedkey = $"{key}:{fieldName};";
+        var joinedkey = $"{key}:{fieldName}";
         Cache.TryGetValue(joinedkey, out var result);
         return Task.FromResult(result.Value as string);
     }

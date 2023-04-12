@@ -23,14 +23,20 @@ using SiteWatcher.Domain.Common.Constants;
 
 namespace IntegrationTests.UserTests;
 
-public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetime
+public class UserTesstBase : BaseTestFixture
+{
+    public override Action<CustomWebApplicationOptions> Options => opts =>
+        opts.DatabaseType = DatabaseType.SqliteOnDisk;
+}
+
+public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
 {
     private User _userXilapaWithoutChanges = null!;
     private int _emailConfirmationTokenExpiration;
     private int _loginTokenExpiration;
     private int _accountReactivationTokenExpiration;
 
-    public UserTests(BaseTestFixture fixture) : base(fixture)
+    public UserTests(UserTesstBase fixture) : base(fixture)
     { }
 
     public async Task InitializeAsync()
@@ -60,10 +66,41 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
         Task.CompletedTask;
 
     [Fact]
+    public async Task GetUserInfo()
+    {
+        // Arrange
+        LoginAs(Users.Xilapa);
+
+        // Act
+        var result = await GetAsync("user");
+
+        // Assert
+        result.HttpResponse!.StatusCode
+            .Should()
+            .Be(HttpStatusCode.OK);
+
+        var typedResult = result.GetTyped<UserViewModel>();
+        typedResult.Should().BeEquivalentTo(_userXilapaWithoutChanges, o => o.ExcludingMissingMembers());
+    }
+
+    [Fact]
     public async Task UserDataIsUpdated()
     {
         // Arrange
         LoginAs(Users.Xilapa);
+        var cacheKey = $"{CacheKeys.UserInfo(Users.Xilapa.Id)}:";
+
+        // user info should not be in cache
+        FakeCache.Cache.TryGetValue(cacheKey, out _)
+            .Should()
+            .BeFalse();
+
+        await GetAsync("user");
+
+        // user info should be in cache
+        FakeCache.Cache.TryGetValue(cacheKey, out _)
+            .Should()
+            .BeTrue();
 
         var updateUserCommand = new UpdateUserCommand
         {
@@ -83,16 +120,9 @@ public class UserTests : BaseTest, IClassFixture<BaseTestFixture>, IAsyncLifetim
 
         var typedResult = result.GetTyped<UpdateUserResult>();
         typedResult!
-            .Token
-            .Should().NotBeNullOrEmpty();
-
-        var userFromDb = await AppFactory.WithDbContext(ctx =>
-            ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
-
-        userFromDb.Email.Should().Be(updateUserCommand.Email);
-        userFromDb.Language.Should().Be(updateUserCommand.Language);
-        userFromDb.Name.Should().Be(updateUserCommand.Name);
-        userFromDb.Theme.Should().Be(updateUserCommand.Theme);
+            .User
+            .Should()
+            .BeEquivalentTo(updateUserCommand, o => o.ExcludingMissingMembers());
 
         // Finalize
         await ResetTestData();
