@@ -22,10 +22,6 @@ export class AuthService {
         this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google`;
     }
 
-    public googleRegister(): void {
-        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google`;
-    }
-
     public exchangeToken(token: string): Observable<AuthenticationResult> {
         return this.httpClient.post<AuthenticationResult>(
             `${environment.baseApiUrl}/${this.baseRoute}/exchange-token`,

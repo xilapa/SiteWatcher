@@ -25,11 +25,6 @@ export class LogInComponent {
     this.authService.googleLogin();
   }
 
-  public register() {
-    this.setReturnUrl();
-    this.authService.googleRegister();
-  }
-
   private setReturnUrl() : void {
     this.returnUrl = this.activatedRoute.snapshot.queryParams?.["returnUrl"] ?? null;
     this.returnUrl && this.userService.setReturnUrl(this.returnUrl);
