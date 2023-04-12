@@ -3,7 +3,8 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Authentication;
-using SiteWatcher.Domain.Authentication.Services;
+using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Domain.Users.Repositories;
@@ -22,36 +23,29 @@ public class UpdateUserCommand : IRequest<CommandResult>
 
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, CommandResult>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUserRepository _userRepo;
     private readonly IUnitOfWork _uow;
-    private readonly IAuthService _authService;
     private readonly ISession _session;
+    private readonly ICache _cache;
 
-    public UpdateUserCommandHandler(
-        IUserRepository userRepository,
-        IUnitOfWork uow,
-        IAuthService authService,
-        ISession session)
+    public UpdateUserCommandHandler(IUserRepository userRepo, IUnitOfWork uow, ISession session, ICache cache)
     {
-        _userRepository = userRepository;
+        _userRepo = userRepo;
         _uow = uow;
-        _authService = authService;
         _session = session;
+        _cache = cache;
     }
 
     public async Task<CommandResult> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository
-            .GetAsync(u => u.Id == _session.UserId && u.Active, cancellationToken);
+        var user = await _userRepo.GetAsync(u => u.Id == _session.UserId && u.Active, cancellationToken);
         if (user is null)
             return CommandResult.FromError(ApplicationErrors.USER_DO_NOT_EXIST);
 
         user.Update(request.ToInputModel(), _session.Now);
         await _uow.SaveChangesAsync(cancellationToken);
+        await _cache.DeleteKeyAsync(CacheKeys.UserInfo(_session.UserId!.Value));
 
-        var newToken = _authService.GenerateLoginToken(user);
-        await _authService.WhiteListTokenForCurrentUser(_session, newToken);
-
-        return CommandResult.FromValue(new UpdateUserResult(newToken, !user.EmailConfirmed));
+        return CommandResult.FromValue(new UpdateUserResult(new UserViewModel(user), !user.EmailConfirmed));
     }
 }
