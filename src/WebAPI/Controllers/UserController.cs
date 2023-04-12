@@ -34,7 +34,7 @@ public class UserController : ControllerBase
     [HttpGet]
     [Route("{UserId}")]
     [Authorize]
-    [CacheFilter]
+    [CacheFilter(ResponseCache: false)]
     public async Task<IActionResult> GetUserInfo([FromRoute] GetUserInfoCommand command, CancellationToken ct)
     {
         var res = await _mediator.Send(command, ct);

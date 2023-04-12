@@ -15,7 +15,13 @@ namespace SiteWatcher.WebAPI.Filters.Cache;
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public class CacheFilterAttribute : Attribute, IAsyncActionFilter, IAsyncResultFilter
 {
+    private readonly bool _responseCache;
     private const string CacheInfoKey = nameof(CacheInfoKey);
+
+    public CacheFilterAttribute(bool ResponseCache = true)
+    {
+        _responseCache = ResponseCache;
+    }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -62,9 +68,12 @@ public class CacheFilterAttribute : Attribute, IAsyncActionFilter, IAsyncResultF
                     (context.Result as ObjectResult)!.Value!, cacheInfo.Expiration);
         }
 
-        // 30s cache on client, based on official ResponseCacheFilterExecutor
-        // https://github.com/dotnet/aspnetcore/blob/main/src/Mvc/Mvc.Core/src/Filters/ResponseCacheFilterExecutor.cs
-        context.HttpContext.Response.Headers.CacheControl = "private,max-age=30";
+        if (_responseCache)
+        {
+            // 30s cache on client, based on official ResponseCacheFilterExecutor
+            // https://github.com/dotnet/aspnetcore/blob/main/src/Mvc/Mvc.Core/src/Filters/ResponseCacheFilterExecutor.cs
+            context.HttpContext.Response.Headers.CacheControl = "private,max-age=30";
+        }
         await next();
     }
 }
