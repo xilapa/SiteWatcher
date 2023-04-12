@@ -14,7 +14,6 @@ using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.Domain.Common.Constants;
-using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.WebAPI.Filters.Cache;
 

@@ -37,7 +37,10 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
     private int _accountReactivationTokenExpiration;
 
     public UserTests(UserTesstBase fixture) : base(fixture)
-    { }
+    {
+        // Clear cache before each test to avoid Forbiden errors
+        FakeCache.Cache.Clear();
+    }
 
     public async Task InitializeAsync()
     {
