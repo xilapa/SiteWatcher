@@ -61,6 +61,7 @@ public class AuthController : ControllerBase
         };
 
         var authCodeRes = await _mediator.Send(authCommand, ct);
+        if (!authCodeRes.Success()) return Unauthorized();
         var redirectUrl = $"{_appSettings.FrontEndAuthUrl}?code={authCodeRes.Code}";
         return Redirect(redirectUrl);
     }
