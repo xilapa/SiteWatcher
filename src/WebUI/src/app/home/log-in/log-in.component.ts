@@ -1,7 +1,7 @@
-import {Component} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {AuthService} from "../../core/auth/service/auth.service";
-import {UserService} from "../../core/user/user.service";
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { AuthService } from "../../core/auth/service/auth.service";
+import { UserService } from "../../core/user/user.service";
 
 
 @Component({
@@ -20,9 +20,9 @@ export class LogInComponent {
   ) {
   }
 
-  public login() {
+  public async login() {
     this.setReturnUrl();
-    this.authService.googleLogin();
+    await this.authService.googleLogin();
   }
 
   private setReturnUrl() : void {

@@ -41,7 +41,7 @@ public class Session : ISession
     }
 
     public string AuthTokenPayload =>
-        _httpContextAccessor.HttpContext?.GetItem<string>(AuthenticationDefaults.AuthtokenPayloadKey) ??
+        _httpContextAccessor.HttpContext?.GetItem<string>(AuthenticationDefaults.AuthTokenPayloadKey) ??
         _httpContextAccessor.HttpContext?.GetAuthTokenPayload() ??
         string.Empty;
 }

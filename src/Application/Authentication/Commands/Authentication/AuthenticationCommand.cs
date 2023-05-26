@@ -14,11 +14,13 @@ public class AuthenticationCommand : IRequest<AuthCodeResult>
     public string? ProfilePicUrl { get; set; }
     public string? Name { get; set; }
     public string? Locale { get; set; }
+    public string? CodeChallenge { get; set; }
 
     public bool IsValid()
     {
         if (string.IsNullOrEmpty(GoogleId)) return false;
         if (string.IsNullOrEmpty(Email)) return false;
+        if (string.IsNullOrEmpty(CodeChallenge)) return false;
         return true;
     }
 
@@ -72,6 +74,6 @@ public class AuthenticationCommandHandler : IRequestHandler<AuthenticationComman
             authRes = new AuthenticationResult(AuthTask.Activate, user.Id.ToString(), null);
 
         // store auth result
-        return await _authService.StoreAuthenticationResult(authRes, ct);
+        return await _authService.StoreAuthenticationResult(authRes, request.CodeChallenge!, ct);
     }
 }

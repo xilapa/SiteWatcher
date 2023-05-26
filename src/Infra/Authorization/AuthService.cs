@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using Domain.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +31,8 @@ public sealed class AuthService : IAuthService
     private const int AccountReactivationTokenExpiration = 24 * 60 * 60;
     private const int LoginStateExpiration = 15 * 60 * 60;
     private const int AuthResExpiration = 20;
+
+    private const string CodeChallengeKey = "::cc::";
 
     public AuthService(IAppSettings appSettings, ICache cache, IDataProtectionProvider protector)
     {
@@ -195,16 +199,23 @@ public sealed class AuthService : IAuthService
         return token;
     }
 
-    public async Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct)
+    public async Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, string codeChallenge, CancellationToken ct)
     {
-        var codeKey = Utils.GenerateSafeRandomBase64String();
+        var codeKey = $"{Utils.GenerateSafeRandomBase64String()}{CodeChallengeKey}{codeChallenge}";
         var code = _protector.Protect(codeKey, TimeSpan.FromSeconds(AuthResExpiration));
         var authCodeRes = new AuthCodeResult(code);
         await _cache.SaveAsync(codeKey, authRes, TimeSpan.FromSeconds(AuthResExpiration));
         return authCodeRes;
     }
 
-    public async Task<AuthenticationResult?> GetAuthenticationResult(string code, CancellationToken ct)
+    public async Task<AuthenticationResult?> GetAuthenticationResult(string code, string codeVerifier, CancellationToken ct)
+    {
+        var codeKey = ExtractCodeKey(code, codeVerifier);
+        if (string.IsNullOrEmpty(codeKey)) return null;
+        return await _cache.GetAndRemoveAsync<AuthenticationResult?>(codeKey, ct);
+    }
+
+    private string ExtractCodeKey(string code, string codeVerifier)
     {
         var codeKey = string.Empty;
         try
@@ -216,7 +227,20 @@ public sealed class AuthService : IAuthService
             // swallow unprotect exceptions
         }
 
-        if (string.IsNullOrEmpty(codeKey)) return null;
-        return await _cache.GetAndRemoveAsync<AuthenticationResult?>(codeKey, ct);
+        if (string.IsNullOrEmpty(codeKey)) return string.Empty;
+
+        var codeKeySpan = codeKey.AsSpan();
+
+        // check if the code_challenge is present
+        var codeChallengeStartIndex = codeKeySpan.IndexOf(CodeChallengeKey, StringComparison.Ordinal);
+        if (codeChallengeStartIndex == -1) return string.Empty;
+        var codeChallenge = codeKeySpan[(codeChallengeStartIndex + CodeChallengeKey.Length)..];
+
+        // compute the code_verifier hash
+        var codeVerifierHash = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));
+        var codeVerifierHashBase64 = Convert.ToBase64String(codeVerifierHash);
+
+        // check if the code_verifier hash matches the code_challenge
+        return codeChallenge.SequenceEqual(codeVerifierHashBase64) ? codeKey : string.Empty;
     }
 }

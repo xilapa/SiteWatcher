@@ -3,9 +3,10 @@ namespace SiteWatcher.Infra.Authorization.Constants;
 public static class AuthenticationDefaults
 {
     public const string Roles = "roles";
-    public const string AuthtokenPayloadKey = nameof(AuthtokenPayloadKey);
+    public const string AuthTokenPayloadKey = nameof(AuthTokenPayloadKey);
     public const string UserIdKey = nameof(UserIdKey);
     public const string ClaimsKey = nameof(ClaimsKey);
+    public const string CodeChallengeKey = nameof(CodeChallengeKey);
 
     public static class ClaimTypes
     {
