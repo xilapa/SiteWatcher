@@ -36,6 +36,7 @@ You can choose the monitoring rate between 2 and 24 hours;
 
 ## Features
 - **Google login**: don't need to create an account to forget the password;
+- **Secure**: we use OAuth Code Flow with PKCE to protect the authentication flow, see [PR 115](https://github.com/xilapa/SiteWatcher/pull/115);
 - **Intelligent search**: the search ignores accents and capital letters, and sorts the results by the most relevant to the search term;
 - **We don't spam your email box**: all alerts are grouped by the monitoring rate and you only receive one email about all alerts that have been triggered with that rate. Also, SiteWatcher uses **outbox pattern** and **idempotent consumers** to send the alert email without the chance to duplicate the email.
 - **You have the control**: you can disconnect all your devices from SiteWatcher with one click.
