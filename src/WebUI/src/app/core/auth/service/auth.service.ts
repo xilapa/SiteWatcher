@@ -22,10 +22,10 @@ export class AuthService {
         this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google`;
     }
 
-    public exchangeToken(token: string): Observable<AuthenticationResult> {
+    public exchangeToken(code: string): Observable<AuthenticationResult> {
         return this.httpClient.post<AuthenticationResult>(
-            `${environment.baseApiUrl}/${this.baseRoute}/exchange-token`,
-            {token}, { withCredentials: true })
+            `${environment.baseApiUrl}/${this.baseRoute}/exchange-code`,
+            {code})
     }
 }
 

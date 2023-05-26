@@ -195,28 +195,28 @@ public sealed class AuthService : IAuthService
         return token;
     }
 
-    public async Task<AuthKeys> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct)
+    public async Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct)
     {
-        var key = Utils.GenerateSafeRandomBase64String();
-        var securityToken = _protector.Protect(key, TimeSpan.FromSeconds(AuthResExpiration));
-        var authkeys = new AuthKeys(key, securityToken);
-        await _cache.SaveAsync(key, authRes, TimeSpan.FromSeconds(AuthResExpiration));
-        return authkeys;
+        var codeKey = Utils.GenerateSafeRandomBase64String();
+        var code = _protector.Protect(codeKey, TimeSpan.FromSeconds(AuthResExpiration));
+        var authCodeRes = new AuthCodeResult(code);
+        await _cache.SaveAsync(codeKey, authRes, TimeSpan.FromSeconds(AuthResExpiration));
+        return authCodeRes;
     }
 
-    public async Task<AuthenticationResult?> GetAuthenticationResult(string key, string token, CancellationToken ct)
+    public async Task<AuthenticationResult?> GetAuthenticationResult(string code, CancellationToken ct)
     {
-        var decodeToken = string.Empty;
+        var codeKey = string.Empty;
         try
         {
-            decodeToken = _protector.Unprotect(token);
+            codeKey = _protector.Unprotect(code);
         }
         catch
         {
             // swallow unprotect exceptions
         }
 
-        if (!key.Equals(decodeToken)) return null;
-        return await _cache.GetAndRemoveAsync<AuthenticationResult?>(key, ct);
+        if (string.IsNullOrEmpty(codeKey)) return null;
+        return await _cache.GetAndRemoveAsync<AuthenticationResult?>(codeKey, ct);
     }
 }

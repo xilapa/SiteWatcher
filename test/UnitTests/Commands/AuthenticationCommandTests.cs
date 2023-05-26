@@ -28,7 +28,7 @@ public sealed class AuthenticationCommandTests
 
         _authServiceMock
             .Setup(a => a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new AuthKeys(RegisterToken, RegisterToken));
+            .ReturnsAsync(new AuthCodeResult(RegisterToken, RegisterToken));
     }
 
     [Fact]
