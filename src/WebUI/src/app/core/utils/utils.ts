@@ -3,6 +3,7 @@ import { ConfirmationService, MessageService } from "primeng/api";
 
 export class utils {
     private static successToastLifeTime = 5000;
+    private static SHA256 = 'SHA-256';
 
     public static toastError(errorResponse: any, messageService: MessageService, translocoService: TranslocoService) {
         const messages = errorResponse.error as string[];
@@ -51,4 +52,11 @@ export class utils {
             reject: rejectCallback
         });
     }
+
+    // Source: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+    public static async sha256Hash(value :string) : Promise<Uint8Array> {
+        const utf8Value = new TextEncoder().encode(value);
+        const hashBuffer = await crypto.subtle.digest(utils.SHA256, utf8Value);
+        return new Uint8Array(hashBuffer);
+      }
 }

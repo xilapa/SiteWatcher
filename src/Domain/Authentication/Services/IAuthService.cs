@@ -41,6 +41,6 @@ public interface IAuthService
     /// <returns></returns>
     Task<string> SetAccountActivationTokenExpiration(string token, UserId userId);
 
-    Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct);
-    Task<AuthenticationResult?> GetAuthenticationResult(string code, CancellationToken ct);
+    Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, string codeChallenge, CancellationToken ct);
+    Task<AuthenticationResult?> GetAuthenticationResult(string code, string codeVerifier, CancellationToken ct);
 }

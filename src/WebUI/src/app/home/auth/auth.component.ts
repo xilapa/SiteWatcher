@@ -35,7 +35,7 @@ export class AuthComponent implements OnInit {
             this.router.navigateByUrl('/home')
             return
         }
-        this.authService.exchangeToken(code)
+        this.authService.exchangeCode(code)
             .pipe(switchMap(response => {
                 if (!response) {
                     utils.toastError(null, this.messageService,

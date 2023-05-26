@@ -17,7 +17,6 @@ public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly IAppSettings _appSettings;
-    private const string key = nameof(key);
 
     public AuthController(IMediator mediator, IAppSettings appSettings)
     {
@@ -27,9 +26,8 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("start/{schema:required}")]
-    public IActionResult StartAuth([FromRoute] string schema)
+    public IActionResult StartAuth([FromRoute] string schema, [FromQuery] string codeChallenge)
     {
-        // TODO: receive code_challenge
         var callBackUrl = schema switch
         {
             AuthenticationDefaults.Schemes.Google => Url.Action(nameof(GoogleAuthCallback)),
@@ -39,6 +37,7 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(callBackUrl)) return BadRequest();
 
         var authProp = new AuthenticationProperties { RedirectUri = callBackUrl };
+        authProp.Items.Add(AuthenticationDefaults.CodeChallengeKey, codeChallenge);
         return Challenge(authProp, schema);
     }
 
@@ -49,13 +48,16 @@ public class AuthController : ControllerBase
         var authRes = await HttpContext.AuthenticateAsync(AuthenticationDefaults.Schemes.Google);
         if (!authRes.Succeeded) return Unauthorized();
 
+        authRes.Properties.Items.TryGetValue(AuthenticationDefaults.CodeChallengeKey, out var codeChallenge);
+
         var authCommand = new AuthenticationCommand
         {
             GoogleId = authRes.Principal.FindFirstValue(ClaimTypes.NameIdentifier),
             ProfilePicUrl = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.ProfilePicUrl),
             Email = authRes.Principal.FindFirstValue(ClaimTypes.Email),
             Name = authRes.Principal.FindFirstValue(ClaimTypes.Name),
-            Locale = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.Locale)
+            Locale = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.Locale),
+            CodeChallenge = codeChallenge ?? string.Empty
         };
 
         var authCodeRes = await _mediator.Send(authCommand, ct);
@@ -67,7 +69,6 @@ public class AuthController : ControllerBase
     [Route("exchange-code")]
     public async Task<IActionResult> ExchangeCode([FromBody] ExchangeCodeCommand command, CancellationToken ct)
     {
-        // TODO: receive code_verifier
         await HttpContext.SignOutAsync(AuthenticationDefaults.Schemes.Cookie);
         var authRes = await _mediator.Send(command, ct);
         if (authRes == null) return Unauthorized();

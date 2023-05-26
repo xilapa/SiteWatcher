@@ -37,7 +37,7 @@ public class ValidAuthDataHandler : AuthorizationHandler<ValidAuthData>
         if (canLogin)
         {
             context.Succeed(requirement);
-            _httpContext!.Items.Add(AuthenticationDefaults.AuthtokenPayloadKey, authTokenPayload);
+            _httpContext!.Items.Add(AuthenticationDefaults.AuthTokenPayloadKey, authTokenPayload);
             _httpContext!.Items.Add(AuthenticationDefaults.UserIdKey, userId);
             _httpContext!.Items.Add(AuthenticationDefaults.ClaimsKey, claimsEnumerated);
         }

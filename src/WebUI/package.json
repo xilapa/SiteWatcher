@@ -22,6 +22,7 @@
     "@angular/router": "~13.3.3",
     "@ngneat/transloco": "^4.0.0",
     "jwt-decode": "^3.1.2",
+    "nanoid": "^4.0.2",
     "ngx-cookie-service": "^13.2.0",
     "ngx-infinite-scroll": "^13.0.2",
     "primeicons": "^5.0.0",
