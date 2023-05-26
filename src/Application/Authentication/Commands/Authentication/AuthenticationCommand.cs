@@ -49,7 +49,7 @@ public class AuthenticationCommandHandler : IRequestHandler<AuthenticationComman
 
     public async Task<AuthCodeResult> Handle(AuthenticationCommand request, CancellationToken ct)
     {
-        if (!request.IsValid()) return new AuthCodeResult(ApplicationErrors.GOOGLE_AUTH_ERROR);
+        if (!request.IsValid()) return new AuthCodeResult(null, ApplicationErrors.GOOGLE_AUTH_ERROR);
 
         var user = await _userRepo.GetUserByGoogleIdAsync(request.GoogleId!, ct);
 
