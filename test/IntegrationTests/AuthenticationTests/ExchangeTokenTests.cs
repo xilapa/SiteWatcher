@@ -2,6 +2,8 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using IntegrationTests.Setup;
@@ -21,9 +23,9 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
 {
     private readonly Mock<IAuthenticationService> _authServiceMock;
     internal const string XilapaProfilePic = "http://xilapa.io/profile.jpg";
-    private const string _key = "key";
-    internal string CookieKey = _key;
     internal readonly int ExpectedAuthResExpiration;
+    internal const string CodeVerifier = "codeverifier";
+    internal readonly string CodeChallenge;
 
     public ExchangeTokenTestsBase()
     {
@@ -33,11 +35,15 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
             .GetType()
             .GetField("AuthResExpiration", BindingFlags.NonPublic | BindingFlags.Static)!
             .GetValue(authService) as int?)!.Value;
+
+        // generate code challenge
+        var codeVerifierHash = SHA256.HashData(Encoding.UTF8.GetBytes(CodeVerifier));
+        CodeChallenge = Convert.ToBase64String(codeVerifierHash);
     }
 
     public override Action<CustomWebApplicationOptions> Options => opts =>
     {
-        // mock cookie auth
+        // mock microsoft's auth service
         _authServiceMock
             .Setup(s =>
                 s.AuthenticateAsync(It.IsAny<HttpContext>(), It.IsAny<string>()))
@@ -55,13 +61,13 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
             new Claim(ClaimTypes.NameIdentifier, Users.Xilapa.GetGoogleId()), // GoogleId
             new Claim(AuthenticationDefaults.ClaimTypes.ProfilePicUrl, XilapaProfilePic),
             new Claim(ClaimTypes.Email, Users.Xilapa.Email),
-            new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-us"),
-            new Claim(_key, CookieKey) // value used on exchange token
+            new Claim(AuthenticationDefaults.ClaimTypes.Locale, "en-us")
         };
         var claimsIdentity = new ClaimsIdentity(claims, AuthenticationDefaults.Schemes.Google);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
         var authTicket = new AuthenticationTicket(claimsPrincipal, AuthenticationDefaults.Schemes.Google);
+        authTicket.Properties.Items.Add(AuthenticationDefaults.CodeChallengeKey, CodeChallenge);
         return AuthenticateResult.Success(authTicket);
     }
 }
@@ -69,6 +75,7 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
 public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase>
 {
     private readonly ExchangeTokenTestsBase _fixture;
+    private const string Code = "?code=";
 
     public ExchangeTokenTests(ExchangeTokenTestsBase fixture) : base(fixture)
     {
@@ -80,7 +87,7 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
     public async Task GoogleAuthCallbackStoresAuthResult()
     {
         // arrange
-        var partialRedirectUri = $"{TestSettings.FrontEndAuthUrl}?token=";
+        var partialRedirectUri = $"{TestSettings.FrontEndAuthUrl}?code=";
 
         // act
         var res = await GetAsync("auth/google");
@@ -101,24 +108,21 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
     [Theory]
     [InlineData(false, HttpStatusCode.OK)]
     [InlineData(true, HttpStatusCode.Unauthorized)]
-    public async Task ExchangeTokenWorks(bool delay, HttpStatusCode expectedHttpCode)
+    public async Task ExchangeCodeWorks(bool delay, HttpStatusCode expectedHttpCode)
     {
         // arrange
 
-        // get the auth res token
+        // get the authentication code
         var googleCallbackRes = await GetAsync("auth/google");
         var redirectUri = googleCallbackRes.HttpResponse!.Headers.Location!.AbsoluteUri;
-        var token = redirectUri[(redirectUri.IndexOf("=", StringComparison.Ordinal) + 1)..];
-        var exchangeTokenCmmd = new ExchangeCodeCommand { Token = token };
-
-        // set the cookie key claim
-        _fixture.CookieKey = FakeCache.Cache.First().Key;
+        var code = redirectUri[(redirectUri.IndexOf(Code, StringComparison.Ordinal) + Code.Length)..];
+        var exchangeCodeCmmd = new ExchangeCodeCommand { Code = code, CodeVerifier = ExchangeTokenTestsBase.CodeVerifier};
 
         // token should not be valid after expiration
         if (delay) await Task.Delay(TimeSpan.FromSeconds(_fixture.ExpectedAuthResExpiration));
 
         // act
-        var res = await PostAsync("auth/exchange-token", exchangeTokenCmmd);
+        var res = await PostAsync("auth/exchange-code", exchangeCodeCmmd);
 
         // assert
         res.HttpResponse!.StatusCode.Should().Be(expectedHttpCode);
