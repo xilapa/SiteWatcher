@@ -30,12 +30,12 @@ export class AuthComponent implements OnInit {
         
         const url = new URL(this.doc.location.origin + routeHash)
 
-        const token = url.searchParams.get('token') as string
-        if (token == null){
+        const code = url.searchParams.get('code') as string
+        if (code == null){
             this.router.navigateByUrl('/home')
             return
         }
-        this.authService.exchangeToken(token)
+        this.authService.exchangeToken(code)
             .pipe(switchMap(response => {
                 if (!response) {
                     utils.toastError(null, this.messageService,

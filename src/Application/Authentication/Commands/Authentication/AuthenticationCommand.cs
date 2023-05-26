@@ -7,7 +7,7 @@ using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Authentication.Commands.Authentication;
 
-public class AuthenticationCommand : IRequest<AuthKeys>
+public class AuthenticationCommand : IRequest<AuthCodeResult>
 {
     public string? GoogleId { get; set; }
     public string? Email { get; set; }
@@ -34,7 +34,7 @@ public class AuthenticationCommand : IRequest<AuthKeys>
     }
 }
 
-public class AuthenticationCommandHandler : IRequestHandler<AuthenticationCommand, AuthKeys>
+public class AuthenticationCommandHandler : IRequestHandler<AuthenticationCommand, AuthCodeResult>
 {
     private readonly IUserDapperRepository _userRepo;
     private readonly IAuthService _authService;
@@ -45,9 +45,9 @@ public class AuthenticationCommandHandler : IRequestHandler<AuthenticationComman
         _authService = authService;
     }
 
-    public async Task<AuthKeys> Handle(AuthenticationCommand request, CancellationToken ct)
+    public async Task<AuthCodeResult> Handle(AuthenticationCommand request, CancellationToken ct)
     {
-        if (!request.IsValid()) return new AuthKeys(ApplicationErrors.GOOGLE_AUTH_ERROR);
+        if (!request.IsValid()) return new AuthCodeResult(ApplicationErrors.GOOGLE_AUTH_ERROR);
 
         var user = await _userRepo.GetUserByGoogleIdAsync(request.GoogleId!, ct);
 

@@ -1,5 +1,4 @@
 using Domain.Authentication;
-using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
@@ -42,6 +41,6 @@ public interface IAuthService
     /// <returns></returns>
     Task<string> SetAccountActivationTokenExpiration(string token, UserId userId);
 
-    Task<AuthKeys> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct);
-    Task<AuthenticationResult?> GetAuthenticationResult(string key, string token, CancellationToken ct);
+    Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, CancellationToken ct);
+    Task<AuthenticationResult?> GetAuthenticationResult(string code, CancellationToken ct);
 }

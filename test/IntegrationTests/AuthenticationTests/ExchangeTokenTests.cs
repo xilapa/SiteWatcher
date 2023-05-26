@@ -109,7 +109,7 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
         var googleCallbackRes = await GetAsync("auth/google");
         var redirectUri = googleCallbackRes.HttpResponse!.Headers.Location!.AbsoluteUri;
         var token = redirectUri[(redirectUri.IndexOf("=", StringComparison.Ordinal) + 1)..];
-        var exchangeTokenCmmd = new ExchangeTokenCommand { Token = token };
+        var exchangeTokenCmmd = new ExchangeCodeCommand { Token = token };
 
         // set the cookie key claim
         _fixture.CookieKey = FakeCache.Cache.First().Key;

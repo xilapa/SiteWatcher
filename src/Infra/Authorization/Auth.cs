@@ -52,7 +52,8 @@ public static class Auth
                 opt.Cookie.HttpOnly = true;
                 opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 opt.Cookie.IsEssential = true;
-                opt.Cookie.SameSite = SameSiteMode.None;
+                // Lax allows redirects and safe HTTP methods on cross-site requests.
+                opt.Cookie.SameSite = SameSiteMode.Lax;
                 opt.Events.OnRedirectToLogin = ctx =>
                 {
                     ctx.Response.StatusCode = 401;
@@ -86,12 +87,6 @@ public static class Auth
                     policy.AddRequirements(new ValidRegisterData());
                     policy.AddAuthenticationSchemes(AuthenticationDefaults.Schemes.Register);
                 });
-
-            opts.AddPolicy(Policies.AuthCookie, policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.AddAuthenticationSchemes(AuthenticationDefaults.Schemes.Cookie);
-            });
         });
 
         services.AddScoped<IAuthService,AuthService>();
