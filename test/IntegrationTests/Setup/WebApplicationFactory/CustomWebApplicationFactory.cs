@@ -27,7 +27,7 @@ using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
-public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup>, ICustomWebApplicationFactory where TStartup : class
+public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     private IDictionary<Type, object>? _servicesToReplace;
 

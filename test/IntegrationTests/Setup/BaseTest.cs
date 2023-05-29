@@ -28,7 +28,7 @@ public abstract class BaseTest
     }
 
     protected IAppSettings TestSettings => _fixture.AppFactory.TestSettings;
-    protected ICustomWebApplicationFactory AppFactory => _fixture.AppFactory;
+    protected CustomWebApplicationFactory<Program> AppFactory => _fixture.AppFactory;
 
     protected BaseTest(BaseTestFixture fixture)
     {

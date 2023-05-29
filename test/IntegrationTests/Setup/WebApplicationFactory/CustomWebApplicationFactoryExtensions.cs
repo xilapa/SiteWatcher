@@ -10,14 +10,14 @@ namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
 public static class CustomWebApplicationFactoryExtensions
 {
-    public static async Task WithDbContext(this ICustomWebApplicationFactory appFactory,
+    public static async Task WithDbContext(this CustomWebApplicationFactory<Program> appFactory,
         Func<SiteWatcherContext, Task> action)
     {
         await using var context = appFactory.GetContext();
         await action(context);
     }
 
-    public static async Task<T> WithDbContext<T>(this ICustomWebApplicationFactory appFactory,
+    public static async Task<T> WithDbContext<T>(this CustomWebApplicationFactory<Program> appFactory,
         Func<SiteWatcherContext, Task<T>> action)
     {
         await using var context = appFactory.GetContext();
@@ -25,14 +25,14 @@ public static class CustomWebApplicationFactoryExtensions
         return result;
     }
 
-    public static async Task WithServiceProvider(this ICustomWebApplicationFactory appFactory,
+    public static async Task WithServiceProvider(this CustomWebApplicationFactory<Program> appFactory,
         Func<IServiceProvider, Task> func)
     {
         await using var scope = appFactory.Services.CreateAsyncScope();
         await func(scope.ServiceProvider);
     }
 
-    public static async Task<T> WithServiceProvider<T>(this ICustomWebApplicationFactory appFactory,
+    public static async Task<T> WithServiceProvider<T>(this CustomWebApplicationFactory<Program> appFactory,
     Func<IServiceProvider, Task<T>> func)
     {
         await using var scope = appFactory.Services.CreateAsyncScope();
@@ -40,13 +40,13 @@ public static class CustomWebApplicationFactoryExtensions
         return result;
     }
 
-    public static async Task<Alert> CreateAlert(this ICustomWebApplicationFactory appFactory, string name,
+    public static async Task<Alert> CreateAlert(this CustomWebApplicationFactory<Program> appFactory, string name,
         Rules rule, UserId userId, DateTime? currentDate = null)
     {
         return await CreateAlert<Alert>(appFactory, name, rule, userId, currentDate);
     }
 
-    public static async Task<T> CreateAlert<T>(this ICustomWebApplicationFactory appFactory, string name,
+    public static async Task<T> CreateAlert<T>(this CustomWebApplicationFactory<Program> appFactory, string name,
         Rules rule, UserId userId, DateTime? currentDate = null, string? siteName = null,
         string? siteUri = null) where T : class
     {
