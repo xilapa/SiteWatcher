@@ -41,7 +41,7 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
         CodeChallenge = Convert.ToBase64String(codeVerifierHash);
     }
 
-    public override Action<CustomWebApplicationOptions> Options => opts =>
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
     {
         // mock microsoft's auth service
         _authServiceMock
@@ -49,10 +49,10 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
                 s.AuthenticateAsync(It.IsAny<HttpContext>(), It.IsAny<string>()))
             .ReturnsAsync(CreateAuthenticateResult);
 
-        opts.ReplaceService(typeof(IAuthenticationService), _authServiceMock.Object);
+        optionsBuilder.ReplaceService(typeof(IAuthenticationService), _authServiceMock.Object);
 
-        opts.DatabaseType = DatabaseType.SqliteOnDisk;
-    };
+        optionsBuilder.UseDatabase(DatabaseType.SqliteOnDisk);
+    }
 
     private AuthenticateResult CreateAuthenticateResult()
     {

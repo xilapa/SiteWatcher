@@ -22,8 +22,10 @@ public sealed class GetAlertsTestsBase : BaseTestFixture
     public static SimpleAlertView[] XulipaAlerts { get; set; } = null!;
     public static DateTime StartingTime { get; } = new(2020, 1, 1, 0, 0, 0);
 
-    public override Action<CustomWebApplicationOptions> Options =>
-        opts => opts.DatabaseType = DatabaseType.SqliteOnDisk;
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseDatabase(DatabaseType.SqliteOnDisk);
+    }
 
     public override async Task InitializeAsync()
     {

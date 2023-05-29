@@ -33,6 +33,36 @@ public class CustomWebApplicationOptions
     public DatabaseType DatabaseType { get; set; }
 }
 
+public class CustomWebApplicationOptionsBuilder
+{
+    private readonly CustomWebApplicationOptions _options;
+
+    public CustomWebApplicationOptionsBuilder()
+    {
+        _options = new CustomWebApplicationOptions();
+    }
+
+    public CustomWebApplicationOptionsBuilder SetInitialDate(DateTime date)
+    {
+        _options.InitalDate = date;
+        return this;
+    }
+
+    public CustomWebApplicationOptionsBuilder UseDatabase(DatabaseType databaseType)
+    {
+        _options.DatabaseType = databaseType;
+        return this;
+    }
+
+    public CustomWebApplicationOptionsBuilder ReplaceService(Type serviceType, object service)
+    {
+        _options.ReplaceService(serviceType, service);
+        return this;
+    }
+
+    public CustomWebApplicationOptions Build() => _options;
+}
+
 public enum DatabaseType
 {
     SqliteInMemory,

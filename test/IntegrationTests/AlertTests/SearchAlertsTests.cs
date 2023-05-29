@@ -20,8 +20,10 @@ public sealed class SearchAlertsTestsBase : BaseTestFixture
     public static SimpleAlertView XulipaBlueShorts;
     public static SimpleAlertView XulipaAletorio;
 
-    public override Action<CustomWebApplicationOptions> Options => opt =>
-        opt.DatabaseType = DatabaseType.PostgresOnDocker;
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseDatabase(DatabaseType.PostgresOnDocker);
+    }
 
     public override async Task InitializeAsync()
     {

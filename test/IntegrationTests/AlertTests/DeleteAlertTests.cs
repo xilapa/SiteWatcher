@@ -13,8 +13,10 @@ namespace IntegrationTests.AlertTests;
 
 public sealed class DeleteAlertTestsBase : BaseTestFixture
 {
-    public override Action<CustomWebApplicationOptions> Options =>
-        opts => opts.DatabaseType = DatabaseType.SqliteOnDisk;
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseDatabase(DatabaseType.SqliteOnDisk);
+    }
 }
 
 public sealed class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsBase>

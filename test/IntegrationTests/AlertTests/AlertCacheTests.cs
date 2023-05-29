@@ -69,14 +69,15 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
     public SimpleAlertView[] AlertsView { get; }
     public AlertId AlertToUpdateId { get; private set; }
 
-    public override Action<CustomWebApplicationOptions> Options => opt =>
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
     {
         CommandHandlerMock
             .Setup(h =>
                 h.Handle(It.IsAny<GetUserAlertsCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CommandResult.FromValue(new PaginatedList<SimpleAlertView>(AlertsView, 0)));
 
-        opt.ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, CommandResult>), CommandHandlerMock.Object);
+        optionsBuilder
+            .ReplaceService(typeof(IRequestHandler<GetUserAlertsCommand, CommandResult>), CommandHandlerMock.Object);
 
         // Replace services to delete alert test
         var idHasherMock = new Mock<IIdHasher>();
@@ -90,9 +91,9 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
                 a.DeleteUserAlert(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        opt.ReplaceService(typeof(IIdHasher), idHasherMock.Object);
-        opt.ReplaceService(typeof(IAlertDapperRepository), alertDapperRepoMock.Object);
-    };
+        optionsBuilder.ReplaceService(typeof(IIdHasher), idHasherMock.Object);
+        optionsBuilder.ReplaceService(typeof(IAlertDapperRepository), alertDapperRepoMock.Object);
+    }
 }
 
 public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>

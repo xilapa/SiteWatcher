@@ -46,7 +46,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public IGoogleSettings TestGoogleSettings { get; }
     public FakeCache FakeCache { get; }
 
-    public CustomWebApplicationFactory(Action<CustomWebApplicationOptions>? options = null)
+    public CustomWebApplicationFactory(CustomWebApplicationOptions options)
     {
         var loggerFactoryMock = new Mock<ILoggerFactory>();
         loggerFactoryMock.Setup(x => x.CreateLogger(It.IsAny<string>()))
@@ -73,14 +73,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         AuthServiceForTokens = CreateAuthServiceForTokens();
     }
 
-    private async Task ConfigureTest(Action<CustomWebApplicationOptions>? options)
+    private async Task ConfigureTest(CustomWebApplicationOptions options)
     {
-        var optionsInstance = new CustomWebApplicationOptions();
-        options?.Invoke(optionsInstance);
-        CurrentTime = optionsInstance.InitalDate ?? DateTime.UtcNow;
-        _servicesToReplace = optionsInstance.ReplacementServices;
+        CurrentTime = options.InitalDate ?? DateTime.UtcNow;
+        _servicesToReplace = options.ReplacementServices;
 
-        switch (optionsInstance.DatabaseType)
+        switch (options.DatabaseType)
         {
             case DatabaseType.SqliteInMemory:
                 DatabaseType = DatabaseType.SqliteInMemory;
@@ -106,7 +104,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _connectionString);
                 break;
             default:
-                throw new ArgumentException(nameof(optionsInstance.DatabaseType));
+                throw new ArgumentException(nameof(options.DatabaseType));
         }
     }
 

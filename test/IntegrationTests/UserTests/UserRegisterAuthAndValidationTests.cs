@@ -15,7 +15,7 @@ public sealed class UserRegisterAuthAndValidationTestsBase : BaseTestFixture
 {
     public readonly Registered RegisteredUserResult = new("REGISTER_TOKEN", true);
 
-    public override Action<CustomWebApplicationOptions> Options => opts =>
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
     {
         var registerUserHandlerMock = new Mock<IRequestHandler<RegisterUserCommand, RegisterUserResult>>();
 
@@ -23,8 +23,9 @@ public sealed class UserRegisterAuthAndValidationTestsBase : BaseTestFixture
                 h.Handle(It.IsAny<RegisterUserCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(RegisteredUserResult);
 
-        opts.ReplaceService(typeof(IRequestHandler<RegisterUserCommand, RegisterUserResult>), registerUserHandlerMock.Object);
-    };
+        optionsBuilder
+            .ReplaceService(typeof(IRequestHandler<RegisterUserCommand, RegisterUserResult>), registerUserHandlerMock.Object);
+    }
 }
 
 public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRegisterAuthAndValidationTestsBase>

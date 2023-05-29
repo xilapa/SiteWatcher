@@ -12,8 +12,10 @@ namespace IntegrationTests.UserTests;
 
 public class UserDeleteTestsBase : BaseTestFixture
 {
-    public override Action<CustomWebApplicationOptions>? Options => opts =>
-        opts.DatabaseType = DatabaseType.SqliteOnDisk;
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseDatabase(DatabaseType.SqliteOnDisk);
+    }
 }
 
 public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAsyncLifetime

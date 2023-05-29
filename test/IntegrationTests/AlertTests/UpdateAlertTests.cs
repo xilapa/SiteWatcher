@@ -20,8 +20,10 @@ public sealed class UpdateAlertTestsBase : BaseTestFixture
     public DetailedAlertView XilapaAlert;
     public Alert XulipaAlert;
 
-    public override Action<CustomWebApplicationOptions> Options =>
-        opt => opt.InitalDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.SetInitialDate(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+    }
 
     public override async Task InitializeAsync()
     {
