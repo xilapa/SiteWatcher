@@ -88,7 +88,7 @@ The WebAPI backend is an onion layered architecture tending to the an hexagonal 
 
 [![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/onion.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/onion.png)
 
-The actual architecture makes use of DDD, with aggregates being responsible for the business logic and dealing with their entities and value objects.
+The actual architecture makes use of DDD-Lite, with aggregates being responsible for the business logic and dealing with their entities and value objects.
 
 Bellow is the domain representation. The aggregates are represented by the bigger orange box, the aggregate root is in red, the entities are in blue and the value objects are green. 
 
