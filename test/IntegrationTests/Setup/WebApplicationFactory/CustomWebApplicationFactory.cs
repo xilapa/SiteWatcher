@@ -13,16 +13,21 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
 using ReflectionMagic;
+using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Services;
+using SiteWatcher.Domain.DomainServices;
+using SiteWatcher.Domain.Emails.Repositories;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.Infra.Persistence.Repositories;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
 using Testcontainers.PostgreSql;
+using HttpClient = SiteWatcher.Infra.Http.HttpClient;
 using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 using ISession = SiteWatcher.Domain.Authentication.ISession;
 
@@ -173,6 +178,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // DapperQueries, Publisher
         services.AddSingleton<ICache>(FakeCache);
         services.AddSingleton<IPublisher>(FakePublisher);
+        services.AddScoped<IPublishService, FakePublishService>();
 
         services.AddScoped<SiteWatcherContext>(srvc =>
         {
@@ -192,7 +198,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton<IAppSettings>(TestSettings);
         services.AddSingleton<IGoogleSettings>(TestGoogleSettings);
         services.AddScoped<IDapperContext>(_ => new TestDapperContext(TestSettings, _connectionString, DatabaseType));
-        services.AddSingleton<IDapperQueries, SqliteDapperQueries>();
+
+        // Execute AlertServices
+        services.AddScoped<IUserAlertsService, UserAlertsService>();
+        services.AddScoped<ExecuteAlertsCommandHandler>();
+        services.AddScoped<IHttpClient, HttpClient>();
+        services.AddScoped<IEmailRepository, EmailRepository>();
+
     }
 
     private void ConfigureOptionsReplacementServices(IServiceCollection services)
