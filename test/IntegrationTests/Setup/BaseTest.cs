@@ -20,6 +20,7 @@ public abstract class BaseTest
     protected Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
     public Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
+    protected FakePublisher FakePublisher => _fixture.AppFactory.FakePublisher;
 
     protected DateTime CurrentTime
     {

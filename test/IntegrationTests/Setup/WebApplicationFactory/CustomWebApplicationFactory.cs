@@ -23,6 +23,7 @@ using SiteWatcher.Infra.Authorization;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
 using Testcontainers.PostgreSql;
+using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -45,6 +46,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public IAppSettings TestSettings { get; }
     public IGoogleSettings TestGoogleSettings { get; }
     public FakeCache FakeCache { get; }
+    public FakePublisher FakePublisher { get; }
 
     public CustomWebApplicationFactory(CustomWebApplicationOptions options)
     {
@@ -68,6 +70,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         TestSettings = new TestAppSettings();
         TestGoogleSettings = new TestGoogleSettings();
         FakeCache = new FakeCache();
+        FakePublisher = new FakePublisher();
         ApplyEnvironmentVariables(TestSettings);
         ApplyEnvironmentVariables(TestGoogleSettings);
         AuthServiceForTokens = CreateAuthServiceForTokens();
@@ -148,7 +151,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IDapperContext),
             typeof(IDapperQueries),
             typeof(ILoggerFactory),
-            typeof(IHttpClientFactory)
+            typeof(IHttpClientFactory),
+            typeof(IPublisher)
         };
 
         var descriptorsToRemove = services
@@ -166,8 +170,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // Services to replace
         // Cache, DbContext, UnitOfWork, Session,
         // AppSettings, GoogleSettings, DapperContext,
-        // DapperQueries
+        // DapperQueries, Publisher
         services.AddSingleton<ICache>(FakeCache);
+        services.AddSingleton<IPublisher>(FakePublisher);
 
         services.AddScoped<SiteWatcherContext>(srvc =>
         {
