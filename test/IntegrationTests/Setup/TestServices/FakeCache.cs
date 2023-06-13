@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Common.Services;
 
 namespace SiteWatcher.IntegrationTests.Setup.TestServices;
@@ -103,7 +102,11 @@ public class FakeCache : ICache
 
     public Task DeleteKeysWith(string partialKey)
     {
-        throw new NotImplementedException();
+        var keysToRemove = Cache.Keys.Where(k => k.Contains(partialKey)).ToList();
+        foreach (var key in keysToRemove)
+            Cache.Remove(key);
+
+        return Task.CompletedTask;
     }
 }
 
