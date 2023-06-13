@@ -9,7 +9,7 @@ namespace SiteWatcher.Infra.Repositories;
 
 public class AlertRepository : Repository<Alert>, IAlertRepository
 {
-    private static readonly Func<SiteWatcherContext, AlertId, UserId, Task<UpdateAlertDto?>> GetAlertForUpdateCompiledQuery
+    private readonly Func<SiteWatcherContext, AlertId, UserId, Task<UpdateAlertDto?>> GetAlertForUpdateCompiledQuery
         = EF.CompileAsyncQuery(
             (SiteWatcherContext context, AlertId alertId, UserId userId) => context.Alerts
                 .Where(a => a.Id == alertId && a.UserId == userId && a.Active)
@@ -22,7 +22,8 @@ public class AlertRepository : Repository<Alert>, IAlertRepository
                     Frequency = alert.Frequency,
                     SiteName = alert.Site.Name,
                     SiteUri = alert.Site.Uri,
-                    Rule = alert.Rule
+                    Rule = alert.Rule,
+                    LastVerification = alert.LastVerification
                 })
                 .AsSplitQuery()
                 .SingleOrDefault()
