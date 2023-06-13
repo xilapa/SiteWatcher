@@ -67,6 +67,6 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
 
         builder.Metadata
             .FindNavigation(nameof(Alert.Notifications))!
-            .SetPropertyAccessMode(PropertyAccessMode.FieldDuringConstruction);
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }
