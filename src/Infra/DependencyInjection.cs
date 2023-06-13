@@ -96,8 +96,6 @@ public static class DependencyInjection
 
     public static IServiceCollection SetupMessaging(this IServiceCollection services, RabbitMqSettings rabbitSettings, IAppSettings appSettings)
     {
-        CreateExchange(rabbitSettings);
-
         services
             .AddCap(opts =>
             {
@@ -108,6 +106,7 @@ public static class DependencyInjection
                 }
                 else
                 {
+                    CreateExchange(rabbitSettings);
                     opts.UseEntityFramework<SiteWatcherContext>();
                     opts.UseRabbitMQ(opt =>
                     {
