@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
+using DotNetCore.CAP;
 using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -156,7 +157,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IDapperContext),
             typeof(ILoggerFactory),
             typeof(IHttpClientFactory),
-            typeof(IPublisher)
+            typeof(IPublisher),
+            typeof(IPublishService),
+            typeof(ICapPublisher)
         };
 
         // Only replace DapperQueries if using Sqlite
