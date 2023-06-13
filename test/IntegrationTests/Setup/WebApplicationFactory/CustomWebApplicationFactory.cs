@@ -98,14 +98,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 break;
             case DatabaseType.SqliteOnDisk:
                 DatabaseType = DatabaseType.SqliteOnDisk;
-                _connectionString = $"DataSource={DateTime.Now.Ticks}.db";
+                _connectionString = $"DataSource={Guid.NewGuid()}.db";
                 _dbConnection = new SqliteConnection(_connectionString);
                 _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
                 break;
             case DatabaseType.PostgresOnDocker:
                 DatabaseType = DatabaseType.PostgresOnDocker;
                 _postgresContainer = new PostgreSqlBuilder()
-                    .WithDatabase($"testDb{DateTime.Now.Ticks}")
+                    .WithDatabase($"testDb{Guid.NewGuid()}")
                     .Build();
                 await _postgresContainer.StartAsync();
                 _connectionString = _postgresContainer.GetConnectionString();
