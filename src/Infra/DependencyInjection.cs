@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Dapper;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
@@ -73,6 +74,13 @@ public static class DependencyInjection
     {
         services.AddHttpContextAccessor();
         services.AddScoped<ISession, Session>();
+        return services;
+    }
+
+    public static IServiceCollection AddSingletonSession(this IServiceCollection services)
+    {
+        var session = RuntimeHelpers.GetUninitializedObject(typeof(Session)) as ISession;
+        services.AddSingleton(session!);
         return services;
     }
 
