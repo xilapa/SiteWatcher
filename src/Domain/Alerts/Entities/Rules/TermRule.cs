@@ -21,6 +21,7 @@ public class TermRule : Rule
     public void Update(UpdateAlertInput updateAlertInput)
     {
         Term = updateAlertInput.Term!.NewValue!;
+        FirstWatchDone = false;
     }
 
     public override async Task<bool> Execute(Stream html)
