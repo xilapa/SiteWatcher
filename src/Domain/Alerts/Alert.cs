@@ -54,7 +54,8 @@ public class Alert : BaseModel<AlertId>
             CreatedAt = updateAlertDto.CreatedAt,
             Name = updateAlertDto.Name,
             Frequency = updateAlertDto.Frequency,
-            Site = new Site(updateAlertDto.SiteUri, updateAlertDto.Name)
+            Site = new Site(updateAlertDto.SiteUri, updateAlertDto.Name),
+            LastVerification = updateAlertDto.LastVerification
         };
 
     public void Update(UpdateAlertInput updateInput, DateTime updateDate)
@@ -110,17 +111,25 @@ public class Alert : BaseModel<AlertId>
         if (updateInput.Rule is not null && !currentRule!.Value.Equals(updateInput.Rule.NewValue))
         {
             Rule = AlertFactory.CreateRule(updateInput, updateDate);
+            LastVerification = null;
             return;
         }
 
         // Update term rule
         // TODO: move this null check to the TermWatch update method
         if (currentRule.Equals(Rules.Term) && updateInput.Term is not null)
+        {
             (Rule as TermRule)!.Update(updateInput);
+            LastVerification = null;
+            return;
+        }
 
         // Update regex rule
         if (currentRule.Equals(Rules.Regex))
+        {
             (Rule as RegexRule)!.Update(updateInput);
+            LastVerification = null;
+        }
 
         // any changes doesn't have field to update, so just ignore it
     }

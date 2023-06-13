@@ -9,6 +9,7 @@ public sealed class UpdateAlertDto
     public AlertId Id { get; set; }
     public UserId UserId { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? LastVerification { get; set; }
     public string Name { get; set; } = null!;
     public Frequencies Frequency { get; set; }
     public string SiteName { get; set; } = null!;
