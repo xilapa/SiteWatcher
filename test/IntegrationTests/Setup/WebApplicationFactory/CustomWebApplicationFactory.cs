@@ -154,11 +154,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IEmailSettings),
             typeof(IEmailService),
             typeof(IDapperContext),
-            typeof(IDapperQueries),
             typeof(ILoggerFactory),
             typeof(IHttpClientFactory),
             typeof(IPublisher)
         };
+
+        // Only replace DapperQueries if using Sqlite
+        if(DatabaseType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
+            servicesToRemove = servicesToRemove.Append(typeof(IDapperQueries)).ToArray();
 
         var descriptorsToRemove = services
             .Where(desc => servicesToRemove.Contains(desc.ServiceType))
@@ -198,6 +201,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton<IAppSettings>(TestSettings);
         services.AddSingleton<IGoogleSettings>(TestGoogleSettings);
         services.AddScoped<IDapperContext>(_ => new TestDapperContext(TestSettings, _connectionString, DatabaseType));
+
+        // Only replace DapperQueries if using Sqlite
+        if(DatabaseType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
+            services.AddSingleton<IDapperQueries, SqliteDapperQueries>();
 
         // Execute AlertServices
         services.AddScoped<IUserAlertsService, UserAlertsService>();
