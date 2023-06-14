@@ -16,11 +16,8 @@ public sealed class PublishService : IPublishService
 
     public async Task WithPublisher(Func<IPublisher, Task> func, CancellationToken ct)
     {
-        await using var trx = await _ctx.Database.BeginTransactionAsync(_capPub, autoCommit: false);
+        await using var trx = await _ctx.Database.BeginTransactionAsync(_capPub, autoCommit: false, cancellationToken: ct);
 
         await func(new Publisher(_capPub));
-
-        await _ctx.SaveChangesAsync(ct);
-        await trx.CommitAsync(CancellationToken.None);
     }
 }

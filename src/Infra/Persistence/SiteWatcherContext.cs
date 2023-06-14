@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -20,10 +16,10 @@ namespace SiteWatcher.Infra;
 public class SiteWatcherContext : DbContext, IUnitOfWork
 {
     private readonly IAppSettings _appSettings;
-    private readonly IMediator? _mediator;
+    private readonly IMediator _mediator;
     public const string Schema = "sw";
 
-    public SiteWatcherContext(IAppSettings appSettings, IMediator? mediator)
+    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator)
     {
         _appSettings = appSettings;
         _mediator = mediator;
@@ -56,9 +52,13 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     {
         try
         {
-            if(_mediator != null)
-                await _mediator.DispatchDomainEvents(this);
-            return await base.SaveChangesAsync(cancellationToken);
+            await _mediator.DispatchDomainEvents(this);
+            var saveRes = await base.SaveChangesAsync(cancellationToken);
+
+            // If CAP transaction is used, then commit it
+            if (Database.CurrentTransaction != null)
+                await Database.CurrentTransaction.CommitAsync(CancellationToken.None);
+            return saveRes;
         }
         catch (DbUpdateException ex)
         {
