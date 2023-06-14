@@ -1,5 +1,5 @@
 using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
@@ -16,7 +16,7 @@ public sealed class ExecuteAlertsCommand
         Frequencies = frequencies;
     }
 
-    public IEnumerable<Frequencies> Frequencies { get; set; }
+    public IEnumerable<Frequencies> Frequencies { get; }
 }
 
 public sealed class ExecuteAlertsCommandHandler
@@ -24,19 +24,17 @@ public sealed class ExecuteAlertsCommandHandler
     private readonly IUserRepository _userRepository;
     private readonly IUserAlertsService _userAlertsService;
     private readonly ISession _session;
-    private readonly IAppSettings _appSettings;
-    private readonly IPublishService _pubService;
     private readonly ICache _cache;
+    private readonly IUnitOfWork _uow;
 
     public ExecuteAlertsCommandHandler(IUserRepository userRepository, IUserAlertsService userAlertsService,
-            ISession session, IAppSettings appSettings, IPublishService pubService, ICache cache)
+            ISession session, ICache cache, IUnitOfWork uow)
     {
         _userRepository = userRepository;
         _userAlertsService = userAlertsService;
         _session = session;
-        _appSettings = appSettings;
-        _pubService = pubService;
         _cache = cache;
+        _uow = uow;
     }
 
     public async Task<CommandResult> Handle(ExecuteAlertsCommand cmmd, CancellationToken ct)
@@ -46,7 +44,7 @@ public sealed class ExecuteAlertsCommandHandler
 
         try
         {
-            await _pubService.WithPublisher(pub => ExecuteAlertsLoop(cmmd.Frequencies, pub, ct), ct);
+            await ExecuteAlertsLoop(cmmd.Frequencies, ct);
             await _cache.DeleteKeysWith(CacheKeys.AlertsKeyPrefix);
         }
         catch
@@ -57,7 +55,7 @@ public sealed class ExecuteAlertsCommandHandler
         return CommandResult.FromValue(true);
     }
 
-    private async Task ExecuteAlertsLoop(IEnumerable<Frequencies> freqs, IPublisher publisher, CancellationToken ct)
+    private async Task ExecuteAlertsLoop(IEnumerable<Frequencies> freqs, CancellationToken ct)
     {
         var loop = true;
         DateTime? lastCreatedDate = null;
@@ -77,19 +75,8 @@ public sealed class ExecuteAlertsCommandHandler
 
             foreach(var user in usersWithAlerts)
             {
-                var notif = await _userAlertsService
-                    .ExecuteAlerts(user,_session.Now, _appSettings.FrontEndUrl, ct);
-
-                if(notif == null) continue;
-
-                // Publish the email message on the bus
-                // Use the email id as the message id
-                var headers = new Dictionary<string, string>
-                {
-                    [_appSettings.MessageIdKey] = notif.EmailNotification!.EmailId.ToString()!,
-                };
-
-                await publisher.PublishAsync(_appSettings.EmailNotificationRoutingKey, notif.EmailNotification, headers, ct);
+                await _userAlertsService.ExecuteAlerts(user,_session.Now, ct);
+                await _uow.SaveChangesAsync(ct);
             }
         }
     }
