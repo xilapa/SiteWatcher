@@ -18,4 +18,9 @@ public sealed class Publisher : IPublisher
         headers.Add("content-type","application/json");
         return _capPublisher.PublishAsync(routingKey, message, headers!, ct);
     }
+
+    public Task PublishAsync(string routingKey, object message, CancellationToken ct)
+    {
+        return PublishAsync(routingKey, message, null, ct);
+    }
 }
