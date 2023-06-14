@@ -3,6 +3,7 @@ using Dapper;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -102,8 +103,9 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection SetupMessaging(this IServiceCollection services, RabbitMqSettings rabbitSettings, IAppSettings appSettings)
+    public static IServiceCollection SetupMessaging(this IServiceCollection services, IConfiguration configManager, IAppSettings appSettings)
     {
+        var rabbitSettings = configManager.Get<RabbitMqSettings>()!;
         services
             .AddCap(opts =>
             {
@@ -128,8 +130,8 @@ public static class DependencyInjection
                         opt.ExchangeName = RabbitMqSettings.SiteWatcherExchange;
                         opt.CustomHeaders = message => new List<KeyValuePair<string, string>>
                         {
-                            new KeyValuePair<string, string>(DotNetCore.CAP.Messages.Headers.MessageId, GetMessageId(message, appSettings.MessageIdKey)),
-                            new KeyValuePair<string, string>(DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
+                            new (DotNetCore.CAP.Messages.Headers.MessageId, GetMessageId(message, appSettings.MessageIdKey)),
+                            new (DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
                         };
                     });
                 }

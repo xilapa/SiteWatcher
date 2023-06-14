@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
-using SiteWatcher.Infra.Messaging;
 using SiteWatcher.Worker;
 using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
@@ -43,7 +42,6 @@ var host = new HostBuilder()
     .ConfigureServices((hostContext, serviceCollection) =>
     {
         var workerSettings = hostContext.Configuration.Get<WorkerSettings>();
-        var rabbitMqSettings = hostContext.Configuration.Get<RabbitMqSettings>();
         var emailSettings = hostContext.Configuration.Get<EmailSettings>();
 
         var appSettings = new WorkerAppSettings
@@ -60,7 +58,7 @@ var host = new HostBuilder()
             .Configure<WorkerSettings>(hostContext.Configuration)
             .SetupPersistence(appSettings)
             .SetupJobs(workerSettings)
-            .SetupMessaging(rabbitMqSettings!, appSettings)
+            .SetupMessaging(hostContext.Configuration, appSettings)
             .AddConsumers()
             .SetupEmail(emailSettings!)
             .AddRedisCache(appSettings);
