@@ -2,6 +2,7 @@
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Entities.Notifications;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
+using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Alerts.ValueObjects;
@@ -40,8 +41,12 @@ public class Alert : BaseModel<AlertId>
     public Site Site { get; private set; } = null!;
     public Rule Rule { get; private set; } = null!;
 
+    // TODO: remove notifications from alerts
     private List<Notification>? _notifications;
     public IReadOnlyCollection<Notification> Notifications => _notifications ?? new List<Notification>();
+
+    private List<Triggering>? _triggerings;
+    public IReadOnlyCollection<Triggering> Triggerings => _triggerings ?? new List<Triggering>();
     public ICollection<Email> Emails { get; set; }
 
     public string SearchField { get; private set; } = null!;
@@ -172,29 +177,28 @@ public class Alert : BaseModel<AlertId>
         SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
     }
 
-    public async Task<AlertToNotify?> ExecuteRule(Stream? html, DateTime currentTime)
+    public async Task<AlertTriggered?> ExecuteRule(Stream? html, DateTime currentTime)
     {
         // when stream is null the site can't be fetched
         if(html == Stream.Null || html == null)
-            return GenerateAlertToNotify(NotificationType.Error, currentTime);
+            return GenerateAlertTriggered(TriggeringStatus.Error, currentTime);
 
-        var notifyUser = await Rule.Execute(html);
+        var triggered = await Rule.Execute(html);
         LastVerification = currentTime;
 
-        AlertToNotify? alertToNotify = null;
-
-        if (notifyUser)
-            alertToNotify = GenerateAlertToNotify(NotificationType.Sucess, currentTime);
-
-        return alertToNotify;
+        return triggered ? GenerateAlertTriggered(TriggeringStatus.Success, currentTime) : null;
     }
 
-    public AlertToNotify GenerateAlertToNotify(NotificationType type, DateTime currentTime)
+    private AlertTriggered GenerateAlertTriggered(TriggeringStatus status, DateTime currentTime)
     {
-        var notification = new Notification(currentTime);
-        _notifications ??= new List<Notification>();
-        _notifications.Add(notification);
-        return new AlertToNotify(this, notification.Id, type, User.Language);
+        // Add the triggering to the list
+        _triggerings ??= new List<Triggering>();
+        var triggering = new Triggering(currentTime);
+        _triggerings.Add(triggering);
+
+        // return the alert triggered data
+        var alertTriggered = new AlertTriggered(this, status, currentTime);
+        return alertTriggered;
     }
 
     /// <summary>
