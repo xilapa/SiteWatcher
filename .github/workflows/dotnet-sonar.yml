@@ -27,6 +27,9 @@ jobs:
       - name: Install SonarCloud scanners
         run: |
           dotnet tool update --global dotnet-sonarscanner
+      - name: Start moby-ryuk for test containers
+        run: |
+          docker run -v /var/run/docker.sock:/var/run/docker.sock -e RYUK_PORT=8080 -p 8080:8080 testcontainers/ryuk:0.5.1
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
