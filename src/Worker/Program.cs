@@ -56,7 +56,7 @@ var host = new HostBuilder()
         serviceCollection
             .AddSingleton<IAppSettings>(appSettings)
             .Configure<WorkerSettings>(hostContext.Configuration)
-            .SetupPersistence(appSettings)
+            .SetupPersistence()
             .SetupJobs(workerSettings)
             .SetupMessaging(hostContext.Configuration, appSettings)
             .AddConsumers()
