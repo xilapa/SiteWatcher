@@ -8,6 +8,7 @@ using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common.Exceptions;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra.Extensions;
 
@@ -81,4 +82,5 @@ public class SiteWatcherContext : DbContext, IUnitOfWork
     public DbSet<Alert> Alerts { get; set; }
     public DbSet<IdempotentConsumer> IdempotentConsumers { get; set; }
     public DbSet<Email> Emails { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 }

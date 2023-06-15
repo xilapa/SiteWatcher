@@ -1,4 +1,3 @@
-using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Domain.Emails;
@@ -22,10 +21,10 @@ public class Email
     public string Recipient { get; set; } = null!;
     public DateTime? DateSent { get; set; }
     public string Subject { get; set; } = null!;
-    public string? Body { get; set; }
+    public string Body { get; set; }
     public string? ErrorMessage { get; set; }
     public UserId UserId { get; set; }
-    public ICollection<Alert> Alerts { get; set; }
+    // public ICollection<Alert> Alerts { get; set; }
 
     public bool HasSent()
     {

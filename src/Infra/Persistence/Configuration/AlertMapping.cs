@@ -61,14 +61,6 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
             .HasColumnType("varchar(640)")
             .IsRequired();
 
-        builder.HasMany(a => a.Notifications)
-            .WithOne()
-            .HasForeignKey(nameof(AlertId));
-
-        builder.Metadata
-            .FindNavigation(nameof(Alert.Notifications))!
-            .SetPropertyAccessMode(PropertyAccessMode.Field);
-
         builder.HasMany(a => a.Triggerings)
             .WithOne()
             .HasForeignKey(nameof(AlertId));

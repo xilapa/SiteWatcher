@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using SiteWatcher.Domain.Alerts.DTOs;
-using SiteWatcher.Domain.Alerts.Entities.Notifications;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
@@ -9,7 +8,7 @@ using SiteWatcher.Domain.Alerts.ValueObjects;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Extensions;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
 using static SiteWatcher.Domain.Common.Utils;
 
@@ -40,14 +39,10 @@ public class Alert : BaseModel<AlertId>
     public DateTime? LastVerification { get; private set; }
     public Site Site { get; private set; } = null!;
     public Rule Rule { get; private set; } = null!;
-
-    // TODO: remove notifications from alerts
-    private List<Notification>? _notifications;
-    public IReadOnlyCollection<Notification> Notifications => _notifications ?? new List<Notification>();
+    public ICollection<Notification> Notifications {get; private set; } = null!;
 
     private List<Triggering>? _triggerings;
     public IReadOnlyCollection<Triggering> Triggerings => _triggerings ?? new List<Triggering>();
-    public ICollection<Email> Emails { get; set; }
 
     public string SearchField { get; private set; } = null!;
 
@@ -199,17 +194,5 @@ public class Alert : BaseModel<AlertId>
         // return the alert triggered data
         var alertTriggered = new AlertTriggered(this, status, currentTime);
         return alertTriggered;
-    }
-
-    /// <summary>
-    /// Correlate the email with the notification.
-    /// </summary>
-    /// <param name="email">The email to be set on the notifications</param>
-    /// <param name="notificationIds">The list of notifications Ids</param>
-    public void SetEmail(Email email, IEnumerable<NotificationId> notificationIds)
-    {
-        var notification = _notifications?.SingleOrDefault(n => notificationIds.Contains(n.Id));
-        if (notification == null) return;
-        notification.SetEmail(email);
     }
 }
