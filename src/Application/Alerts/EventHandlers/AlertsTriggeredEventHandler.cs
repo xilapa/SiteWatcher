@@ -5,7 +5,7 @@ using SiteWatcher.Domain.Common.Services;
 
 namespace SiteWatcher.Application.Alerts.EventHandlers;
 
-public class AlertsTriggeredEventHandler : INotificationHandler<AlertsChangedEvent>
+public class AlertsTriggeredEventHandler : INotificationHandler<AlertsTriggeredEvent>
 {
     private readonly IPublishService _pubService;
 
@@ -14,7 +14,7 @@ public class AlertsTriggeredEventHandler : INotificationHandler<AlertsChangedEve
         _pubService = pubService;
     }
 
-    public async Task Handle(AlertsChangedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(AlertsTriggeredEvent notification, CancellationToken cancellationToken)
     {
         await _pubService.WithPublisher(async publisher =>
                 await publisher.PublishAsync(RoutingKeys.AlertsTriggered, notification, cancellationToken)

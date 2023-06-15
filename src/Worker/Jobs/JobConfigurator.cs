@@ -22,7 +22,7 @@ public static class JobConfigurator
             .AddScoped<ExecuteAlertsCommandHandler>()
             // Adding MediatR with only the handler that is used by the worker
             .AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(IMediator).Assembly))
-            .AddScoped<INotificationHandler<AlertsChangedEvent>, AlertsTriggeredEventHandler>();
+            .AddScoped<INotificationHandler<AlertsTriggeredEvent>, AlertsTriggeredEventHandler>();
 
         if (!settings.EnableJobs)
             return serviceCollection;
