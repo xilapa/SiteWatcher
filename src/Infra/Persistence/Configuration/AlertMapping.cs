@@ -68,5 +68,13 @@ public class AlertMapping : BaseModelMapping<Alert, AlertId>
         builder.Metadata
             .FindNavigation(nameof(Alert.Notifications))!
             .SetPropertyAccessMode(PropertyAccessMode.Field);
+
+        builder.HasMany(a => a.Triggerings)
+            .WithOne()
+            .HasForeignKey(nameof(AlertId));
+
+        builder.Metadata
+            .FindNavigation(nameof(Alert.Triggerings))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }
