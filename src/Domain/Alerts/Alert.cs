@@ -188,11 +188,11 @@ public class Alert : BaseModel<AlertId>
     {
         // Add the triggering to the list
         _triggerings ??= new List<Triggering>();
-        var triggering = new Triggering(currentTime);
+        var triggering = new Triggering(currentTime, status);
         _triggerings.Add(triggering);
 
         // return the alert triggered data
-        var alertTriggered = new AlertTriggered(this, status, currentTime);
+        var alertTriggered = new AlertTriggered(this, status);
         return alertTriggered;
     }
 }

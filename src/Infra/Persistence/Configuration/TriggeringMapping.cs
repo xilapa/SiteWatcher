@@ -14,12 +14,19 @@ public class TriggeringMapping : IEntityTypeConfiguration<Triggering>
         builder.Property<AlertId>(nameof(AlertId));
 
         builder.Property<int>("Id");
+        builder.HasKey("Id");
 
         builder.Property("Id")
             .HasColumnType("integer")
             .ValueGeneratedOnAdd()
             .UseIdentityColumn();
 
-        builder.HasKey("Id");
+        builder.Property(t => t.Date)
+            .HasColumnType("timestampz")
+            .IsRequired();
+
+        builder.Property(t => t.Status)
+            .HasColumnType("smallint")
+            .IsRequired();
     }
 }
