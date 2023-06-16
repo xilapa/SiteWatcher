@@ -39,7 +39,7 @@ public class Alert : BaseModel<AlertId>
     public DateTime? LastVerification { get; private set; }
     public Site Site { get; private set; } = null!;
     public Rule Rule { get; private set; } = null!;
-    public ICollection<Notification> Notifications {get; private set; } = null!;
+    public IReadOnlyCollection<Notification>? Notifications {get; private set; }
 
     private List<Triggering>? _triggerings;
     public IReadOnlyCollection<Triggering> Triggerings => _triggerings ?? new List<Triggering>();
@@ -192,7 +192,6 @@ public class Alert : BaseModel<AlertId>
         _triggerings.Add(triggering);
 
         // return the alert triggered data
-        var alertTriggered = new AlertTriggered(this, status);
-        return alertTriggered;
+       return new AlertTriggered(this, status, currentTime);
     }
 }
