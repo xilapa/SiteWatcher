@@ -5,13 +5,13 @@ using SiteWatcher.Domain.Emails;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
-public class EmailMapping : IEntityTypeConfiguration<Email>
+public class EmailMapping : BaseModelMapping<Email, EmailId>
 {
-    public void Configure(EntityTypeBuilder<Email> builder)
+    public override void Configure(EntityTypeBuilder<Email> builder)
     {
-        builder.ToTable("Emails");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
+        builder.ToTable("Emails");
 
         builder.Property(e => e.Id)
             .HasConversion<EmailId.EfCoreValueConverter>()
@@ -36,6 +36,10 @@ public class EmailMapping : IEntityTypeConfiguration<Email>
 
         builder.Property(e => e.ErrorMessage)
             .HasColumnType("text")
+            .IsRequired(false);
+
+        builder.Property(e => e.ErrorDate)
+            .HasColumnType("timestamptz")
             .IsRequired(false);
     }
 }

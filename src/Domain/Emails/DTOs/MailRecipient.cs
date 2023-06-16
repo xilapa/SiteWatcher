@@ -1,6 +1,6 @@
 ﻿using SiteWatcher.Domain.Common.ValueObjects;
 
-namespace SiteWatcher.Domain.Emails;
+namespace SiteWatcher.Domain.Emails.DTOs;
 
 public struct MailRecipient
 {

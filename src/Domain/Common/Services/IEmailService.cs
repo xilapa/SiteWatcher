@@ -1,4 +1,4 @@
-﻿using SiteWatcher.Domain.Emails;
+﻿using SiteWatcher.Domain.Emails.DTOs;
 
 namespace SiteWatcher.Common.Services;
 

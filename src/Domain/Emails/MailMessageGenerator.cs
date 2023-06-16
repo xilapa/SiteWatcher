@@ -1,8 +1,10 @@
 ﻿using SiteWatcher.Domain.Common;
+using SiteWatcher.Domain.Emails.DTOs;
 using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Domain.Emails;
 
+// TODO: Should be Email Factory, and MailMessage Should Be On EmailCreatedEvent
 public static class MailMessageGenerator
 {
     public static MailMessage EmailConfirmation(string userName, string email, string confirmationLink, Language language) =>
