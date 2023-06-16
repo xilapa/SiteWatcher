@@ -93,11 +93,11 @@ public static class LocalizedMessages
                       <br>
                       The following alerts have been triggered:
                       <ul>
-                          {% for alert in AlertsToNotifySuccess %}
+                          {% for alert in AlertSuccess %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} : {{alert.RuleString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.Frequency}} : {{alert.Rule}}
                           </li>
                           <br>
                           {% endfor %}
@@ -108,11 +108,11 @@ public static class LocalizedMessages
                       <br>
                       The following alerts sites couldn't be reached:
                       <ul>
-                          {% for alert in AlertsToNotifyError %}
+                          {% for alert in AlertErrorsr %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.Frequency}} - {{alert.Rule}}
                           </li>
                           <br>
                           {% endfor %}
@@ -130,11 +130,11 @@ public static class LocalizedMessages
                       <br>
                       Se han activado las siguientes alertas:
                       <ul>
-                          {% for alert in AlertsToNotifySuccess %}
+                          {% for alert in AlertSuccess %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.Frequency}} - {{alert.Rule}}
                           </li>
                           <br>
                           {% endfor %}
@@ -145,11 +145,11 @@ public static class LocalizedMessages
                       <br>
                       No se pudo acceder a los siguientes sitios de alertas:
                       <ul>
-                          {% for alert in AlertsToNotifyError %}
+                          {% for alert in AlertErrors %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.Frequency}} - {{alert.Rule}}
                           </li>
                           <br>
                           {% endfor %}
@@ -167,11 +167,11 @@ public static class LocalizedMessages
                       <br>
                       Os seguintes alertas foram disparados:
                       <ul>
-                          {% for alert in AlertsToNotifySuccess %}
+                          {% for alert in AlertSuccess %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.Frequency}} - {{alert.Rule}}
                           </li>
                           <br>
                           {% endfor %}
@@ -182,11 +182,11 @@ public static class LocalizedMessages
                       <br>
                       Não foi possível acessar os seguintes sites de alertas:
                       <ul>
-                          {% for alert in AlertsToNotifyError %}
+                          {% for alert in AlertErrors %}
                           <li>
                               <b>{{alert.Name}}</b>
                               <br>
-                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.FrequencyString}} - {{alert.RuleString}}
+                              <a href=""{{alert.SiteUri}}"">{{alert.SiteName}}</a> - {{alert.Frequency}} - {{alert.Rule}}
                           </li>
                           <br>
                           {% endfor %}

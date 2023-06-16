@@ -6,17 +6,21 @@ using SiteWatcher.Domain.Notifications;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
-public class NotificationMapping : BaseModelMapping<Notification, NotificationId>
+public class NotificationMapping : IEntityTypeConfiguration<Notification>
 {
-    public override void Configure(EntityTypeBuilder<Notification> builder)
+    public void Configure(EntityTypeBuilder<Notification> builder)
     {
-        base.Configure(builder);
-
         builder.ToTable("Notifications");
+
+        builder.HasKey(n => n.Id);
 
         builder.Property(n => n.Id)
             .HasConversion<NotificationId.EfCoreValueConverter>()
             .HasColumnType("uuid");
+
+        builder.Property(m => m.CreatedAt)
+            .HasColumnType("timestamptz")
+            .IsRequired();
 
         builder.HasOne(n => n.Email)
             .WithMany()
@@ -27,18 +31,18 @@ public class NotificationMapping : BaseModelMapping<Notification, NotificationId
 
         builder.HasOne(n => n.User)
             .WithMany()
-            .HasForeignKey(n => n.UserId);
+            .HasForeignKey(n => n.UserId)
+            .IsRequired();
 
-        // N-N relationship between Alert and Notification with skip navigation
         builder.HasMany(n => n.Alerts)
             .WithMany(a => a.Notifications)
             .UsingEntity<NotificationAlert>(cfg =>
             {
                 cfg.ToTable("NotificationAlerts");
-                cfg.HasKey(an => new { an.AlertId, an.NotificationId });
+                cfg.HasKey(na => new { na.NotificationId, na.AlertId });
                 cfg.HasOne<Notification>()
-                    .WithMany(an => an.NotificationAlerts)
-                    .HasForeignKey(an => an.NotificationId);
+                    .WithMany(n => n.NotificationAlerts)
+                    .HasForeignKey(na => na.NotificationId);
                 cfg.HasOne<Alert>()
                     .WithMany()
                     .HasForeignKey(an => an.AlertId);
