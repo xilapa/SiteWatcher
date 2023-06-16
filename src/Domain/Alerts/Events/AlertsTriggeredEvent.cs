@@ -12,13 +12,17 @@ public sealed class AlertsTriggeredEvent : BaseEvent
 {
     public AlertsTriggeredEvent(User user, IEnumerable<AlertTriggered> alertsTriggered)
     {
+        UserId = user.Id;
         UserName = user.Name;
         UserLanguage = user.Language;
+        UserEmail = user.Email;
         Alerts = alertsTriggered;
     }
 
+    public UserId UserId { get; }
     public string UserName { get; }
     public Language UserLanguage { get; }
+    public string UserEmail { get; }
     public IEnumerable<AlertTriggered> Alerts { get; }
 }
 
@@ -36,7 +40,7 @@ public sealed class AlertTriggered
         TriggeringDate = triggeringDate;
     }
 
-    public AlertId AlertId { get; set; }
+    public AlertId AlertId { get; }
     public string AlertName { get; }
     public string SiteUri { get; }
     public string SiteName { get; }
