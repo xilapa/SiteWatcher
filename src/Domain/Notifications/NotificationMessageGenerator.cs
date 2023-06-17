@@ -35,6 +35,7 @@ public static class NotificationMessageGenerator
     {
         var templateOptions = new TemplateOptions();
         templateOptions.MemberAccessStrategy.Register<NotificationData>();
+        templateOptions.MemberAccessStrategy.Register<AlertData>();
         var templateContext = new TemplateContext(notificationData, templateOptions);
         var parsedTemplate = _parsedTemplates.Value[notificationData.Language];
         return await parsedTemplate.RenderAsync(templateContext);

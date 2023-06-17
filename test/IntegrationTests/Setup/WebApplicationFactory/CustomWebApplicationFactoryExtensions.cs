@@ -58,7 +58,9 @@ public static class CustomWebApplicationFactoryExtensions
             Frequency = Frequencies.EightHours,
             Term = "test term",
             SiteName = siteName ?? "test site",
-            SiteUri = siteUri ?? "http://mytest.net"
+            SiteUri = siteUri ?? "http://mytest.net",
+            RegexPattern = "[a-z]+",
+            NotifyOnDisappearance = false
         };
         var alert = AlertFactory.Create(createAlertInput, userId, currentDate.Value);
         await WithDbContext(appFactory, async ctx =>

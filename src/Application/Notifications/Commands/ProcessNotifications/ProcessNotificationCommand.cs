@@ -8,14 +8,14 @@ using SiteWatcher.Domain.Notifications.Repositories;
 
 namespace SiteWatcher.Application.Notifications.Commands.ProcessNotifications;
 
-public class ProcessNotificationsCommandHandler
+public class ProcessNotificationCommandHandler
 {
     private readonly ISession _session;
     private readonly IAppSettings _appSettings;
     private readonly INotificationRepository _repo;
     private readonly IUnitOfWork _uow;
 
-    public ProcessNotificationsCommandHandler(ISession session, IAppSettings appSettings, INotificationRepository repo,
+    public ProcessNotificationCommandHandler(ISession session, IAppSettings appSettings, INotificationRepository repo,
         IUnitOfWork uow)
     {
         _session = session;

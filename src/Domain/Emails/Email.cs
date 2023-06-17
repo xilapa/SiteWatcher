@@ -23,7 +23,8 @@ public class Email : BaseModel<EmailId>
             Subject = subject,
             Body = body,
             HtmlBody = htmlBody,
-            Recipients = new[] { recipient }
+            Recipients = new[] { recipient },
+            EmailId = Id
         };
         AddDomainEvent(new EmailCreatedEvent(emailMessage));
     }
