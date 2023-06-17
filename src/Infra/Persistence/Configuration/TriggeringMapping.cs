@@ -22,7 +22,7 @@ public class TriggeringMapping : IEntityTypeConfiguration<Triggering>
             .UseIdentityColumn();
 
         builder.Property(t => t.Date)
-            .HasColumnType("timestampz")
+            .HasColumnType("timestamptz")
             .IsRequired();
 
         builder.Property(t => t.Status)
