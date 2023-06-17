@@ -33,7 +33,10 @@ public class RegexRule : Rule
             NotifyOnDisappearance = updateAlertInput.NotifyOnDisappearance.NewValue;
 
         if (updateAlertInput.RegexPattern?.NewValue != null)
+        {
             RegexPattern = updateAlertInput.RegexPattern.NewValue;
+            FirstWatchDone = false;
+        }
     }
 
     public override async Task<bool> Execute(Stream html)

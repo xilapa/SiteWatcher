@@ -175,11 +175,15 @@ public class Alert : BaseModel<AlertId>
     public async Task<AlertTriggered?> ExecuteRule(Stream? html, DateTime currentTime)
     {
         // when stream is null the site can't be fetched
-        if(html == Stream.Null || html == null)
+        if (html == Stream.Null || html == null)
+        {
+            LastUpdatedAt = currentTime;
             return GenerateAlertTriggered(TriggeringStatus.Error, currentTime);
+        }
 
         var triggered = await Rule.Execute(html);
         LastVerification = currentTime;
+        LastUpdatedAt = currentTime;
 
         return triggered ? GenerateAlertTriggered(TriggeringStatus.Success, currentTime) : null;
     }

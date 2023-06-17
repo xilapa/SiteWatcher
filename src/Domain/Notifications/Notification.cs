@@ -9,6 +9,9 @@ namespace SiteWatcher.Domain.Notifications;
 
 public class Notification
 {
+    // for EF
+    protected Notification(){}
+
     public Notification(AlertsTriggeredEvent @event, DateTime currentDate, string siteWatcherUri)
     {
         Id = NotificationId.New();

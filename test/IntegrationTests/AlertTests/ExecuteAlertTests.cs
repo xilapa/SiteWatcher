@@ -8,11 +8,11 @@ using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Domain.Alerts;
-using SiteWatcher.Domain.Alerts.Entities.Notifications;
+using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Emails;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -33,6 +33,8 @@ public sealed class ExecuteAlertTestsBase : BaseTestFixture
     protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
     {
         base.OnConfiguringTestServer(optionsBuilder);
+        // TODO: Reconfigure Site to not be an owned type of Alert,
+        // because it's not supported by SQLite, thus Postgres it's needed for this test
         optionsBuilder.UseDatabase(DatabaseType.PostgresOnDocker);
     }
 }
@@ -44,27 +46,28 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
     public ExecuteAlertTests(ExecuteAlertTestsBase fixture) : base(fixture)
     {
         _fixture = fixture;
+        LoginAs(Users.Xilapa);
+        FakePublisher.Messages.Clear();
+        FakeCache.Cache.Clear();
     }
 
     [Theory]
     [InlineData(Rules.AnyChanges, false)]
-    [InlineData(Rules.Regex, false)]
     [InlineData(Rules.Term, false)]
-    [InlineData(Rules.Term, true)]
+    [InlineData(Rules.Regex, false)]
+    [InlineData(Rules.Regex, true)]
     public async Task ExecuteAnyChangesAlertSucceeds(Rules rule, bool notifyOnDisappearance)
     {
         // Arrange
-        LoginAs(Users.Xilapa);
         SetupFakeHttpResponse();
         await UpdateAlert(rule, notifyOnDisappearance);
-        FakePublisher.Messages.Clear();
         // Create cache
         await GetAsync("alert");
         AppFactory.FakeCache.Cache.Count.Should().Be(1);
 
         // Alert should not be executed
         var alert = await GetAlertFromDb();
-        if (!Rules.Term.Equals(rule)) alert.Rule.FirstWatchDone.Should().BeFalse();
+        alert.Rule.FirstWatchDone.Should().BeFalse();
         alert.LastVerification.Should().BeNull();
 
         // Act & Assert
@@ -80,44 +83,59 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         // Cache should be cleared when alerts are executed
         AppFactory.FakeCache.Cache.Should().BeEmpty();
 
-        // Second time, alert should generate a notification and publish a mail message ont the message bus
+        // Second time
         result = await ExecuteAlerts();
         result.Value.Should().BeTrue();
+
+        // Alert should be updated
         alert = await GetAlertFromDb();
+        alert.LastVerification.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
+        alert.LastUpdatedAt.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
+
+        // Alert should generate a triggering and publish a triggered event
         FakePublisher.Messages.Should().HaveCount(1);
-        // Email sent should be a success email
-        (FakePublisher.Messages[0].Message as MailMessage)!.Body.Should().NotContain("couldn't be reached");
-        alert.Notifications.Should().HaveCount(1);
-        alert.Emails.Should().HaveCount(1);
+        (FakePublisher.Messages[0].Message as AlertsTriggeredEvent)!.
+            Alerts.Should().OnlyContain(a => a.Status.Equals(TriggeringStatus.Success));
+
+        var triggering = alert.Triggerings.Single();
+        triggering.Status.Should().Be(TriggeringStatus.Success);
+        triggering.Date.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
     }
 
     [Theory]
     [InlineData(Rules.AnyChanges, false)]
-    [InlineData(Rules.Regex, false)]
     [InlineData(Rules.Term, false)]
-    [InlineData(Rules.Term, true)]
+    [InlineData(Rules.Regex, false)]
+    [InlineData(Rules.Regex, true)]
     public async Task ExecuteAnyChangesAlertFails(Rules rule, bool notifyOnDisappearance)
     {
         // Arrange
         LoginAs(Users.Xilapa);
         SetupFakeHttpResponse(errorResponse: true);
         await UpdateAlert(rule, notifyOnDisappearance);
-        FakePublisher.Messages.Clear();
 
         // Alert should not be executed
         var alert = await GetAlertFromDb();
-        if (!Rules.Term.Equals(rule)) alert.Rule.FirstWatchDone.Should().BeFalse();
+        alert.Rule.FirstWatchDone.Should().BeFalse();
         alert.LastVerification.Should().BeNull();
 
         // Act & Assert
         var result = await ExecuteAlerts();
         result.Value.Should().BeTrue();
         alert = await GetAlertFromDb();
+
+        // Alert should be updated but not the last verification date
+        alert.LastVerification.Should().BeNull();
+        alert.LastUpdatedAt.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
+
+        // Alert should generate a triggering and publish a triggered event
         FakePublisher.Messages.Should().HaveCount(1);
-        // Email sent should be an error email
-        (FakePublisher.Messages[0].Message as MailMessage)!.Body.Should().Contain("couldn't be reached");
-        alert.Notifications.Should().HaveCount(1);
-        alert.Emails.Should().HaveCount(1);
+        (FakePublisher.Messages[0].Message as AlertsTriggeredEvent)!.
+            Alerts.Should().OnlyContain(a => a.Status.Equals(TriggeringStatus.Error));
+
+        var triggering = alert.Triggerings.Single();
+        triggering.Status.Should().Be(TriggeringStatus.Error);
+        triggering.Date.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
     }
 
     private void SetupFakeHttpResponse(bool errorResponse = false)
@@ -156,12 +174,12 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         var result = await PutAsync("alert", cmmd);
         result.HttpResponse!.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        // Clear notifications and emails
+        // Clear triggerings
         await AppFactory.WithDbContext(ctx =>
         {
-            ctx.Set<Notification>().RemoveRange(ctx.Set<Notification>());
-            ctx.Emails.RemoveRange(ctx.Emails);
-            return ctx.SaveChangesAsync();
+            return ctx.Set<Triggering>()
+                .Where(_ => true)
+                .ExecuteDeleteAsync();
         });
     }
 
@@ -170,8 +188,7 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         return AppFactory.WithDbContext(ctx =>
                 ctx.Alerts
                 .Include(a => a.Rule)
-                .Include(a => a.Notifications)
-                .Include(a => a.Emails)
+                .Include(a => a.Triggerings)
                 .AsNoTracking()
                 .FirstAsync()
         );
