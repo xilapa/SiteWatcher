@@ -136,8 +136,8 @@
     },
     "common": {
       "createdAt": "Criado em",
-      "notificationsSent": "Notificações enviadas",
-      "notificationsSentMobile": "Notificações",
+      "triggeringsCount": "Número de acionamentos",
+      "triggeringsCountMobile": "Acionamentos",
       "frequencyMobile": "Frequência",
       "ruleMobile": "Regra",
       "notifyOnDisappearance": "Notificar no desaparecimento",

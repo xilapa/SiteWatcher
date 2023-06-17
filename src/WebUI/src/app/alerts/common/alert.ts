@@ -1,5 +1,5 @@
 ﻿import { AlertFrequencyUtils, EAlertFrequency } from "./e-alert-frequency";
-import { Rules, RuleUtils } from "./e-watch-mode";
+import { RuleUtils, Rules } from "./e-watch-mode";
 
 export interface CreateUpdateAlertModel {
     name: string,
@@ -19,7 +19,7 @@ export interface DetailedAlertViewApi {
     CreatedAt: Date,
     Frequency: EAlertFrequency,
     LastVerification: Date | undefined,
-    NotificationsSent: number,
+    TriggeringsCount: number,
     Site: SiteViewApi,
     Rule: DetailedRuleViewApi
 }
@@ -42,7 +42,7 @@ export interface SimpleAlertViewApi {
     CreatedAt: Date,
     Frequency: EAlertFrequency,
     LastVerification: Date | undefined,
-    NotificationsSent: number,
+    TriggeringsCount: number,
     SiteName: string,
     Rule: Rules
 }
@@ -81,7 +81,7 @@ export interface DetailedAlertView {
     CreatedAt?: Date,
     Frequency?: EAlertFrequency,
     LastVerification?: Date,
-    NotificationsSent?: number,
+    TriggeringsCount?: number,
     Site: SiteView,
     Rule: DetailedRuleView,
     FullyLoaded?: boolean,
@@ -115,7 +115,7 @@ export class AlertUtils {
             CreatedAt: createdAt,
             Frequency: apiView.Frequency,
             LastVerification: apiView.LastVerification ? new Date(apiView.LastVerification) : undefined,
-            NotificationsSent: apiView.NotificationsSent,
+            TriggeringsCount: apiView.TriggeringsCount,
             Site: apiView.Site,
             Rule: apiView.Rule,
             FullyLoaded: true,
@@ -135,7 +135,7 @@ export class AlertUtils {
             CreatedAt: createdAt,
             Frequency: simpleApiView.Frequency,
             LastVerification: simpleApiView.LastVerification ? new Date(simpleApiView.LastVerification) : undefined,
-            NotificationsSent: simpleApiView.NotificationsSent,
+            TriggeringsCount: simpleApiView.TriggeringsCount,
             Site: { Name: simpleApiView.SiteName },
             Rule: { Rule: simpleApiView.Rule },
             FullyLoaded: false,

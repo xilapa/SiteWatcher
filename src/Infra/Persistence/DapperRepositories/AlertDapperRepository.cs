@@ -116,7 +116,7 @@ public sealed class SimpleAlertViewDto
     public DateTime CreatedAt { get; set; }
     public Frequencies Frequency { get; set; }
     public DateTime? LastVerification { get; set; }
-    public int NotificationsSent { get; set; }
+    public int TriggeringsCount { get; set; }
     public string? SiteName { get; set; }
     public char Rule { get; set; }
 
@@ -128,7 +128,7 @@ public sealed class SimpleAlertViewDto
         CreatedAt = CreatedAt,
         Frequency = Frequency,
         LastVerification = LastVerification,
-        NotificationsSent = NotificationsSent,
+        TriggeringsCount = TriggeringsCount,
         SiteName = SiteName,
         Rule = Utils.GetRuleEnumByTableDiscriminator(Rule)!.Value
     };

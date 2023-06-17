@@ -44,7 +44,7 @@ public class DapperQueries : IDapperQueries
                 a.""LastVerification"",
                 a.""Site_Name"" SiteName,
                 r.""Rule"",
-                COUNT(t.""Id"") NotificationsSent
+                COUNT(t.""Id"") TriggeringsCount
             FROM 
             ""sw"".""Alerts"" a
                 INNER JOIN ""sw"".""Rules"" r 
