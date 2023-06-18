@@ -176,11 +176,7 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
 
         // Clear triggerings
         await AppFactory.WithDbContext(ctx =>
-        {
-            return ctx.Set<Triggering>()
-                .Where(_ => true)
-                .ExecuteDeleteAsync();
-        });
+                ctx.Set<Triggering>().ExecuteDeleteAsync());
     }
 
     private Task<Alert> GetAlertFromDb()
