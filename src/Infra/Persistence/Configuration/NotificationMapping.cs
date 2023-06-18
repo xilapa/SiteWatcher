@@ -42,7 +42,7 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
             .UsingEntity<NotificationAlert>(cfg =>
             {
                 cfg.ToTable("NotificationAlerts");
-                cfg.HasKey(na => new { na.NotificationId, na.AlertId });
+                cfg.HasKey(na => new { na.NotificationId, na.AlertId, na.TriggeringDate });
                 cfg.HasOne<Notification>()
                     .WithMany(n => n.NotificationAlerts)
                     .HasForeignKey(na => na.NotificationId);
