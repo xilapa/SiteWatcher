@@ -29,10 +29,13 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.EmailId)
             .IsRequired(false);
 
+        // TODO: change to required after migrating data
+        builder.Property(n => n.UserId)
+            .IsRequired(false);
+
         builder.HasOne(n => n.User)
             .WithMany()
-            .HasForeignKey(n => n.UserId)
-            .IsRequired();
+            .HasForeignKey(n => n.UserId);
 
         builder.HasMany(n => n.Alerts)
             .WithMany(a => a.Notifications)
@@ -46,6 +49,9 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
                 cfg.HasOne<Alert>()
                     .WithMany()
                     .HasForeignKey(an => an.AlertId);
+                cfg.Property(na => na.TriggeringDate)
+                    .HasColumnType("timestamptz")
+                    .IsRequired();
             });
 
         builder.Metadata

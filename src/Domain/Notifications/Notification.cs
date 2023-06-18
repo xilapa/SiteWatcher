@@ -32,7 +32,7 @@ public class Notification
 
     public NotificationId Id { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public UserId UserId { get; private set; }
+    public UserId? UserId { get; private set; }
     public User User { get; private set; } = null!;
     public EmailId? EmailId { get;  private set; }
     public Email Email { get; private set; } = null!;
@@ -57,7 +57,7 @@ public class Notification
         var subject = NotificationMessageGenerator.GetSubject(_notificationData);
         var body = await NotificationMessageGenerator.GetBody(_notificationData);
         // Create the email, the email will generate a domain event
-        var recipient = new MailRecipient(_notificationData.UserName, _notificationData.Email, UserId);
+        var recipient = new MailRecipient(_notificationData.UserName, _notificationData.Email, UserId!.Value);
         Email = new Email(body,htmlBody: true, subject, recipient, currentDate);
         EmailId = Email.Id;
     }
