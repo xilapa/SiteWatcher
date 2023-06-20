@@ -10,15 +10,17 @@ namespace SiteWatcher.Domain.Alerts.Events;
 
 public sealed class AlertsTriggeredEvent : BaseEvent
 {
-    public AlertsTriggeredEvent(User user, IEnumerable<AlertTriggered> alertsTriggered)
+    public AlertsTriggeredEvent(User user, IEnumerable<AlertTriggered> alertsTriggered, DateTime currentDate)
     {
         UserId = user.Id;
         UserName = user.Name;
         UserLanguage = user.Language;
         UserEmail = user.Email;
         Alerts = alertsTriggered;
+        Id = $"U{UserId}-{currentDate.Ticks}";
     }
 
+    public string Id { get; }
     public UserId UserId { get; }
     public string UserName { get; }
     public Language UserLanguage { get; }

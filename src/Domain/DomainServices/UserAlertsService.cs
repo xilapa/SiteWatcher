@@ -25,7 +25,7 @@ public sealed class UserAlertsService : IUserAlertsService
         }
 
         if (alertsTriggered.Count == 0) return;
-        user.AddDomainEvent(new AlertsTriggeredEvent(user, alertsTriggered));
+        user.AddDomainEvent(new AlertsTriggeredEvent(user, alertsTriggered, currentTime));
     }
 
     // TODO: Generate mail message will be done on the notification processor
