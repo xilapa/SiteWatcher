@@ -196,6 +196,6 @@ public class Alert : BaseModel<AlertId>
         _triggerings.Add(triggering);
 
         // return the alert triggered data
-       return new AlertTriggered(this, status, currentTime);
+       return new AlertTriggered(this, status, triggering.Date);
     }
 }
