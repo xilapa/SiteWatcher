@@ -31,7 +31,6 @@ public class TestAppSettings : IAppSettings
         MinimumHashedIdLength = TestHashedIdLength;
         MessageIdKey = "message-id-testing";
         InMemoryStorageAndQueue = true;
-        EmailNotificationRoutingKey = "email-notification-testing";
         DisableDataProtectionRedisStore = true;
     }
 

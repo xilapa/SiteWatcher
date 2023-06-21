@@ -49,7 +49,6 @@ var host = new HostBuilder()
             IsDevelopment = hostContext.HostingEnvironment.IsDevelopment(),
             ConnectionString = workerSettings!.DbConnectionString,
             InMemoryStorageAndQueue = workerSettings.UseInMemoryStorageAndQueue,
-            EmailNotificationRoutingKey = RoutingKeys.EmailNotification,
             RedisConnectionString = workerSettings.RedisConnectionString
         };
 
