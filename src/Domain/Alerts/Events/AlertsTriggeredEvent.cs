@@ -8,8 +8,10 @@ using static SiteWatcher.Domain.Common.Utils;
 
 namespace SiteWatcher.Domain.Alerts.Events;
 
-public sealed class AlertsTriggeredEvent : BaseEvent
+public class AlertsTriggeredEvent : BaseEvent
 {
+    public AlertsTriggeredEvent(){}
+
     public AlertsTriggeredEvent(User user, IEnumerable<AlertTriggered> alertsTriggered, DateTime currentDate)
     {
         UserId = user.Id;
@@ -20,16 +22,18 @@ public sealed class AlertsTriggeredEvent : BaseEvent
         Id = $"U{UserId}-{currentDate.Ticks}";
     }
 
-    public string Id { get; }
-    public UserId UserId { get; }
-    public string UserName { get; }
-    public Language UserLanguage { get; }
-    public string UserEmail { get; }
-    public IEnumerable<AlertTriggered> Alerts { get; }
+    public string Id { get; set; }
+    public UserId UserId { get; set; }
+    public string UserName { get; set; }
+    public Language UserLanguage { get; set; }
+    public string UserEmail { get; set; }
+    public IEnumerable<AlertTriggered> Alerts { get; set; }
 }
 
-public sealed class AlertTriggered
+public class AlertTriggered
 {
+    public AlertTriggered() {}
+
     public AlertTriggered(Alert alert, TriggeringStatus status, DateTime triggeringDate)
     {
         AlertId = alert.Id;
@@ -42,12 +46,12 @@ public sealed class AlertTriggered
         TriggeringDate = triggeringDate;
     }
 
-    public AlertId AlertId { get; }
-    public string AlertName { get; }
-    public string SiteUri { get; }
-    public string SiteName { get; }
-    public Frequencies Frequency { get; }
-    public Rules Rule { get; }
-    public TriggeringStatus Status { get; }
+    public AlertId AlertId { get; set; }
+    public string AlertName { get; set; }
+    public string SiteUri { get; set; }
+    public string SiteName { get; set; }
+    public Frequencies Frequency { get; set; }
+    public Rules Rule { get; set; }
+    public TriggeringStatus Status { get; set; }
     public DateTime TriggeringDate { get; set; }
 }

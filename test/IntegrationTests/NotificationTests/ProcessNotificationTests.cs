@@ -56,7 +56,7 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
         await UpdateUserLanguage(language);
         var user = await GetUser();
 
-        var @event = new AlertsTriggeredEvent(user, _fixture.AlertTriggereds);
+        var @event = new AlertsTriggeredEvent(user, _fixture.AlertTriggereds, AppFactory.CurrentTime);
 
         // Act
         var res = await ProcessNotification(@event);
