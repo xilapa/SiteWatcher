@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Dapper;
+using DotNetCore.CAP;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -130,17 +131,26 @@ public static class DependencyInjection
                         opt.ExchangeName = RabbitMqSettings.SiteWatcherExchange;
                         opt.CustomHeaders = message => new List<KeyValuePair<string, string>>
                         {
-                            new (DotNetCore.CAP.Messages.Headers.MessageId, GetMessageId(message, appSettings.MessageIdKey)),
-                            new (DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
+                            new(DotNetCore.CAP.Messages.Headers.MessageId,
+                                GetMessageId(message, appSettings.MessageIdKey)),
+                            new(DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
                         };
+
+                        opt.PublishConfirms = true;
+                        opt.BasicQosOptions = new RabbitMQOptions.BasicQos(1, false);
                     });
                 }
+
+                opts.Version = "v2";
 
                 opts.FailedRetryCount = 25;
                 // Email notification consumer needs to have only one consumer
                 opts.ConsumerThreadCount = 1;
                 // Enable the concurrency level to be per queue
                 opts.UseDispatchingPerGroup = true;
+
+                // Disable prefetching messages
+                opts.EnableConsumerPrefetch = false;
             });
 
         services.AddScoped<IPublisher, Publisher>();
