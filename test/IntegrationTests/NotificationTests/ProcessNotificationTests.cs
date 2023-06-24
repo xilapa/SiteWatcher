@@ -76,7 +76,7 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
             .Should()
             .BeEquivalentTo(new[]
             {
-                new NotificationAlert(notification.Id, _fixture.Alert.Id, AppFactory.CurrentTime)
+                new NotificationAlert(notification.Id, _fixture.AlertTriggereds[0])
             });
 
         // Check the email created

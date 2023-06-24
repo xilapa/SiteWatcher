@@ -29,9 +29,8 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.EmailId)
             .IsRequired(false);
 
-        // TODO: change to required after migrating data
         builder.Property(n => n.UserId)
-            .IsRequired(false);
+            .IsRequired();
 
         builder.HasOne(n => n.User)
             .WithMany()
@@ -51,6 +50,9 @@ public class NotificationMapping : IEntityTypeConfiguration<Notification>
                     .HasForeignKey(an => an.AlertId);
                 cfg.Property(na => na.TriggeringDate)
                     .HasColumnType("timestamptz")
+                    .IsRequired();
+                cfg.Property(na => na.TriggeringStatus)
+                    .HasColumnType("smallint")
                     .IsRequired();
             });
 

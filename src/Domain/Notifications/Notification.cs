@@ -1,4 +1,5 @@
 ﻿using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
@@ -23,7 +24,7 @@ public class Notification
         foreach (var alertTriggered in @event.Alerts)
         {
             // Create the relation between the notification and the alert
-            _notificationAlerts.Add(new NotificationAlert(Id, alertTriggered.AlertId, alertTriggered.TriggeringDate));
+            _notificationAlerts.Add(new NotificationAlert(Id, alertTriggered));
 
             // Save the alert triggering data
             AddAlertTriggered(alertTriggered);
@@ -65,14 +66,18 @@ public class Notification
 
 public class NotificationAlert
 {
-    public NotificationAlert(NotificationId notificationId, AlertId alertId, DateTime triggeringDate)
+    protected NotificationAlert(){}
+
+    public NotificationAlert(NotificationId notificationId, AlertTriggered alertTriggered)
     {
         NotificationId = notificationId;
-        AlertId = alertId;
-        TriggeringDate = triggeringDate;
+        AlertId = alertTriggered.AlertId;
+        TriggeringDate = alertTriggered.TriggeringDate;
+        TriggeringStatus = alertTriggered.Status;
     }
 
     public NotificationId NotificationId { get; private set; }
     public AlertId AlertId { get; private set; }
     public DateTime TriggeringDate { get; private set; }
+    public TriggeringStatus TriggeringStatus { get; private set; }
 }

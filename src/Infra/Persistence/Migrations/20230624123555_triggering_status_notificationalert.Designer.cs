@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SiteWatcher.Infra;
 
 #nullable disable
 
-namespace SiteWatcher.Infra.Migrations
+namespace Infra.Persistence.Migrations
 {
     [DbContext(typeof(SiteWatcherContext))]
-    partial class SiteWatcherContextModelSnapshot : ModelSnapshot
+    [Migration("20230624123555_triggering_status_notificationalert")]
+    partial class triggering_status_notificationalert
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
