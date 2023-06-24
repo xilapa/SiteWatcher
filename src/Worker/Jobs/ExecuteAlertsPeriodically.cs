@@ -1,8 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
-using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Enums;
 
@@ -11,13 +9,11 @@ namespace SiteWatcher.Worker.Jobs;
 public sealed class ExecuteAlertsPeriodically : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<ExecuteAlertsPeriodically> _logger;
     private readonly PeriodicTimer _timer;
 
-    public ExecuteAlertsPeriodically(IServiceScopeFactory scopeProvider, ILogger<ExecuteAlertsPeriodically> logger, IAppSettings settings)
+    public ExecuteAlertsPeriodically(IServiceScopeFactory scopeProvider, IAppSettings settings)
     {
         _scopeFactory = scopeProvider;
-        _logger = logger;
         _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromHours(1));
     }
 
@@ -29,25 +25,14 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
                 await using var scope = _scopeFactory.CreateAsyncScope();
                 var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
 
-                await ExecuteAlerts(handler, stoppingToken);
+                var frequencies = GetAlertFrequenciesForCurrentHour();
+                await handler.Handle(new ExecuteAlertsCommand(frequencies), stoppingToken);
 
                 await _timer.WaitForNextTickAsync(stoppingToken);
             }
         }, stoppingToken);
 
-    private async Task ExecuteAlerts(ExecuteAlertsCommandHandler handler, CancellationToken ct)
-    {
-        var frequencies = GetAlertFrequenciesForCurrentHour();
-
-        _logger.LogInformation("{Date} - Execute Alerts Started: {Frequencies}", DateTime.UtcNow, frequencies);
-
-        var ok = await handler.Handle(new ExecuteAlertsCommand(frequencies), ct);
-
-        _logger.LogInformation("{Date} - Execute Alerts Finished: {Frequencies} - Success: {success}",
-            DateTime.UtcNow, frequencies, (ok as ValueResult<bool>)!.Value);
-    }
-
-    private static IEnumerable<Frequencies> GetAlertFrequenciesForCurrentHour()
+    private static List<Frequencies> GetAlertFrequenciesForCurrentHour()
     {
         var alertFrequenciesToWatch = new List<Frequencies>();
 
