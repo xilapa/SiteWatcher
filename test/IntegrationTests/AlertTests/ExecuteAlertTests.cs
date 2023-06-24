@@ -13,6 +13,7 @@ using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Domain.Users.Repositories;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -84,6 +85,7 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         AppFactory.FakeCache.Cache.Should().BeEmpty();
 
         // Second time
+        CurrentTime = CurrentTime.Add(TimeSpan.FromMinutes(121));
         result = await ExecuteAlerts();
         result.Value.Should().BeTrue();
 
@@ -124,8 +126,8 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         result.Value.Should().BeTrue();
         alert = await GetAlertFromDb();
 
-        // Alert should be updated but not the last verification date
-        alert.LastVerification.Should().BeNull();
+        // Alert should be updated
+        alert.LastVerification.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
         alert.LastUpdatedAt.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
 
         // Alert should generate a triggering and publish a triggered event
@@ -136,6 +138,52 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         var triggering = alert.Triggerings.Single();
         triggering.Status.Should().Be(TriggeringStatus.Error);
         triggering.Date.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
+    }
+
+    public static TheoryData<Stream, TimeSpan, bool> StreamData = new()
+    {
+        { Stream.Null, TimeSpan.FromMinutes(10), false },// Simulate an error reaching the site
+        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromMinutes(10), false },
+
+        // After exactly two hours
+        { Stream.Null, TimeSpan.FromHours(2),false },// Simulate an error reaching the site
+        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromHours(2), false },
+
+        // After more than two hours
+        { Stream.Null, TimeSpan.FromHours(3), true },// Simulate an error reaching the site
+        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromHours(3), true }
+    };
+
+    [Theory]
+    [MemberData(nameof(StreamData))]
+    public async Task AlertsAreReExecutedOnlyAfterTwoHours(Stream? siteStream, TimeSpan executionDelay, bool shouldExecute)
+    {
+        // Arrange
+
+        // Create an alert and execute it
+        var alert = await AppFactory.CreateAlert("alert", Rules.AnyChanges, Users.Xilapa.Id);
+        await AppFactory.WithDbContext(async ctx =>
+        {
+            var alertFromDb = await ctx.Alerts
+                .Include(a => a.Rule)
+                .FirstAsync(a => a.Id == alert.Id);
+            await alertFromDb.ExecuteRule(siteStream, AppFactory.CurrentTime);
+            await ctx.SaveChangesAsync();
+        });
+
+        var frequencies = Enum.GetValues<Frequencies>();
+        CurrentTime = CurrentTime.Add(executionDelay);
+
+        // Act
+        var usersWithAlerts = await AppFactory.WithServiceProvider(sp =>
+        {
+            var userRepo = sp.GetRequiredService<IUserRepository>();
+            return userRepo.GetUserWithPendingAlertsAsync(frequencies, 10, null, CancellationToken.None);
+        });
+
+        // Assert
+        var alerts = usersWithAlerts.SelectMany(u => u.Alerts);
+        alerts.Any(a => a.Id == alert.Id).Should().Be(shouldExecute);
     }
 
     private void SetupFakeHttpResponse(bool errorResponse = false)

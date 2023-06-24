@@ -62,7 +62,7 @@ public sealed class ExecuteAlertsCommandHandler
         while(loop)
         {
             var usersWithAlerts = (await _userRepository
-                .GetUserWithAlertsAsync(freqs, 50, lastCreatedDate, ct))
+                .GetUserWithPendingAlertsAsync(freqs, 50, lastCreatedDate, ct))
                 .ToArray();
 
             if (usersWithAlerts.Length == 0)

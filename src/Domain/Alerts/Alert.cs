@@ -178,6 +178,7 @@ public class Alert : BaseModel<AlertId>
         if (html == Stream.Null || html == null)
         {
             LastUpdatedAt = currentTime;
+            LastVerification = currentTime;
             return GenerateAlertTriggered(TriggeringStatus.Error, currentTime);
         }
 
