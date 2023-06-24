@@ -11,10 +11,11 @@ namespace Infra.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-UPDATE ""sw"".""Emails"" e
+            UPDATE ""sw"".""Emails"" e
             SET 
             ""CreatedAt"" = sub.""CreatedAt"",
-            ""LastUpdatedAt"" = sub.""CreatedAt""
+            ""LastUpdatedAt"" = sub.""CreatedAt"",
+            ""Active"" = true
             FROM (
                 SELECT n.""EmailId"", n.""CreatedAt""
             FROM ""sw"".""Notifications"" n
