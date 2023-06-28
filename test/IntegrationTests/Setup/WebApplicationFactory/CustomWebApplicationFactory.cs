@@ -56,12 +56,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public IGoogleSettings TestGoogleSettings { get; }
     public FakeCache FakeCache { get; }
     public FakePublisher FakePublisher { get; }
+    public Mock<ILogger> LoggerMock { get; }
 
     public CustomWebApplicationFactory(CustomWebApplicationOptions options)
     {
         var loggerFactoryMock = new Mock<ILoggerFactory>();
+        LoggerMock = new Mock<ILogger>();
         loggerFactoryMock.Setup(x => x.CreateLogger(It.IsAny<string>()))
-            .Returns(new Mock<ILogger>().Object);
+            .Returns(LoggerMock.Object);
         _loggerFactory = loggerFactoryMock.Object;
 
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();

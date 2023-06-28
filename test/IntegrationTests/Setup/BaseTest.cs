@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using Domain.Authentication;
+using Microsoft.Extensions.Logging;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -23,6 +24,7 @@ public abstract class BaseTest
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
     protected FakePublisher FakePublisher => _fixture.AppFactory.FakePublisher;
     protected IdHasher IdHasher = new (new TestAppSettings());
+    public Mock<ILogger> LoggerMock => _fixture.AppFactory.LoggerMock;
 
     protected DateTime CurrentTime
     {

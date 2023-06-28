@@ -3,7 +3,9 @@ using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Domain.Alerts;
@@ -46,8 +48,11 @@ public sealed class ExecuteAlertTestsBase : BaseTestFixture
 
 public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
 {
+    private readonly ExecuteAlertTestsBase _fixture;
+
     public ExecuteAlertTests(ExecuteAlertTestsBase fixture) : base(fixture)
     {
+        _fixture = fixture;
         LoginAs(Users.Xilapa);
         FakePublisher.Messages.Clear();
         FakeCache.Cache.Clear();
@@ -78,6 +83,8 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
 
         // First execution, alert rule should mark "first watch" as true
         await ExecuteAlerts();
+        VerifyLogger(hasError: false);
+
         alert = await GetAlertFromDb(alertId);
         alert.Rule.FirstWatchDone.Should().BeTrue();
         alert.Triggerings.Should().BeEmpty();
@@ -95,6 +102,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         SetupFakeHttpResponse(alertCount, baseMessage: "fake response fake response");
         CurrentTime = CurrentTime.Add(TimeSpan.FromMinutes(121));
         await ExecuteAlerts();
+        VerifyLogger(hasError: false);
 
         // Alert should be updated
         alert = await GetAlertFromDb(alertId);
@@ -130,6 +138,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
 
         // Act
         await ExecuteAlerts();
+        VerifyLogger(hasError: true);
 
         // Assert
         alert = await GetAlertFromDb(alertId);
@@ -293,5 +302,18 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
             var executeAlertsCommandHandler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
             await executeAlertsCommandHandler.Handle(executeAlertsCmmd, CancellationToken.None);
         });
+    }
+
+    private void VerifyLogger(bool hasError)
+    {
+        var times = hasError ? Times.AtLeastOnce() : Times.Never();
+        var failMessage = hasError ? "Alerts executed successfully" : "Alerts executed with errors";
+        LoggerMock.Verify(logger =>
+            logger.Log(It.Is<LogLevel>(l => LogLevel.Error.Equals(l)),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((_, _) => true),
+                It.IsAny<Exception?>(),
+                It.Is<Func<It.IsAnyType,Exception?,string>>((_,_) => true)),
+            times, failMessage);
     }
 }
