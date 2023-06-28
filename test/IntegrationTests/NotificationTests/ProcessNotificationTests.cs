@@ -89,7 +89,7 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
         var fakeMessage = FakePublisher.Messages.Single();
         fakeMessage.RoutingKey.Should().Be(RoutingKeys.MailMessage);
 
-        var mailMessage = (fakeMessage.Message as MailMessage)!;
+        var mailMessage = (fakeMessage.Content as MailMessage)!;
         mailMessage.Recipients.Should().BeEquivalentTo(new[]
         {
             new MailRecipient(user.Name, user.Email, user.Id)

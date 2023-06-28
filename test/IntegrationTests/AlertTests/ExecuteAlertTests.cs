@@ -6,15 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
-using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.Repositories;
-using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -23,12 +22,17 @@ namespace IntegrationTests.AlertTests;
 
 public sealed class ExecuteAlertTestsBase : BaseTestFixture
 {
-    internal AlertId AlertId { get; private set; }
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        var alert = await AppFactory.CreateAlert("alert", Rules.AnyChanges, Users.Xilapa.Id);
-        AlertId = alert.Id;
+
+        foreach (var freq in Enum.GetValues<Frequencies>())
+        {
+            var alert = await AppFactory.CreateAlert($"alert-{freq}", Rules.AnyChanges, Users.Xilapa.Id, frequency: freq);
+            await AppFactory.WithDbContext(ctx => ctx.Set<Rule>()
+                .Where(r => r.Id == alert.Rule.Id)
+                .ExecuteUpdateAsync(s => s.SetProperty(r => r.FirstWatchDone, true)));
+        }
     }
 
     protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
@@ -40,13 +44,10 @@ public sealed class ExecuteAlertTestsBase : BaseTestFixture
     }
 }
 
-public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
+public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
 {
-    private readonly ExecuteAlertTestsBase _fixture;
-
     public ExecuteAlertTests(ExecuteAlertTestsBase fixture) : base(fixture)
     {
-        _fixture = fixture;
         LoginAs(Users.Xilapa);
         FakePublisher.Messages.Clear();
         FakeCache.Cache.Clear();
@@ -57,47 +58,52 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
     [InlineData(Rules.Term, false)]
     [InlineData(Rules.Regex, false)]
     [InlineData(Rules.Regex, true)]
-    public async Task ExecuteAnyChangesAlertSucceeds(Rules rule, bool notifyOnDisappearance)
+    public async Task ExecuteAlertSucceeds(Rules rule, bool notifyOnDisappearance)
     {
         // Arrange
-        SetupFakeHttpResponse();
-        await UpdateAlert(rule, notifyOnDisappearance);
+        var alertId = await CreateAlert(rule, notifyOnDisappearance);
+        var alertCount = await AppFactory.WithDbContext(ctx => ctx.Alerts.CountAsync());
+        SetupFakeHttpResponse(alertCount);
+
         // Create cache
         await GetAsync("alert");
         AppFactory.FakeCache.Cache.Count.Should().Be(1);
 
         // Alert should not be executed
-        var alert = await GetAlertFromDb();
+        var alert = await GetAlertFromDb(alertId);
         alert.Rule.FirstWatchDone.Should().BeFalse();
         alert.LastVerification.Should().BeNull();
 
         // Act & Assert
 
         // First execution, alert rule should mark "first watch" as true
-        var result = await ExecuteAlerts();
-        result.Value.Should().BeTrue();
-        alert = await GetAlertFromDb();
+        await ExecuteAlerts();
+        alert = await GetAlertFromDb(alertId);
         alert.Rule.FirstWatchDone.Should().BeTrue();
-        FakePublisher.Messages.Should().BeEmpty();
+        alert.Triggerings.Should().BeEmpty();
         alert.LastVerification.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
+
+        // Alert should not be triggered
+        var alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredEvent)?.Alerts;
+        alertsTriggered?.Should().NotContain(a => a.AlertId == alertId);
+        FakePublisher.Messages.Clear();
 
         // Cache should be cleared when alerts are executed
         AppFactory.FakeCache.Cache.Should().BeEmpty();
 
         // Second time
+        SetupFakeHttpResponse(alertCount, baseMessage: "fake response fake response");
         CurrentTime = CurrentTime.Add(TimeSpan.FromMinutes(121));
-        result = await ExecuteAlerts();
-        result.Value.Should().BeTrue();
+        await ExecuteAlerts();
 
         // Alert should be updated
-        alert = await GetAlertFromDb();
+        alert = await GetAlertFromDb(alertId);
         alert.LastVerification.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
         alert.LastUpdatedAt.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
 
         // Alert should generate a triggering and publish a triggered event
-        FakePublisher.Messages.Should().HaveCount(1);
-        (FakePublisher.Messages[0].Message as AlertsTriggeredEvent)!.
-            Alerts.Should().OnlyContain(a => a.Status.Equals(TriggeringStatus.Success));
+        alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredEvent)?.Alerts;
+        alertsTriggered?.Should().Contain(a => a.AlertId == alertId && a.Status.Equals(TriggeringStatus.Success));
 
         var triggering = alert.Triggerings.Single();
         triggering.Status.Should().Be(TriggeringStatus.Success);
@@ -109,35 +115,37 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
     [InlineData(Rules.Term, false)]
     [InlineData(Rules.Regex, false)]
     [InlineData(Rules.Regex, true)]
-    public async Task ExecuteAnyChangesAlertFails(Rules rule, bool notifyOnDisappearance)
+    public async Task ExecuteAlertFails(Rules rule, bool notifyOnDisappearance)
     {
         // Arrange
         LoginAs(Users.Xilapa);
-        SetupFakeHttpResponse(errorResponse: true);
-        await UpdateAlert(rule, notifyOnDisappearance);
+        var alertCount = await AppFactory.WithDbContext(ctx => ctx.Alerts.CountAsync());
+        SetupFakeHttpResponse(alertCount, errorResponse: true);
+        var alertId = await CreateAlert(rule, notifyOnDisappearance);
 
         // Alert should not be executed
-        var alert = await GetAlertFromDb();
+        var alert = await GetAlertFromDb(alertId);
         alert.Rule.FirstWatchDone.Should().BeFalse();
         alert.LastVerification.Should().BeNull();
 
-        // Act & Assert
-        var result = await ExecuteAlerts();
-        result.Value.Should().BeTrue();
-        alert = await GetAlertFromDb();
+        // Act
+        await ExecuteAlerts();
+
+        // Assert
+        alert = await GetAlertFromDb(alertId);
 
         // Alert should be updated
         alert.LastVerification.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
         alert.LastUpdatedAt.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
 
-        // Alert should generate a triggering and publish a triggered event
-        FakePublisher.Messages.Should().HaveCount(1);
-        (FakePublisher.Messages[0].Message as AlertsTriggeredEvent)!.
-            Alerts.Should().OnlyContain(a => a.Status.Equals(TriggeringStatus.Error));
-
+        // Alert should generate an error triggering
         var triggering = alert.Triggerings.Single();
         triggering.Status.Should().Be(TriggeringStatus.Error);
         triggering.Date.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
+
+        // An error event should be published
+        var alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredEvent)?.Alerts;
+        alertsTriggered?.Should().Contain(a => a.AlertId == alertId && a.Status.Equals(TriggeringStatus.Error));
     }
 
     public static TheoryData<Stream, TimeSpan, bool> StreamData = new()
@@ -186,38 +194,73 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         alerts.Any(a => a.Id == alert.Id).Should().Be(shouldExecute);
     }
 
-    private void SetupFakeHttpResponse(bool errorResponse = false)
+    public static TheoryData<List<Frequencies>> Freqs = new()
     {
-        var fakeDelegateHandler = new FakeHttpDelegateHandler(
-            new FakeHttpResponse { StatusCode = HttpStatusCode.OK, Response = "fake response 1" },
-            new FakeHttpResponse { StatusCode = HttpStatusCode.OK, Response = "fake response 2" }
-        );
+        new List<Frequencies> {Frequencies.TwoHours },
+        new List<Frequencies> {Frequencies.FourHours},
+        new List<Frequencies> {Frequencies.EightHours},
+        new List<Frequencies> {Frequencies.TwelveHours},
+        new List<Frequencies> {Frequencies.TwentyFourHours},
+        new List<Frequencies> {Frequencies.TwoHours, Frequencies.FourHours},
+        new List<Frequencies> {Frequencies.TwoHours, Frequencies.FourHours, Frequencies.EightHours},
+        new List<Frequencies> {Frequencies.TwoHours, Frequencies.FourHours, Frequencies.EightHours, Frequencies.TwelveHours},
+        new List<Frequencies> {Frequencies.TwoHours, Frequencies.FourHours, Frequencies.EightHours, Frequencies.TwelveHours, Frequencies.TwentyFourHours}
+    };
 
-        if (errorResponse)
-        {
-            var exception = new HttpRequestException();
-            fakeDelegateHandler = new FakeHttpDelegateHandler(
-                new FakeHttpResponse { StatusCode = HttpStatusCode.InternalServerError, Exception = exception},
-                new FakeHttpResponse { StatusCode = HttpStatusCode.InternalServerError, Exception = exception},
-                new FakeHttpResponse { StatusCode = HttpStatusCode.InternalServerError, Exception = exception}
-            );
-        }
+    [Theory]
+    [MemberData(nameof(Freqs))]
+    public async Task AlertsAreOnlyExecutedOnTheirFrequency(List<Frequencies> freq)
+    {
+        // Arrange
+        var alertCount = await AppFactory.WithDbContext(ctx => ctx.Alerts.CountAsync());
+        SetupFakeHttpResponse(count: alertCount);
+        CurrentTime = CurrentTime.Add(TimeSpan.FromMinutes(121));
+
+        // Act
+        await ExecuteAlerts(freq);
+
+        // Assert
+        var alertsTriggeredEvent = FakePublisher.Messages.SingleOrDefault()?.Content as AlertsTriggeredEvent;
+        alertsTriggeredEvent!.Alerts.Should().OnlyContain(a => freq.Contains(a.Frequency));
+
+        var currentAlertsTriggeredFromDb = await AppFactory.WithDbContext(ctx =>
+                ctx.Alerts.Where(a => a.LastVerification == CurrentTime).ToArrayAsync());
+
+        currentAlertsTriggeredFromDb.Should().OnlyContain(a => freq.Contains(a.Frequency));
+    }
+
+    private void SetupFakeHttpResponse(int count, bool errorResponse = false, string? baseMessage = null)
+    {
+        var exception = new HttpRequestException();
+        var fakeResponses = Enumerable.Range(0, count)
+            .Select(i =>
+                errorResponse ?
+                    new FakeHttpResponse { StatusCode = HttpStatusCode.InternalServerError, Exception = exception} :
+                    new FakeHttpResponse
+                    {
+                        StatusCode = HttpStatusCode.OK,
+                        Response = baseMessage is null ? $"fake response {i}" : $"{baseMessage} {i}"
+                    }
+            )
+            .ToArray();
+
+        var fakeDelegateHandler = new FakeHttpDelegateHandler(fakeResponses);
+
         HttpClientFactoryMock.Setup(x => x.CreateClient(Options.DefaultName))
             .Returns(new HttpClient(fakeDelegateHandler));
     }
 
-    private async Task UpdateAlert(Rules rule, bool notifyOnDisappearance)
+    private async Task<AlertId> CreateAlert(Rules rule, bool notifyOnDisappearance)
     {
+        var alertId = (await AppFactory.CreateAlert("alert", Rules.AnyChanges, Users.Xilapa.Id)).Id;
         var cmmd = new UpdateAlertCommmand
         {
-            AlertId = new IdHasher(new TestAppSettings()).HashId(_fixture.AlertId.Value),
+            AlertId = IdHasher.HashId(alertId.Value),
             Rule = new UpdateInfo<Rules>(rule),
-            Term = new UpdateInfo<string>("fake response 2"),
+            Term = new UpdateInfo<string>("fake response"),
             NotifyOnDisappearance = new UpdateInfo<bool>(notifyOnDisappearance),
             RegexPattern = new UpdateInfo<string>("[0-9]")
         };
-
-        if (notifyOnDisappearance) cmmd.Term = new UpdateInfo<string>("fake response 1");
 
         var result = await PutAsync("alert", cmmd);
         result.HttpResponse!.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -225,12 +268,15 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         // Clear triggerings
         await AppFactory.WithDbContext(ctx =>
                 ctx.Set<Triggering>().ExecuteDeleteAsync());
+
+        return alertId;
     }
 
-    private Task<Alert> GetAlertFromDb()
+    private Task<Alert> GetAlertFromDb(AlertId alertId)
     {
         return AppFactory.WithDbContext(ctx =>
                 ctx.Alerts
+                .Where(a => a.Id == alertId)
                 .Include(a => a.Rule)
                 .Include(a => a.Triggerings)
                 .AsNoTracking()
@@ -238,15 +284,14 @@ public class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTestsBase>
         );
     }
 
-    private async Task<ValueResult<bool>> ExecuteAlerts()
+    private async Task ExecuteAlerts(List<Frequencies>? frequencies = null)
     {
-        var executeAlertsCmmd = new ExecuteAlertsCommand(Enum.GetValues<Frequencies>());
-        return await AppFactory.WithServiceProvider(async sp =>
+        var executeAlertsCmmd = new ExecuteAlertsCommand(frequencies ?? Enum.GetValues<Frequencies>().ToList());
+        await AppFactory.WithServiceProvider(async sp =>
         {
             var scope = sp.CreateAsyncScope();
             var executeAlertsCommandHandler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
-            var res = await executeAlertsCommandHandler.Handle(executeAlertsCmmd, CancellationToken.None);
-            return (res as ValueResult<bool>)!;
+            await executeAlertsCommandHandler.Handle(executeAlertsCmmd, CancellationToken.None);
         });
     }
 }

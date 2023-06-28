@@ -11,7 +11,7 @@ public class FakePublisher : IPublisher
         Messages.Add(new FakePublishedMessage
         {
             RoutingKey = routingKey,
-            Message = message,
+            Content = message,
             Headers = headers
         });
         return Task.CompletedTask;
@@ -26,7 +26,7 @@ public class FakePublisher : IPublisher
 public sealed class FakePublishedMessage
 {
     public string RoutingKey { get; set; } = null!;
-    public object Message { get; set; } = null!;
+    public object Content { get; set; } = null!;
     public Dictionary<string, string>? Headers { get; set; }
 }
 
