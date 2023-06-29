@@ -1,14 +1,14 @@
 ﻿using System.Text.RegularExpressions;
 using SiteWatcher.Domain.Alerts.DTOs;
-using SiteWatcher.Domain.Alerts.Entities.Notifications;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
+using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Alerts.ValueObjects;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Extensions;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
 using static SiteWatcher.Domain.Common.Utils;
 
@@ -39,10 +39,10 @@ public class Alert : BaseModel<AlertId>
     public DateTime? LastVerification { get; private set; }
     public Site Site { get; private set; } = null!;
     public Rule Rule { get; private set; } = null!;
+    public IReadOnlyCollection<Notification>? Notifications {get; private set; }
 
-    private List<Notification>? _notifications;
-    public IReadOnlyCollection<Notification> Notifications => _notifications ?? new List<Notification>();
-    public ICollection<Email> Emails { get; set; }
+    private List<Triggering>? _triggerings;
+    public IReadOnlyCollection<Triggering> Triggerings => _triggerings ?? new List<Triggering>();
 
     public string SearchField { get; private set; } = null!;
 
@@ -172,40 +172,31 @@ public class Alert : BaseModel<AlertId>
         SearchField = StringBuilderCache.GetStringAndRelease(stringBuilder);
     }
 
-    public async Task<AlertToNotify?> ExecuteRule(Stream? html, DateTime currentTime)
+    public async Task<AlertTriggered?> ExecuteRule(Stream? html, DateTime currentTime)
     {
         // when stream is null the site can't be fetched
-        if(html == Stream.Null || html == null)
-            return GenerateAlertToNotify(NotificationType.Error, currentTime);
+        if (html == Stream.Null || html == null)
+        {
+            LastUpdatedAt = currentTime;
+            LastVerification = currentTime;
+            return GenerateAlertTriggered(TriggeringStatus.Error, currentTime);
+        }
 
-        var notifyUser = await Rule.Execute(html);
+        var triggered = await Rule.Execute(html);
         LastVerification = currentTime;
+        LastUpdatedAt = currentTime;
 
-        AlertToNotify? alertToNotify = null;
-
-        if (notifyUser)
-            alertToNotify = GenerateAlertToNotify(NotificationType.Sucess, currentTime);
-
-        return alertToNotify;
+        return triggered ? GenerateAlertTriggered(TriggeringStatus.Success, currentTime) : null;
     }
 
-    public AlertToNotify GenerateAlertToNotify(NotificationType type, DateTime currentTime)
+    private AlertTriggered GenerateAlertTriggered(TriggeringStatus status, DateTime currentTime)
     {
-        var notification = new Notification(currentTime);
-        _notifications ??= new List<Notification>();
-        _notifications.Add(notification);
-        return new AlertToNotify(this, notification.Id, type, User.Language);
-    }
+        // Add the triggering to the list
+        _triggerings ??= new List<Triggering>();
+        var triggering = new Triggering(currentTime, status);
+        _triggerings.Add(triggering);
 
-    /// <summary>
-    /// Correlate the email with the notification.
-    /// </summary>
-    /// <param name="email">The email to be set on the notifications</param>
-    /// <param name="notificationIds">The list of notifications Ids</param>
-    public void SetEmail(Email email, IEnumerable<NotificationId> notificationIds)
-    {
-        var notification = _notifications?.SingleOrDefault(n => notificationIds.Contains(n.Id));
-        if (notification == null) return;
-        notification.SetEmail(email);
+        // return the alert triggered data
+       return new AlertTriggered(this, status, triggering.Date);
     }
 }

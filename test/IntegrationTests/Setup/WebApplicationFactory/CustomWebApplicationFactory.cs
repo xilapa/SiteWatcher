@@ -1,6 +1,7 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
 using DotNetCore.CAP;
+using Infra.Persistence.Repositories;
 using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -16,12 +17,14 @@ using Npgsql;
 using ReflectionMagic;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Application.Notifications.Commands.ProcessNotifications;
 using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Domain.Emails.Repositories;
+using SiteWatcher.Domain.Notifications.Repositories;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Persistence.Repositories;
@@ -53,12 +56,14 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public IGoogleSettings TestGoogleSettings { get; }
     public FakeCache FakeCache { get; }
     public FakePublisher FakePublisher { get; }
+    public Mock<ILogger> LoggerMock { get; }
 
     public CustomWebApplicationFactory(CustomWebApplicationOptions options)
     {
         var loggerFactoryMock = new Mock<ILoggerFactory>();
+        LoggerMock = new Mock<ILogger>();
         loggerFactoryMock.Setup(x => x.CreateLogger(It.IsAny<string>()))
-            .Returns(new Mock<ILogger>().Object);
+            .Returns(LoggerMock.Object);
         _loggerFactory = loggerFactoryMock.Object;
 
         EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
@@ -215,6 +220,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddScoped<IHttpClient, HttpClient>();
         services.AddScoped<IEmailRepository, EmailRepository>();
 
+        // Process notification services
+        services.AddScoped<ProcessNotificationCommandHandler>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
     }
 
     private void ConfigureOptionsReplacementServices(IServiceCollection services)

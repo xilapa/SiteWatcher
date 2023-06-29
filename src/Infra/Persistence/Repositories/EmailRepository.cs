@@ -1,22 +1,16 @@
-using System;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Emails.Repositories;
-using SiteWatcher.Infra.Repositories;
 
 namespace SiteWatcher.Infra.Persistence.Repositories;
 
-public sealed class EmailRepository : Repository<Email>, IEmailRepository
+public sealed class EmailRepository : IEmailRepository
 {
-    public EmailRepository(SiteWatcherContext context) : base(context)
-    { }
+    private readonly SiteWatcherContext _ctx;
 
-    public void Add(Email email) => Context.Add(email);
-
-    public override Task<Email?> GetAsync(Expression<Func<Email, bool>> predicate, CancellationToken cancellationToken)
+    public EmailRepository(SiteWatcherContext ctx)
     {
-        throw new NotImplementedException();
+        _ctx = ctx;
     }
+
+    public void Add(Email email) => _ctx.Add(email);
 }

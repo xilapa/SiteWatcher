@@ -2,11 +2,13 @@
 using System.Text;
 using System.Text.Json;
 using Domain.Authentication;
+using Microsoft.Extensions.Logging;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -21,6 +23,8 @@ public abstract class BaseTest
     public Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
     protected FakePublisher FakePublisher => _fixture.AppFactory.FakePublisher;
+    protected IdHasher IdHasher = new (new TestAppSettings());
+    public Mock<ILogger> LoggerMock => _fixture.AppFactory.LoggerMock;
 
     protected DateTime CurrentTime
     {

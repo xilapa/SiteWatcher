@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using SiteWatcher.Common.Repositories;
+﻿using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Infra.DapperRepositories;
@@ -45,13 +44,13 @@ public class DapperQueries : IDapperQueries
                 a.""LastVerification"",
                 a.""Site_Name"" SiteName,
                 r.""Rule"",
-                COUNT(n.""Id"") NotificationsSent
+                COUNT(t.""Id"") TriggeringsCount
             FROM 
             ""sw"".""Alerts"" a
                 INNER JOIN ""sw"".""Rules"" r 
                     ON a.""Id"" = r.""AlertId""
-                LEFT JOIN ""sw"".""Notifications"" n
-                    ON a.""Id"" = n.""AlertId""
+                LEFT JOIN ""sw"".""Triggerings"" t
+                    ON a.""Id"" = t.""AlertId""
             WHERE
                 a.""Id"" > @lastAlertId
                 AND a.""UserId"" = @userId

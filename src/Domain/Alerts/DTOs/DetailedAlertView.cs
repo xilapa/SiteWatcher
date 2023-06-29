@@ -6,14 +6,14 @@ namespace SiteWatcher.Domain.Alerts.DTOs;
 public class DetailedAlertView
 {
     public DetailedAlertView(string id, string name, DateTime createdAt, Frequencies frequency,
-        DateTime? lastVerification, int notificationsSent, SiteView site, DetailedRuleView rule)
+        DateTime? lastVerification, int triggeringsCount, SiteView site, DetailedRuleView rule)
     {
         Id = id;
         Name = name;
         CreatedAt = createdAt;
         Frequency = frequency;
         LastVerification = lastVerification;
-        NotificationsSent = notificationsSent;
+        TriggeringsCount = triggeringsCount;
         Site = site;
         Rule = rule;
     }
@@ -25,7 +25,7 @@ public class DetailedAlertView
         CreatedAt = alert.CreatedAt;
         Frequency = alert.Frequency;
         LastVerification = alert.LastVerification;
-        NotificationsSent = 0;
+        TriggeringsCount = alert.Triggerings.Count;
         Site = alert.Site;
         Rule = alert.Rule;
     }
@@ -38,7 +38,7 @@ public class DetailedAlertView
     public DateTime CreatedAt { get; set; }
     public Frequencies Frequency { get; set; }
     public DateTime? LastVerification { get; set; }
-    public int NotificationsSent { get; set; }
+    public int TriggeringsCount { get; set; }
     public SiteView? Site { get; set; }
     public DetailedRuleView? Rule { get; set; }
 

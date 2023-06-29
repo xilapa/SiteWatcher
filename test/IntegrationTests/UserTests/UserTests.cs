@@ -20,6 +20,7 @@ using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Emails.DTOs;
 
 namespace IntegrationTests.UserTests;
 

@@ -88,14 +88,15 @@ The WebAPI backend is an onion layered architecture tending to the an hexagonal 
 
 [![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/onion.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/onion.png)
 
-The actual architecture makes use of DDD-Lite, with aggregates being responsible for the business logic and dealing with their entities and value objects.
+The actual architecture is pragmatic making use of some DDD concepts like aggregates being responsible for the business logic and dealing with their entities and value objects.
+Bounded contexts are not implemented, because the application domain is not complex enough to justify the use of bounded contexts.
 
 Bellow is the domain representation. The aggregates are represented by the bigger orange box, the aggregate root is in red, the entities are in blue and the value objects are green. 
 
 [![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/aggregates.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/aggregates.png)
 
-The cardinality is read top-down, e.g., the Alert aggregate has many notifications and each notification has only one EmailSent.
-It's good to notice from the domain representation, that the Notification entity is part of an N-N relationship between Alert and EmailSent aggregates. An alert can have many emails sent and an email sent can be related to many alerts.
+The cardinality is read top-down, e.g., the Notification aggregate has many NotificationAlerts and each NotificationAlerts has only one AlertId.
+It's good to notice from the domain representation, that the NotificationAlerts entity is part of an N-N relationship between Alert and Notification aggregates. An alert can have many notifications and a notification can be related to many alerts.
 
 In some parts the design is based on the [Jason Taylor Clean Architecture template](https://github.com/jasontaylordev/CleanArchitecture "Jason Taylor Clean Architecture template"), his approach using MediatR to send Domain Events is very clean and well done.
 
@@ -104,13 +105,13 @@ To be able to "watch" the user-defined websites periodically, Sitewatcher has a 
                 
 1. It reads the database from time to time, matching the possible frequencies available to get the alerts;
 2. Try crawling the site using a retry policy to avoid transient errors;
-3. If an alert is triggered or any site cannot be reached, a message with the email content is sent to the queue;
-4. Consumes the queue and sends the email to the user;
-
-The email sending makes use of a queue to not overflow the maximum email sending rate, and to have better control to recover from failures.             
+3. If an alert is triggered or any site cannot be reached, an AlertTriggeredEvent is published on queue with all alerts triggered for an user;
+4. The Worker consumes the AlertTriggeredEvent an process it creating a Notification, the notification is responsible to create the email that is published on the queue;
+5. The Worker, also consumes the email queue and sends the email to the user;
 
 
 ## Next steps
+- Remove dead code and unnecessary abstractions;
 - Improve the intelligent search using an algorithm like the Levenshtein distance, removing some search business rules from the database;
 - Implementing a full hexagonal architecture;
 - Increase test coverage;

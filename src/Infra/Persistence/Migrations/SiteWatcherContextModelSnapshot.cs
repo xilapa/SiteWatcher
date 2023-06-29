@@ -18,7 +18,7 @@ namespace SiteWatcher.Infra.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("sw")
-                .HasAnnotation("ProductVersion", "6.0.11")
+                .HasAnnotation("ProductVersion", "7.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -64,29 +64,6 @@ namespace SiteWatcher.Infra.Migrations
                     b.ToTable("Alerts", "sw");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Notifications.Notification", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("AlertId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamptz");
-
-                    b.Property<Guid?>("EmailId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AlertId");
-
-                    b.HasIndex("EmailId");
-
-                    b.ToTable("Notifications", "sw");
-                });
-
             modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.Rule", b =>
                 {
                     b.Property<int>("Id")
@@ -121,6 +98,32 @@ namespace SiteWatcher.Infra.Migrations
                     b.ToTable("Rules", "sw");
 
                     b.HasDiscriminator<char>("Rule");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Triggerings.Triggering", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AlertId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<short>("Status")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlertId");
+
+                    b.ToTable("Triggerings", "sw");
                 });
 
             modelBuilder.Entity("SiteWatcher.Domain.Common.ValueObjects.IdempotentConsumer", b =>
@@ -141,15 +144,27 @@ namespace SiteWatcher.Infra.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamptz");
+
                     b.Property<DateTime?>("DateSent")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<DateTime?>("ErrorDate")
                         .HasColumnType("timestamptz");
 
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("LastUpdatedAt")
+                        .HasColumnType("timestamptz");
 
                     b.Property<string>("Recipient")
                         .IsRequired()
@@ -167,6 +182,50 @@ namespace SiteWatcher.Infra.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Emails", "sw");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Notifications.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<Guid?>("EmailId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications", "sw");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Notifications.NotificationAlert", b =>
+                {
+                    b.Property<Guid>("NotificationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AlertId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("TriggeringDate")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<short>("TriggeringStatus")
+                        .HasColumnType("smallint");
+
+                    b.HasKey("NotificationId", "AlertId", "TriggeringDate");
+
+                    b.HasIndex("AlertId");
+
+                    b.ToTable("NotificationAlerts", "sw");
                 });
 
             modelBuilder.Entity("SiteWatcher.Domain.Users.User", b =>
@@ -293,23 +352,6 @@ namespace SiteWatcher.Infra.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Notifications.Notification", b =>
-                {
-                    b.HasOne("SiteWatcher.Domain.Alerts.Alert", "Alert")
-                        .WithMany("Notifications")
-                        .HasForeignKey("AlertId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SiteWatcher.Domain.Emails.Email", "Email")
-                        .WithMany()
-                        .HasForeignKey("EmailId");
-
-                    b.Navigation("Alert");
-
-                    b.Navigation("Email");
-                });
-
             modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Rules.Rule", b =>
                 {
                     b.HasOne("SiteWatcher.Domain.Alerts.Alert", null)
@@ -319,11 +361,52 @@ namespace SiteWatcher.Infra.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SiteWatcher.Domain.Alerts.Entities.Triggerings.Triggering", b =>
+                {
+                    b.HasOne("SiteWatcher.Domain.Alerts.Alert", null)
+                        .WithMany("Triggerings")
+                        .HasForeignKey("AlertId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SiteWatcher.Domain.Emails.Email", b =>
                 {
                     b.HasOne("SiteWatcher.Domain.Users.User", null)
                         .WithMany("Emails")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Notifications.Notification", b =>
+                {
+                    b.HasOne("SiteWatcher.Domain.Emails.Email", "Email")
+                        .WithMany()
+                        .HasForeignKey("EmailId");
+
+                    b.HasOne("SiteWatcher.Domain.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Email");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Notifications.NotificationAlert", b =>
+                {
+                    b.HasOne("SiteWatcher.Domain.Alerts.Alert", null)
+                        .WithMany()
+                        .HasForeignKey("AlertId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SiteWatcher.Domain.Notifications.Notification", null)
+                        .WithMany("NotificationAlerts")
+                        .HasForeignKey("NotificationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -358,10 +441,15 @@ namespace SiteWatcher.Infra.Migrations
 
             modelBuilder.Entity("SiteWatcher.Domain.Alerts.Alert", b =>
                 {
-                    b.Navigation("Notifications");
-
                     b.Navigation("Rule")
                         .IsRequired();
+
+                    b.Navigation("Triggerings");
+                });
+
+            modelBuilder.Entity("SiteWatcher.Domain.Notifications.Notification", b =>
+                {
+                    b.Navigation("NotificationAlerts");
                 });
 
             modelBuilder.Entity("SiteWatcher.Domain.Users.User", b =>

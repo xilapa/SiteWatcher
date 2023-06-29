@@ -1,8 +1,10 @@
 using System.Runtime.CompilerServices;
 using Dapper;
+using DotNetCore.CAP;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -28,14 +30,14 @@ namespace SiteWatcher.Infra;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services) where TContext : DbContext, IUnitOfWork
+    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services, bool addMigrator = true) where TContext : DbContext, IUnitOfWork
     {
         // Making explicit that the context is the same for all repositories
         services.AddDbContext<TContext>(ServiceLifetime.Scoped);
         services.AddScoped<IUnitOfWork>(s => s.GetRequiredService<TContext>());
 
         // Add migrator
-        services.AddScoped(typeof(DatabaseMigrator));
+        if (addMigrator) services.AddScoped(typeof(DatabaseMigrator));
 
         return services;
     }
@@ -102,8 +104,9 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection SetupMessaging(this IServiceCollection services, RabbitMqSettings rabbitSettings, IAppSettings appSettings)
+    public static IServiceCollection SetupMessaging(this IServiceCollection services, IConfiguration configManager, IAppSettings appSettings)
     {
+        var rabbitSettings = configManager.Get<RabbitMqSettings>()!;
         services
             .AddCap(opts =>
             {
@@ -128,17 +131,26 @@ public static class DependencyInjection
                         opt.ExchangeName = RabbitMqSettings.SiteWatcherExchange;
                         opt.CustomHeaders = message => new List<KeyValuePair<string, string>>
                         {
-                            new KeyValuePair<string, string>(DotNetCore.CAP.Messages.Headers.MessageId, GetMessageId(message, appSettings.MessageIdKey)),
-                            new KeyValuePair<string, string>(DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
+                            new(DotNetCore.CAP.Messages.Headers.MessageId,
+                                GetMessageId(message, appSettings.MessageIdKey)),
+                            new(DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
                         };
+
+                        opt.PublishConfirms = true;
+                        opt.BasicQosOptions = new RabbitMQOptions.BasicQos(1, false);
                     });
                 }
+
+                opts.Version = "v2";
 
                 opts.FailedRetryCount = 25;
                 // Email notification consumer needs to have only one consumer
                 opts.ConsumerThreadCount = 1;
                 // Enable the concurrency level to be per queue
                 opts.UseDispatchingPerGroup = true;
+
+                // Disable prefetching messages
+                opts.EnableConsumerPrefetch = false;
             });
 
         services.AddScoped<IPublisher, Publisher>();

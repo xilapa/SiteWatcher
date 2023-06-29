@@ -136,8 +136,8 @@
     },
     "common": {
       "createdAt": "Created at",
-      "notificationsSent": "Notifications sent",
-      "notificationsSentMobile": "Notifications",
+      "triggeringsCount": "Triggerings count",
+      "triggeringsMobile": "Triggerings",
       "frequencyMobile": "Frequency",
       "ruleMobile": "Rule",
       "notifyOnDisappearance": "Notify on disappearance",

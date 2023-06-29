@@ -20,11 +20,6 @@ public class WorkerSettings
     public string RedisConnectionString { get; set; } = null!;
 }
 
-public static class RoutingKeys
-{
-    public const string EmailNotification = "site-watcher.worker.notifications.email";
-}
-
 public class WorkerAppSettings : IAppSettings
 {
     public bool IsDevelopment { get; set; }
@@ -43,7 +38,6 @@ public class WorkerAppSettings : IAppSettings
     string IAppSettings.MessageIdKey => MessageIdKey;
     public const string MessageIdKey = "message-id";
     public bool InMemoryStorageAndQueue { get; set; }
-    public string EmailNotificationRoutingKey { get; set; } = null!;
     public bool DisableDataProtectionRedisStore { get; set; }
 }
 

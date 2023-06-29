@@ -28,7 +28,7 @@ public class AutoMapperVsManualMapping
                 Name = $"Alert {index}",
                 CreatedAt = DateTime.Now,
                 LastVerification = DateTime.Now.AddDays(-index),
-                NotificationsSent = 12,
+                TriggeringsCount = 12,
                 SiteName = $"Site name {index}",
                 Rule = index % 2 == 0 ? 'A' : 'T'
             });

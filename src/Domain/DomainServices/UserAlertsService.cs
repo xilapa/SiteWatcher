@@ -1,8 +1,6 @@
 using SiteWatcher.Common.Services;
-using SiteWatcher.Domain.Alerts.Entities.Notifications;
-using SiteWatcher.Domain.Alerts.ValueObjects;
-using SiteWatcher.Domain.Emails;
-using SiteWatcher.Domain.Emails.Repositories;
+using SiteWatcher.Domain.Alerts.Events;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 
 namespace SiteWatcher.Domain.DomainServices;
@@ -10,62 +8,41 @@ namespace SiteWatcher.Domain.DomainServices;
 public sealed class UserAlertsService : IUserAlertsService
 {
     private readonly IHttpClient _httpClient;
-    private readonly IEmailRepository _emailRepository;
 
-    public UserAlertsService(IHttpClient httpClient, IEmailRepository emailRepository)
+    public UserAlertsService(IHttpClient httpClient)
     {
         _httpClient = httpClient;
-        _emailRepository = emailRepository;
     }
 
-    public async Task<NotificationToSend?> ExecuteAlerts(User user, DateTime currentTime, string siteWatcherUri, CancellationToken ct)
+    public async Task<List<AlertExecutionError>> ExecuteAlerts(User user, DateTime currentTime, CancellationToken ct)
     {
-        var alertsToNotify = new List<AlertToNotify>();
+        var alertsTriggered = new List<AlertTriggered>();
+        var errors = new List<AlertExecutionError>();
         foreach (var alert in user.Alerts)
         {
-            var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
-            // TODO: Execute rule should return the notification, the notification should have more data on it
-            var alertToNotify = await alert.ExecuteRule(htmlStream, currentTime);
-            if (alertToNotify != null)
-                alertsToNotify.Add(alertToNotify);
+            try
+            {
+                var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
+                var alertTriggered = await alert.ExecuteRule(htmlStream, currentTime);
+                if (alertTriggered != null)
+                    alertsTriggered.Add(alertTriggered);
+            }
+            catch (Exception e)
+            {
+                errors.Add(new AlertExecutionError { AlertId = alert.Id, Exception = e });
+            }
         }
-        if(alertsToNotify.Count == 0)
-            return null;
 
-        // TODO: GenerateMailMessage should use the notification
-        var mailMsg = await GenerateMailMessage(user, siteWatcherUri, alertsToNotify);
-        return new NotificationToSend
-        {
-            EmailNotification = mailMsg
-        };
-    }
-
-    private async Task<MailMessage> GenerateMailMessage(User user, string siteWatcherUri, List<AlertToNotify> alertsToNotify)
-    {
-        var subject = NotificationMessageGenerator.GetSubject(user.Language);
-        var body = await NotificationMessageGenerator.GetBody(user, alertsToNotify, siteWatcherUri);
-        var emailRecipient = new MailRecipient(user.Name, user.Email, user.Id);
-
-        // generate the email and the email msg
-        var email = new Email(body, subject, emailRecipient);
-        var emailMsg = new MailMessage(email.Id, subject, body, true, emailRecipient);
-
-        // Save the email related to the MailMessage that will be sent
-        // The DateSent will be set by who sent the email
-        _emailRepository.Add(email);
-
-        // correlate the notifications with the email entity
-        var notificationIds = alertsToNotify.Select(_ => _.NotificationId).ToArray();
-        foreach(var alert in user.Alerts)
-            alert.SetEmail(email, notificationIds);
-
-        return emailMsg;
+        if (alertsTriggered.Count != 0)
+            user.AddDomainEvent(new AlertsTriggeredEvent(user, alertsTriggered, currentTime));
+        return errors;
     }
 }
 
-public sealed class NotificationToSend
+public sealed class AlertExecutionError
 {
-    public MailMessage? EmailNotification { get; set; }
+    public AlertId AlertId { get; set; }
+    public Exception Exception { get; set; } = null!;
 }
 
 public interface IUserAlertsService
@@ -75,6 +52,6 @@ public interface IUserAlertsService
     /// </summary>
     /// <param name="user">User with the alerts and rules loaded</param>
     /// <param name="currentTime">Current time</param>
-    /// <returns>The notification to send</returns>
-    Task<NotificationToSend?> ExecuteAlerts(User user, DateTime currentTime, string siteWatcherUri, CancellationToken ct);
+    /// <param name="ct">Cancellation token</param>
+    Task<List<AlertExecutionError>> ExecuteAlerts(User user, DateTime currentTime, CancellationToken ct);
 }

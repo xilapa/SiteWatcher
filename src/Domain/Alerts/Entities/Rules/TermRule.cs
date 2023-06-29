@@ -57,6 +57,7 @@ public class TermRule : Rule
         if(differentLength)
             return SaveDifferenceAndReturn(differentLength);
 
+        // TODO: remove this check, term occurrences only check the count of the matches
         // If the length are equals, compare if the matches are in the occurrences
         var differentOccurrence = false;
         foreach(var m in matchesArray)

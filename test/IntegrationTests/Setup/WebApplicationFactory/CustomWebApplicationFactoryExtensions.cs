@@ -41,24 +41,26 @@ public static class CustomWebApplicationFactoryExtensions
     }
 
     public static async Task<Alert> CreateAlert(this CustomWebApplicationFactory<Program> appFactory, string name,
-        Rules rule, UserId userId, DateTime? currentDate = null)
+        Rules rule, UserId userId, DateTime? currentDate = null, Frequencies? frequency = null)
     {
-        return await CreateAlert<Alert>(appFactory, name, rule, userId, currentDate);
+        return await CreateAlert<Alert>(appFactory, name, rule, userId, currentDate, frequency: frequency);
     }
 
     public static async Task<T> CreateAlert<T>(this CustomWebApplicationFactory<Program> appFactory, string name,
         Rules rule, UserId userId, DateTime? currentDate = null, string? siteName = null,
-        string? siteUri = null) where T : class
+        string? siteUri = null, Frequencies? frequency = null) where T : class
     {
         currentDate ??= appFactory.CurrentTime;
         var createAlertInput = new CreateAlertInput
         {
             Name = name,
             Rule = rule,
-            Frequency = Frequencies.EightHours,
+            Frequency = frequency ?? Frequencies.TwoHours,
             Term = "test term",
             SiteName = siteName ?? "test site",
-            SiteUri = siteUri ?? "http://mytest.net"
+            SiteUri = siteUri ?? "http://mytest.net",
+            RegexPattern = "[a-z]+",
+            NotifyOnDisappearance = false
         };
         var alert = AlertFactory.Create(createAlertInput, userId, currentDate.Value);
         await WithDbContext(appFactory, async ctx =>

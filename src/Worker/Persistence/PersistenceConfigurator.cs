@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Emails.Repositories;
 using SiteWatcher.Domain.Users.Repositories;
 using SiteWatcher.Infra;
@@ -10,10 +9,10 @@ namespace SiteWatcher.Worker.Persistence;
 
 public static class PersistenceConfigurator
 {
-    public static IServiceCollection SetupPersistence(this IServiceCollection serviceCollection, IAppSettings appSettings)
+    public static IServiceCollection SetupPersistence(this IServiceCollection serviceCollection)
     {
         serviceCollection
-            .AddScoped<SiteWatcherContext>(_ => new SiteWatcherContext(appSettings, mediator: null))
+            .AddDataContext<SiteWatcherContext>(addMigrator: false)
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IEmailRepository, EmailRepository>();
         return serviceCollection;

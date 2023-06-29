@@ -1,18 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SiteWatcher.Domain.Alerts.Entities.Notifications;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 
-public class EmailMapping : IEntityTypeConfiguration<Email>
+public class EmailMapping : BaseModelMapping<Email, EmailId>
 {
-    public void Configure(EntityTypeBuilder<Email> builder)
+    public override void Configure(EntityTypeBuilder<Email> builder)
     {
-        builder.ToTable("Emails");
+        base.Configure(builder);
 
-        builder.HasKey(e => e.Id);
+        builder.ToTable("Emails");
 
         builder.Property(e => e.Id)
             .HasConversion<EmailId.EfCoreValueConverter>()
@@ -39,15 +38,8 @@ public class EmailMapping : IEntityTypeConfiguration<Email>
             .HasColumnType("text")
             .IsRequired(false);
 
-        builder.HasMany(e => e.Alerts)
-            .WithMany(a => a.Emails)
-            .UsingEntity<Notification>(
-                j => j.HasOne(n => n.Alert)
-                .WithMany(a => a.Notifications)
-                .HasForeignKey(nameof(AlertId)),
-                j => j.HasOne(n => n.Email)
-                .WithMany()
-                .HasForeignKey(n => n.EmailId)
-            );
+        builder.Property(e => e.ErrorDate)
+            .HasColumnType("timestamptz")
+            .IsRequired(false);
     }
 }

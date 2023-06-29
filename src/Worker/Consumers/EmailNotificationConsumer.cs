@@ -1,10 +1,8 @@
-using System.Data;
 using DotNetCore.CAP;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
-using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails.DTOs;
 using SiteWatcher.Infra;
 using SiteWatcher.Worker.Persistence;
@@ -30,53 +28,39 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
     // CAP uses this attribute to create a queue and bind it with a routing key.
     // The message name is the routing key and group name is used to create the queue name.
     // Cap append the version on the queue name (e.g., queue-name.v1)
-    [CapSubscribe(RoutingKeys.EmailNotification, Group = RoutingKeys.EmailNotification)]
-    public async Task Consume(EmailNotificationMessage message, [FromCap] CapHeader capHeader, CancellationToken cancellationToken)
+    [CapSubscribe(RoutingKeys.MailMessage, Group = RoutingKeys.MailMessage)]
+    public async Task Consume(MailMessage message, CancellationToken cancellationToken)
     {
-        // Explicit closing and opening the db connection, along with pooling disabled
-        // on connection string, to reduce Neon db usage
-        var conn = _context.Database.GetDbConnection();
-        if (conn.State != ConnectionState.Open)
-            await _context.Database.OpenConnectionAsync(cancellationToken);
-        
-        var messageId = capHeader[WorkerAppSettings.MessageIdKey]!;
-        var hasBeenProcessed = await _context.HasBeenProcessed(messageId, nameof(EmailNotificationConsumer));
+        var messageId = message.EmailId.ToString();
+        var hasBeenProcessed = await _context.HasBeenProcessed(messageId!, nameof(EmailNotificationConsumer));
         if (hasBeenProcessed)
         {
-            _logger.LogInformation("{Date} Message has already been processed: {MessageId}", DateTime.UtcNow, messageId);
+            _logger.LogInformation("{Date} MailMessage has already been processed: {MessageId}", DateTime.UtcNow, message.EmailId);
             return;
         }
 
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-        var error = await SendEmailNotification(message, messageId, cancellationToken);
-        // If there is an error, throw an exception to fail the message consuming
-        if(error != null)
-            throw new Exception(error);
+        /// TODO: move inner email sending logic to Application UseCase, and set error or mark email as sent
+        var error = await _emailService.SendEmailAsync(message.Subject, message.Body!, message.Recipients, cancellationToken);
 
-        await _context.MarkMessageAsConsumed(messageId, nameof(EmailNotificationConsumer));
-        await transaction.CommitAsync(CancellationToken.None);
-        _logger.LogInformation("{Date} Message consumed: {MessageId}", DateTime.UtcNow, messageId);
+        if (error != null)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            await Task.Delay(TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds), cancellationToken);
+            // If there is an error, throw an exception to fail the message consuming
+            throw new Exception(error);
+        }
+
+        await _context.MarkMessageAsConsumed(messageId!, nameof(EmailNotificationConsumer));
+        await _context.SaveChangesAsync(cancellationToken);
 
         await Task.Delay(TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds), cancellationToken);
-        await _context.Database.CloseConnectionAsync();
-    }
-
-    private async Task<string?> SendEmailNotification(EmailNotificationMessage message, string messageId, CancellationToken cancellationToken)
-    {
-        // The messageId is the email Id
-        var emailId = new EmailId(Guid.Parse(messageId));
-        var email = await _context.Emails.SingleAsync(e => e.Id.Equals(emailId), cancellationToken);
-        // TODO: create a wrapper for date, to make tests possible
-        email.DateSent = DateTime.UtcNow;
-
-        // TODO: create flag to disable email sending
-        // TODO: set error message on email
-        return await _emailService.SendEmailAsync(message.Subject, message.Body, message.Recipients, cancellationToken);
+        _logger.LogInformation("{Date} MailMessage consumed: {MessageId}", DateTime.UtcNow, messageId);
     }
 }
 
 public interface IEmailNotificationConsumer
 {
-    Task Consume(EmailNotificationMessage message, CapHeader capHeader, CancellationToken cancellationToken);
+    Task Consume(MailMessage message, CancellationToken cancellationToken);
 }
