@@ -52,7 +52,7 @@ public sealed class EmailNotificationConsumer : IEmailNotificationConsumer, ICap
             throw new Exception(error);
         }
 
-        await _context.MarkMessageAsConsumed(messageId!, nameof(EmailNotificationConsumer));
+        _context.MarkMessageAsConsumed(messageId!, nameof(EmailNotificationConsumer));
         await _context.SaveChangesAsync(cancellationToken);
 
         await Task.Delay(TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds), cancellationToken);

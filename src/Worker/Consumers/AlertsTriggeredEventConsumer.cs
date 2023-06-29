@@ -34,7 +34,7 @@ public class AlertsTriggeredEventConsumer : ICapSubscribe
         }
 
         await using var transaction = await _ctx.Database.BeginTransactionAsync(ct);
-        await _ctx.MarkMessageAsConsumed(message.Id, nameof(AlertsTriggeredEventConsumer));
+        _ctx.MarkMessageAsConsumed(message.Id, nameof(AlertsTriggeredEventConsumer));
         var res = await _handler.Handle(message, ct) as ValueResult<bool>;
 
         if (!res!.Value) throw new Exception($"Cant process AlertsTriggeredEvent {message.Id}");

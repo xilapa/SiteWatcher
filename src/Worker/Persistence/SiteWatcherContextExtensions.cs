@@ -11,14 +11,13 @@ public static class SiteWatcherContextExtensions
             .AsNoTracking()
             .AnyAsync(i => i.Consumer == consumerName && i.MessageId == messageId);
 
-        public static async Task MarkMessageAsConsumed(this SiteWatcherContext context, string messageId, string consumerName)
+        public static void MarkMessageAsConsumed(this SiteWatcherContext context, string messageId, string consumerName)
         {
-            var idemPotencyConsumer = new IdempotentConsumer()
+            var idemPotencyConsumer = new IdempotentConsumer
             {
                 MessageId = messageId,
                 Consumer = consumerName,
             };
             context.Add(idemPotencyConsumer);
-            await context.SaveChangesAsync();
         }
 }
