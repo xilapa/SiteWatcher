@@ -1,4 +1,3 @@
 ﻿{
-  "DOCKER_HOST" : "",
-  "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE" : ""
+  "DOCKER_HOST" : ""
 }
