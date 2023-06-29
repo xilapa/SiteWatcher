@@ -33,7 +33,6 @@ public class AlertsTriggeredEventConsumer : ICapSubscribe
             return;
         }
 
-        await using var transaction = await _ctx.Database.BeginTransactionAsync(ct);
         _ctx.MarkMessageAsConsumed(message.Id, nameof(AlertsTriggeredEventConsumer));
         var res = await _handler.Handle(message, ct) as ValueResult<bool>;
 
