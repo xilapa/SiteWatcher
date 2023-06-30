@@ -11,6 +11,7 @@ COPY src/Application ./src/Application
 COPY src/Domain ./src/Domain
 COPY src/Infra ./src/Infra/
 COPY src/WebAPI ./src/WebAPI/
+COPY Directory.Packages.props .
 #COPY test/Benchmark ./test/Benchmark
 #COPY test/UnitTests ./test/UnitTests
 #COPY test/IntegrationTests ./test/IntegrationTests

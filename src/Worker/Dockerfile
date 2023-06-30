@@ -11,6 +11,7 @@ COPY src/Worker ./src/Worker
 COPY src/Application ./src/Application
 COPY src/Domain ./src/Domain
 COPY src/Infra ./src/Infra/
+COPY Directory.Packages.props .
 
 #https://devblogs.microsoft.com/dotnet/performance_improvements_in_net_7/#pgo
 # ENV DOTNET_ReadyToRun=0
