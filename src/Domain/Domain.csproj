@@ -8,20 +8,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="1.0.3" />
-    <PackageReference Include="Dapper" Version="2.0.138" />
-    <PackageReference Include="Fluid.Core" Version="2.4.0" />
-    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.7" />
-    <PackageReference Include="Roslynator.Analyzers" Version="4.3.0">
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Fluid.Core" />
+    <PackageReference Include="MediatR.Contracts" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Roslynator.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.3.0">
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="StronglyTypedId" Version="1.0.0-beta06">
+    <PackageReference Include="StronglyTypedId">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>runtime</ExcludeAssets>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

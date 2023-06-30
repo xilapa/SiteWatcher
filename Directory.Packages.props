@@ -1,0 +1,56 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="FluentValidation" Version="11.5.2" />
+    <PackageVersion Include="MediatR" Version="12.0.1" />
+    <PackageVersion Include="MediatR.Contracts" Version="2.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.IdentityModel.Tokens" Version="6.31.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
+    <PackageVersion Include="Npgsql" Version="7.0.4" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.3.0" />
+    <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="4.3.0" />
+    <PackageVersion Include="AngleSharp" Version="1.0.4" />
+    <PackageVersion Include="Dapper" Version="2.0.143" />
+    <PackageVersion Include="Fluid.Core" Version="2.4.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
+    <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta06" />
+    <PackageVersion Include="DotNetCore.CAP" Version="7.1.4" />
+    <PackageVersion Include="DotNetCore.CAP.InMemoryStorage" Version="7.1.4" />
+    <PackageVersion Include="DotNetCore.CAP.PostgreSql" Version="7.1.4" />
+    <PackageVersion Include="DotNetCore.CAP.RabbitMQ" Version="7.1.4" />
+    <PackageVersion Include="Hashids.net" Version="1.7.0" />
+    <PackageVersion Include="MailKit" Version="4.1.0" />
+    <PackageVersion Include="Polly" Version="7.2.4" />
+    <PackageVersion Include="RabbitMQ.Client" Version="6.5.0" />
+    <PackageVersion Include="Savorboard.CAP.InMemoryMessageQueue" Version="7.0.0" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.6.116" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
+    <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageVersion Include="AutoMapper" Version="12.0.1" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.13.5" />
+    <PackageVersion Include="FluentAssertions" Version="6.11.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.8" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageVersion Include="Moq" Version="4.18.4" />
+    <PackageVersion Include="ReflectionMagic" Version="5.0.0" />
+    <PackageVersion Include="Testcontainers" Version="3.3.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="3.3.0" />
+    <PackageVersion Include="xunit" Version="2.4.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
+  </ItemGroup>
+</Project>
