@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
@@ -15,7 +16,6 @@ using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Users.Repositories;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -188,17 +188,14 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
             await ctx.SaveChangesAsync();
         });
 
-        var frequencies = Enum.GetValues<Frequencies>();
+        var frequencies = Enum.GetValues<Frequencies>().ToList();
         CurrentTime = CurrentTime.Add(executionDelay);
 
         // Act
-        var usersWithAlerts = await AppFactory.WithServiceProvider(sp =>
-        {
-            var userRepo = sp.GetRequiredService<IUserRepository>();
-            return userRepo.GetUserWithPendingAlertsAsync(frequencies, 10, null, CancellationToken.None);
-        });
+        var usersWithAlerts = await AppFactory.WithDbContext(ctx =>
+            ctx.GetUserWithPendingAlertsAsync(null, frequencies, 50, CurrentTime, CancellationToken.None));
 
-        // Assert
+            // Assert
         var alerts = usersWithAlerts.SelectMany(u => u.Alerts);
         alerts.Any(a => a.Id == alert.Id).Should().Be(shouldExecute);
     }

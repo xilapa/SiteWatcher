@@ -4,15 +4,15 @@ public sealed class PaginatedList<T>
 {
     public PaginatedList()
     {
-        Results = Enumerable.Empty<T>();
+        Results = Array.Empty<T>();
     }
 
-    public PaginatedList(IEnumerable<T> results, int total)
+    public PaginatedList(T[] results, int total)
     {
         Results = results;
         Total = total;
     }
 
     public int Total { get; set; }
-    public IEnumerable<T> Results { get; set; }
+    public T[] Results { get; set; }
 }

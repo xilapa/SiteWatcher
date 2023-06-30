@@ -1,9 +1,9 @@
-﻿using SiteWatcher.Common.Repositories;
+﻿using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Infra.DapperRepositories;
 
-public class DapperQueries : IDapperQueries
+public class PostgresQueries : IQueries
 {
 	public virtual string GetUserByGoogleId => @"
             SELECT 
@@ -20,13 +20,6 @@ public class DapperQueries : IDapperQueries
                 ""sw"".""Users"" AS u
             WHERE
                 u.""Id"" = @id ";
-
-    public virtual string DeleteActiveUserById => @"
-            DELETE 
-            FROM 
-                ""sw"".""Users"" AS u
-            WHERE
-                u.""Id"" = @userId AND u.""Active"" ";
 
     public virtual string GetSimpleAlertViewListByUserId => @"
             SELECT 

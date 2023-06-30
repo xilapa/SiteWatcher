@@ -1,42 +1,37 @@
-﻿using System.Linq.Expressions;
-using FluentAssertions;
+﻿using FluentAssertions;
+using MockQueryable.Moq;
 using Moq;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
-using SiteWatcher.Domain.Users.Repositories;
+using SiteWatcher.IntegrationTests.Setup.TestServices;
 
 namespace UnitTests.Commands;
 
 public sealed class ConfirmEmailCommandTests
 {
-    private readonly IAuthService _authService;
+    private readonly Mock<IAuthService> _authServiceMock;
+    private SqliteContext _context = null!;
 
     public ConfirmEmailCommandTests()
     {
-        var authService = new Mock<IAuthService>();
-        authService
-            .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))
-            .ReturnsAsync(new UserId());
-        _authService = authService.Object;
+        _authServiceMock = new Mock<IAuthService>();
     }
 
     [Fact]
     public async Task CantConfirmEmailIfUserDoesNotExists()
     {
         // Arrange
-        var userRepository = new Mock<IUserRepository>();
-        userRepository
-            .Setup(u => u.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
-            .Returns(Task.FromResult<User?>(default));
-
-        var commandHandler = new ConfirmEmailCommandHandler(_authService, userRepository.Object, null!, null!);
+        _authServiceMock
+            .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))
+            .ReturnsAsync(new UserId());
+        var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, _context, null!);
 
         // Act
         var result = await commandHandler.Handle(new ConfirmEmailCommand(), CancellationToken.None) as ErrorResult;
@@ -54,17 +49,19 @@ public sealed class ConfirmEmailCommandTests
         var user = new User("googleId", "name", "email", "authEmail",
             Language.BrazilianPortuguese, Theme.Light, DateTime.Now);
 
-        var userRepository = new Mock<IUserRepository>();
-        userRepository
-            .Setup(u => u.GetAsync(It.IsAny<Expression<Func<User, bool>>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
+        var userDbSetMock = new[] { user }.AsQueryable().BuildMockDbSet();
+        var contextMock = new Mock<ISiteWatcherContext>();
+        contextMock.Setup(c => c.Users).Returns(userDbSetMock.Object);
 
-        var session = new Mock<ISession>().Object;
-        var uow = new Mock<IUnitOfWork>().Object;
-        var commandHandler = new ConfirmEmailCommandHandler(_authService, userRepository.Object, session, uow);
+        _authServiceMock
+            .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))
+            .ReturnsAsync(user.Id);
+
+        var sessionMock = new Mock<ISession>();
+        var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, contextMock.Object, sessionMock.Object);
 
         // Act
-        var result = await commandHandler.Handle(new ConfirmEmailCommand { Token = "INVALID_TOKEN"}, CancellationToken.None) as ErrorResult;
+        var result = await commandHandler.Handle(new ConfirmEmailCommand {Token = "INVALID_TOKEN"}, CancellationToken.None) as ErrorResult;
 
         // Assert
 

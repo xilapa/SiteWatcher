@@ -11,7 +11,6 @@ using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.IdHasher;
@@ -85,14 +84,14 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
             .Setup(i => i.DecodeId(It.IsAny<string>()))
             .Returns(1);
 
-        var alertDapperRepoMock = new Mock<IAlertDapperRepository>();
-        alertDapperRepoMock
-            .Setup(a =>
-                a.DeleteUserAlert(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+        // var alertDapperRepoMock = new Mock<IAlertDapperRepository>();
+        // alertDapperRepoMock
+        //     .Setup(a =>
+        //         a.DeleteUserAlert(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()))
+        //     .ReturnsAsync(true);
 
         optionsBuilder.ReplaceService(typeof(IIdHasher), idHasherMock.Object);
-        optionsBuilder.ReplaceService(typeof(IAlertDapperRepository), alertDapperRepoMock.Object);
+        // optionsBuilder.ReplaceService(typeof(IAlertDapperRepository), alertDapperRepoMock.Object);
     }
 }
 

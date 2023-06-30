@@ -26,9 +26,8 @@ builder.Services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInva
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDataContext<SiteWatcherContext>();
-builder.Services.AddRepositories();
-builder.Services.AddDapperRepositories();
+builder.Services.AddDataContext();
+builder.Services.AddDapperContext();
 builder.Services.AddApplication();
 
 builder.Services.AddRedisCache(appSettings)

@@ -1,10 +1,10 @@
-﻿using MediatR;
+﻿using Dapper;
+using MediatR;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.DTOs;
-using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Users.Commands.GetUserinfo;
 
@@ -19,12 +19,14 @@ public sealed class GetUserInfoCommand : IRequest<UserViewModel?>, ICacheable
 
 public sealed class GetUserInfoCommandHandler : IRequestHandler<GetUserInfoCommand, UserViewModel?>
 {
-    private readonly IUserDapperRepository _userRepo;
+    private readonly IDapperContext _context;
+    private readonly IQueries _queries;
     private readonly ISession _session;
 
-    public GetUserInfoCommandHandler(IUserDapperRepository userRepo, ISession session)
+    public GetUserInfoCommandHandler(IDapperContext context, IQueries queries, ISession session)
     {
-        _userRepo = userRepo;
+        _context = context;
+        _queries = queries;
         _session = session;
     }
 
@@ -33,6 +35,14 @@ public sealed class GetUserInfoCommandHandler : IRequestHandler<GetUserInfoComma
         if (UserId.Empty.Equals(_session.UserId))
             return Task.FromResult<UserViewModel?>(null);
 
-        return _userRepo.GetUserByIdAsync(_session.UserId!.Value, ct);
+        return _context.UsingConnectionAsync(conn =>
+        {
+            var cmd = new CommandDefinition(
+                _queries.GetUserById,
+                new { id = _session.UserId },
+                cancellationToken: ct);
+
+            return conn.QuerySingleOrDefaultAsync<UserViewModel?>(cmd);
+        });
     }
 }

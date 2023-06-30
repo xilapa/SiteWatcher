@@ -1,9 +1,8 @@
-﻿namespace SiteWatcher.Common.Repositories;
-public interface IDapperQueries
+﻿namespace SiteWatcher.Application.Interfaces;
+public interface IQueries
 {
     string GetUserByGoogleId { get; }
     string GetUserById { get; }
-    string DeleteActiveUserById { get; }
     string GetSimpleAlertViewListByUserId { get; }
     string GetAlertDetails { get; }
     string DeleteUserAlert { get; }

@@ -2,12 +2,11 @@
 
 namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 
-public class SqliteDapperQueries : DapperQueries
+public class SqliteDapperQueries : PostgresQueries
 {
     public SqliteDapperQueries()
     {
         GetUserByGoogleId = RemoveSchema(base.GetUserByGoogleId);
-        DeleteActiveUserById = RemoveSchema(base.DeleteActiveUserById);
         GetSimpleAlertViewListByUserId = RemoveSchema(base.GetSimpleAlertViewListByUserId);
         GetAlertDetails = RemoveSchema(base.GetAlertDetails);
         DeleteUserAlert = RemoveSchema(base.DeleteUserAlert);
@@ -16,7 +15,6 @@ public class SqliteDapperQueries : DapperQueries
 
     public override string GetUserByGoogleId { get; }
     public override string GetUserById { get; }
-    public override string DeleteActiveUserById { get; }
     public override string GetSimpleAlertViewListByUserId { get; }
     public override string GetAlertDetails { get; }
     public override string DeleteUserAlert { get; }

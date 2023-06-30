@@ -1,11 +1,11 @@
 using Microsoft.Extensions.Logging;
-using SiteWatcher.Common.Repositories;
+using SiteWatcher.Application.Common.Extensions;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.DomainServices;
-using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 
@@ -21,21 +21,19 @@ public sealed class ExecuteAlertsCommand
 
 public sealed class ExecuteAlertsCommandHandler
 {
-    private readonly IUserRepository _userRepository;
+    private readonly ISiteWatcherContext _context;
     private readonly IUserAlertsService _userAlertsService;
     private readonly ISession _session;
     private readonly ICache _cache;
-    private readonly IUnitOfWork _uow;
     private readonly ILogger<ExecuteAlertsCommandHandler> _logger;
 
-    public ExecuteAlertsCommandHandler(IUserRepository userRepository, IUserAlertsService userAlertsService,
-            ISession session, ICache cache, IUnitOfWork uow, ILogger<ExecuteAlertsCommandHandler> logger)
+    public ExecuteAlertsCommandHandler(ISiteWatcherContext context, IUserAlertsService userAlertsService,
+            ISession session, ICache cache, ILogger<ExecuteAlertsCommandHandler> logger)
     {
-        _userRepository = userRepository;
+        _context = context;
         _userAlertsService = userAlertsService;
         _session = session;
         _cache = cache;
-        _uow = uow;
         _logger = logger;
     }
 
@@ -69,9 +67,8 @@ public sealed class ExecuteAlertsCommandHandler
         DateTime? lastCreatedDate = null;
         while(loop)
         {
-            var usersWithAlerts = (await _userRepository
-                .GetUserWithPendingAlertsAsync(freqs, 50, lastCreatedDate, ct))
-                .ToArray();
+            var usersWithAlerts = await _context
+                .GetUserWithPendingAlertsAsync(lastCreatedDate, freqs, 50, _session.Now, ct);
 
             if (usersWithAlerts.Length == 0)
             {
@@ -87,7 +84,7 @@ public sealed class ExecuteAlertsCommandHandler
                 {
                     var errors = await _userAlertsService.ExecuteAlerts(user,_session.Now, ct);
                     if (errors.Count != 0) LogAlertExecutionErrors(errors);
-                    await _uow.SaveChangesAsync(ct);
+                    await _context.SaveChangesAsync(ct);
                 }
                 catch (Exception e)
                 {

@@ -3,38 +3,32 @@ using Dapper;
 using DotNetCore.CAP;
 using DotNetCore.CAP.Internal;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Savorboard.CAP.InMemoryMessageQueue;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Users.Repositories;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.FireAndForget;
 using SiteWatcher.Infra.Messaging;
-using SiteWatcher.Infra.Repositories;
 using StackExchange.Redis;
 
 namespace SiteWatcher.Infra;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDataContext<TContext>(this IServiceCollection services, bool addMigrator = true) where TContext : DbContext, IUnitOfWork
+    public static IServiceCollection AddDataContext(this IServiceCollection services, bool addMigrator = true)
     {
-        // Making explicit that the context is the same for all repositories
-        services.AddDbContext<TContext>(ServiceLifetime.Scoped);
-        services.AddScoped<IUnitOfWork>(s => s.GetRequiredService<TContext>());
+        services.AddDbContext<SiteWatcherContext>(ServiceLifetime.Scoped);
+        services.AddScoped<ISiteWatcherContext>(sp => sp.GetRequiredService<SiteWatcherContext>());
 
         // Add migrator
         if (addMigrator) services.AddScoped(typeof(DatabaseMigrator));
@@ -42,19 +36,10 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    public static IServiceCollection AddDapperContext(this IServiceCollection services)
     {
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IAlertRepository, AlertRepository>();
-        return services;
-    }
-
-    public static IServiceCollection AddDapperRepositories(this IServiceCollection services)
-    {
-        services.AddSingleton<IDapperQueries, DapperQueries>();
+        services.AddSingleton<IQueries, PostgresQueries>();
         services.AddScoped<IDapperContext, DapperContext>();
-        services.AddScoped<IUserDapperRepository, UserDapperRepository>();
-        services.AddScoped<IAlertDapperRepository, AlertDapperRepository>();
         SqlMapper.AddTypeHandler(new UserId.DapperTypeHandler());
         return services;
     }

@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using SiteWatcher.Common.Repositories;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
@@ -38,24 +37,21 @@ public class CreateAlertCommand : IRequest<DetailedAlertView>
 public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, DetailedAlertView>
 {
     private readonly ISession _session;
-    private readonly IAlertRepository _alertRepository;
-    private readonly IUnitOfWork _uow;
+    private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
 
-    public CreateAlertCommandHandler(ISession session, IAlertRepository alertRepository, IUnitOfWork uow,
-        IIdHasher idHasher)
+    public CreateAlertCommandHandler(ISession session, ISiteWatcherContext context, IIdHasher idHasher)
     {
         _session = session;
-        _alertRepository = alertRepository;
-        _uow = uow;
+        _context = context;
         _idHasher = idHasher;
     }
 
     public async Task<DetailedAlertView> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
     {
         var alert = AlertFactory.Create(request, _session.UserId!.Value, _session.Now);
-        _alertRepository.Add(alert);
-        await _uow.SaveChangesAsync(cancellationToken);
+        _context.Alerts.Add(alert);
+        await _context.SaveChangesAsync(cancellationToken);
         return DetailedAlertView.FromAlert(alert, _idHasher);
     }
 }

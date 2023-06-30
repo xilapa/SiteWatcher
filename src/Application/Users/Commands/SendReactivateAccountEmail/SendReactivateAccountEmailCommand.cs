@@ -1,9 +1,8 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Users.Commands.ActivateAccount;
 
@@ -14,24 +13,23 @@ public class SendReactivateAccountEmailCommand : IRequest
 
 public class SendReactivateAccountEmailCommandHandler : IRequestHandler<SendReactivateAccountEmailCommand>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly ISiteWatcherContext _context;
     private readonly ISession _session;
-    private readonly IUnitOfWork _uow;
 
-    public SendReactivateAccountEmailCommandHandler(IUserRepository userRepository, ISession session, IUnitOfWork uow)
+    public SendReactivateAccountEmailCommandHandler(ISiteWatcherContext context, ISession session)
     {
-        _userRepository = userRepository;
+        _context = context;
         _session = session;
-        _uow = uow;
     }
 
     public async Task Handle(SendReactivateAccountEmailCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetAsync(u => u.Id == request.UserId && !u.Active, cancellationToken);
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == request.UserId && !u.Active, cancellationToken);
         if(user is null)
             return;
 
         user.GenerateUserActivationToken(_session.Now);
-        await _uow.SaveChangesAsync(CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
     }
 }

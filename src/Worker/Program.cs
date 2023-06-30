@@ -8,7 +8,6 @@ using SiteWatcher.Infra;
 using SiteWatcher.Worker;
 using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
-using SiteWatcher.Worker.Persistence;
 using SiteWatcher.Worker.Utils;
 
 var host = new HostBuilder()
@@ -55,7 +54,7 @@ var host = new HostBuilder()
         serviceCollection
             .AddSingleton<IAppSettings>(appSettings)
             .Configure<WorkerSettings>(hostContext.Configuration)
-            .SetupPersistence()
+            .AddDataContext(addMigrator: false)
             .SetupJobs(workerSettings)
             .SetupMessaging(hostContext.Configuration, appSettings)
             .AddConsumers()

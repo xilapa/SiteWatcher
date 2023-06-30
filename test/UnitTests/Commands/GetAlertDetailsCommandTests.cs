@@ -1,8 +1,8 @@
-﻿using FluentAssertions;
+﻿using System.Data;
+using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
-using SiteWatcher.Domain.Alerts.Repositories;
-using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 
@@ -14,9 +14,9 @@ public sealed class GetAlertDetailsCommandTests
     public async Task RepositoryIsNotCalledWithInvalidHash()
     {
         // Arrange
-        var alertRepoMock = new Mock<IAlertDapperRepository>();
+        var dapperContextMock = new Mock<IDapperContext>();
         var idHasher = new IdHasher(new TestAppSettings());
-        var handler = new GetAlertDetailsCommandHandler(null!, alertRepoMock.Object, idHasher);
+        var handler = new GetAlertDetailsCommandHandler(null!, dapperContextMock.Object, null!, idHasher);
 
         var command = new GetAlertDetailsCommand {AlertId = "invalid"};
 
@@ -26,8 +26,8 @@ public sealed class GetAlertDetailsCommandTests
         // Assert
         result.Should().BeNull();
 
-        alertRepoMock
-            .Verify(r => r.GetAlertDetails(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()),
+        dapperContextMock
+            .Verify(r => r.UsingConnectionAsync(It.IsAny<Func<IDbConnection,Task<It.IsAnyType>>>()),
                 Times.Never);
     }
 }

@@ -1,9 +1,11 @@
-﻿using Domain.Authentication;
+﻿using Dapper;
+using Domain.Authentication;
 using MediatR;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
-using SiteWatcher.Domain.Users.Repositories;
+using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Application.Authentication.Commands.Authentication;
 
@@ -38,12 +40,14 @@ public class AuthenticationCommand : IRequest<AuthCodeResult>
 
 public class AuthenticationCommandHandler : IRequestHandler<AuthenticationCommand, AuthCodeResult>
 {
-    private readonly IUserDapperRepository _userRepo;
+    private readonly IDapperContext _context;
+    private readonly IQueries _queries;
     private readonly IAuthService _authService;
 
-    public AuthenticationCommandHandler(IUserDapperRepository userRepo, IAuthService authService)
+    public AuthenticationCommandHandler(IDapperContext context, IQueries queries, IAuthService authService)
     {
-        _userRepo = userRepo;
+        _context = context;
+        _queries = queries;
         _authService = authService;
     }
 
@@ -51,7 +55,14 @@ public class AuthenticationCommandHandler : IRequestHandler<AuthenticationComman
     {
         if (!request.IsValid()) return new AuthCodeResult(null, ApplicationErrors.GOOGLE_AUTH_ERROR);
 
-        var user = await _userRepo.GetUserByGoogleIdAsync(request.GoogleId!, ct);
+        var user = await _context.UsingConnectionAsync(conn =>
+            {
+                var cmd = new CommandDefinition(
+                    _queries.GetUserByGoogleId,
+                    new {googleId  = request.GoogleId},
+                    cancellationToken: ct);
+                return conn.QueryFirstOrDefaultAsync<UserViewModel?>(cmd);
+            });
 
         AuthenticationResult authRes = null!;
         // User exists and is active

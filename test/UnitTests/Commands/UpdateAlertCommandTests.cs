@@ -1,12 +1,11 @@
 ﻿using Moq;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace UnitTests.Commands;
 
 public sealed class UpdateAlertCommandTests
 {
-    private readonly Mock<IAlertRepository> _alertRepositoryMock = new ();
+    // private readonly Mock<IAlertRepository> _alertRepositoryMock = new ();
 
     public static IEnumerable<object[]> InvalidIdData()
     {

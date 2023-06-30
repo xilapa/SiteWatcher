@@ -16,7 +16,7 @@ public class GetUserInfoCommandTests
         sessionMock.Setup(s => s.UserId).Returns(UserId.Empty);
 
         var cmmd = new GetUserInfoCommand();
-        var handler = new GetUserInfoCommandHandler(null!, sessionMock.Object);
+        var handler = new GetUserInfoCommandHandler(null!, null!, sessionMock.Object);
 
         // Act
         var res = await handler.Handle(cmmd, CancellationToken.None);

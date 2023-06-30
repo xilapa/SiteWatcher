@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
+﻿using System.Data;
+using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Domain.Alerts.Repositories;
-using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Application.Interfaces;
 
 namespace UnitTests.Commands;
 
@@ -14,17 +14,17 @@ public sealed class GetUserAlertsCommandTests
     {
         // Arrange
         var command = new GetUserAlertsCommand {Take = 0};
-        var alertDapperRepoMock = new Mock<IAlertDapperRepository>();
-        var handler = new GetUserAlertsCommandHandler(null!, null!, alertDapperRepoMock.Object);
+        var dapperContextMock = new Mock<IDapperContext>();
+        var handler = new GetUserAlertsCommandHandler(null!, null!, dapperContextMock.Object, null!);
 
         // Act
         var result = await handler.Handle(command, default);
 
         // Assert
         result.Should().BeAssignableTo<EmptyResult>();
-        alertDapperRepoMock
+        dapperContextMock
             .Verify(r =>
-                r.GetUserAlerts(It.IsAny<UserId>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()),
+                r.UsingConnectionAsync(It.IsAny<Func<IDbConnection,Task<It.IsAnyType>>>()),
                 Times.Never);
     }
 }

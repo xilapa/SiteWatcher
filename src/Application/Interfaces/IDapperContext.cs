@@ -1,6 +1,7 @@
 using System.Data;
+using Dapper;
 
-namespace SiteWatcher.Common.Repositories;
+namespace SiteWatcher.Application.Interfaces;
 
 public interface IDapperContext
 {

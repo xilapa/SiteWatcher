@@ -1,7 +1,8 @@
-﻿using Moq;
+﻿using MockQueryable.Moq;
+using Moq;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
-using SiteWatcher.Common.Repositories;
-using SiteWatcher.Domain.Users.Repositories;
+using SiteWatcher.Domain.Users;
 
 namespace UnitTests.Commands;
 
@@ -11,15 +12,16 @@ public sealed class SendEmailConfirmationCommandTests
     public async Task CantSentEmailConfirmationForNonExistingUser()
     {
         // Arrange
-        var userRepository = new Mock<IUserRepository>().Object;
-        var uowMock = new Mock<IUnitOfWork>();
-        var commandHandler = new SendEmailConfirmationCommandHandler(null!, userRepository, uowMock.Object);
+        var dbsetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
+        var contextMock = new Mock<ISiteWatcherContext>();
+        contextMock.Setup(c => c.Users).Returns(dbsetMock.Object);
+        var commandHandler = new SendEmailConfirmationCommandHandler(null!, contextMock.Object);
 
         // Act
         await commandHandler.Handle(new SendEmailConfirmationCommand(), default);
 
         // Assert
-        uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()),
+        contextMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Never);
     }
 }
