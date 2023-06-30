@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Enums;
 
@@ -86,4 +87,20 @@ public static class Utils
 
     public static Rules? GetRuleEnumByTableDiscriminator(char discriminator) =>
         RulesDiscriminatorDictionary[discriminator];
+
+    public static bool IsRegexValid(string? r)
+    {
+        if(r == null)
+            return false;
+
+        try
+        {
+            Regex.Match("", r, RegexOptions.None, TimeSpan.FromSeconds(2));
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

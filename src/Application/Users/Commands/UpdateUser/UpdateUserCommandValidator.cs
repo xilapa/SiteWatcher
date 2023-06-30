@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Common.Validation;
 using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.UpdateUser;
@@ -14,9 +13,9 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateUserCommand.Name)))
             .MinimumLength(3)
-            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateUserCommand.Name)))
-            .HasOnlyLetters()
-            .WithMessage(ApplicationErrors.NAME_MUST_HAVE_ONLY_LETTERS);
+            .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateUserCommand.Name)));
+            // .HasOnlyLetters()
+            // .WithMessage(ApplicationErrors.NAME_MUST_HAVE_ONLY_LETTERS);
 
         RuleFor(cmmd => cmmd.Email)
             .Cascade(CascadeMode.Stop)

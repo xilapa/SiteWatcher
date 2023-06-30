@@ -28,9 +28,11 @@ public class AlertController : ControllerBase
     }
 
     [HttpPost]
-    [CommandValidationFilter]
-    public async Task<IActionResult> CreateAlert(CreateAlertCommand command) =>
-        Created(string.Empty, await _mediator.Send(command));
+    public async Task<IActionResult> CreateAlert(CreateAlertCommand cmmd)
+    {
+        var res = await _mediator.Send(cmmd);
+        return res.ToActionResult<DetailedAlertView>(r => Created(string.Empty, r));
+    }
 
     [HttpGet]
     [CacheFilter]
