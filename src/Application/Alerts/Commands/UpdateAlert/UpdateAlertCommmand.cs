@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
-using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Authentication;
@@ -66,28 +65,8 @@ public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, Co
         if (AlertId.Empty.Equals(updateInfo.AlertId) || updateInfo.AlertId.Value == 0)
             return CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
 
-        var alertDto = await _context.Alerts
-            .Where(a => a.Id == updateInfo.AlertId && a.UserId == _session.UserId && a.Active)
-            .Select(alert => new UpdateAlertDto
-            {
-                Id = alert.Id,
-                UserId = alert.UserId,
-                CreatedAt = alert.CreatedAt,
-                Name = alert.Name,
-                Frequency = alert.Frequency,
-                SiteName = alert.Site.Name,
-                SiteUri = alert.Site.Uri,
-                Rule = alert.Rule,
-                LastVerification = alert.LastVerification
-            })
-            .SingleOrDefaultAsync(cancellationToken);
-
-        if (alertDto is null)
-            return CommandResult.FromError(ApplicationErrors.ALERT_DO_NOT_EXIST);
-
-        var alert = Alert.GetModelForUpdate(alertDto);
-        // Attach alert and site, because the rule is already tracked
-        _context.Attach(alert);
+        var alert = await _context.GetAlertForUpdateAsync(updateInfo.AlertId, _session.UserId!.Value, cancellationToken);
+        if (alert is null) return CommandResult.FromError(ApplicationErrors.ALERT_DO_NOT_EXIST);
 
         alert.Update(updateInfo, _session.Now);
         await _context.SaveChangesAsync(CancellationToken.None);
