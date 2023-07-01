@@ -195,7 +195,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         var usersWithAlerts = await AppFactory.WithDbContext(ctx =>
             ctx.GetUserWithPendingAlertsAsync(null, frequencies, 50, CurrentTime, CancellationToken.None));
 
-            // Assert
+        // Assert
         var alerts = usersWithAlerts.SelectMany(u => u.Alerts);
         alerts.Any(a => a.Id == alert.Id).Should().Be(shouldExecute);
     }
