@@ -1,70 +1,80 @@
-﻿using Moq;
+﻿using FluentAssertions;
+using MockQueryable.Moq;
+using Moq;
+using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Alerts;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace UnitTests.Commands;
 
+
+
 public sealed class UpdateAlertCommandTests
 {
-    // private readonly Mock<IAlertRepository> _alertRepositoryMock = new ();
+    private readonly Mock<IIdHasher> _hasherMock;
 
-    public static IEnumerable<object[]> InvalidIdData()
+    public UpdateAlertCommandTests()
     {
-        yield return new object[] {new AlertId(0)};
-        yield return new object[] {AlertId.Empty};
+        _hasherMock = new Mock<IIdHasher>();
     }
 
-//TODO: make these tests run
-    // [Theory]
-    // [MemberData(nameof(InvalidIdData))]
-    // public async Task AlertIsNotUpdatedWithInvalidId(AlertId alertId)
-    // {
-    //     // Arrange
-    //     var mapperMock = new Mock<IIdHasher>();
-    //     mapperMock.Setup(m => m.DecodeId(It.IsAny<string>()))
-    //         .Returns(new UpdateAlertInput {AlertId = alertId});
-    //
-    //     var handler = new UpdateAlertCommandHandler(mapperMock.Object, _alertRepositoryMock.Object, null!, null!);
-    //     var command = new UpdateAlertCommmand();
-    //
-    //     // Act
-    //     var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
-    //
-    //     // Assert
-    //     result!.Errors
-    //         .Should()
-    //         .BeEquivalentTo(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
-    //
-    //     _alertRepositoryMock
-    //         .Verify(r => r.GetAlertForUpdate(It.IsAny<AlertId>(), It.IsAny<UserId>()),
-    //             Times.Never);
-    // }
-    //
-    // [Fact]
-    // public async Task NonexistentAlertDoesntCallSaveChanges()
-    // {
-    //     // Arrange
-    //     var mapperMock = new Mock<IMapper>();
-    //     mapperMock.Setup(m => m.Map<UpdateAlertInput>(It.IsAny<object>()))
-    //         .Returns(new UpdateAlertInput {AlertId = new AlertId(1)});
-    //
-    //     var sessionMock = new Mock<ISession>();
-    //     sessionMock.Setup(s => s.UserId).Returns(UserId.Empty);
-    //
-    //     var uowMock = new Mock<IUnitOfWork>();
-    //
-    //     var handler = new UpdateAlertCommandHandler(mapperMock.Object, _alertRepositoryMock.Object, sessionMock.Object,
-    //         uowMock.Object);
-    //     var command = new UpdateAlertCommmand();
-    //
-    //     // Act
-    //     var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
-    //
-    //     // Assert
-    //     result!.Errors
-    //         .Should()
-    //         .BeEquivalentTo(ApplicationErrors.ALERT_DO_NOT_EXIST);
-    //
-    //     uowMock
-    //         .Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    // }
+    public static TheoryData<int> InvalidIds => new()
+    {
+        0,
+        default!
+    };
+
+    [Theory]
+    [MemberData(nameof(InvalidIds))]
+    public async Task AlertIsNotUpdatedWithInvalidId(int alertId)
+    {
+        // Arrange
+        _hasherMock.Setup(h => h.DecodeId(It.IsAny<string>()))
+            .Returns(alertId);
+
+        var handler = new UpdateAlertCommandHandler(_hasherMock.Object,null!, null!);
+        var command = new UpdateAlertCommmand();
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
+
+        // Assert
+        result!.Errors
+            .Should()
+            .BeEquivalentTo(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
+    }
+
+    [Fact]
+    public async Task NonexistentAlertDoesntCallSaveChanges()
+    {
+        // Arrange
+        _hasherMock.Setup(h => h.DecodeId(It.IsAny<string>()))
+            .Returns(1);
+
+        var alertDbSetMock = Array.Empty<Alert>().AsQueryable().BuildMockDbSet();
+        var contextMock = new Mock<ISiteWatcherContext>();
+        contextMock.Setup(c => c.Alerts).Returns(alertDbSetMock.Object);
+
+        var sessionMock = new Mock<ISession>();
+        sessionMock.Setup(s => s.UserId).Returns(UserId.Empty);
+
+        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, contextMock.Object, sessionMock.Object);
+        var command = new UpdateAlertCommmand();
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
+
+        // Assert
+        result!.Errors
+            .Should()
+            .BeEquivalentTo(ApplicationErrors.ALERT_DO_NOT_EXIST);
+
+        contextMock
+            .Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
 }
