@@ -1,4 +1,5 @@
-﻿using SiteWatcher.Application.Common.Queries;
+﻿using System.Collections.Concurrent;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.ValueObjects;
 
@@ -6,8 +7,11 @@ namespace SiteWatcher.Infra.Persistence;
 
 public class Queries : IQueries
 {
+    private readonly ConcurrentDictionary<int, string> _searchSimpleAlertsQueryCache;
+
     public Queries(DatabaseType dbType)
     {
+        _searchSimpleAlertsQueryCache = new ConcurrentDictionary<int, string>();
         if (dbType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
             PrepareSqliteQueries();
     }
@@ -124,19 +128,32 @@ public class Queries : IQueries
 
     public QueryResult SearchSimpleAlerts(UserId userId, string[] searchTerms, int take)
     {
+        var query = _searchSimpleAlertsQueryCache.GetOrAdd(searchTerms.Length, GenerateSearchSimpleAlertsQuery);
+        var parameters = new Dictionary<string, object> {{"userId", userId}};
+
+        for (var i = 0; i < searchTerms.Length; i++)
+        {
+            parameters.Add($"searchTermWildCards{i}", $"%{searchTerms[i]}%");
+            parameters.Add($"searchTerm{i}", searchTerms[i]);
+        }
+        return new QueryResult(query, parameters);
+    }
+
+    private static string GenerateSearchSimpleAlertsQuery(int searchTermsLenght)
+    {
         var whereQueryBuilder = StringBuilderCache.Acquire(200);
         var orderByQueryBuilder = StringBuilderCache.Acquire(200);
-        foreach (var termIndex in Enumerable.Range(0, searchTerms.Length))
+        foreach (var termIndex in Enumerable.Range(0, searchTermsLenght))
         {
             whereQueryBuilder.Append(@"(""SearchField"" LIKE @searchTermWildCards").Append(termIndex).Append(')');
             orderByQueryBuilder.Append(@" ""similarity""(""SearchField"", @searchTerm").Append(termIndex).Append(") ");
 
-            if (termIndex == searchTerms.Length - 1) continue;
+            if (termIndex == searchTermsLenght - 1) continue;
             whereQueryBuilder.Append(" OR ");
             orderByQueryBuilder.Append('+');
         }
 
-        var query = $@"
+        return $@"
             SELECT 
                 a.""Id"",
 	            a.""Name"",
@@ -155,19 +172,6 @@ public class Queries : IQueries
             ORDER BY 
                 {StringBuilderCache.GetStringAndRelease(orderByQueryBuilder)}
             DESC
-            LIMIT @take";
-
-        var parameters = new Dictionary<string, object>
-        {
-            {"userId", userId},
-            {"take", take}
-        };
-
-        for (var i = 0; i < searchTerms.Length; i++)
-        {
-            parameters.Add($"searchTermWildCards{i}", $"%{searchTerms[i]}%");
-            parameters.Add($"searchTerm{i}", searchTerms[i]);
-        }
-        return new QueryResult(query, parameters);
+            LIMIT 10";
     }
 }
