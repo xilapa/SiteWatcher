@@ -2,12 +2,14 @@
 using Dapper;
 using MediatR;
 using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.DTOs;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 
@@ -46,15 +48,17 @@ public class GetUserAlertsCommandHandler : IRequestHandler<GetUserAlertsCommand,
             return CommandResult.Empty();
 
         var take = request.Take > 50 ? 50 : request.Take;
-        var lastAlertId = string.IsNullOrEmpty(request.LastAlertId) ? 0 : _idHasher.DecodeId(request.LastAlertId);
+        var lastAlertId = _idHasher.DecodeId(request.LastAlertId!);
+
+        var query = _queries.GetSimpleAlertViewListByUserId(_session.UserId!.Value, new AlertId(lastAlertId), take);
 
         var paginatedListAlerts = await _context
             .UsingConnectionAsync(async conn =>
             {
                 var command = new CommandDefinition(
-                        _queries.GetSimpleAlertViewListByUserId,
-                        new { lastAlertId, userId = _session.UserId, take },
-                        cancellationToken: cancellationToken);
+                    query.Sql,
+                    query.Parameters,
+                    cancellationToken: cancellationToken);
 
                 var result = new PaginatedList<SimpleAlertView>();
                 var gridReader = await conn.QueryMultipleAsync(command);

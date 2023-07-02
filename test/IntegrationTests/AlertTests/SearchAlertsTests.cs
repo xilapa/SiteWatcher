@@ -5,6 +5,7 @@ using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 
@@ -22,7 +23,7 @@ public sealed class SearchAlertsTestsBase : BaseTestFixture
 
     protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseDatabase(DatabaseType.PostgresOnDocker);
+        optionsBuilder.UseDatabase(DatabaseType.Postgres);
     }
 
     public override async Task InitializeAsync()

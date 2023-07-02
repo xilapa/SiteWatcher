@@ -6,6 +6,7 @@ using Moq;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Emails.DTOs;
 using SiteWatcher.Domain.Users;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 

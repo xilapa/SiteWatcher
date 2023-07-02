@@ -6,6 +6,7 @@ using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 

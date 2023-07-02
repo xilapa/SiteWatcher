@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 using Npgsql;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra.DapperRepositories;
-using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
+using SiteWatcher.Infra.Persistence;
 
 namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 
@@ -20,7 +20,7 @@ public class TestDapperContext : DapperContext
 
     protected override DbConnection CreateConnection(string connectionString)
     {
-        if (DatabaseType.PostgresOnDocker.Equals(_databaseType))
+        if (DatabaseType.Postgres.Equals(_databaseType))
             return new NpgsqlConnection(_connectionString);
 
         return new SqliteConnection(_connectionString);

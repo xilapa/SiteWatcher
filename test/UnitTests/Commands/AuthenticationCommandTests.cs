@@ -4,12 +4,12 @@ using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Authentication.Commands.Authentication;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.DTOs;
-using SiteWatcher.Infra.DapperRepositories;
 
 namespace UnitTests.Commands;
 
@@ -25,7 +25,7 @@ public sealed class AuthenticationCommandTests
     public AuthenticationCommandTests()
     {
         _authServiceMock = new Mock<IAuthService>();
-        _queries = new PostgresQueries();
+        _queries = new Mock<IQueries>().Object;
 
         _authServiceMock
             .Setup(a => a.GenerateRegisterToken(It.IsAny<UserRegisterData>()))
@@ -61,7 +61,7 @@ public sealed class AuthenticationCommandTests
     }
 
     [Fact]
-    public async Task AcitvationTaskIsReturnedWhenUserIsDeactivated()
+    public async Task ActivationTaskIsReturnedWhenUserIsDeactivated()
     {
         // Arrange
         var userVm = new UserViewModel
@@ -69,13 +69,13 @@ public sealed class AuthenticationCommandTests
             Id = UserId.New(),
             Active = false
         };
-        var userDapperRepoMock = new Mock<IDapperContext>();
-        userDapperRepoMock
+        var dapperContextMock = new Mock<IDapperContext>();
+        dapperContextMock
             .Setup(_ => _.UsingConnectionAsync(It.IsAny<Func<IDbConnection,Task<UserViewModel?>>>()))
             .ReturnsAsync(userVm);
 
         var commandHandler =
-            new AuthenticationCommandHandler(userDapperRepoMock.Object, _queries, _authServiceMock.Object);
+            new AuthenticationCommandHandler(dapperContextMock.Object, _queries, _authServiceMock.Object);
 
         var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email, CodeChallenge = CodeChallenge};
 

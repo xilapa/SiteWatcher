@@ -14,6 +14,7 @@ using SiteWatcher.Application.Authentication.Commands.ExchangeToken;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Authorization.Constants;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 

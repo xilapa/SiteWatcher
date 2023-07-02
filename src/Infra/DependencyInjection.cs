@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Savorboard.CAP.InMemoryMessageQueue;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication;
@@ -19,6 +20,7 @@ using SiteWatcher.Infra.DapperRepositories;
 using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.FireAndForget;
 using SiteWatcher.Infra.Messaging;
+using SiteWatcher.Infra.Persistence;
 using StackExchange.Redis;
 
 namespace SiteWatcher.Infra;
@@ -36,11 +38,12 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddDapperContext(this IServiceCollection services)
+    public static IServiceCollection AddDapperContext(this IServiceCollection services, DatabaseType databaseType)
     {
-        services.AddSingleton<IQueries, PostgresQueries>();
+        services.AddSingleton<IQueries>(new Queries(databaseType));
         services.AddScoped<IDapperContext, DapperContext>();
         SqlMapper.AddTypeHandler(new UserId.DapperTypeHandler());
+        SqlMapper.AddTypeHandler(new AlertId.DapperTypeHandler());
         return services;
     }
 

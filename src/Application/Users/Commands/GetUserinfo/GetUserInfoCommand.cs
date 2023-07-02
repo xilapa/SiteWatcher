@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MediatR;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
@@ -35,11 +36,12 @@ public sealed class GetUserInfoCommandHandler : IRequestHandler<GetUserInfoComma
         if (UserId.Empty.Equals(_session.UserId))
             return Task.FromResult<UserViewModel?>(null);
 
+        var query = _queries.GetUserById(_session.UserId!.Value);
         return _context.UsingConnectionAsync(conn =>
         {
             var cmd = new CommandDefinition(
-                _queries.GetUserById,
-                new { id = _session.UserId },
+                query.Sql,
+                query.Parameters,
                 cancellationToken: ct);
 
             return conn.QuerySingleOrDefaultAsync<UserViewModel?>(cmd);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using SiteWatcher.Infra.Persistence;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
@@ -61,16 +62,4 @@ public class CustomWebApplicationOptionsBuilder
     }
 
     public CustomWebApplicationOptions Build() => _options;
-}
-
-public enum DatabaseType
-{
-    SqliteInMemory,
-    /// <summary>
-    /// Use Sqlite on disk when the test calls a dapper repository.
-    /// Dapper repositories closes the underlying connection after each call,
-    /// thus deleting "Sqlite in memory".
-    /// </summary>
-    SqliteOnDisk,
-    PostgresOnDocker
 }

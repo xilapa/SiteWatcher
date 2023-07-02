@@ -16,6 +16,7 @@ using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -42,7 +43,7 @@ public sealed class ExecuteAlertTestsBase : BaseTestFixture
         base.OnConfiguringTestServer(optionsBuilder);
         // TODO: Reconfigure Site to not be an owned type of Alert,
         // because it's not supported by SQLite, thus Postgres it's needed for this test
-        optionsBuilder.UseDatabase(DatabaseType.PostgresOnDocker);
+        optionsBuilder.UseDatabase(DatabaseType.Postgres);
     }
 }
 

@@ -2,6 +2,7 @@
 using Domain.Authentication;
 using MediatR;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
@@ -55,11 +56,12 @@ public class AuthenticationCommandHandler : IRequestHandler<AuthenticationComman
     {
         if (!request.IsValid()) return new AuthCodeResult(null, ApplicationErrors.GOOGLE_AUTH_ERROR);
 
+        var queries = _queries.GetUserByGoogleId(request.GoogleId!);
         var user = await _context.UsingConnectionAsync(conn =>
             {
                 var cmd = new CommandDefinition(
-                    _queries.GetUserByGoogleId,
-                    new {googleId  = request.GoogleId},
+                    queries.Sql,
+                    queries.Parameters,
                     cancellationToken: ct);
                 return conn.QueryFirstOrDefaultAsync<UserViewModel?>(cmd);
             });

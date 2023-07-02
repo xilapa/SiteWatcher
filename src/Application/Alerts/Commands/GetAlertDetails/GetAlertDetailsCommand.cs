@@ -1,11 +1,13 @@
 ﻿using Application.Alerts.Dtos;
 using Dapper;
 using MediatR;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 
@@ -47,12 +49,14 @@ public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsComm
         if (alertId == 0)
             return null;
 
+        var query = _queries.GetAlertDetails(_session.UserId!.Value, new AlertId(alertId));
+
         var alertDetailsDto = await _context
             .UsingConnectionAsync(conn =>
             {
                 var command = new CommandDefinition(
-                    _queries.GetAlertDetails,
-                    new { alertId, userId = _session.UserId },
+                    query.Sql,
+                    query.Parameters,
                     cancellationToken: cancellationToken);
                 return conn.QueryFirstOrDefaultAsync<AlertDetailsDto?>(command);
             });

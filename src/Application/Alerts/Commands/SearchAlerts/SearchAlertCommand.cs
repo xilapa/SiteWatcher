@@ -1,7 +1,7 @@
-﻿using System.Dynamic;
-using Application.Alerts.Dtos;
+﻿using Application.Alerts.Dtos;
 using Dapper;
 using MediatR;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
@@ -26,8 +26,6 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEn
     private readonly IQueries _queries;
     private readonly ISession _session;
     private readonly IIdHasher _idHasher;
-    private const string userIdParam = "userId";
-    private const string takeParam = "take";
 
     public SearchAlertCommandHandler(IDapperContext context, IQueries queries, ISession session, IIdHasher idHasher)
     {
@@ -44,22 +42,14 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEn
             .Where(t => !string.IsNullOrEmpty(t))
             .Select(t => t.ToLowerCaseWithoutDiacritics()).ToArray();
 
-        var parameters = new ExpandoObject() as IDictionary<string, object>;
-        parameters[userIdParam] = _session.UserId!;
-        parameters[takeParam] = 10;
-
-        for (var i = 0; i < searchTerms.Length; i++)
-        {
-            parameters.Add($"searchTermWildCards{i}", $"%{searchTerms[i]}%");
-            parameters.Add($"searchTerm{i}", searchTerms[i]);
-        }
+        var query = _queries.SearchSimpleAlerts(_session.UserId!.Value, searchTerms, 10);
 
         var simpleAlertViewDtos = await _context
             .UsingConnectionAsync(conn =>
                 {
                     var cmd = new CommandDefinition(
-                        _queries.SearchSimpleAlerts(searchTerms.Length),
-                        parameters,
+                        query.Sql,
+                        query.Parameters,
                         cancellationToken: cancellationToken);
                     return conn.QueryAsync<SimpleAlertViewDto>(cmd);
                 });
