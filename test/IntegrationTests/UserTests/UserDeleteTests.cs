@@ -71,7 +71,7 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
 
         // Verifying that the correct message was sent
         var message =
-            MailMessageGenerator.AccountDeleted(userFromDb.Name, userFromDb.Email, userFromDb.Language);
+            EmailFactory.AccountDeleted(userFromDb.Name, userFromDb.Email, userFromDb.Language);
 
         (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
             .Should().BeEquivalentTo(message);
