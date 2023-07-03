@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
@@ -18,7 +18,7 @@ public class EmailConfirmationGeneratedEventHandler : INotificationHandler<Email
         _fireAndForgetService = fireAndForgetService;
     }
 
-    public Task Handle(EmailConfirmationTokenGeneratedEvent notification, CancellationToken cancellationToken)
+    public ValueTask Handle(EmailConfirmationTokenGeneratedEvent notification, CancellationToken cancellationToken)
     {
         var link = $"{_appSettings.FrontEndUrl}/#/security/confirm-email?t={notification.ConfirmationToken}";
         var message =
@@ -29,6 +29,6 @@ public class EmailConfirmationGeneratedEventHandler : INotificationHandler<Email
             await authService.SetEmailConfirmationTokenExpiration(notification.ConfirmationToken, notification.UserId);
             await emailService.SendEmailAsync(message, CancellationToken.None);
         });
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

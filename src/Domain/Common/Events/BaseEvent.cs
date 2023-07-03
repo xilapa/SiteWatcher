@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 
 namespace SiteWatcher.Domain.Common.Events;
 

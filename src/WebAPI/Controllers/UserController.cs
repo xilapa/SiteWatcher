@@ -1,6 +1,6 @@
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using MediatR;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
 using SiteWatcher.Application.Users.Commands.DeactivateAccount;
@@ -11,10 +11,10 @@ using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
-using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
+using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Filters.Cache;
 
 namespace SiteWatcher.WebAPI.Controllers;

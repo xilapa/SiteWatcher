@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
+﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Domain.Common;
 

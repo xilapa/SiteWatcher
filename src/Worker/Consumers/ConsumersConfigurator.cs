@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application.Emails.EventHandlers;
 using SiteWatcher.Application.Notifications.Commands.ProcessNotifications;

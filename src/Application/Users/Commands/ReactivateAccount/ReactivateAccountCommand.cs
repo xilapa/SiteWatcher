@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
@@ -8,12 +8,12 @@ using SiteWatcher.Domain.Authentication.Services;
 
 namespace SiteWatcher.Application.Users.Commands.ReactivateAccount;
 
-public class ReactivateAccountCommand : IRequest<CommandResult>
+public class ReactivateAccountCommand : ICommand<CommandResult>
 {
     public string? Token { get; set; }
 }
 
-public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccountCommand, CommandResult>
+public class ReactivateAccountCommandHandler : ICommandHandler<ReactivateAccountCommand, CommandResult>
 {
     private readonly IAuthService _authService;
     private readonly ISiteWatcherContext _context;
@@ -26,7 +26,7 @@ public class ReactivateAccountCommandHandler : IRequestHandler<ReactivateAccount
         _session = session;
     }
 
-    public async Task<CommandResult> Handle(ReactivateAccountCommand request, CancellationToken cancellationToken)
+    public async ValueTask<CommandResult> Handle(ReactivateAccountCommand request, CancellationToken cancellationToken)
     {
         if(request.Token == null)
             return ReturnError();

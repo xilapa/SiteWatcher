@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
@@ -11,7 +11,7 @@ using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.UpdateUser;
 
-public class UpdateUserCommand : IRequest<CommandResult>
+public class UpdateUserCommand : ICommand<CommandResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
@@ -21,7 +21,7 @@ public class UpdateUserCommand : IRequest<CommandResult>
     public UpdateUserInput ToInputModel() => new (Name!, Email!, Language, Theme);
 }
 
-public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, CommandResult>
+public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, CommandResult>
 {
     private readonly ISiteWatcherContext _context;
     private readonly ISession _session;
@@ -34,7 +34,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Comma
         _cache = cache;
     }
 
-    public async Task<CommandResult> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+    public async ValueTask<CommandResult> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Id == _session.UserId && u.Active, cancellationToken);

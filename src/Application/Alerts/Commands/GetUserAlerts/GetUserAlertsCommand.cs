@@ -1,6 +1,6 @@
 ﻿using Application.Alerts.Dtos;
 using Dapper;
-using MediatR;
+using Mediator;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
@@ -13,7 +13,7 @@ using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 
-public class GetUserAlertsCommand : IRequest<CommandResult>, ICacheable
+public class GetUserAlertsCommand : ICommand<CommandResult>, ICacheable
 {
     public string? LastAlertId { get; set; }
     public int Take { get; set; } = 10;
@@ -27,7 +27,7 @@ public class GetUserAlertsCommand : IRequest<CommandResult>, ICacheable
     public TimeSpan Expiration => TimeSpan.FromMinutes(60);
 }
 
-public class GetUserAlertsCommandHandler : IRequestHandler<GetUserAlertsCommand, CommandResult>
+public class GetUserAlertsCommandHandler : ICommandHandler<GetUserAlertsCommand, CommandResult>
 {
     private readonly IIdHasher _idHasher;
     private readonly ISession _session;
@@ -42,7 +42,7 @@ public class GetUserAlertsCommandHandler : IRequestHandler<GetUserAlertsCommand,
         _queries = queries;
     }
 
-    public async Task<CommandResult> Handle(GetUserAlertsCommand request, CancellationToken cancellationToken)
+    public async ValueTask<CommandResult> Handle(GetUserAlertsCommand request, CancellationToken cancellationToken)
     {
         if (request.Take == 0)
             return CommandResult.Empty();

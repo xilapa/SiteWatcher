@@ -1,14 +1,14 @@
-﻿using MediatR;
+﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.Users.Commands.DeactivateAccount;
 
-public class DeactivateAccountCommand : IRequest
+public class DeactivateAccountCommand : ICommand
 { }
 
-public class DeactivateAccountCommandHandler : IRequestHandler<DeactivateAccountCommand>
+public class DeactivateAccountCommandHandler : ICommandHandler<DeactivateAccountCommand>
 {
     private readonly ISiteWatcherContext _context;
     private readonly ISession _session;
@@ -19,14 +19,15 @@ public class DeactivateAccountCommandHandler : IRequestHandler<DeactivateAccount
         _session = session;
     }
 
-    public async Task Handle(DeactivateAccountCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Unit> Handle(DeactivateAccountCommand request, CancellationToken cancellationToken)
     {
         var user = await  _context.Users
             .FirstOrDefaultAsync(u => u.Id == _session.UserId && u.Active, cancellationToken);
         if (user is null)
-            return;
+            return Unit.Value;
 
         user.Deactivate(_session.Now);
         await _context.SaveChangesAsync(cancellationToken);
+        return Unit.Value;
     }
 }

@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Common.Extensions;
@@ -12,7 +12,7 @@ using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 
-public class UpdateAlertCommmand : IRequest<CommandResult>
+public class UpdateAlertCommmand : ICommand<CommandResult>
 {
     public string AlertId { get; set; } = null!;
     public UpdateInfo<string>? Name { get; set; }
@@ -45,7 +45,7 @@ public class UpdateAlertCommmand : IRequest<CommandResult>
     }
 }
 
-public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, CommandResult>
+public class UpdateAlertCommandHandler : ICommandHandler<UpdateAlertCommmand, CommandResult>
 {
     private readonly IIdHasher _idHasher;
     private readonly ISiteWatcherContext _context;
@@ -58,7 +58,7 @@ public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, Co
         _session = session;
     }
 
-    public async Task<CommandResult> Handle(UpdateAlertCommmand request, CancellationToken cancellationToken)
+    public async ValueTask<CommandResult> Handle(UpdateAlertCommmand request, CancellationToken cancellationToken)
     {
         var updateInfo = request.ToUpdateAlertInput(_idHasher);
 

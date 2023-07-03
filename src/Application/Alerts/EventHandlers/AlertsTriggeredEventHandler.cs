@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Domain.Alerts.Events;
 using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
@@ -14,7 +14,7 @@ public class AlertsTriggeredEventHandler : INotificationHandler<AlertsTriggeredE
         _pubService = pubService;
     }
 
-    public async Task Handle(AlertsTriggeredEvent notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(AlertsTriggeredEvent notification, CancellationToken cancellationToken)
     {
         await _pubService.PublishAsync(RoutingKeys.AlertsTriggered, notification, cancellationToken);
     }
