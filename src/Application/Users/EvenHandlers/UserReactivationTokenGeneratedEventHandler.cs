@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
@@ -19,7 +19,7 @@ public class UserReactivationTokenGeneratedEventHandler : INotificationHandler<U
         _fireAndForgetService = fireAndForgetService;
     }
 
-    public Task Handle(UserReactivationTokenGeneratedEvent notification, CancellationToken cancellationToken)
+    public ValueTask Handle(UserReactivationTokenGeneratedEvent notification, CancellationToken cancellationToken)
     {
         var link = $"{_appSettings.FrontEndUrl}/#/security/reactivate-account?t={notification.ConfirmationToken}";
         var message =
@@ -30,6 +30,6 @@ public class UserReactivationTokenGeneratedEventHandler : INotificationHandler<U
             await authService.SetAccountActivationTokenExpiration(notification.ConfirmationToken, notification.UserId);
             await emailService.SendEmailAsync(message, CancellationToken.None);
         });
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

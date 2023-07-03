@@ -13,6 +13,7 @@
     <PackageReference Include="DotNetCore.CAP.InMemoryStorage" />
     <PackageReference Include="DotNetCore.CAP.PostgreSql" />
     <PackageReference Include="DotNetCore.CAP.RabbitMQ" />
+    <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="Roslynator.Analyzers">

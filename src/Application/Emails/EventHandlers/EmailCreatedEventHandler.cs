@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Domain.Emails.Events;
 using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
@@ -13,7 +13,7 @@ public class EmailCreatedEventHandler : INotificationHandler<EmailCreatedEvent>
     {
         _publishService = publishService;
     }
-    public async Task Handle(EmailCreatedEvent notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(EmailCreatedEvent notification, CancellationToken cancellationToken)
     {
         await _publishService.PublishAsync(RoutingKeys.MailMessage, notification.MailMessage, cancellationToken);
     }

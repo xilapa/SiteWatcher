@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
@@ -8,12 +8,12 @@ using SiteWatcher.Domain.Authentication.Services;
 
 namespace SiteWatcher.Application.Users.Commands.ConfirmEmail;
 
-public class ConfirmEmailCommand : IRequest<CommandResult>
+public class ConfirmEmailCommand : ICommand<CommandResult>
 {
     public string? Token { get; set; }
 }
 
-public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, CommandResult>
+public class ConfirmEmailCommandHandler : ICommandHandler<ConfirmEmailCommand, CommandResult>
 {
     private readonly IAuthService _authservice;
     private readonly ISiteWatcherContext _context;
@@ -26,7 +26,7 @@ public class ConfirmEmailCommandHandler : IRequestHandler<ConfirmEmailCommand, C
         _session = session;
     }
 
-    public async Task<CommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
+    public async ValueTask<CommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
     {
         if (request.Token == null)
             return ReturnError();

@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
@@ -10,12 +10,12 @@ using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 
-public class DeleteAlertCommand : IRequest<CommandResult>
+public class DeleteAlertCommand : ICommand<CommandResult>
 {
     public string? AlertId { get; set; }
 }
 
-public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, CommandResult>
+public class DeleteAlertCommandHandler : ICommandHandler<DeleteAlertCommand, CommandResult>
 {
     private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
@@ -31,7 +31,7 @@ public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, Com
         _mediator = mediator;
     }
 
-    public async Task<CommandResult> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
+    public async ValueTask<CommandResult> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
     {
         if(request.AlertId == null)
             return ReturnError();

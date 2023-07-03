@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using Mediator;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts;
@@ -8,7 +8,7 @@ using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
-public class CreateAlertCommand : IRequest<DetailedAlertView>
+public class CreateAlertCommand : ICommand<DetailedAlertView>
 {
     public string Name { get; set; } = null!;
     public Frequencies Frequency { get; set; }
@@ -34,7 +34,7 @@ public class CreateAlertCommand : IRequest<DetailedAlertView>
             command.RegexPattern);
 }
 
-public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, DetailedAlertView>
+public class CreateAlertCommandHandler : ICommandHandler<CreateAlertCommand, DetailedAlertView>
 {
     private readonly ISession _session;
     private readonly ISiteWatcherContext _context;
@@ -47,7 +47,7 @@ public class CreateAlertCommandHandler : IRequestHandler<CreateAlertCommand, Det
         _idHasher = idHasher;
     }
 
-    public async Task<DetailedAlertView> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
+    public async ValueTask<DetailedAlertView> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
     {
         var alert = AlertFactory.Create(request, _session.UserId!.Value, _session.Now);
         _context.Alerts.Add(alert);

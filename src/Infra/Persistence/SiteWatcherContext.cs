@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using DotNetCore.CAP;
-using MediatR;
+using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;

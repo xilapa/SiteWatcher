@@ -14,7 +14,6 @@
 		<PackageReference Include="DotNetCore.CAP.RabbitMQ" />
 		<PackageReference Include="Hashids.net" />
 		<PackageReference Include="MailKit" />
-		<PackageReference Include="MediatR" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" />

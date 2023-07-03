@@ -1,10 +1,10 @@
-﻿using MediatR;
+﻿using Mediator;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 
 namespace SiteWatcher.Application.Authentication.Commands.ExchangeToken;
 
-public sealed class ExchangeCodeCommand : IRequest<AuthenticationResult?>
+public sealed class ExchangeCodeCommand : ICommand<AuthenticationResult?>
 {
     public string? Code { get; set; }
     public string? CodeVerifier { get; set; }
@@ -17,7 +17,7 @@ public sealed class ExchangeCodeCommand : IRequest<AuthenticationResult?>
     }
 }
 
-public sealed class ExchangeCodeCommandHandler : IRequestHandler<ExchangeCodeCommand, AuthenticationResult?>
+public sealed class ExchangeCodeCommandHandler : ICommandHandler<ExchangeCodeCommand, AuthenticationResult?>
 {
     private readonly IAuthService _authService;
 
@@ -26,7 +26,7 @@ public sealed class ExchangeCodeCommandHandler : IRequestHandler<ExchangeCodeCom
         _authService = authService;
     }
 
-    public async Task<AuthenticationResult?> Handle(ExchangeCodeCommand request, CancellationToken ct)
+    public async ValueTask<AuthenticationResult?> Handle(ExchangeCodeCommand request, CancellationToken ct)
     {
         if (!request.IsValid()) return null;
         return await _authService.GetAuthenticationResult(request.Code!, request.CodeVerifier!, ct);

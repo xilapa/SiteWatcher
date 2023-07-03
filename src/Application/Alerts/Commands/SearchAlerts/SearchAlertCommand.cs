@@ -1,6 +1,6 @@
 ﻿using Application.Alerts.Dtos;
 using Dapper;
-using MediatR;
+using Mediator;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -11,7 +11,7 @@ using SiteWatcher.Domain.Common.Extensions;
 
 namespace SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 
-public class SearchAlertCommand : IRequest<IEnumerable<SimpleAlertView>>, ICacheable
+public class SearchAlertCommand : ICommand<IEnumerable<SimpleAlertView>>, ICacheable
 {
     public string Term { get; set; } = null!;
     public TimeSpan Expiration => TimeSpan.FromMinutes(10);
@@ -20,7 +20,7 @@ public class SearchAlertCommand : IRequest<IEnumerable<SimpleAlertView>>, ICache
         CacheKeys.UserAlertSearch(session.UserId!.Value);
 }
 
-public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEnumerable<SimpleAlertView>>
+public class SearchAlertCommandHandler : ICommandHandler<SearchAlertCommand, IEnumerable<SimpleAlertView>>
 {
     private readonly IDapperContext _context;
     private readonly IQueries _queries;
@@ -35,7 +35,7 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEn
         _idHasher = idHasher;
     }
 
-    public async Task<IEnumerable<SimpleAlertView>> Handle(SearchAlertCommand request, CancellationToken cancellationToken)
+    public async ValueTask<IEnumerable<SimpleAlertView>> Handle(SearchAlertCommand request, CancellationToken cancellationToken)
     {
         var searchTerms = request
             .Term.Split(' ')

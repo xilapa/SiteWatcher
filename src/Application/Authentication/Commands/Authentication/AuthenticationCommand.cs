@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Domain.Authentication;
-using MediatR;
+using Mediator;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
@@ -10,7 +10,7 @@ using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Application.Authentication.Commands.Authentication;
 
-public class AuthenticationCommand : IRequest<AuthCodeResult>
+public class AuthenticationCommand : ICommand<AuthCodeResult>
 {
     public string? GoogleId { get; set; }
     public string? Email { get; set; }
@@ -39,7 +39,7 @@ public class AuthenticationCommand : IRequest<AuthCodeResult>
     }
 }
 
-public class AuthenticationCommandHandler : IRequestHandler<AuthenticationCommand, AuthCodeResult>
+public class AuthenticationCommandHandler : ICommandHandler<AuthenticationCommand, AuthCodeResult>
 {
     private readonly IDapperContext _context;
     private readonly IQueries _queries;
@@ -52,7 +52,7 @@ public class AuthenticationCommandHandler : IRequestHandler<AuthenticationComman
         _authService = authService;
     }
 
-    public async Task<AuthCodeResult> Handle(AuthenticationCommand request, CancellationToken ct)
+    public async ValueTask<AuthCodeResult> Handle(AuthenticationCommand request, CancellationToken ct)
     {
         if (!request.IsValid()) return new AuthCodeResult(null, ApplicationErrors.GOOGLE_AUTH_ERROR);
 

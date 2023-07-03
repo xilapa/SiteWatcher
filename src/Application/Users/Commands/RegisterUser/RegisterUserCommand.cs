@@ -1,4 +1,4 @@
-using MediatR;
+using Mediator;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
@@ -9,7 +9,7 @@ using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommand : IRequest<RegisterUserResult>
+public class RegisterUserCommand : ICommand<RegisterUserResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
@@ -21,7 +21,7 @@ public class RegisterUserCommand : IRequest<RegisterUserResult>
     public RegisterUserInput ToInputModel() => new (Name!, Email!, Language, Theme, GoogleId, AuthEmail);
 }
 
-public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
+public class RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand, RegisterUserResult>
 {
     private readonly ISiteWatcherContext _context;
     private readonly IAuthService _authService;
@@ -35,7 +35,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         _session = session;
     }
 
-    public async Task<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async ValueTask<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var user = User.FromInputModel(request.ToInputModel(), _session.Now);
 

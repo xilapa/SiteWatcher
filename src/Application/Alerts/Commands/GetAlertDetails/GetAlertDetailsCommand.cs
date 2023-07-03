@@ -1,6 +1,6 @@
 ﻿using Application.Alerts.Dtos;
 using Dapper;
-using MediatR;
+using Mediator;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -11,7 +11,7 @@ using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 
-public class GetAlertDetailsCommand : IRequest<AlertDetails?>, ICacheable
+public class GetAlertDetailsCommand : ICommand<AlertDetails?>, ICacheable
 {
     public string? AlertId { get; set; }
 
@@ -25,7 +25,7 @@ public class GetAlertDetailsCommand : IRequest<AlertDetails?>, ICacheable
         CacheKeys.UserAlerts(session.UserId!.Value);
 }
 
-public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsCommand, AlertDetails?>
+public class GetAlertDetailsCommandHandler : ICommandHandler<GetAlertDetailsCommand, AlertDetails?>
 {
     private readonly ISession _session;
     private readonly IDapperContext _context;
@@ -40,7 +40,7 @@ public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsComm
         _idHasher = idHasher;
     }
 
-    public async Task<AlertDetails?> Handle(GetAlertDetailsCommand request, CancellationToken cancellationToken)
+    public async ValueTask<AlertDetails?> Handle(GetAlertDetailsCommand request, CancellationToken cancellationToken)
     {
         if(request.AlertId == null)
             return default;
