@@ -1,10 +1,13 @@
-﻿using MediatR;
+﻿using Application.Alerts.Dtos;
+using Dapper;
+using MediatR;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 
@@ -25,14 +28,15 @@ public class GetAlertDetailsCommand : IRequest<AlertDetails?>, ICacheable
 public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsCommand, AlertDetails?>
 {
     private readonly ISession _session;
-    private readonly IAlertDapperRepository _alertDapperRepository;
+    private readonly IDapperContext _context;
+    private readonly IQueries _queries;
     private readonly IIdHasher _idHasher;
 
-    public GetAlertDetailsCommandHandler(ISession session, IAlertDapperRepository alertDapperRepository,
-        IIdHasher idHasher)
+    public GetAlertDetailsCommandHandler(ISession session, IDapperContext context, IQueries queries,  IIdHasher idHasher)
     {
         _session = session;
-        _alertDapperRepository = alertDapperRepository;
+        _context = context;
+        _queries = queries;
         _idHasher = idHasher;
     }
 
@@ -45,7 +49,17 @@ public class GetAlertDetailsCommandHandler : IRequestHandler<GetAlertDetailsComm
         if (alertId == 0)
             return null;
 
-        return await _alertDapperRepository
-            .GetAlertDetails(alertId, _session.UserId!.Value, cancellationToken);
+        var query = _queries.GetAlertDetails(_session.UserId!.Value, new AlertId(alertId));
+
+        var alertDetailsDto = await _context
+            .UsingConnectionAsync(conn =>
+            {
+                var command = new CommandDefinition(
+                    query.Sql,
+                    query.Parameters,
+                    cancellationToken: cancellationToken);
+                return conn.QueryFirstOrDefaultAsync<AlertDetailsDto?>(command);
+            });
+        return alertDetailsDto?.ToAlertDetails(_idHasher);
     }
 }

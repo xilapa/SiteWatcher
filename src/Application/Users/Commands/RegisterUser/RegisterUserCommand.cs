@@ -1,12 +1,11 @@
 using MediatR;
-using SiteWatcher.Common.Repositories;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Exceptions;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
-using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
@@ -19,35 +18,32 @@ public class RegisterUserCommand : IRequest<RegisterUserResult>
     public string GoogleId { get; set; }
     public string AuthEmail { get; set; }
 
-    public RegisterUserInput ToInputModel(ISession session) =>
-        new (Name!, Email!, Language, Theme, GoogleId, AuthEmail);
+    public RegisterUserInput ToInputModel() => new (Name!, Email!, Language, Theme, GoogleId, AuthEmail);
 }
 
 public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, RegisterUserResult>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IUnitOfWork _uow;
+    private readonly ISiteWatcherContext _context;
     private readonly IAuthService _authService;
     private readonly ISession _session;
 
-    public RegisterUserCommandHandler(IUserRepository userRepository, IUnitOfWork uow, IAuthService authService,
+    public RegisterUserCommandHandler(ISiteWatcherContext context, IAuthService authService,
         ISession session)
     {
-        _userRepository = userRepository;
-        _uow = uow;
+        _context = context;
         _authService = authService;
         _session = session;
     }
 
     public async Task<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var user = User.FromInputModel(request.ToInputModel(_session), _session.Now);
+        var user = User.FromInputModel(request.ToInputModel(), _session.Now);
 
         // TODO: remove this exception, not rely on database for a business rule
         try
         {
-            _userRepository.Add(user);
-            await _uow.SaveChangesAsync(cancellationToken);
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync(cancellationToken);
         }
         catch (UniqueViolationException)
         {

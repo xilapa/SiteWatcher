@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Infra;
-using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Utils;
 
 namespace SiteWatcher.IntegrationTests.Setup;
@@ -27,7 +27,7 @@ public static class Database
 
     private static async ValueTask ApplyManualMigrations(SiteWatcherContext ctx, DatabaseType databaseType)
     {
-        if(!DatabaseType.PostgresOnDocker.Equals(databaseType))
+        if(!DatabaseType.Postgres.Equals(databaseType))
             return;
 
         await ctx.Database.ExecuteSqlRawAsync(ManualMigrations.AlertSearchTrigramIndex);

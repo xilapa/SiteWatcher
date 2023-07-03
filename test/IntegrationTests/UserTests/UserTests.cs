@@ -21,6 +21,7 @@ using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Emails.DTOs;
+using SiteWatcher.Infra.Persistence;
 
 namespace IntegrationTests.UserTests;
 

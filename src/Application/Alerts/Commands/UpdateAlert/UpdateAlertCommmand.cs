@@ -1,12 +1,11 @@
 ﻿using MediatR;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
@@ -49,17 +48,14 @@ public class UpdateAlertCommmand : IRequest<CommandResult>
 public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, CommandResult>
 {
     private readonly IIdHasher _idHasher;
-    private readonly IAlertRepository _alertRepository;
+    private readonly ISiteWatcherContext _context;
     private readonly ISession _session;
-    private readonly IUnitOfWork _uow;
 
-    public UpdateAlertCommandHandler(IIdHasher idHasher, IAlertRepository alertRepository, ISession session,
-        IUnitOfWork uow)
+    public UpdateAlertCommandHandler(IIdHasher idHasher, ISiteWatcherContext context, ISession session)
     {
         _idHasher = idHasher;
-        _alertRepository = alertRepository;
+        _context = context;
         _session = session;
-        _uow = uow;
     }
 
     public async Task<CommandResult> Handle(UpdateAlertCommmand request, CancellationToken cancellationToken)
@@ -69,12 +65,11 @@ public class UpdateAlertCommandHandler : IRequestHandler<UpdateAlertCommmand, Co
         if (AlertId.Empty.Equals(updateInfo.AlertId) || updateInfo.AlertId.Value == 0)
             return CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
 
-        var alert = await _alertRepository.GetAlertForUpdate(updateInfo.AlertId, _session.UserId!.Value);
-        if (alert is null)
-            return CommandResult.FromError(ApplicationErrors.ALERT_DO_NOT_EXIST);
+        var alert = await _context.GetAlertForUpdateAsync(updateInfo.AlertId, _session.UserId!.Value, cancellationToken);
+        if (alert is null) return CommandResult.FromError(ApplicationErrors.ALERT_DO_NOT_EXIST);
 
         alert.Update(updateInfo, _session.Now);
-        await _uow.SaveChangesAsync(CancellationToken.None);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
         return CommandResult.FromValue(DetailedAlertView.FromAlert(alert, _idHasher));
     }

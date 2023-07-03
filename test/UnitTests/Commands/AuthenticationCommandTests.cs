@@ -1,19 +1,22 @@
-﻿using Domain.Authentication;
+﻿using System.Data;
+using Domain.Authentication;
 using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Authentication.Commands.Authentication;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Queries;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users.DTOs;
-using SiteWatcher.Domain.Users.Repositories;
 
 namespace UnitTests.Commands;
 
 public sealed class AuthenticationCommandTests
 {
     private readonly Mock<IAuthService> _authServiceMock;
+    private readonly IQueries _queries;
     private const string RegisterToken = nameof(RegisterToken);
     private const string GoogleId = nameof(GoogleId);
     private const string Email = nameof(Email);
@@ -22,6 +25,7 @@ public sealed class AuthenticationCommandTests
     public AuthenticationCommandTests()
     {
         _authServiceMock = new Mock<IAuthService>();
+        _queries = new Mock<IQueries>().Object;
 
         _authServiceMock
             .Setup(a => a.GenerateRegisterToken(It.IsAny<UserRegisterData>()))
@@ -36,12 +40,9 @@ public sealed class AuthenticationCommandTests
     public async Task RegisterTokenIsGeneratedWhenUserDoesNotExists()
     {
         // Arrange
-        var userDapperRepoMock = new Mock<IUserDapperRepository>();
-        userDapperRepoMock
-            .Setup(_ => _.GetUserByGoogleIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(null as UserViewModel);
+        var contextMock = new Mock<IDapperContext>();
 
-        var commandHandler = new AuthenticationCommandHandler(userDapperRepoMock.Object, _authServiceMock.Object);
+        var commandHandler = new AuthenticationCommandHandler(contextMock.Object, _queries, _authServiceMock.Object);
 
         var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email, CodeChallenge = CodeChallenge };
 
@@ -60,7 +61,7 @@ public sealed class AuthenticationCommandTests
     }
 
     [Fact]
-    public async Task AcitvationTaskIsReturnedWhenUserIsDeactivated()
+    public async Task ActivationTaskIsReturnedWhenUserIsDeactivated()
     {
         // Arrange
         var userVm = new UserViewModel
@@ -68,13 +69,13 @@ public sealed class AuthenticationCommandTests
             Id = UserId.New(),
             Active = false
         };
-        var userDapperRepoMock = new Mock<IUserDapperRepository>();
-        userDapperRepoMock
-            .Setup(_ => _.GetUserByGoogleIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        var dapperContextMock = new Mock<IDapperContext>();
+        dapperContextMock
+            .Setup(_ => _.UsingConnectionAsync(It.IsAny<Func<IDbConnection,Task<UserViewModel?>>>()))
             .ReturnsAsync(userVm);
 
         var commandHandler =
-            new AuthenticationCommandHandler(userDapperRepoMock.Object, _authServiceMock.Object);
+            new AuthenticationCommandHandler(dapperContextMock.Object, _queries, _authServiceMock.Object);
 
         var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email, CodeChallenge = CodeChallenge};
 
@@ -96,7 +97,7 @@ public sealed class AuthenticationCommandTests
     public async Task InvalidAuthCommandReturnError()
     {
         // Arrange
-        var commandHandler = new AuthenticationCommandHandler(null!, _authServiceMock.Object);
+        var commandHandler = new AuthenticationCommandHandler(null!, null!, _authServiceMock.Object);
 
         var command = new AuthenticationCommand();
 

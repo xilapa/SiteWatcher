@@ -1,10 +1,12 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Events;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Authentication;
+using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 
@@ -15,15 +17,15 @@ public class DeleteAlertCommand : IRequest<CommandResult>
 
 public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, CommandResult>
 {
-    private readonly IAlertDapperRepository _alertDapperRepository;
+    private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
     private readonly ISession _session;
     private readonly IMediator _mediator;
 
-    public DeleteAlertCommandHandler(IAlertDapperRepository alertDapperRepository, IIdHasher idHasher, ISession session,
+    public DeleteAlertCommandHandler(ISiteWatcherContext context, IIdHasher idHasher, ISession session,
         IMediator mediator)
     {
-        _alertDapperRepository = alertDapperRepository;
+        _context = context;
         _idHasher = idHasher;
         _session = session;
         _mediator = mediator;
@@ -34,17 +36,20 @@ public class DeleteAlertCommandHandler : IRequestHandler<DeleteAlertCommand, Com
         if(request.AlertId == null)
             return ReturnError();
 
-        var alertId = _idHasher.DecodeId(request.AlertId);
-        if (alertId == 0)
+        var alertIdInt = _idHasher.DecodeId(request.AlertId);
+        if (alertIdInt == 0)
             return ReturnError();
 
-        var deleted = await _alertDapperRepository
-            .DeleteUserAlert(alertId, _session.UserId!.Value, cancellationToken);
+        var alertId = new AlertId(alertIdInt);
 
-        if (deleted)
-            await _mediator.Publish(new AlertsChangedEvent(_session.UserId.Value), CancellationToken.None);
+        var deleted = await _context.Alerts
+            .Where(a => a.Id == alertId && a.UserId == _session.UserId)
+            .ExecuteDeleteAsync(cancellationToken);
 
-        return deleted ? CommandResult.Empty() : ReturnError();
+        if (deleted != 0)
+            await _mediator.Publish(new AlertsChangedEvent(_session.UserId!.Value), CancellationToken.None);
+
+        return deleted != 0 ? CommandResult.Empty() : ReturnError();
     }
 
     private static CommandResult ReturnError() =>

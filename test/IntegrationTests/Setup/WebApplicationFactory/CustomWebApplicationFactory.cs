@@ -1,7 +1,6 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
 using DotNetCore.CAP;
-using Infra.Persistence.Repositories;
 using IntegrationTests.Setup;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
@@ -16,18 +15,16 @@ using Moq;
 using Npgsql;
 using ReflectionMagic;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Notifications.Commands.ProcessNotifications;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.DomainServices;
-using SiteWatcher.Domain.Emails.Repositories;
-using SiteWatcher.Domain.Notifications.Repositories;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
-using SiteWatcher.Infra.Persistence.Repositories;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
 using Testcontainers.PostgreSql;
@@ -108,8 +105,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 _dbConnection = new SqliteConnection(_connectionString);
                 _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
                 break;
-            case DatabaseType.PostgresOnDocker:
-                DatabaseType = DatabaseType.PostgresOnDocker;
+            case DatabaseType.Postgres:
+                DatabaseType = DatabaseType.Postgres;
                 _postgresContainer = new PostgreSqlBuilder()
                     .WithDatabase($"testDb{Guid.NewGuid()}")
                     .Build();
@@ -153,7 +150,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IConnectionMultiplexer),
             typeof(ICache),
             typeof(DbContext),
-            typeof(IUnitOfWork),
             typeof(ISession),
             typeof(IAppSettings),
             typeof(IGoogleSettings),
@@ -164,12 +160,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IHttpClientFactory),
             typeof(IPublisher),
             typeof(IPublishService),
-            typeof(ICapPublisher)
+            typeof(ICapPublisher),
+            typeof(IQueries)
         };
 
         // Only replace DapperQueries if using Sqlite
         if(DatabaseType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
-            servicesToRemove = servicesToRemove.Append(typeof(IDapperQueries)).ToArray();
+            servicesToRemove = servicesToRemove.Append(typeof(IQueries)).ToArray();
 
         var descriptorsToRemove = services
             .Where(desc => servicesToRemove.Contains(desc.ServiceType))
@@ -198,8 +195,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             return _contextFactory(appSettings, mediator);
         });
 
-        services.AddScoped<IUnitOfWork>(_ => _.GetRequiredService<SiteWatcherContext>());
-
         services.AddScoped<ISession>(srvc =>
         {
             var httpContextAccessor = srvc.GetRequiredService<IHttpContextAccessor>();
@@ -209,20 +204,15 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton<IAppSettings>(TestSettings);
         services.AddSingleton<IGoogleSettings>(TestGoogleSettings);
         services.AddScoped<IDapperContext>(_ => new TestDapperContext(TestSettings, _connectionString, DatabaseType));
-
-        // Only replace DapperQueries if using Sqlite
-        if(DatabaseType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
-            services.AddSingleton<IDapperQueries, SqliteDapperQueries>();
+        services.AddSingleton<IQueries>(new Queries(DatabaseType));
 
         // Execute AlertServices
         services.AddScoped<IUserAlertsService, UserAlertsService>();
         services.AddScoped<ExecuteAlertsCommandHandler>();
         services.AddScoped<IHttpClient, HttpClient>();
-        services.AddScoped<IEmailRepository, EmailRepository>();
 
         // Process notification services
         services.AddScoped<ProcessNotificationCommandHandler>();
-        services.AddScoped<INotificationRepository, NotificationRepository>();
     }
 
     private void ConfigureOptionsReplacementServices(IServiceCollection services)

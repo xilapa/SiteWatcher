@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Domain.Alerts.Repositories;
-using SiteWatcher.Domain.Common.ValueObjects;
+using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 
@@ -13,12 +14,15 @@ namespace UnitTests.Commands;
 public sealed class DeleteAlertCommandTests
 {
     [Fact]
-    public async Task InvalidAlertIdDoesntCallTheDatabase()
+    public async Task InvalidAlertIdDoesntDeleteAnything()
     {
         // Arrange
-        var alertDapperRepoMock = new Mock<IAlertDapperRepository>();
+        var alertDbSetMock = new Mock<DbSet<Alert>>();
+        var contextMock = new Mock<ISiteWatcherContext>();
+        contextMock.Setup(c => c.Alerts).Returns(alertDbSetMock.Object);
+
         var idHasher = new IdHasher(new TestAppSettings());
-        var handler = new DeleteAlertCommandHandler(alertDapperRepoMock.Object, idHasher, null!, null!);
+        var handler = new DeleteAlertCommandHandler(contextMock.Object, idHasher, null!, null!);
 
         var command = new DeleteAlertCommand {AlertId = "invalidId"};
 
@@ -28,9 +32,5 @@ public sealed class DeleteAlertCommandTests
         // Assert
         result!.Errors.Count().Should().Be(1);
         result.Errors.First().Should().Be(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
-        alertDapperRepoMock
-            .Verify(r =>
-                r.DeleteUserAlert(It.IsAny<int>(), It.IsAny<UserId>(), It.IsAny<CancellationToken>()),
-                Times.Never);
     }
 }

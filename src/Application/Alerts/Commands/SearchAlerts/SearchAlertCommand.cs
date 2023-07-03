@@ -1,7 +1,10 @@
-﻿using MediatR;
+﻿using Application.Alerts.Dtos;
+using Dapper;
+using MediatR;
+using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
-using SiteWatcher.Domain.Alerts.Repositories;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Extensions;
@@ -19,13 +22,17 @@ public class SearchAlertCommand : IRequest<IEnumerable<SimpleAlertView>>, ICache
 
 public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEnumerable<SimpleAlertView>>
 {
-    private readonly IAlertDapperRepository _alertDapperRepository;
+    private readonly IDapperContext _context;
+    private readonly IQueries _queries;
     private readonly ISession _session;
+    private readonly IIdHasher _idHasher;
 
-    public SearchAlertCommandHandler(IAlertDapperRepository alertDapperRepository, ISession session)
+    public SearchAlertCommandHandler(IDapperContext context, IQueries queries, ISession session, IIdHasher idHasher)
     {
-        _alertDapperRepository = alertDapperRepository;
+        _context = context;
+        _queries = queries;
         _session = session;
+        _idHasher = idHasher;
     }
 
     public async Task<IEnumerable<SimpleAlertView>> Handle(SearchAlertCommand request, CancellationToken cancellationToken)
@@ -35,7 +42,17 @@ public class SearchAlertCommandHandler : IRequestHandler<SearchAlertCommand, IEn
             .Where(t => !string.IsNullOrEmpty(t))
             .Select(t => t.ToLowerCaseWithoutDiacritics()).ToArray();
 
-        return await _alertDapperRepository
-            .SearchSimpleAlerts(searchTerms, _session.UserId!.Value, 10, cancellationToken);
+        var query = _queries.SearchSimpleAlerts(_session.UserId!.Value, searchTerms, 10);
+
+        var simpleAlertViewDtos = await _context
+            .UsingConnectionAsync(conn =>
+                {
+                    var cmd = new CommandDefinition(
+                        query.Sql,
+                        query.Parameters,
+                        cancellationToken: cancellationToken);
+                    return conn.QueryAsync<SimpleAlertViewDto>(cmd);
+                });
+        return simpleAlertViewDtos.Select(dto => dto.ToSimpleAlertView(_idHasher));
     }
 }

@@ -1,8 +1,7 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Authentication;
-using SiteWatcher.Domain.Users.Repositories;
 
 namespace SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 
@@ -12,24 +11,21 @@ public class SendEmailConfirmationCommand : IRequest
 public class SendEmailConfirmationCommandHandler : IRequestHandler<SendEmailConfirmationCommand>
 {
     private readonly ISession _session;
-    private readonly IUserRepository _userRepository;
-    private readonly IUnitOfWork _uow;
+    private readonly ISiteWatcherContext _context;
 
-    public SendEmailConfirmationCommandHandler(ISession session, IUserRepository userRepository, IUnitOfWork uow)
+    public SendEmailConfirmationCommandHandler(ISession session, ISiteWatcherContext context)
     {
         _session = session;
-        _userRepository = userRepository;
-        _uow = uow;
+        _context = context;
     }
 
     public async Task Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository
-            .GetAsync(u => u.Id == _session.UserId && u.Active && !u.EmailConfirmed, cancellationToken);
-        if(user is null)
-            return;
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == _session.UserId && u.Active && !u.EmailConfirmed, cancellationToken);
+        if(user is null) return;
 
         user.GenerateEmailConfirmationToken(_session.Now);
-        await _uow.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

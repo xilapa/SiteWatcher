@@ -1,25 +1,27 @@
-﻿using Moq;
+﻿using MockQueryable.Moq;
+using Moq;
+using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.DeactivateAccount;
-using SiteWatcher.Common.Repositories;
-using SiteWatcher.Domain.Users.Repositories;
+using SiteWatcher.Domain.Users;
 
 namespace UnitTests.Commands;
 
 public sealed class DeactivateAccountCommandTests
 {
-        [Fact]
-        public async Task CantDeactivateNonExistingUser()
-        {
-            // Arrange
-            var userRepository = new Mock<IUserRepository>().Object;
-            var uowMock = new Mock<IUnitOfWork>();
-            var commandHandler = new DeactivateAccountCommandHandler(userRepository, uowMock.Object, null!);
+    [Fact]
+    public async Task CantDeactivateNonExistingUser()
+    {
+        // Arrange
+        var dbSetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
+        var contextMock = new Mock<ISiteWatcherContext>();
+        contextMock.Setup(c => c.Users).Returns(dbSetMock.Object);
+        var commandHandler = new DeactivateAccountCommandHandler(contextMock.Object, null!);
 
-            // Act
-            await commandHandler.Handle(new DeactivateAccountCommand(), default);
+        // Act
+        await commandHandler.Handle(new DeactivateAccountCommand(), default);
 
-            // Assert
-            uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()),
-                Times.Never);
-        }
+        // Assert
+        contextMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
 }

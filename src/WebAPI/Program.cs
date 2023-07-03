@@ -5,6 +5,7 @@ using SiteWatcher.Application;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.WebAPI.Extensions;
 using SiteWatcher.WebAPI.Settings;
 using DependencyInjection = SiteWatcher.Infra.DependencyInjection;
@@ -26,9 +27,8 @@ builder.Services.Configure<ApiBehaviorOptions>(opt => opt.SuppressModelStateInva
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDataContext<SiteWatcherContext>();
-builder.Services.AddRepositories();
-builder.Services.AddDapperRepositories();
+builder.Services.AddDataContext();
+builder.Services.AddDapperContext(DatabaseType.Postgres);
 builder.Services.AddApplication();
 
 builder.Services.AddRedisCache(appSettings)

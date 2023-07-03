@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common.Exceptions;
 using SiteWatcher.Domain.Common.ValueObjects;
@@ -14,7 +13,7 @@ using SiteWatcher.Infra.Extensions;
 
 namespace SiteWatcher.Infra;
 
-public class SiteWatcherContext : DbContext, IUnitOfWork
+public class SiteWatcherContext : DbContext, ISiteWatcherContext
 {
     private readonly IAppSettings _appSettings;
     private readonly IMediator _mediator;

@@ -1,10 +1,8 @@
 ﻿using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Common.Repositories;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Notifications;
-using SiteWatcher.Domain.Notifications.Repositories;
 
 namespace SiteWatcher.Application.Notifications.Commands.ProcessNotifications;
 
@@ -12,16 +10,13 @@ public class ProcessNotificationCommandHandler
 {
     private readonly ISession _session;
     private readonly IAppSettings _appSettings;
-    private readonly INotificationRepository _repo;
-    private readonly IUnitOfWork _uow;
+    private readonly ISiteWatcherContext _context;
 
-    public ProcessNotificationCommandHandler(ISession session, IAppSettings appSettings, INotificationRepository repo,
-        IUnitOfWork uow)
+    public ProcessNotificationCommandHandler(ISession session, IAppSettings appSettings, ISiteWatcherContext context)
     {
         _session = session;
         _appSettings = appSettings;
-        _repo = repo;
-        _uow = uow;
+        _context = context;
     }
 
     public async Task<CommandResult> Handle(AlertsTriggeredEvent @event, CancellationToken ct)
@@ -32,9 +27,9 @@ public class ProcessNotificationCommandHandler
 
             await notification.ProcessAndDispatch(_session.Now);
 
-            _repo.Add(notification);
+            _context.Notifications.Add(notification);
 
-            await _uow.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync(ct);
         }
         catch
         {

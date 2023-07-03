@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Common.Extensions;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
@@ -15,7 +16,7 @@ using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
-using SiteWatcher.Domain.Users.Repositories;
+using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -42,7 +43,7 @@ public sealed class ExecuteAlertTestsBase : BaseTestFixture
         base.OnConfiguringTestServer(optionsBuilder);
         // TODO: Reconfigure Site to not be an owned type of Alert,
         // because it's not supported by SQLite, thus Postgres it's needed for this test
-        optionsBuilder.UseDatabase(DatabaseType.PostgresOnDocker);
+        optionsBuilder.UseDatabase(DatabaseType.Postgres);
     }
 }
 
@@ -162,9 +163,12 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         { Stream.Null, TimeSpan.FromMinutes(10), false },// Simulate an error reaching the site
         { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromMinutes(10), false },
 
+        { Stream.Null, TimeSpan.FromMinutes(119), false },// Simulate an error reaching the site
+        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromMinutes(119), false },
+
         // After exactly two hours
-        { Stream.Null, TimeSpan.FromHours(2),false },// Simulate an error reaching the site
-        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromHours(2), false },
+        { Stream.Null, TimeSpan.FromHours(2), true },// Simulate an error reaching the site
+        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromHours(2), true },
 
         // After more than two hours
         { Stream.Null, TimeSpan.FromHours(3), true },// Simulate an error reaching the site
@@ -188,15 +192,12 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
             await ctx.SaveChangesAsync();
         });
 
-        var frequencies = Enum.GetValues<Frequencies>();
+        var frequencies = Enum.GetValues<Frequencies>().ToList();
         CurrentTime = CurrentTime.Add(executionDelay);
 
         // Act
-        var usersWithAlerts = await AppFactory.WithServiceProvider(sp =>
-        {
-            var userRepo = sp.GetRequiredService<IUserRepository>();
-            return userRepo.GetUserWithPendingAlertsAsync(frequencies, 10, null, CancellationToken.None);
-        });
+        var usersWithAlerts = await AppFactory.WithDbContext(ctx =>
+            ctx.GetUserWithPendingAlertsAsync(null, frequencies, 50, CurrentTime, CancellationToken.None));
 
         // Assert
         var alerts = usersWithAlerts.SelectMany(u => u.Alerts);
