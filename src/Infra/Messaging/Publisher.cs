@@ -5,18 +5,21 @@ namespace SiteWatcher.Infra.Messaging;
 
 public sealed class Publisher : IPublisher
 {
+    private readonly SiteWatcherContext _ctx;
     private readonly ICapPublisher _capPublisher;
 
-    public Publisher(ICapPublisher capPublisher)
+    public Publisher(SiteWatcherContext ctx, ICapPublisher capPublisher)
     {
+        _ctx = ctx;
         _capPublisher = capPublisher;
     }
 
-    public Task PublishAsync(string routingKey, object message, Dictionary<string, string>? headers, CancellationToken ct)
+    public async Task PublishAsync(string routingKey, object message, Dictionary<string, string>? headers, CancellationToken ct)
     {
+        await using var trx = await _ctx.Database.BeginTransactionAsync(_capPublisher, autoCommit: false, cancellationToken: ct);
         headers ??= new Dictionary<string, string>(1);
         headers.Add("content-type","application/json");
-        return _capPublisher.PublishAsync(routingKey, message, headers!, ct);
+        await _capPublisher.PublishAsync(routingKey, message, headers!, ct);
     }
 
     public Task PublishAsync(string routingKey, object message, CancellationToken ct)

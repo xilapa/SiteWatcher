@@ -29,16 +29,3 @@ public sealed class FakePublishedMessage
     public object Content { get; set; } = null!;
     public Dictionary<string, string>? Headers { get; set; }
 }
-
-public sealed class FakePublishService : IPublishService
-{
-    private readonly IPublisher _publisher;
-
-    public FakePublishService(IPublisher publisher)
-    {
-        _publisher = publisher;
-    }
-
-    public async Task WithPublisher(Func<IPublisher, Task> func, CancellationToken ct) =>
-        await func(_publisher);
-}

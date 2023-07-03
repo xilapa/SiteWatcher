@@ -142,7 +142,6 @@ public static class DependencyInjection
             });
 
         services.AddScoped<IPublisher, Publisher>();
-        services.AddScoped<IPublishService, PublishService>();
 
         return services;
     }

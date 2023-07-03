@@ -159,7 +159,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(ILoggerFactory),
             typeof(IHttpClientFactory),
             typeof(IPublisher),
-            typeof(IPublishService),
             typeof(ICapPublisher),
             typeof(IQueries)
         };
@@ -186,7 +185,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // DapperQueries, Publisher
         services.AddSingleton<ICache>(FakeCache);
         services.AddSingleton<IPublisher>(FakePublisher);
-        services.AddScoped<IPublishService, FakePublishService>();
 
         services.AddScoped<SiteWatcherContext>(srvc =>
         {
