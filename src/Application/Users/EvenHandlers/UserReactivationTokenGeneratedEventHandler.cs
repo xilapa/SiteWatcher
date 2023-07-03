@@ -23,7 +23,7 @@ public class UserReactivationTokenGeneratedEventHandler : INotificationHandler<U
     {
         var link = $"{_appSettings.FrontEndUrl}/#/security/reactivate-account?t={notification.ConfirmationToken}";
         var message =
-            MailMessageGenerator.AccountActivation(notification.Name, notification.Email, link,
+            EmailFactory.AccountActivation(notification.Name, notification.Email, link,
                 notification.Language);
         _fireAndForgetService.ExecuteWith<IAuthService, IEmailService>(async (authService, emailService) =>
         {

@@ -2,7 +2,7 @@
 
 namespace SiteWatcher.Domain.Emails.DTOs;
 
-public struct MailRecipient
+public class MailRecipient
 {
     public MailRecipient(string name, string email, UserId userId)
     {

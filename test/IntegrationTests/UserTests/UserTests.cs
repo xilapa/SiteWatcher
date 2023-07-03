@@ -220,7 +220,7 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         // Verifying that the correct message was sent
         var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
         var message =
-            MailMessageGenerator.EmailConfirmation(updateUserCommand.Name, updateUserCommand.Email, link,
+            EmailFactory.EmailConfirmation(updateUserCommand.Name, updateUserCommand.Email, link,
                 updateUserCommand.Language);
 
         (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
@@ -288,7 +288,7 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         // Verifying that the correct message was sent
         var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
         var message =
-            MailMessageGenerator.EmailConfirmation(registerUserCommand.Name, registerUserCommand.Email, link,
+            EmailFactory.EmailConfirmation(registerUserCommand.Name, registerUserCommand.Email, link,
                 registerUserCommand.Language);
 
         (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
@@ -422,7 +422,7 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         // Verifying that the correct message was sent
         var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
         var message =
-            MailMessageGenerator.EmailConfirmation(Users.Xulipa.Name, Users.Xulipa.Email, link,
+            EmailFactory.EmailConfirmation(Users.Xulipa.Name, Users.Xulipa.Email, link,
                 Users.Xulipa.Language);
 
         (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
@@ -512,7 +512,7 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         // Verifying that the correct message was sent
         var link = $"{TestSettings.FrontEndUrl}/#/security/reactivate-account?t={userFromDb.SecurityStamp}";
         var message =
-            MailMessageGenerator.AccountActivation(userFromDb.Name, userFromDb.Email, link,
+            EmailFactory.AccountActivation(userFromDb.Name, userFromDb.Email, link,
                 userFromDb.Language);
 
         (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)

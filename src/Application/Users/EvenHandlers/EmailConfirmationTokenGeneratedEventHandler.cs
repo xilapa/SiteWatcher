@@ -22,7 +22,7 @@ public class EmailConfirmationGeneratedEventHandler : INotificationHandler<Email
     {
         var link = $"{_appSettings.FrontEndUrl}/#/security/confirm-email?t={notification.ConfirmationToken}";
         var message =
-            MailMessageGenerator.EmailConfirmation(notification.Name, notification.Email, link,
+            EmailFactory.EmailConfirmation(notification.Name, notification.Email, link,
                 notification.Language);
         _fireAndForgetService.ExecuteWith<IAuthService, IEmailService>(async (authService, emailService) =>
         {
