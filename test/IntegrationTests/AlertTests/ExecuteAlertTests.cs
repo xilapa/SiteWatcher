@@ -163,9 +163,12 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         { Stream.Null, TimeSpan.FromMinutes(10), false },// Simulate an error reaching the site
         { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromMinutes(10), false },
 
+        { Stream.Null, TimeSpan.FromMinutes(119), false },// Simulate an error reaching the site
+        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromMinutes(119), false },
+
         // After exactly two hours
-        { Stream.Null, TimeSpan.FromHours(2),false },// Simulate an error reaching the site
-        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromHours(2), false },
+        { Stream.Null, TimeSpan.FromHours(2), true },// Simulate an error reaching the site
+        { new MemoryStream(new byte[] { 1, 2, 3 }), TimeSpan.FromHours(2), true },
 
         // After more than two hours
         { Stream.Null, TimeSpan.FromHours(3), true },// Simulate an error reaching the site

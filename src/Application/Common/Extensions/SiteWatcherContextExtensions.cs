@@ -24,7 +24,7 @@ public static class SiteWatcherContextExtensions
                     freqs.Contains(a.Frequency)
                     && (
                         a.LastVerification == null
-                        || a.LastVerification < currentTime.AddHours(-2)
+                        || a.LastVerification <= currentTime.AddHours(-2)
                     )
                 )
             )
