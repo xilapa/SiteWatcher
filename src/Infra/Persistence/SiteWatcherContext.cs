@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
+using DotNetCore.CAP;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts;
@@ -17,12 +19,15 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
 {
     private readonly IAppSettings _appSettings;
     private readonly IMediator _mediator;
+    private readonly ICapPublisher _capPublisher;
+    private IDbContextTransaction? _currentTransaction;
     public const string Schema = "sw";
 
-    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator)
+    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator, ICapPublisher capPublisher)
     {
         _appSettings = appSettings;
         _mediator = mediator;
+        _capPublisher = capPublisher;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -48,17 +53,62 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct)
+    {
+        if(_currentTransaction != null)
+            return _currentTransaction;
+
+        _currentTransaction = await Database.BeginTransactionAsync(_capPublisher, autoCommit: false, ct);
+        return _currentTransaction;
+    }
+
+    public async Task CommitTransactionAsync(IDbContextTransaction transaction, CancellationToken ct)
+    {
+        if (transaction is null) throw new ArgumentNullException(nameof(transaction));
+        if (transaction != _currentTransaction)
+            throw new InvalidOperationException($"Transaction {transaction.TransactionId} is not current");
+
+        try
+        {
+            await transaction.CommitAsync(ct);
+        }
+        catch
+        {
+            await RollbackTransactionAsync(ct);
+            throw;
+        }
+        finally
+        {
+            DisposeTransaction();
+        }
+    }
+
+    private async Task RollbackTransactionAsync(CancellationToken ct)
+    {
+        try
+        {
+            if (_currentTransaction != null)
+                await _currentTransaction.RollbackAsync(ct);
+        }
+        finally
+        {
+            DisposeTransaction();
+        }
+    }
+
+    private void DisposeTransaction()
+    {
+        if (_currentTransaction == null) return;
+        _currentTransaction.Dispose();
+        _currentTransaction = null;
+    }
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             await _mediator.DispatchDomainEvents(this);
-            var saveRes = await base.SaveChangesAsync(cancellationToken);
-
-            // If CAP transaction is used, then commit it
-            if (Database.CurrentTransaction != null)
-                await Database.CurrentTransaction.CommitAsync(CancellationToken.None);
-            return saveRes;
+            return await base.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateException ex)
         {

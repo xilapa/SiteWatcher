@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
@@ -12,6 +13,8 @@ public interface ISiteWatcherContext
 {
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct);
+    Task CommitTransactionAsync(IDbContextTransaction transaction, CancellationToken ct);
     DbSet<User> Users { get; }
     DbSet<Alert> Alerts { get; }
     DbSet<IdempotentConsumer> IdempotentConsumers { get; }
