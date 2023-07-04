@@ -2,7 +2,7 @@
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
-using SiteWatcher.Domain.Users.Events;
+using SiteWatcher.Domain.Users.Messages;
 
 namespace UnitTests.ModelTests;
 
@@ -20,11 +20,11 @@ public sealed class UserTests
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
 
-        // Check email confirmation event
+        // Check email confirmation message
         if (!emailConfirmed)
-            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedEvent);
+            user.Messages.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
         else
-            user.DomainEvents.Should().BeEmpty();
+            user.Messages.Should().BeEmpty();
     }
 
     [Theory]
@@ -35,7 +35,7 @@ public sealed class UserTests
     {
         // Arrange
         var user = new User("googleId", "name", email, authEmail, Language.English, Theme.Dark, DateTime.Now);
-        user.ClearDomainEvents();
+        user.ClearMessages();
         var userUpdate = new UpdateUserInput
         {
             Name = "name",
@@ -50,11 +50,11 @@ public sealed class UserTests
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
 
-        // Check email confirmation event
+        // Check email confirmation message
         if (!emailConfirmed)
-            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedEvent);
+            user.Messages.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
         else
-            user.DomainEvents.Should().BeEmpty();
+            user.Messages.Should().BeEmpty();
     }
 
     [Fact]

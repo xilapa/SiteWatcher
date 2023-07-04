@@ -12,13 +12,12 @@ using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication;
+using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
-using SiteWatcher.Infra.EmailSending;
-using SiteWatcher.Infra.FireAndForget;
 using SiteWatcher.Infra.Messaging;
 using SiteWatcher.Infra.Persistence;
 using StackExchange.Redis;
@@ -71,18 +70,6 @@ public static class DependencyInjection
     {
         var session = RuntimeHelpers.GetUninitializedObject(typeof(Session)) as ISession;
         services.AddSingleton(session!);
-        return services;
-    }
-
-    public static IServiceCollection AddEmailService(this IServiceCollection services)
-    {
-        services.AddScoped<IEmailService, EmailService>();
-        return services;
-    }
-
-    public static IServiceCollection AddFireAndForgetService(this IServiceCollection services)
-    {
-        services.AddScoped<IFireAndForgetService, FireAndForgetService>();
         return services;
     }
 
@@ -141,8 +128,6 @@ public static class DependencyInjection
                 opts.EnableConsumerPrefetch = false;
             });
 
-        services.AddScoped<IPublisher, Publisher>();
-
         return services;
     }
 
@@ -197,6 +182,12 @@ public static class DependencyInjection
             .AddDataProtection()
             .PersistKeysToStackExchangeRedis(redisMultiplexer);
 
+        return services;
+    }
+
+    public static IServiceCollection AddAuthService(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthService,AuthService>();
         return services;
     }
 }

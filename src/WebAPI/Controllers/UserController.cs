@@ -33,9 +33,9 @@ public class UserController : ControllerBase
     [HttpGet]
     [Authorize]
     [CacheFilter(ResponseCache: false)]
-    public async Task<IActionResult> GetUserInfo([FromRoute] GetUserInfoCommand command, CancellationToken ct)
+    public async Task<IActionResult> GetUserInfo([FromRoute] GetUserInfoQuery request, CancellationToken ct)
     {
-        var res = await _mediator.Send(command, ct);
+        var res = await _mediator.Send(request, ct);
         if (res == null) return NotFound();
         return Ok(res);
     }
@@ -44,11 +44,11 @@ public class UserController : ControllerBase
     [CommandValidationFilter]
     [Route("register")]
     [Authorize(Policy = Policies.ValidRegisterData)]
-    public async Task<IActionResult> Register(RegisterUserCommand command)
+    public async Task<IActionResult> Register(RegisterUserCommand request)
     {
-        command.GoogleId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
-        command.AuthEmail = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
-        RegisterUserResult commandResult = await _mediator.Send(command);
+        request.GoogleId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
+        request.AuthEmail = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
+        RegisterUserResult commandResult = await _mediator.Send(request);
         return commandResult switch
         {
             AlreadyExists => Conflict(),
@@ -64,18 +64,18 @@ public class UserController : ControllerBase
 
     [AllowAnonymous]
     [HttpPut("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand confirmEmailCommand)
+    public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand request)
     {
-        var commandResult = await _mediator.Send(confirmEmailCommand);
+        var commandResult = await _mediator.Send(request);
         return commandResult.ToActionResult();
     }
 
     [Authorize]
     [HttpPut]
     [CommandValidationFilter]
-    public async Task<IActionResult> UpdateUser(UpdateUserCommand command)
+    public async Task<IActionResult> UpdateUser(UpdateUserCommand request)
     {
-        var commandResult = await _mediator.Send(command);
+        var commandResult = await _mediator.Send(request);
         return commandResult.ToActionResult<UpdateUserResult>();
     }
 
@@ -87,14 +87,14 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     [CommandValidationFilter]
     [HttpPut("send-reactivate-account-email")]
-    public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand command) =>
-        await _mediator.Send(command);
+    public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand request) =>
+        await _mediator.Send(request);
 
     [AllowAnonymous]
     [HttpPut("reactivate-account")]
-    public async Task<IActionResult> ReactivateAccount(ReactivateAccountCommand reactivateAccountCommand)
+    public async Task<IActionResult> ReactivateAccount(ReactivateAccountCommand request)
     {
-        var commandResult = await _mediator.Send(reactivateAccountCommand);
+        var commandResult = await _mediator.Send(request);
         return commandResult.ToActionResult();
     }
 

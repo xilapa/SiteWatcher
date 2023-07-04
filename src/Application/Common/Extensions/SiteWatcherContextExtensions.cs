@@ -60,4 +60,19 @@ public static class SiteWatcherContextExtensions
         ctx.Attach(alert);
         return alert;
     }
+
+    public static async Task<bool> HasBeenProcessed(this ISiteWatcherContext context, string messageId, string consumerName) =>
+        await context.IdempotentConsumers
+            .AsNoTracking()
+            .AnyAsync(i => i.Consumer == consumerName && i.MessageId == messageId);
+
+    public static void MarkMessageAsConsumed(this ISiteWatcherContext context, string messageId, string consumerName)
+    {
+        var idemPotencyConsumer = new IdempotentConsumer
+        {
+            MessageId = messageId,
+            Consumer = consumerName,
+        };
+        context.IdempotentConsumers.Add(idemPotencyConsumer);
+    }
 }

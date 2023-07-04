@@ -12,6 +12,7 @@ using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra.Extensions;
+using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 
 namespace SiteWatcher.Infra;
 
@@ -20,14 +21,16 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
     private readonly IAppSettings _appSettings;
     private readonly IMediator _mediator;
     private readonly ICapPublisher _capPublisher;
+    private readonly IPublisher _publisher;
     private IDbContextTransaction? _currentTransaction;
     public const string Schema = "sw";
 
-    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator, ICapPublisher capPublisher)
+    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator, ICapPublisher capPublisher, IPublisher publisher)
     {
         _appSettings = appSettings;
         _mediator = mediator;
         _capPublisher = capPublisher;
+        _publisher = publisher;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -103,12 +106,12 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
         _currentTransaction = null;
     }
 
-    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
         try
         {
-            await _mediator.DispatchDomainEvents(this);
-            return await base.SaveChangesAsync(cancellationToken);
+            await _mediator.DispatchDomainEventsAndMessages(this, _publisher, ct);
+            return await base.SaveChangesAsync(ct);
         }
         catch (DbUpdateException ex)
         {

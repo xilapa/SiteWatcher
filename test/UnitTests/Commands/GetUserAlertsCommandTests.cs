@@ -13,9 +13,9 @@ public sealed class GetUserAlertsCommandTests
     public async Task RepositoryIsNotCalledWithTakeEqualsToZero()
     {
         // Arrange
-        var command = new GetUserAlertsCommand {Take = 0};
+        var command = new GetUserAlertsQuery {Take = 0};
         var dapperContextMock = new Mock<IDapperContext>();
-        var handler = new GetUserAlertsCommandHandler(null!, null!, dapperContextMock.Object, null!);
+        var handler = new GetUserAlertsQueryHandler(null!, null!, dapperContextMock.Object, null!);
 
         // Act
         var result = await handler.Handle(command, default);

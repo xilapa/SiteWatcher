@@ -25,7 +25,7 @@ public class CacheFilterAttribute : Attribute, IAsyncActionFilter, IAsyncResultF
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var cacheableCommand = context.ActionArguments["command"] as ICacheable;
+        var cacheableCommand = context.ActionArguments["request"] as ICacheable;
 
         var cache = context.HttpContext.RequestServices.GetRequiredService<ICache>();
         var session = context.HttpContext.RequestServices.GetRequiredService<ISession>();

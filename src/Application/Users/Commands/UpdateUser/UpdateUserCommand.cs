@@ -43,7 +43,6 @@ public class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand, Comma
 
         user.Update(request.ToInputModel(), _session.Now);
         await _context.SaveChangesAsync(cancellationToken);
-        await _cache.DeleteKeyAsync(CacheKeys.UserInfo(_session.UserId!.Value));
 
         return CommandResult.FromValue(new UpdateUserResult(new UserViewModel(user), !user.EmailConfirmed));
     }

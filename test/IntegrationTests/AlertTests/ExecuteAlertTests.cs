@@ -13,7 +13,7 @@ using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Alerts.Events;
+using SiteWatcher.Domain.Alerts.Messages;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.Persistence;
@@ -92,7 +92,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         alert.LastVerification.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
 
         // Alert should not be triggered
-        var alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredEvent)?.Alerts;
+        var alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredMessage)?.Alerts;
         alertsTriggered?.Should().NotContain(a => a.AlertId == alertId);
         FakePublisher.Messages.Clear();
 
@@ -111,7 +111,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         alert.LastUpdatedAt.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
 
         // Alert should generate a triggering and publish a triggered event
-        alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredEvent)?.Alerts;
+        alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredMessage)?.Alerts;
         alertsTriggered?.Should().Contain(a => a.AlertId == alertId && a.Status.Equals(TriggeringStatus.Success));
 
         var triggering = alert.Triggerings.Single();
@@ -154,7 +154,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         triggering.Date.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
 
         // An error event should be published
-        var alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredEvent)?.Alerts;
+        var alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredMessage)?.Alerts;
         alertsTriggered?.Should().Contain(a => a.AlertId == alertId && a.Status.Equals(TriggeringStatus.Error));
     }
 
@@ -230,7 +230,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         await ExecuteAlerts(freq);
 
         // Assert
-        var alertsTriggeredEvent = FakePublisher.Messages.SingleOrDefault()?.Content as AlertsTriggeredEvent;
+        var alertsTriggeredEvent = FakePublisher.Messages.SingleOrDefault()?.Content as AlertsTriggeredMessage;
         alertsTriggeredEvent!.Alerts.Should().OnlyContain(a => freq.Contains(a.Frequency));
 
         var currentAlertsTriggeredFromDb = await AppFactory.WithDbContext(ctx =>

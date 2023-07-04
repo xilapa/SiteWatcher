@@ -28,7 +28,7 @@ public class CommandValidationFilter : ActionFilterAttribute
 
     private static async Task<string[]> ValidateInputAsync(ActionExecutingContext context)
     {
-        var command = context.ActionArguments["command"];
+        var command = context.ActionArguments["request"];
         var validatorType = typeof(IValidator<>).MakeGenericType(command!.GetType());
 
         var validator = context.HttpContext.RequestServices.GetRequiredService(validatorType) as IValidator;

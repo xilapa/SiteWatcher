@@ -3,7 +3,6 @@ using System.Reflection;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.IntegrationTests.Utils;
 using System.Runtime.CompilerServices;
@@ -17,10 +16,9 @@ using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
-using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Common.Constants;
-using SiteWatcher.Domain.Emails.DTOs;
+using SiteWatcher.Domain.Users.Messages;
 using SiteWatcher.Infra.Persistence;
 
 namespace IntegrationTests.UserTests;
@@ -36,14 +34,13 @@ public class UserTesstBase : BaseTestFixture
 public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
 {
     private User _userXilapaWithoutChanges = null!;
-    private int _emailConfirmationTokenExpiration;
     private int _loginTokenExpiration;
-    private int _accountReactivationTokenExpiration;
 
     public UserTests(UserTesstBase fixture) : base(fixture)
     {
         // Clear cache before each test to avoid Forbiden errors
         FakeCache.Cache.Clear();
+        FakePublisher.Messages.Clear();
     }
 
     public async Task InitializeAsync()
@@ -53,19 +50,9 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
 
         var authServiceInstance = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
 
-        _emailConfirmationTokenExpiration = (int) typeof(AuthService)
-            .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
-            .Single(f => f.Name == "EmailConfirmationTokenExpiration")
-            .GetValue(authServiceInstance)!;
-
         _loginTokenExpiration = (int) typeof(AuthService)
             .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
             .Single(f => f.Name == "LoginTokenExpiration")
-            .GetValue(authServiceInstance)!;
-
-        _accountReactivationTokenExpiration = (int) typeof(AuthService)
-            .GetFields(BindingFlags.Static | BindingFlags.NonPublic)
-            .Single(f => f.Name == "AccountReactivationTokenExpiration")
             .GetValue(authServiceInstance)!;
     }
 
@@ -168,7 +155,7 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task EmailConfirmationIsSentWhenUserChangesEmail()
+    public async Task UserEmailChangeTriggersEmailValidation()
     {
         // Arrange
         LoginAs(Users.Xilapa);
@@ -185,9 +172,6 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         // Act
         var result = await PutAsync("user", updateUserCommand);
 
-        // Await fire and forget to execute
-        await Task.Delay(300);
-
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
@@ -203,35 +187,17 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         userFromDb.EmailConfirmed.Should().BeFalse();
         userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
 
-        // Verifying on cache
-        FakeCache.Cache[userFromDb.SecurityStamp!]
-            .Value
-            .Should().Be(userFromDb.Id.ToString());
-
-        FakeCache.Cache[userFromDb.SecurityStamp!]
-            .Expiration.TotalSeconds
-            .Should().Be(_emailConfirmationTokenExpiration);
-
-        // Verifying that email was sent only once
-        EmailServiceMock.Verify(e =>
-                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        // Verifying that the correct message was sent
-        var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
-        var message =
-            EmailFactory.EmailConfirmation(updateUserCommand.Name, updateUserCommand.Email, link,
-                updateUserCommand.Language);
-
-        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
-            .Should().BeEquivalentTo(message);
+        // Verifying that the message was sent
+        var message = FakePublisher.Messages[0].Content as EmailConfirmationTokenGeneratedMessage;
+        var expected = new EmailConfirmationTokenGeneratedMessage(userFromDb, CurrentTime);
+        message.Should().BeEquivalentTo(expected);
 
         // Finalize
         await ResetTestData();
     }
 
     [Fact]
-    public async Task EmailConfirmationIsSentAfterUserCreation()
+    public async Task EmailConfirmationTriggersEmailValidation()
     {
         // Arrange
         EmailServiceMock.Invocations.Clear();
@@ -254,9 +220,6 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         // Act
         var result = await PostAsync("user/register", registerUserCommand);
 
-        // Await fire and forget to execute
-        await Task.Delay(300);
-
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
@@ -271,28 +234,10 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
 
         userFromDb.EmailConfirmed.Should().BeFalse();
 
-        // Verifying on cache
-        FakeCache.Cache[userFromDb.SecurityStamp!]
-            .Value
-            .Should().Be(userFromDb.Id.ToString());
-
-        FakeCache.Cache[userFromDb.SecurityStamp!]
-            .Expiration.TotalSeconds
-            .Should().Be(_emailConfirmationTokenExpiration);
-
-        // Verifying that email was sent only once
-        EmailServiceMock.Verify(e =>
-                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        // Verifying that the correct message was sent
-        var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
-        var message =
-            EmailFactory.EmailConfirmation(registerUserCommand.Name, registerUserCommand.Email, link,
-                registerUserCommand.Language);
-
-        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
-            .Should().BeEquivalentTo(message);
+        // Verifying that the message was sent
+        var message = FakePublisher.Messages[0].Content as EmailConfirmationTokenGeneratedMessage;
+        var expected = new EmailConfirmationTokenGeneratedMessage(userFromDb, CurrentTime);
+        message.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -376,12 +321,13 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task ManualEmailConfirmationIsSent()
+    public async Task ManualEmailConfirmationWorks()
     {
         // Arrange
         EmailServiceMock.Invocations.Clear();
         FakeCache.Cache.Clear();
         LoginAs(Users.Xulipa);
+
         // Ensuring that the user email is not confirmed
         await AppFactory.WithDbContext(ctx =>
             ctx.Database.ExecuteSqlRawAsync(@$"UPDATE Users 
@@ -390,9 +336,6 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
 
         // Act
         var result = await PutAsync("user/resend-confirmation-email");
-
-        // Await fire and forget to execute
-        await Task.Delay(300);
 
         // Assert
         result.HttpResponse!.StatusCode
@@ -406,27 +349,10 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         userFromDb.SecurityStamp.Should().NotBeNull();
         userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
 
-        // Verifying that the cache entry was created
-        FakeCache.Cache
-            .Values.Count.Should().Be(1);
-
-        FakeCache.Cache[userFromDb.SecurityStamp!]
-            .Value
-            .Should().Be(userFromDb.Id.ToString());
-
-        // Verifying that email was sent only once
-        EmailServiceMock.Verify(e =>
-                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        // Verifying that the correct message was sent
-        var link = $"{TestSettings.FrontEndUrl}/#/security/confirm-email?t={userFromDb.SecurityStamp}";
-        var message =
-            EmailFactory.EmailConfirmation(Users.Xulipa.Name, Users.Xulipa.Email, link,
-                Users.Xulipa.Language);
-
-        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
-            .Should().BeEquivalentTo(message);
+        // Verifying that the message was published
+        var message = FakePublisher.Messages[0].Content as EmailConfirmationTokenGeneratedMessage;
+        var expected = new EmailConfirmationTokenGeneratedMessage(userFromDb, CurrentTime);
+        message.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -463,7 +389,7 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task ReactivateAccountEmailIsSentCorrectly()
+    public async Task ReactivateAccountTokenMessageIsGenerated()
     {
         // Arrange
         EmailServiceMock.Invocations.Clear();
@@ -480,9 +406,6 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         // Act
         var result = await PutAsync("user/send-reactivate-account-email", command);
 
-        // Await fire and forget to execute
-        await Task.Delay(300);
-
         // Assert
         result.HttpResponse!.StatusCode
             .Should()
@@ -495,28 +418,10 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
         userFromDb.Active.Should().BeFalse();
         userFromDb.LastUpdatedAt.Should().Be(CurrentTime);
 
-        // Verifying on cache
-        FakeCache.Cache[userFromDb.SecurityStamp!]
-            .Value
-            .Should().Be(userFromDb.Id.ToString());
-
-        FakeCache.Cache[userFromDb.SecurityStamp!]
-            .Expiration.TotalSeconds
-            .Should().Be(_accountReactivationTokenExpiration);
-
-        // Verifying that email was sent only once
-        EmailServiceMock.Verify(e =>
-                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        // Verifying that the correct message was sent
-        var link = $"{TestSettings.FrontEndUrl}/#/security/reactivate-account?t={userFromDb.SecurityStamp}";
-        var message =
-            EmailFactory.AccountActivation(userFromDb.Name, userFromDb.Email, link,
-                userFromDb.Language);
-
-        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
-            .Should().BeEquivalentTo(message);
+        // Verifying that the message was sent
+        var message = FakePublisher.Messages[0].Content as UserReactivationTokenGeneratedMessage;
+        var expected = new UserReactivationTokenGeneratedMessage(userFromDb, CurrentTime);
+        message.Should().BeEquivalentTo(expected);
 
         // Finalize
         await ResetTestData();

@@ -16,9 +16,9 @@ public sealed class GetAlertDetailsCommandTests
         // Arrange
         var dapperContextMock = new Mock<IDapperContext>();
         var idHasher = new IdHasher(new TestAppSettings());
-        var handler = new GetAlertDetailsCommandHandler(null!, dapperContextMock.Object, null!, idHasher);
+        var handler = new GetAlertDetailsQueryHandler(null!, dapperContextMock.Object, null!, idHasher);
 
-        var command = new GetAlertDetailsCommand {AlertId = "invalid"};
+        var command = new GetAlertDetailsQuery {AlertId = "invalid"};
 
         // Act
         var result = await handler.Handle(command, default);

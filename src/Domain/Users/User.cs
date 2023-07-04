@@ -5,6 +5,7 @@ using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Domain.Users.Events;
+using SiteWatcher.Domain.Users.Messages;
 using static SiteWatcher.Domain.Common.Utils;
 
 namespace SiteWatcher.Domain.Users;
@@ -53,12 +54,14 @@ public class User : BaseModel<UserId>
         LastUpdatedAt = updateDate;
 
         GenerateEmailConfirmationToken(updateDate);
+        AddDomainEvent(new UserUpdatedEvent(Id));
     }
 
     public void Deactivate(DateTime deactivateDate)
     {
         Active = false;
         LastUpdatedAt = deactivateDate;
+        AddDomainEvent(new UserUpdatedEvent(Id));
     }
 
     public void GenerateEmailConfirmationToken(DateTime currentDate)
@@ -66,7 +69,7 @@ public class User : BaseModel<UserId>
         if (EmailConfirmed) return;
         SecurityStamp = GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
-        AddDomainEvent(new EmailConfirmationTokenGeneratedEvent(this));
+        AddMessage(new EmailConfirmationTokenGeneratedMessage(this, currentDate));
     }
 
     public bool ConfirmEmail(string token, DateTime currentDate)
@@ -76,6 +79,7 @@ public class User : BaseModel<UserId>
 
         SecurityStamp = null;
         LastUpdatedAt = currentDate;
+        AddDomainEvent(new UserUpdatedEvent(Id));
 
         return EmailConfirmed;
     }
@@ -84,7 +88,7 @@ public class User : BaseModel<UserId>
     {
         SecurityStamp = GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
-        AddDomainEvent(new UserReactivationTokenGeneratedEvent(this));
+        AddMessage(new UserReactivationTokenGeneratedMessage(this, currentDate));
     }
 
     public bool ReactivateAccount(string token, DateTime currentDate)
@@ -94,6 +98,7 @@ public class User : BaseModel<UserId>
 
         SecurityStamp = null;
         LastUpdatedAt = currentDate;
+        AddDomainEvent(new UserUpdatedEvent(Id));
 
         return Active;
     }

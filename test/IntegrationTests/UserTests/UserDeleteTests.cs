@@ -3,9 +3,11 @@ using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using SiteWatcher.Domain.Emails;
+using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Emails.DTOs;
+using SiteWatcher.Domain.Emails.Events;
 using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
@@ -25,7 +27,9 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
     private User _userXilapaWithoutChanges;
 
     public UserDeleteTests(UserDeleteTestsBase fixture) : base(fixture)
-    { }
+    {
+        FakePublisher.Messages.Clear();
+    }
 
     public async Task InitializeAsync()
     {
@@ -36,23 +40,26 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
     public Task DisposeAsync() =>
         Task.CompletedTask;
 
-    [Fact]
-    public async Task UserIsDeleted()
+    [Theory]
+    [InlineData(Language.English)]
+    [InlineData(Language.BrazilianPortuguese)]
+    [InlineData(Language.Spanish)]
+    public async Task UserIsDeleted(Language language)
     {
         // Arrange
+        await UpdateUsersLanguage(language);
         LoginAs(Users.Xilapa);
-        EmailServiceMock.Invocations.Clear();
 
         // Verifying that the user exists
         var userFromDb = await AppFactory.WithDbContext(ctx =>
             ctx.Users.SingleAsync(u => u.Id == Users.Xilapa.Id));
         userFromDb.Should().NotBeNull();
 
+        var expectedBody = LocalizedMessages.AccountDeletedBody(userFromDb.Language);
+        var expectedSubject = LocalizedMessages.AccountDeletedSubject(userFromDb.Language);
+
         // Act
         var result = await DeleteAsync("user");
-
-        // Await fire and forget to execute
-        await Task.Delay(300);
 
         // Assert
         result.HttpResponse!.StatusCode
@@ -64,17 +71,13 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
             ctx.Users.SingleOrDefaultAsync(u => u.Id == Users.Xilapa.Id)))
             .Should().BeNull();
 
-        // Verifying that the email was sent
-        EmailServiceMock.Verify(e =>
-                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        // Verifying that the correct message was sent
-        var message =
-            EmailFactory.AccountDeleted(userFromDb.Name, userFromDb.Email, userFromDb.Language);
-
-        (EmailServiceMock.Invocations[0].Arguments[0] as MailMessage)
-            .Should().BeEquivalentTo(message);
+        // Verifying that the email message was published
+        var emailMessage = FakePublisher.Messages[0].Content as EmailCreatedMessage;
+        emailMessage!.Body.Should().Be(expectedBody);
+        emailMessage.Subject.Should().Be(expectedSubject);
+        emailMessage.EmailId.Should().NotBeNull();
+        emailMessage.Recipients.Should()
+            .BeEquivalentTo(new []{new MailRecipient(userFromDb.Name, userFromDb.Email, userFromDb.Id)});
 
         // Finalize
         await ResetTestData();
@@ -105,9 +108,11 @@ public class UserDeleteTests : BaseTest, IClassFixture<UserDeleteTestsBase>, IAs
             .Be(HttpStatusCode.OK);
 
         // Verifying that the email was not sent
-        EmailServiceMock.Verify(e =>
-                e.SendEmailAsync(It.IsAny<MailMessage>(), It.IsAny<CancellationToken>()),
-            Times.Never);
+        EmailServiceMock
+            .Verify(e =>
+                    e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<MailRecipient[]>(),
+                        It.IsAny<CancellationToken>()),
+                Times.Never);
 
         // Finalize
         await ResetTestData();

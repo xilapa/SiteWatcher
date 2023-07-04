@@ -84,7 +84,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
     {
         yield return new object[]
         {
-            new GetUserAlertsCommand
+            new GetUserAlertsQuery
             {
                 Take = 10,
                 LastAlertId = null
@@ -97,7 +97,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
         yield return new object[]
         {
-            new GetUserAlertsCommand
+            new GetUserAlertsQuery
             {
                 Take = 10,
                 LastAlertId = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength)
@@ -111,7 +111,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
         yield return new object[]
         {
-            new GetUserAlertsCommand
+            new GetUserAlertsQuery
             {
                 Take = 10,
                 LastAlertId = new Hashids(TestAppSettings.TestHashIdSalt, TestAppSettings.TestHashedIdLength)
@@ -126,24 +126,24 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
     [Theory]
     [MemberData(nameof(PaginationData))]
-    public async Task PaginationTests(GetUserAlertsCommand command, DateTime dateToFilter, int? firstid, int? lastId, int count)
+    public async Task PaginationTests(GetUserAlertsQuery query, DateTime dateToFilter, int? firstid, int? lastId, int count)
     {
         // Arrange
         LoginAs(Users.Xilapa);
 
         // Act
-        var result = await GetAsync("alert", command);
+        var result = await GetAsync("alert", query);
 
         // Assert
         result.HttpResponse!
             .StatusCode
             .Should().Be(HttpStatusCode.OK);
 
-        command.Take = command.Take == 0 ? 10 : command.Take;
+        query.Take = query.Take == 0 ? 10 : query.Take;
 
         var expected = GetAlertsTestsBase.XilapaAlerts
             .Where(a => a.CreatedAt > dateToFilter)
-            .Take(command.Take)
+            .Take(query.Take)
             .ToArray();
 
         var typedResult = result.GetTyped<PaginatedList<SimpleAlertView>>();
@@ -155,7 +155,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
         if (count != 0)
         {
             resultList[0].Name.Should().Contain(firstid.ToString());
-            resultList[command.Take-1].Name.Should().Contain(lastId.ToString());
+            resultList[query.Take-1].Name.Should().Contain(lastId.ToString());
         }
 
         resultList.Should().BeEquivalentTo(expected,
@@ -166,7 +166,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
     {
         yield return new object[]
         {
-            new GetUserAlertsCommand
+            new GetUserAlertsQuery
             {
                 Take = 15,
                 LastAlertId = null
@@ -177,7 +177,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
         yield return new object[]
         {
-            new GetUserAlertsCommand
+            new GetUserAlertsQuery
             {
                 Take = 50,
                 LastAlertId = null
@@ -188,7 +188,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
         yield return new object[]
         {
-            new GetUserAlertsCommand
+            new GetUserAlertsQuery
             {
                 Take = 51,
                 LastAlertId = null
@@ -200,13 +200,13 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
 
     [Theory]
     [MemberData(nameof(TakeData))]
-    public async Task CantTakeMoreThan50Results(GetUserAlertsCommand command, int count, int total)
+    public async Task CantTakeMoreThan50Results(GetUserAlertsQuery query, int count, int total)
     {
         // Arrange
         LoginAs(Users.Xilapa);
 
         // Act
-        var result = await GetAsync("alert", command);
+        var result = await GetAsync("alert", query);
 
         // Assert
         result.HttpResponse!

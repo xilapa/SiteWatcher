@@ -1,5 +1,4 @@
 ﻿using Mediator;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Services;
@@ -8,20 +7,16 @@ namespace SiteWatcher.Application.Alerts.EventHandlers;
 
 public class AlertsChangedEventHandler : INotificationHandler<AlertsChangedEvent>
 {
-    private readonly IFireAndForgetService _fireAndForgetService;
+    private readonly ICache _cache;
 
-    public AlertsChangedEventHandler(IFireAndForgetService fireAndForgetService)
+    public AlertsChangedEventHandler(ICache cache)
     {
-        _fireAndForgetService = fireAndForgetService;
+        _cache = cache;
     }
 
-    public ValueTask Handle(AlertsChangedEvent notification, CancellationToken cancellationToken)
+    public async ValueTask Handle(AlertsChangedEvent notification, CancellationToken cancellationToken)
     {
-        _fireAndForgetService.ExecuteWith<ICache>(async cache =>
-        {
-            await cache.DeleteKeyAsync(CacheKeys.UserAlerts(notification.UserId));
-            await cache.DeleteKeyAsync(CacheKeys.UserAlertSearch(notification.UserId));
-        });
-        return ValueTask.CompletedTask;
+        await _cache.DeleteKeyAsync(CacheKeys.UserAlerts(notification.UserId));
+        await _cache.DeleteKeyAsync(CacheKeys.UserAlertSearch(notification.UserId));
     }
 }
