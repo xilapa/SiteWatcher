@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using DotNetCore.CAP;
 using IntegrationTests.Setup;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,16 +14,17 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
 using ReflectionMagic;
+using SiteWatcher.Application;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Application.Notifications.Commands.ProcessNotifications;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
@@ -40,12 +41,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     private string _connectionString;
     private DbConnection? _dbConnection;
-    private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
+    private Func<IAppSettings, IMediator, ICapPublisher, SiteWatcherContext> _contextFactory;
     private PostgreSqlContainer? _postgresContainer;
     public DatabaseType DatabaseType { get; private set; }
 
     private readonly ILoggerFactory _loggerFactory;
-    public readonly Mock<IEmailService> EmailServiceMock;
+    public readonly Mock<IEmailServiceSingleton> EmailServiceMock;
     public readonly Mock<IHttpClientFactory> HttpClientFactoryMock;
     public readonly IAuthService AuthServiceForTokens;
     public DateTime CurrentTime { get; set; }
@@ -63,7 +64,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             .Returns(LoggerMock.Object);
         _loggerFactory = loggerFactoryMock.Object;
 
-        EmailServiceMock = EmailServiceMock = new Mock<IEmailService>();
+        EmailServiceMock = EmailServiceMock = new Mock<IEmailServiceSingleton>();
         HttpClientFactoryMock = new Mock<IHttpClientFactory>();
 
         var testSettings = new ConfigurationBuilder()
@@ -97,13 +98,15 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 _dbConnection = new SqliteConnection(_connectionString);
                 // handling the connection on factory to avoid the database being destroyed on connection close
                 _dbConnection.Open();
-                _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
+                _contextFactory = (appSettings, mediator, cap) =>
+                    new SqliteContext(appSettings, mediator, _dbConnection, cap, FakePublisher);
                 break;
             case DatabaseType.SqliteOnDisk:
                 DatabaseType = DatabaseType.SqliteOnDisk;
                 _connectionString = $"DataSource={Guid.NewGuid()}.db";
                 _dbConnection = new SqliteConnection(_connectionString);
-                _contextFactory = (appSettings, mediator) => new SqliteContext(appSettings, mediator, _dbConnection);
+                _contextFactory = (appSettings, mediator, cap) =>
+                    new SqliteContext(appSettings, mediator, _dbConnection, cap, FakePublisher);
                 break;
             case DatabaseType.Postgres:
                 DatabaseType = DatabaseType.Postgres;
@@ -112,7 +115,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     .Build();
                 await _postgresContainer.StartAsync();
                 _connectionString = _postgresContainer.GetConnectionString();
-                _contextFactory = (appSettings, mediator) => new PostgresTestContext(appSettings, mediator, _connectionString);
+                _contextFactory = (appSettings, mediator, cap) =>
+                    new PostgresTestContext(appSettings, mediator, _connectionString, cap, FakePublisher);
                 break;
             default:
                 throw new ArgumentException(nameof(options.DatabaseType));
@@ -154,12 +158,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IAppSettings),
             typeof(IGoogleSettings),
             typeof(IEmailSettings),
-            typeof(IEmailService),
+            typeof(IEmailServiceSingleton),
             typeof(IDapperContext),
             typeof(ILoggerFactory),
             typeof(IHttpClientFactory),
             typeof(IPublisher),
-            typeof(ICapPublisher),
             typeof(IQueries)
         };
 
@@ -175,7 +178,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             services.Remove(serviceDescriptor);
 
         // Mock EmailService, LoggerFactory and HttpClientFactory
-        services.AddScoped<IEmailService>(_ => EmailServiceMock.Object);
         services.AddTransient<ILoggerFactory>(_ => _loggerFactory);
         services.AddSingleton<IHttpClientFactory>(HttpClientFactoryMock.Object);
 
@@ -190,7 +192,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         {
             var appSettings = srvc.GetRequiredService<IAppSettings>();
             var mediator = srvc.GetRequiredService<IMediator>();
-            return _contextFactory(appSettings, mediator);
+            var cap = srvc.GetRequiredService<ICapPublisher>();
+            return _contextFactory(appSettings, mediator, cap);
         });
 
         services.AddScoped<ISession>(srvc =>
@@ -209,8 +212,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddScoped<ExecuteAlertsCommandHandler>();
         services.AddScoped<IHttpClient, HttpClient>();
 
-        // Process notification services
-        services.AddScoped<ProcessNotificationCommandHandler>();
+        // Process messages
+        services.AddMessageHandlers();
+
+        // Email
+        services.AddSingleton<IEmailServiceSingleton>(EmailServiceMock.Object);
+        services.AddSingleton<IEmailSettings>(new Mock<IEmailSettings>().Object);
     }
 
     private void ConfigureOptionsReplacementServices(IServiceCollection services)
@@ -233,7 +240,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public SiteWatcherContext GetContext()
     {
         var mediatorMock = new Mock<IMediator>();
-        return _contextFactory(TestSettings, mediatorMock.Object);
+        var capMock = new Mock<ICapPublisher>();
+        return _contextFactory(TestSettings, mediatorMock.Object, capMock.Object);
     }
 
     private IAuthService CreateAuthServiceForTokens()

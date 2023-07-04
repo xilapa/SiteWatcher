@@ -147,7 +147,7 @@ public sealed class SearchAlertsTests : BaseTest, IClassFixture<SearchAlertsTest
     {
         // Arrange
         LoginAs(loggedUser);
-        var searchCommand = new SearchAlertCommand {Term = searchTerm};
+        var searchCommand = new SearchAlertQuery {Term = searchTerm};
 
         // Act
         var httpResult = await GetAsync("alert/search", searchCommand);

@@ -4,6 +4,7 @@ using SiteWatcher.Domain.Alerts.Entities.Rules;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Alerts.Events;
+using SiteWatcher.Domain.Alerts.Messages;
 using SiteWatcher.Domain.Alerts.ValueObjects;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.Extensions;

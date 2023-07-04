@@ -35,8 +35,6 @@ builder.Services.AddRedisCache(appSettings)
     .SetupDataProtection(appSettings);
 
 DependencyInjection.AddSession(builder.Services)
-    .AddEmailService()
-    .AddFireAndForgetService()
     .AddIdHasher()
     .SetupMessaging(builder.Configuration, appSettings);
 

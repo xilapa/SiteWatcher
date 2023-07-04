@@ -1,6 +1,6 @@
 ﻿using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
-using SiteWatcher.Domain.Alerts.Events;
+using SiteWatcher.Domain.Alerts.Messages;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Emails.DTOs;
@@ -13,15 +13,15 @@ public class Notification
     // for EF
     protected Notification(){}
 
-    public Notification(AlertsTriggeredEvent @event, DateTime currentDate, string siteWatcherUri)
+    public Notification(AlertsTriggeredMessage message, DateTime currentDate, string siteWatcherUri)
     {
         Id = NotificationId.New();
         CreatedAt = currentDate;
-        UserId = @event.UserId;
+        UserId = message.UserId;
         _notificationAlerts = new List<NotificationAlert>();
-        _notificationData = new NotificationData(@event.UserName, @event.UserLanguage, @event.UserEmail, siteWatcherUri);
+        _notificationData = new NotificationData(message.UserName, message.UserLanguage, message.UserEmail, siteWatcherUri);
 
-        foreach (var alertTriggered in @event.Alerts)
+        foreach (var alertTriggered in message.Alerts)
         {
             // Create the relation between the notification and the alert
             _notificationAlerts.Add(new NotificationAlert(Id, alertTriggered));

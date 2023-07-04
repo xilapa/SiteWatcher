@@ -39,9 +39,6 @@ public sealed class DeleteAlertTests : BaseTest, IClassFixture<DeleteAlertTestsB
         LoginAs(Users.Xulipa);
         var result = await DeleteAsync($"alert/{alertCreated.Id}");
 
-        // await the fire and forget run for alerts changed event
-        await Task.Delay(300);
-
         result.HttpResponse!
             .StatusCode.Should().Be(HttpStatusCode.NoContent);
 

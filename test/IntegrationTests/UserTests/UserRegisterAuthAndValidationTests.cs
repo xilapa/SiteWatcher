@@ -1,47 +1,30 @@
 ﻿using System.Net;
 using FluentAssertions;
 using IntegrationTests.Setup;
-using MediatR;
-using Moq;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
+using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
-using SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 using SiteWatcher.IntegrationTests.Utils;
 
 namespace IntegrationTests.UserTests;
 
 public sealed class UserRegisterAuthAndValidationTestsBase : BaseTestFixture
-{
-    public readonly Registered RegisteredUserResult = new("REGISTER_TOKEN", true);
-
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
-    {
-        var registerUserHandlerMock = new Mock<IRequestHandler<RegisterUserCommand, RegisterUserResult>>();
-
-        registerUserHandlerMock.Setup(h =>
-                h.Handle(It.IsAny<RegisterUserCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(RegisteredUserResult);
-
-        optionsBuilder
-            .ReplaceService(typeof(IRequestHandler<RegisterUserCommand, RegisterUserResult>), registerUserHandlerMock.Object);
-    }
-}
+{ }
 
 public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture<UserRegisterAuthAndValidationTestsBase>
 {
-    private readonly UserRegisterAuthAndValidationTestsBase _fixture;
     private readonly RegisterUserCommand _registerUserCommand;
 
     public UserRegisterAuthAndValidationTests(UserRegisterAuthAndValidationTestsBase fixture) : base(fixture)
     {
-        _fixture = fixture;
         _registerUserCommand  = new RegisterUserCommand
         {
             Email = "email@email.com",
             Language = Language.English,
             Name = "Xilapilson",
-            Theme = Theme.Dark
+            Theme = Theme.Dark,
+            GoogleId = "googleId"
         };
     }
 
@@ -68,7 +51,11 @@ public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture
     public async Task ValidRegisterTokenWithValidDataReturnsCreated()
     {
         // Arrange
-        SetRegisterToken(Users.Xilapa);
+        SetRegisterToken(new UserViewModel
+        {
+            Email = _registerUserCommand.Email!,
+            Name = _registerUserCommand.Name!
+        });
 
         // Act
         var result = await PostAsync("user/register", _registerUserCommand);
@@ -80,7 +67,9 @@ public sealed class UserRegisterAuthAndValidationTests : BaseTest, IClassFixture
 
         result.GetTyped<Registered>()
             .Should()
-            .BeEquivalentTo(_fixture.RegisteredUserResult);
+            .Match<Registered>(r => !r.ConfirmationEmailSend)
+            .And
+            .Match<Registered>(r => !string.IsNullOrEmpty(r.Token));
     }
 
     public static IEnumerable<object[]> InvalidRegisterData()

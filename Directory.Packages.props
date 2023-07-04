@@ -26,6 +26,7 @@
     <PackageVersion Include="Dapper" Version="2.0.143" />
     <PackageVersion Include="Fluid.Core" Version="2.4.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
+    <PackageVersion Include="Scrutor" Version="4.2.2" />
     <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta06" />
     <PackageVersion Include="DotNetCore.CAP" Version="7.1.4" />
     <PackageVersion Include="DotNetCore.CAP.InMemoryStorage" Version="7.1.4" />

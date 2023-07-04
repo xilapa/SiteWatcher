@@ -1,5 +1,5 @@
 using SiteWatcher.Common.Services;
-using SiteWatcher.Domain.Alerts.Events;
+using SiteWatcher.Domain.Alerts.Messages;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 
@@ -34,7 +34,7 @@ public sealed class UserAlertsService : IUserAlertsService
         }
 
         if (alertsTriggered.Count != 0)
-            user.AddDomainEvent(new AlertsTriggeredEvent(user, alertsTriggered, currentTime));
+            user.AddMessage(new AlertsTriggeredMessage(user, alertsTriggered, currentTime));
         return errors;
     }
 }

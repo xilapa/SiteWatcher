@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SiteWatcher.Application;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 using SiteWatcher.Worker;
-using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
 using SiteWatcher.Worker.Utils;
 
@@ -57,7 +57,7 @@ var host = new HostBuilder()
             .AddDataContext(addMigrator: false)
             .SetupJobs(workerSettings)
             .SetupMessaging(hostContext.Configuration, appSettings)
-            .AddConsumers()
+            .AddMessageHandlers()
             .SetupEmail(emailSettings!)
             .AddRedisCache(appSettings);
     })

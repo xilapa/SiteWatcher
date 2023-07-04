@@ -29,42 +29,41 @@ public class AlertController : ControllerBase
 
     [HttpPost]
     [CommandValidationFilter]
-    public async Task<IActionResult> CreateAlert(CreateAlertCommand command) =>
-        Created(string.Empty, await _mediator.Send(command));
+    public async Task<IActionResult> CreateAlert(CreateAlertCommand request, CancellationToken ct) =>
+        Created(string.Empty, await _mediator.Send(request, ct));
 
     [HttpGet]
     [CacheFilter]
-    public async Task<IActionResult> GetUserAlerts([FromQuery] GetUserAlertsCommand command,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserAlerts([FromQuery] GetUserAlertsQuery request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(command, cancellationToken);
+        var commandResult = await _mediator.Send(request, ct);
         return commandResult.ToActionResult<PaginatedList<SimpleAlertView>>();
     }
 
     [HttpGet("{AlertId}/details")]
     [CacheFilter]
-    public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlertDetailsCommand command, CancellationToken ct) =>
-        Ok(await _mediator.Send(command, ct));
+    public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlertDetailsQuery request, CancellationToken ct) =>
+        Ok(await _mediator.Send(request, ct));
 
     [HttpDelete("{AlertId}")]
-    public async Task<IActionResult> DeleteAlert([FromRoute] DeleteAlertCommand command,
+    public async Task<IActionResult> DeleteAlert([FromRoute] DeleteAlertCommand request,
         CancellationToken cancellationToken)
     {
-        var commandResult = await _mediator.Send(command, cancellationToken);
+        var commandResult = await _mediator.Send(request, cancellationToken);
         return commandResult.ToActionResult();
     }
 
     [HttpPut]
     [CommandValidationFilter]
-    public async Task<IActionResult> UpdateAlert([FromBody] UpdateAlertCommmand command, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateAlert([FromBody] UpdateAlertCommmand request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(command, cancellationToken);
+        var commandResult = await _mediator.Send(request, ct);
         return commandResult.ToActionResult<DetailedAlertView>();
     }
 
     [HttpGet("search")]
     [CacheFilter]
     [CommandValidationFilter]
-    public async Task<IActionResult> SearchAlerts([FromQuery] SearchAlertCommand command, CancellationToken cancellationToken) =>
-        Ok(await _mediator.Send(command, cancellationToken));
+    public async Task<IActionResult> SearchAlerts([FromQuery] SearchAlertQuery request, CancellationToken ct) =>
+        Ok(await _mediator.Send(request, ct));
 }

@@ -2,16 +2,15 @@
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SiteWatcher.Application.Common.Commands;
-using SiteWatcher.Application.Common.Constants;
-using SiteWatcher.Application.Notifications.Commands.ProcessNotifications;
+using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Alerts.Events;
+using SiteWatcher.Domain.Alerts.Messages;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails.DTOs;
+using SiteWatcher.Domain.Emails.Events;
 using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
@@ -53,16 +52,16 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
     {
         // Arrange
         await ClearNotifications();
-        await UpdateUserLanguage(language);
+        await UpdateUsersLanguage(language);
         var user = await GetUser();
+        CurrentTime = CurrentTime.AddSeconds(1); // Change time to avoid conflict on messageId
 
-        var @event = new AlertsTriggeredEvent(user, _fixture.AlertTriggereds, AppFactory.CurrentTime);
+        var message = new AlertsTriggeredMessage(user, _fixture.AlertTriggereds, AppFactory.CurrentTime);
 
         // Act
-        var res = await ProcessNotification(@event);
+        await ProcessNotification(message);
 
         // Assert
-        res.Value.Should().BeTrue();
 
         // Check the notification created
         var notification = await GetNotification();
@@ -87,9 +86,9 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
 
         // Check the message published
         var fakeMessage = FakePublisher.Messages.Single();
-        fakeMessage.RoutingKey.Should().Be(RoutingKeys.MailMessage);
+        fakeMessage.RoutingKey.Should().Be(nameof(EmailCreatedMessage));
 
-        var mailMessage = (fakeMessage.Content as MailMessage)!;
+        var mailMessage = (fakeMessage.Content as EmailCreatedMessage)!;
         mailMessage.Recipients.Should().BeEquivalentTo(new[]
         {
             new MailRecipient(user.Name, user.Email, user.Id)
@@ -109,26 +108,18 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
         });
     }
 
-    private Task UpdateUserLanguage(Language lang)
-    {
-        return AppFactory.WithDbContext(ctx =>
-            ctx.Users.ExecuteUpdateAsync(s =>
-                s.SetProperty(u => u.Language, lang)));
-    }
-
     private Task<User> GetUser()
     {
         return AppFactory.WithDbContext(ctx =>
             ctx.Users.Where(u => u.Id == Users.Xilapa.Id).SingleAsync());
     }
 
-    private async Task<ValueResult<bool>> ProcessNotification(AlertsTriggeredEvent @event)
+    private async Task ProcessNotification(AlertsTriggeredMessage message)
     {
-        return await AppFactory.WithServiceProvider(async sp =>
+        await AppFactory.WithServiceProvider(async sp =>
         {
-            var handler = sp.GetRequiredService<ProcessNotificationCommandHandler>();
-            var res = await handler.Handle(@event, CancellationToken.None);
-            return (res as ValueResult<bool>)!;
+            var handler = sp.GetRequiredService<IMessageHandler<AlertsTriggeredMessage>>();
+            await handler.Handle(message, CancellationToken.None);
         });
     }
 

@@ -2,12 +2,14 @@
 using System.Text;
 using System.Text.Json;
 using Domain.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Users.DTOs;
+using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
@@ -19,7 +21,7 @@ namespace IntegrationTests.Setup;
 public abstract class BaseTest
 {
     private readonly BaseTestFixture _fixture;
-    protected Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
+    protected Mock<IEmailServiceSingleton> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
     public Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
     protected FakePublisher FakePublisher => _fixture.AppFactory.FakePublisher;
@@ -67,6 +69,13 @@ public abstract class BaseTest
     protected void RemoveLoginToken()
     {
         _fixture.Client.DefaultRequestHeaders.Authorization = null;
+    }
+
+    protected Task UpdateUsersLanguage(Language lang)
+    {
+        return AppFactory.WithDbContext(ctx =>
+            ctx.Users.ExecuteUpdateAsync(s =>
+                s.SetProperty(u => u.Language, lang)));
     }
 
     #region HttpClient Helper Methods

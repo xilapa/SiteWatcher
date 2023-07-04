@@ -23,5 +23,6 @@ public abstract class BaseModelMapping<TModel,IdType> : IEntityTypeConfiguration
                 .IsRequired();
 
         builder.Ignore(m => m.DomainEvents);
+        builder.Ignore(m => m.Messages);
     }
 }

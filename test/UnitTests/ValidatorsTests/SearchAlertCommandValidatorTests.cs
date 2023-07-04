@@ -21,7 +21,7 @@ public sealed class SearchAlertCommandValidatorTests
     {
         // Arrange
         var validator = new SearchAlertCommandValidator();
-        var command = new SearchAlertCommand {Term = searchTerm!};
+        var command = new SearchAlertQuery {Term = searchTerm!};
 
         // Act
         var result = await validator.ValidateAsync(command);
@@ -29,6 +29,6 @@ public sealed class SearchAlertCommandValidatorTests
         // Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Select(e => e.ErrorMessage).Should()
-            .BeEquivalentTo(ApplicationErrors.ValueIsNullOrEmpty(nameof(SearchAlertCommand.Term)));
+            .BeEquivalentTo(ApplicationErrors.ValueIsNullOrEmpty(nameof(SearchAlertQuery.Term)));
     }
 }

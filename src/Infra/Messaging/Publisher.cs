@@ -12,15 +12,8 @@ public sealed class Publisher : IPublisher
         _capPublisher = capPublisher;
     }
 
-    public async Task PublishAsync(string routingKey, object message, Dictionary<string, string>? headers, CancellationToken ct)
+    public async Task PublishAsync(string routingKey, object message, CancellationToken ct)
     {
-        headers ??= new Dictionary<string, string>(1);
-        headers.Add("content-type","application/json");
-        await _capPublisher.PublishAsync(routingKey, message, headers!, ct);
-    }
-
-    public Task PublishAsync(string routingKey, object message, CancellationToken ct)
-    {
-        return PublishAsync(routingKey, message, null, ct);
+        await _capPublisher.PublishAsync(routingKey, message, cancellationToken: ct);
     }
 }

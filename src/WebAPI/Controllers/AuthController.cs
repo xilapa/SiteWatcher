@@ -68,10 +68,10 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("exchange-code")]
-    public async Task<IActionResult> ExchangeCode([FromBody] ExchangeCodeCommand command, CancellationToken ct)
+    public async Task<IActionResult> ExchangeCode([FromBody] ExchangeCodeCommand request, CancellationToken ct)
     {
         await HttpContext.SignOutAsync(AuthenticationDefaults.Schemes.Cookie);
-        var authRes = await _mediator.Send(command, ct);
+        var authRes = await _mediator.Send(request, ct);
         if (authRes == null) return Unauthorized();
         return Ok(authRes);
     }
