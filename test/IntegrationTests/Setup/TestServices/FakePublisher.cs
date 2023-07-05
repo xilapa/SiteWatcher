@@ -18,6 +18,5 @@ public class FakePublisher : IPublisher
 
 public sealed class FakePublishedMessage
 {
-    public string RoutingKey { get; set; } = null!;
     public object Content { get; set; } = null!;
 }

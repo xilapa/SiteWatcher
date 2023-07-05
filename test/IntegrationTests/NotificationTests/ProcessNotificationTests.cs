@@ -85,10 +85,7 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
         AssertEmailBody(notification.Email.Body, language, rule , expected, notExpected);
 
         // Check the message published
-        var fakeMessage = FakePublisher.Messages.Single();
-        fakeMessage.RoutingKey.Should().Be(nameof(EmailCreatedMessage));
-
-        var mailMessage = (fakeMessage.Content as EmailCreatedMessage)!;
+        var mailMessage = (FakePublisher.Messages.Single().Content as EmailCreatedMessage)!;
         mailMessage.Recipients.Should().BeEquivalentTo(new[]
         {
             new MailRecipient(user.Name, user.Email, user.Id)

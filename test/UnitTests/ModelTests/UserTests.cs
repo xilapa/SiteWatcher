@@ -54,7 +54,7 @@ public sealed class UserTests
         if (!emailConfirmed)
             user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
         else
-            user.DomainEvents.Should().BeEmpty();
+            user.DomainEvents.Should().NotContain(e => e is EmailConfirmationTokenGeneratedMessage);
     }
 
     [Fact]

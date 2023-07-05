@@ -1,6 +1,7 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
 using IntegrationTests.Setup;
+using MassTransit;
 using Mediator;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -135,13 +136,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        base.ConfigureWebHost(builder);
         builder.ConfigureServices(services =>
         {
             ReplaceServices(services);
             ConfigureOptionsReplacementServices(services);
         });
-
-        base.ConfigureWebHost(builder);
     }
 
     private void ReplaceServices(IServiceCollection services)
@@ -215,6 +215,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // Email
         services.AddSingleton<IEmailServiceSingleton>(EmailServiceMock.Object);
         services.AddSingleton<IEmailSettings>(new Mock<IEmailSettings>().Object);
+
+        // Masstransit
+        services.AddMassTransitTestHarness();
     }
 
     private void ConfigureOptionsReplacementServices(IServiceCollection services)
