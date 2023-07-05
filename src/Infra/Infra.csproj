@@ -31,7 +31,6 @@
 		<PackageReference Include="Npgsql" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 		<PackageReference Include="Polly" />
-		<PackageReference Include="RabbitMQ.Client" />
 		<PackageReference Include="Roslynator.Analyzers">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
