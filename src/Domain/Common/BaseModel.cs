@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using SiteWatcher.Domain.Common.Events;
-using SiteWatcher.Domain.Common.Messages;
 
 namespace SiteWatcher.Domain.Common;
 
@@ -10,7 +9,6 @@ public abstract class BaseModel<IdType> : IBaseModel
     protected BaseModel()
     {
         _domainEvents = new List<BaseEvent>();
-        _messages = new List<BaseMessage>();
     }
 
     protected BaseModel(IdType id, DateTime currentDate) : this()
@@ -34,21 +32,10 @@ public abstract class BaseModel<IdType> : IBaseModel
     public void ClearDomainEvents() => _domainEvents.Clear();
 
     #endregion
-
-    #region Messages
-
-    private readonly List<BaseMessage> _messages;
-    public ReadOnlyCollection<BaseMessage> Messages => _messages.AsReadOnly();
-    public void AddMessage(BaseMessage message) => _messages.Add(message);
-    public void ClearMessages() => _messages.Clear();
-
-    #endregion
 }
 
 public interface IBaseModel
 {
     ReadOnlyCollection<BaseEvent> DomainEvents { get; }
     void ClearDomainEvents();
-    ReadOnlyCollection<BaseMessage> Messages { get; }
-    void ClearMessages();
 }

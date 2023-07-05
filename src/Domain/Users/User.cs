@@ -69,7 +69,7 @@ public class User : BaseModel<UserId>
         if (EmailConfirmed) return;
         SecurityStamp = GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
-        AddMessage(new EmailConfirmationTokenGeneratedMessage(this, currentDate));
+        AddDomainEvent(new EmailConfirmationTokenGeneratedMessage(this, currentDate));
     }
 
     public bool ConfirmEmail(string token, DateTime currentDate)
@@ -88,7 +88,7 @@ public class User : BaseModel<UserId>
     {
         SecurityStamp = GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
-        AddMessage(new UserReactivationTokenGeneratedMessage(this, currentDate));
+        AddDomainEvent(new UserReactivationTokenGeneratedMessage(this, currentDate));
     }
 
     public bool ReactivateAccount(string token, DateTime currentDate)

@@ -34,7 +34,7 @@ public sealed class UserAlertsService : IUserAlertsService
         }
 
         if (alertsTriggered.Count != 0)
-            user.AddMessage(new AlertsTriggeredMessage(user, alertsTriggered, currentTime));
+            user.AddDomainEvent(new AlertsTriggeredMessage(user, alertsTriggered, currentTime));
         return errors;
     }
 }
