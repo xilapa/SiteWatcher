@@ -14,6 +14,13 @@
 		<PackageReference Include="DotNetCore.CAP.RabbitMQ" />
 		<PackageReference Include="Hashids.net" />
 		<PackageReference Include="MailKit" />
+		<PackageReference Include="MassTransit" />
+		<PackageReference Include="MassTransit.Analyzers">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="MassTransit.EntityFrameworkCore" />
+		<PackageReference Include="MassTransit.RabbitMQ" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" />

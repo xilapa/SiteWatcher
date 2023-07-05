@@ -1,7 +1,9 @@
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Dapper;
 using DotNetCore.CAP;
 using DotNetCore.CAP.Internal;
+using MassTransit;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -167,6 +169,43 @@ public static class DependencyInjection
             ExchangeType.Topic,
             durable: true,
             autoDelete: false);
+    }
+
+    public static IServiceCollection SetupMassTransit(this IServiceCollection services, IConfiguration config, Assembly? consumerAssembly)
+    {
+        var rabbitMqSettings = config.Get<RabbitMqSettings>();
+
+        services.AddMassTransit(opts =>
+        {
+            opts.AddEntityFrameworkOutbox<SiteWatcherContext>(o =>
+            {
+                o.UsePostgres();
+                o.UseBusOutbox();
+                o.QueryDelay = TimeSpan.FromSeconds(60);
+                o.DuplicateDetectionWindow = TimeSpan.FromMinutes(5);
+                o.QueryMessageLimit = 100;
+            });
+
+            if (consumerAssembly != null)
+                opts.AddConsumers(consumerAssembly);
+
+            opts.UsingRabbitMq((b,cfg) =>
+            {
+                cfg.Host(rabbitMqSettings!.Host, rabbitMqSettings.Port, rabbitMqSettings.VirtualHost, o =>
+                {
+                    o.Password(rabbitMqSettings.Password);
+                    o.Username(rabbitMqSettings.UserName);
+                    o.PublisherConfirmation = true;
+                });
+                cfg.PrefetchCount = 1;
+                cfg.ConcurrentMessageLimit = 1;
+                cfg.AutoStart = true;
+                cfg.ConfigureEndpoints(b);
+            });
+        });
+
+        services.AddScoped<IPublisher, Publisher>();
+        return services;
     }
 
     public static IServiceCollection SetupDataProtection(this IServiceCollection services, IAppSettings appSettings)

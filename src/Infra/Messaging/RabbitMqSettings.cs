@@ -17,6 +17,6 @@ public class RabbitMqSettings
     public string Password { get; set; } = null!;
 
     [ConfigurationKeyName("RabbitMq_Port")]
-    public int Port { get; set; }
+    public ushort Port { get; set; }
     public const string SiteWatcherExchange = "site-watcher";
 }

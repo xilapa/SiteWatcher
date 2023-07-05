@@ -1,19 +1,19 @@
-using DotNetCore.CAP;
+using MassTransit;
 using SiteWatcher.Domain.Common.Services;
 
 namespace SiteWatcher.Infra.Messaging;
 
 public sealed class Publisher : IPublisher
 {
-    private readonly ICapPublisher _capPublisher;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public Publisher(ICapPublisher capPublisher)
+    public Publisher(IPublishEndpoint publishEndpoint)
     {
-        _capPublisher = capPublisher;
+        _publishEndpoint = publishEndpoint;
     }
 
-    public async Task PublishAsync(string routingKey, object message, CancellationToken ct)
+    public async Task PublishAsync(object message, CancellationToken ct)
     {
-        await _capPublisher.PublishAsync(routingKey, message, cancellationToken: ct);
+        await _publishEndpoint.Publish(message, ct);
     }
 }
