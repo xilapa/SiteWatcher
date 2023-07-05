@@ -13,7 +13,7 @@ public abstract class BaseMessageHandler<T> : IMessageHandler<T> where T : BaseM
     protected readonly ISession Session;
     private readonly string _consumerName;
 
-    public BaseMessageHandler(ISiteWatcherContext context, ILogger<T> logger, ISession session)
+    protected BaseMessageHandler(ISiteWatcherContext context, ILogger<T> logger, ISession session)
     {
         Context = context;
         _logger = logger;

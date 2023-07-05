@@ -1,3 +1,4 @@
+using System.Threading.Channels;
 using MimeKit;
 using SiteWatcher.Application.Interfaces;
 using MailKit.Net.Smtp;
@@ -11,10 +12,20 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
 {
     private SmtpClient? _smtpClient;
     private readonly IEmailSettings _emailSettings;
+    private readonly Channel<bool> _rateLimiter;
 
     public EmailServiceSingleton(IEmailSettings emailSettings)
     {
         _emailSettings = emailSettings;
+        _rateLimiter = Channel.CreateBounded<bool>(1);
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(emailSettings.EmailDelaySeconds));
+                _ = await _rateLimiter.Reader.ReadAsync();
+            }
+        });
     }
 
     public async Task<string?> SendEmailAsync(string subject, string body, MailRecipient[] recipients, CancellationToken cancellationToken)
@@ -33,6 +44,7 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
         {
             var smtpClient = await GetSmtpClient(cancellationToken);
             await smtpClient.SendAsync(msg, cancellationToken);
+            await _rateLimiter.Writer.WriteAsync(true, cancellationToken);
             return null;
         }
         catch (Exception e)
