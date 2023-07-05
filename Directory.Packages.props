@@ -33,15 +33,10 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
     <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta06" />
-    <PackageVersion Include="DotNetCore.CAP" Version="7.1.4" />
-    <PackageVersion Include="DotNetCore.CAP.InMemoryStorage" Version="7.1.4" />
-    <PackageVersion Include="DotNetCore.CAP.PostgreSql" Version="7.1.4" />
-    <PackageVersion Include="DotNetCore.CAP.RabbitMQ" Version="7.1.4" />
     <PackageVersion Include="Hashids.net" Version="1.7.0" />
     <PackageVersion Include="MailKit" Version="4.1.0" />
     <PackageVersion Include="Polly" Version="7.2.4" />
     <PackageVersion Include="RabbitMQ.Client" Version="6.5.0" />
-    <PackageVersion Include="Savorboard.CAP.InMemoryMessageQueue" Version="7.0.0" />
     <PackageVersion Include="StackExchange.Redis" Version="2.6.116" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />

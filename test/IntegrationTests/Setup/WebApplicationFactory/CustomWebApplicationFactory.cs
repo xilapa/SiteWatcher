@@ -1,6 +1,5 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
-using DotNetCore.CAP;
 using IntegrationTests.Setup;
 using Mediator;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +23,6 @@ using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
-using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using StackExchange.Redis;
@@ -41,7 +39,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
     private string _connectionString;
     private DbConnection? _dbConnection;
-    private Func<IAppSettings, IMediator, ICapPublisher, SiteWatcherContext> _contextFactory;
+    private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
     private PostgreSqlContainer? _postgresContainer;
     public DatabaseType DatabaseType { get; private set; }
 
@@ -98,15 +96,15 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 _dbConnection = new SqliteConnection(_connectionString);
                 // handling the connection on factory to avoid the database being destroyed on connection close
                 _dbConnection.Open();
-                _contextFactory = (appSettings, mediator, cap) =>
-                    new SqliteContext(appSettings, mediator, _dbConnection, cap, FakePublisher);
+                _contextFactory = (appSettings, mediator) =>
+                    new SqliteContext(appSettings, mediator, _dbConnection);
                 break;
             case DatabaseType.SqliteOnDisk:
                 DatabaseType = DatabaseType.SqliteOnDisk;
                 _connectionString = $"DataSource={Guid.NewGuid()}.db";
                 _dbConnection = new SqliteConnection(_connectionString);
-                _contextFactory = (appSettings, mediator, cap) =>
-                    new SqliteContext(appSettings, mediator, _dbConnection, cap, FakePublisher);
+                _contextFactory = (appSettings, mediator) =>
+                    new SqliteContext(appSettings, mediator, _dbConnection);
                 break;
             case DatabaseType.Postgres:
                 DatabaseType = DatabaseType.Postgres;
@@ -115,8 +113,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                     .Build();
                 await _postgresContainer.StartAsync();
                 _connectionString = _postgresContainer.GetConnectionString();
-                _contextFactory = (appSettings, mediator, cap) =>
-                    new PostgresTestContext(appSettings, mediator, _connectionString, cap, FakePublisher);
+                _contextFactory = (appSettings, mediator) =>
+                    new PostgresTestContext(appSettings, mediator, _connectionString);
                 break;
             default:
                 throw new ArgumentException(nameof(options.DatabaseType));
@@ -192,8 +190,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         {
             var appSettings = srvc.GetRequiredService<IAppSettings>();
             var mediator = srvc.GetRequiredService<IMediator>();
-            var cap = srvc.GetRequiredService<ICapPublisher>();
-            return _contextFactory(appSettings, mediator, cap);
+            return _contextFactory(appSettings, mediator);
         });
 
         services.AddScoped<ISession>(srvc =>
@@ -240,8 +237,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public SiteWatcherContext GetContext()
     {
         var mediatorMock = new Mock<IMediator>();
-        var capMock = new Mock<ICapPublisher>();
-        return _contextFactory(TestSettings, mediatorMock.Object, capMock.Object);
+        return _contextFactory(TestSettings, mediatorMock.Object);
     }
 
     private IAuthService CreateAuthServiceForTokens()

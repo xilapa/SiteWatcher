@@ -6,11 +6,10 @@ public class FakePublisher : IPublisher
 {
     public List<FakePublishedMessage> Messages { get; } = new();
 
-    public Task PublishAsync(string routingKey, object message, CancellationToken ct)
+    public Task PublishAsync(object message, CancellationToken ct)
     {
         Messages.Add(new FakePublishedMessage
         {
-            RoutingKey = routingKey,
             Content = message,
         });
         return Task.CompletedTask;

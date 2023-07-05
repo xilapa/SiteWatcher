@@ -6,6 +6,8 @@ namespace SiteWatcher.Domain.Users.Messages;
 
 public class UserReactivationTokenGeneratedMessage : BaseMessage
 {
+    public UserReactivationTokenGeneratedMessage() { }
+
     public UserReactivationTokenGeneratedMessage(User user, DateTime currentTime)
     {
         Id = $"{user.Id}:{currentTime.Ticks}";

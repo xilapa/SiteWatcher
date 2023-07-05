@@ -1,12 +1,10 @@
 ﻿using System.Data.Common;
-using DotNetCore.CAP;
 using Mediator;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra;
-using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 
 namespace SiteWatcher.IntegrationTests.Setup.TestServices;
 
@@ -14,9 +12,8 @@ public class SqliteContext : SiteWatcherContext
 {
     private readonly DbConnection _connection;
 
-    public SqliteContext(IAppSettings appSettings, IMediator mediator, DbConnection connection, ICapPublisher cap,
-        IPublisher publisher) :
-        base(appSettings, mediator, cap, publisher)
+    public SqliteContext(IAppSettings appSettings, IMediator mediator, DbConnection connection) :
+        base(appSettings, mediator)
     {
         _connection = connection;
     }

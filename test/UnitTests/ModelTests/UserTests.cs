@@ -22,9 +22,9 @@ public sealed class UserTests
 
         // Check email confirmation message
         if (!emailConfirmed)
-            user.Messages.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
+            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
         else
-            user.Messages.Should().BeEmpty();
+            user.DomainEvents.Should().BeEmpty();
     }
 
     [Theory]
@@ -35,7 +35,7 @@ public sealed class UserTests
     {
         // Arrange
         var user = new User("googleId", "name", email, authEmail, Language.English, Theme.Dark, DateTime.Now);
-        user.ClearMessages();
+        user.ClearDomainEvents();
         var userUpdate = new UpdateUserInput
         {
             Name = "name",
@@ -52,9 +52,9 @@ public sealed class UserTests
 
         // Check email confirmation message
         if (!emailConfirmed)
-            user.Messages.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
+            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
         else
-            user.Messages.Should().BeEmpty();
+            user.DomainEvents.Should().BeEmpty();
     }
 
     [Fact]

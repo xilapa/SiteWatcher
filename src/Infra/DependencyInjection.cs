@@ -1,15 +1,10 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Dapper;
-using DotNetCore.CAP;
-using DotNetCore.CAP.Internal;
 using MassTransit;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using Savorboard.CAP.InMemoryMessageQueue;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -79,96 +74,6 @@ public static class DependencyInjection
     {
         services.AddSingleton<IIdHasher, IdHasher.IdHasher>();
         return services;
-    }
-
-    public static IServiceCollection SetupMessaging(this IServiceCollection services, IConfiguration configManager, IAppSettings appSettings)
-    {
-        var rabbitSettings = configManager.Get<RabbitMqSettings>()!;
-        services
-            .AddCap(opts =>
-            {
-                if (appSettings.InMemoryStorageAndQueue)
-                {
-                    opts.UseInMemoryStorage();
-                    opts.UseInMemoryMessageQueue();
-                }
-                else
-                {
-                    CreateExchange(rabbitSettings);
-                    opts.UseEntityFramework<SiteWatcherContext>();
-                    opts.UseRabbitMQ(opt =>
-                    {
-                        opt.HostName = rabbitSettings.Host;
-                        opt.VirtualHost = rabbitSettings.VirtualHost;
-                        opt.UserName = rabbitSettings.UserName;
-                        opt.Password = rabbitSettings.Password;
-                        opt.Port = rabbitSettings.Port;
-
-                        // Configuration to publish/consume messages from a custom exchange
-                        opt.ExchangeName = RabbitMqSettings.SiteWatcherExchange;
-                        opt.CustomHeaders = message => new List<KeyValuePair<string, string>>
-                        {
-                            new(DotNetCore.CAP.Messages.Headers.MessageId,
-                                GetMessageId(message, appSettings.MessageIdKey)),
-                            new(DotNetCore.CAP.Messages.Headers.MessageName, message.RoutingKey)
-                        };
-
-                        opt.PublishConfirms = true;
-                        opt.BasicQosOptions = new RabbitMQOptions.BasicQos(1, false);
-                    });
-                }
-
-                opts.Version = "v2";
-
-                opts.FailedRetryCount = 25;
-                // Email notification consumer needs to have only one consumer
-                opts.ConsumerThreadCount = 1;
-                // Enable the concurrency level to be per queue
-                opts.UseDispatchingPerGroup = true;
-
-                // Disable prefetching messages
-                opts.EnableConsumerPrefetch = false;
-            });
-
-        return services;
-    }
-
-    private static string GetMessageId(BasicDeliverEventArgs message, string headerKey)
-    {
-        var hasMessageId = message.BasicProperties.Headers.TryGetValue(headerKey, out var messageId);
-        if (hasMessageId && messageId != null)
-        {
-            var byteMessageId = (byte[])messageId;
-            var stringMessageId = byteMessageId != null ? System.Text.Encoding.UTF8.GetString(byteMessageId) : string.Empty;
-
-            return string.IsNullOrEmpty(stringMessageId) ?
-                SnowflakeId.Default().NextId().ToString()
-                : stringMessageId;
-        }
-
-        return SnowflakeId.Default().NextId().ToString();
-    }
-
-    private static void CreateExchange(RabbitMqSettings settings)
-    {
-        var connectionFactory = new ConnectionFactory
-        {
-            HostName = settings.Host,
-            VirtualHost = settings.VirtualHost,
-            UserName = settings.UserName,
-            Password = settings.Password,
-            Port = settings.Port
-        };
-
-        using var connection = connectionFactory.CreateConnection();
-        using var channel = connection.CreateModel();
-
-        // Create a topic exchange for site watcher
-        channel.ExchangeDeclare(
-            RabbitMqSettings.SiteWatcherExchange,
-            ExchangeType.Topic,
-            durable: true,
-            autoDelete: false);
     }
 
     public static IServiceCollection SetupMassTransit(this IServiceCollection services, IConfiguration config, Assembly? consumerAssembly)

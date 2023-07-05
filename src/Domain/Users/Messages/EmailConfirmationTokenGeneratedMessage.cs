@@ -6,6 +6,8 @@ namespace SiteWatcher.Domain.Users.Messages;
 
 public class EmailConfirmationTokenGeneratedMessage : BaseMessage
 {
+    public EmailConfirmationTokenGeneratedMessage() { }
+
     public EmailConfirmationTokenGeneratedMessage(User user, DateTime currentTime)
     {
         Id = $"{user.Id}:{currentTime.Ticks}";
