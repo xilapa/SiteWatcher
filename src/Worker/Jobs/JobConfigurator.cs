@@ -1,8 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application;
+using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Infra;
+using SiteWatcher.Infra.Persistence;
 using HttpClient = SiteWatcher.Infra.Http.HttpClient;
 
 namespace SiteWatcher.Worker.Jobs;
@@ -17,12 +19,15 @@ public static class JobConfigurator
             .AddHttpClient()
             .AddScoped<IHttpClient, HttpClient>()
             .AddSingletonSession()
-            .AddApplication();
+            .AddApplication()
+            .AddIdHasher()
+            .AddDapperContext(DatabaseType.Postgres);
 
         if (!settings.EnableJobs)
             return serviceCollection;
 
         serviceCollection.AddHostedService<ExecuteAlertsPeriodically>();
+        serviceCollection.AddScoped<ExecuteAlertsCommandHandler>();
 
         return serviceCollection;
     }

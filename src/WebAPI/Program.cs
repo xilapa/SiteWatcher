@@ -36,7 +36,7 @@ builder.Services.AddRedisCache(appSettings)
 
 DependencyInjection.AddSession(builder.Services)
     .AddIdHasher()
-    .SetupMessaging(builder.Configuration, appSettings);
+    .SetupMassTransit(builder.Configuration, null);
 
 var googleSettings = builder.Configuration.Get<GoogleSettings>();
 builder.Services.ConfigureAuth(appSettings, googleSettings!);

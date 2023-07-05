@@ -4,6 +4,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="FluentValidation" Version="11.5.2" />
+    <PackageVersion Include="MassTransit" Version="8.0.16" />
+    <PackageVersion Include="MassTransit.Abstractions" Version="8.0.16" />
+    <PackageVersion Include="MassTransit.Analyzers" Version="8.0.16" />
+    <PackageVersion Include="MassTransit.EntityFrameworkCore" Version="8.0.16" />
+    <PackageVersion Include="MassTransit.RabbitMQ" Version="8.0.16" />
     <PackageVersion Include="Mediator.Abstractions" Version="2.1.5" />
     <PackageVersion Include="Mediator.SourceGenerator" Version="2.1.5" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.8" />

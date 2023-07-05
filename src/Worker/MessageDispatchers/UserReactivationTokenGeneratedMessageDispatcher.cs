@@ -1,10 +1,10 @@
-﻿using DotNetCore.CAP;
+﻿using MassTransit;
 using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Domain.Users.Messages;
 
 namespace Worker.MessageDispatchers;
 
-public class UserReactivationTokenGeneratedMessageDispatcher : ICapSubscribe
+public class UserReactivationTokenGeneratedMessageDispatcher : IConsumer<UserReactivationTokenGeneratedMessage>
 {
     private readonly IMessageHandler<UserReactivationTokenGeneratedMessage> _handler;
 
@@ -13,9 +13,8 @@ public class UserReactivationTokenGeneratedMessageDispatcher : ICapSubscribe
         _handler = handler;
     }
 
-    [CapSubscribe(nameof(UserReactivationTokenGeneratedMessage), Group = nameof(UserReactivationTokenGeneratedMessage))]
-    public async Task Dispatch(UserReactivationTokenGeneratedMessage message, CancellationToken ct)
+    public async Task Consume(ConsumeContext<UserReactivationTokenGeneratedMessage> context)
     {
-        await _handler.Handle(message, ct);
+        await _handler.Handle(context.Message, context.CancellationToken);
     }
 }

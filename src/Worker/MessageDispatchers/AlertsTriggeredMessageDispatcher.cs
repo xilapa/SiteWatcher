@@ -1,10 +1,10 @@
-﻿using DotNetCore.CAP;
+﻿using MassTransit;
 using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Domain.Alerts.Messages;
 
 namespace SiteWatcher.Worker.Consumers;
 
-public class AlertsTriggeredMessageDispatcher : ICapSubscribe
+public class AlertsTriggeredMessageDispatcher : IConsumer<AlertsTriggeredMessage>
 {
     private readonly IMessageHandler<AlertsTriggeredMessage> _handler;
 
@@ -13,9 +13,8 @@ public class AlertsTriggeredMessageDispatcher : ICapSubscribe
         _handler = handler;
     }
 
-    [CapSubscribe(nameof(AlertsTriggeredMessage), Group = nameof(AlertsTriggeredMessage))]
-    public async Task Dispatch(AlertsTriggeredMessage message, CancellationToken ct)
+    public async Task Consume(ConsumeContext<AlertsTriggeredMessage> context)
     {
-        await _handler.Handle(message, ct);
+        await _handler.Handle(context.Message, context.CancellationToken);
     }
 }

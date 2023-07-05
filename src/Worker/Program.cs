@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Mediator;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,10 +57,11 @@ var host = new HostBuilder()
             .Configure<WorkerSettings>(hostContext.Configuration)
             .AddDataContext(addMigrator: false)
             .SetupJobs(workerSettings)
-            .SetupMessaging(hostContext.Configuration, appSettings)
             .AddMessageHandlers()
             .SetupEmail(emailSettings!)
-            .AddRedisCache(appSettings);
+            .AddRedisCache(appSettings)
+            .SetupDataProtection(appSettings)
+            .SetupMassTransit(hostContext.Configuration, typeof(Program).Assembly);
     })
     .Build();
 

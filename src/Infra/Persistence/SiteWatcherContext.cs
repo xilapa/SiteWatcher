@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using DotNetCore.CAP;
+using MassTransit;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -12,7 +12,6 @@ using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Infra.Extensions;
-using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 
 namespace SiteWatcher.Infra;
 
@@ -20,17 +19,13 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
 {
     private readonly IAppSettings _appSettings;
     private readonly IMediator _mediator;
-    private readonly ICapPublisher _capPublisher;
-    private readonly IPublisher _publisher;
     private IDbContextTransaction? _currentTransaction;
     public const string Schema = "sw";
 
-    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator, ICapPublisher capPublisher, IPublisher publisher)
+    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator)
     {
         _appSettings = appSettings;
         _mediator = mediator;
-        _capPublisher = capPublisher;
-        _publisher = publisher;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -54,6 +49,9 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.AddInboxStateEntity();
+        modelBuilder.AddOutboxMessageEntity();
+        modelBuilder.AddOutboxStateEntity();
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct)
@@ -61,7 +59,7 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
         if(_currentTransaction != null)
             return _currentTransaction;
 
-        _currentTransaction = await Database.BeginTransactionAsync(_capPublisher, autoCommit: false, ct);
+        _currentTransaction = await Database.BeginTransactionAsync(ct);
         return _currentTransaction;
     }
 
@@ -110,7 +108,8 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
     {
         try
         {
-            await _mediator.DispatchDomainEventsAndMessages(this, _publisher, ct);
+            await _mediator.DispatchDomainEventsAndMessages(this, ct);
+            await Task.Delay(TimeSpan.FromSeconds(20));
             return await base.SaveChangesAsync(ct);
         }
         catch (DbUpdateException ex)
