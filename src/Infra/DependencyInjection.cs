@@ -106,6 +106,7 @@ public static class DependencyInjection
                 });
                 cfg.PrefetchCount = 7;
                 cfg.ConcurrentMessageLimit = 5;
+                cfg.UseMessageRetry(r => r.Interval(3, 3));
                 cfg.ConfigureEndpoints(b);
             });
         });
