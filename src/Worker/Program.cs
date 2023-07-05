@@ -7,8 +7,11 @@ using SiteWatcher.Application;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 using SiteWatcher.Worker;
+using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
+using SiteWatcher.Worker.MessageDispatchers;
 using SiteWatcher.Worker.Utils;
+using Worker.MessageDispatchers;
 
 var host = new HostBuilder()
     .ConfigureDefaults(args)
@@ -60,7 +63,14 @@ var host = new HostBuilder()
             .SetupEmail(emailSettings!)
             .AddRedisCache(appSettings)
             .SetupDataProtection(appSettings)
-            .SetupMassTransit(hostContext.Configuration, typeof(Program).Assembly);
+            .SetupMassTransit(hostContext.Configuration, c =>
+            {
+                c.AddConsumer<AlertsTriggeredMessageDispatcher>();
+                c.AddConsumer<EmailConfirmationTokenGeneratedMessageDispatcher>();
+                c.AddConsumer<UserReactivationTokenGeneratedMessageDispatcher>();
+                c.AddConsumer<EmailCreatedMessageDispatcher>()
+                    .Endpoint(e => e.ConcurrentMessageLimit = 1);
+            });
     })
     .Build();
 

@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Dapper;
 using MassTransit;
@@ -76,8 +75,11 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection SetupMassTransit(this IServiceCollection services, IConfiguration config, Assembly? consumerAssembly)
+    public static IServiceCollection SetupMassTransit(this IServiceCollection services, IConfiguration config,
+        Action<IBusRegistrationConfigurator>? configureConsumers = null)
     {
+        services.AddScoped<IPublisher, Publisher>();
+
         var rabbitMqSettings = config.Get<RabbitMqSettings>();
 
         services.AddMassTransit(opts =>
@@ -91,10 +93,10 @@ public static class DependencyInjection
                 o.QueryMessageLimit = 100;
             });
 
-            if (consumerAssembly != null)
-                opts.AddConsumers(consumerAssembly);
+            configureConsumers?.Invoke(opts);
+            opts.SetEndpointNameFormatter(new CustomEndpointNameFormatter());
 
-            opts.UsingRabbitMq((b,cfg) =>
+            opts.UsingRabbitMq((b, cfg) =>
             {
                 cfg.Host(rabbitMqSettings!.Host, rabbitMqSettings.Port, rabbitMqSettings.VirtualHost, o =>
                 {
@@ -102,14 +104,12 @@ public static class DependencyInjection
                     o.Username(rabbitMqSettings.UserName);
                     o.PublisherConfirmation = true;
                 });
-                cfg.PrefetchCount = 1;
-                cfg.ConcurrentMessageLimit = 1;
-                cfg.AutoStart = true;
+                cfg.PrefetchCount = 7;
+                cfg.ConcurrentMessageLimit = 5;
                 cfg.ConfigureEndpoints(b);
             });
         });
 
-        services.AddScoped<IPublisher, Publisher>();
         return services;
     }
 
