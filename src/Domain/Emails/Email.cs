@@ -19,7 +19,7 @@ public class Email : BaseModel<EmailId>
         Body = body;
         Recipient = $"{recipient.Name}:{recipient.Email}";
         UserId = recipient.UserId;
-        AddMessage(new EmailCreatedMessage(Id,subject, body, htmlBody, recipient, currentDate));
+        AddDomainEvent(new EmailCreatedMessage(Id,subject, body, htmlBody, recipient, currentDate));
     }
 
     public Email(string body, bool htmlBody, string subject, User user, DateTime currentDate) :
@@ -30,7 +30,7 @@ public class Email : BaseModel<EmailId>
         Recipient = $"{user.Name}:{user.Email}";
         UserId = user.Id;
         var recipient = new MailRecipient(user.Name, user.Email, user.Id);
-        AddMessage(new EmailCreatedMessage(Id,subject, body, htmlBody, recipient, currentDate));
+        AddDomainEvent(new EmailCreatedMessage(Id,subject, body, htmlBody, recipient, currentDate));
     }
 
     public string Recipient { get; }
