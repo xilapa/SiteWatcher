@@ -109,7 +109,6 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
         try
         {
             await _mediator.DispatchDomainEventsAndMessages(this, ct);
-            await Task.Delay(TimeSpan.FromSeconds(20));
             return await base.SaveChangesAsync(ct);
         }
         catch (DbUpdateException ex)

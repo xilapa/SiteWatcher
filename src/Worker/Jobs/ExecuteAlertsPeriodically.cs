@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Interfaces;
-using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.DomainServices;
 
@@ -28,7 +27,7 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
                 var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-                var frequencies = Enum.GetValues<Frequencies>().ToList();
+                var frequencies = AlertFrequencies.GetCurrentFrequencies(session.Now);
                 await handler.Handle(new ExecuteAlertsCommand(frequencies), stoppingToken);
 
                 await _timer.WaitForNextTickAsync(stoppingToken);
