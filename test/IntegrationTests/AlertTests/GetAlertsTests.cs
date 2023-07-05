@@ -216,7 +216,7 @@ public sealed class GetAlertsTests : BaseTest, IClassFixture<GetAlertsTestsBase>
         var typedResult = result.GetTyped<PaginatedList<SimpleAlertView>>();
 
         typedResult!.Total.Should().Be(total);
-        typedResult.Results.Count().Should().Be(count);
+        typedResult.Results.Length.Should().Be(count);
     }
 
     public static IEnumerable<object[]> AlertDetailsData()
