@@ -12,7 +12,6 @@
     <PackageReference Include="MassTransit.Abstractions" />
     <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
-    <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="Roslynator.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

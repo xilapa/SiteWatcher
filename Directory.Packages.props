@@ -25,6 +25,7 @@
     <PackageVersion Include="MockQueryable.Moq" Version="7.0.0" />
     <PackageVersion Include="Npgsql" Version="7.0.4" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+    <PackageVersion Include="ReflectionMagic" Version="5.0.0" />
     <PackageVersion Include="Roslynator.Analyzers" Version="4.3.0" />
     <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="4.3.0" />
     <PackageVersion Include="AngleSharp" Version="1.0.4" />
@@ -36,7 +37,6 @@
     <PackageVersion Include="Hashids.net" Version="1.7.0" />
     <PackageVersion Include="MailKit" Version="4.1.0" />
     <PackageVersion Include="Polly" Version="7.2.4" />
-    <PackageVersion Include="RabbitMQ.Client" Version="6.5.0" />
     <PackageVersion Include="StackExchange.Redis" Version="2.6.116" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="6.31.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
@@ -48,7 +48,6 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.8" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
     <PackageVersion Include="Moq" Version="4.18.4" />
-    <PackageVersion Include="ReflectionMagic" Version="5.0.0" />
     <PackageVersion Include="Testcontainers" Version="3.3.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="3.3.0" />
     <PackageVersion Include="xunit" Version="2.4.2" />
