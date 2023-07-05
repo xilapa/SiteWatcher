@@ -8,10 +8,6 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Dapper" />
-		<PackageReference Include="DotNetCore.CAP" />
-		<PackageReference Include="DotNetCore.CAP.InMemoryStorage" />
-		<PackageReference Include="DotNetCore.CAP.PostgreSql" />
-		<PackageReference Include="DotNetCore.CAP.RabbitMQ" />
 		<PackageReference Include="Hashids.net" />
 		<PackageReference Include="MailKit" />
 		<PackageReference Include="MassTransit" />
@@ -44,7 +40,6 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Savorboard.CAP.InMemoryMessageQueue" />
 		<PackageReference Include="StackExchange.Redis" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
 	</ItemGroup>

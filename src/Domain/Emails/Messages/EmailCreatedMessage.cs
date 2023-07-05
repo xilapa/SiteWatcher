@@ -6,6 +6,8 @@ namespace SiteWatcher.Domain.Emails.Events;
 
 public sealed class EmailCreatedMessage : BaseMessage
 {
+    public EmailCreatedMessage() { }
+
     public EmailCreatedMessage(EmailId emailId, string subject, string? body, bool htmlBody, MailRecipient recipient,
         DateTime currentTime)
     {

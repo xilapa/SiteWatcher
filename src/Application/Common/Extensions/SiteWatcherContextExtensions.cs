@@ -17,15 +17,15 @@ public static class SiteWatcherContextExtensions
             .OrderBy(_ => _.CreatedAt)
             .Where(u =>
                 u.Active
-                && u.EmailConfirmed
+                // && u.EmailConfirmed
                 && (!lastCreatedAt.HasValue ||  u.CreatedAt > lastCreatedAt))
             .Include(u =>
                 u.Alerts.Where(a =>
                     freqs.Contains(a.Frequency)
-                    && (
-                        a.LastVerification == null
-                        || a.LastVerification <= currentTime.AddHours(-2)
-                    )
+                    // && (
+                    //     a.LastVerification == null
+                    //     || a.LastVerification <= currentTime.AddHours(-2)
+                    // )
                 )
             )
             .ThenInclude(a => a.Rule)
