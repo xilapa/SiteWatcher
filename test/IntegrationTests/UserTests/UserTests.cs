@@ -25,7 +25,7 @@ namespace IntegrationTests.UserTests;
 
 public class UserTesstBase : BaseTestFixture
 {
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseDatabase(DatabaseType.SqliteOnDisk);
     }

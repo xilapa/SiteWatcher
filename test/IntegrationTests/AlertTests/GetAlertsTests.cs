@@ -23,7 +23,7 @@ public sealed class GetAlertsTestsBase : BaseTestFixture
     public static SimpleAlertView[] XulipaAlerts { get; set; } = null!;
     public static DateTime StartingTime { get; } = new(2020, 1, 1, 0, 0, 0);
 
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseDatabase(DatabaseType.SqliteOnDisk);
     }

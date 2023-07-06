@@ -22,11 +22,11 @@ public abstract class BaseTest
 {
     private readonly BaseTestFixture _fixture;
     protected Mock<IEmailServiceSingleton> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
-    public Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
+    protected Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
     protected FakePublisher FakePublisher => _fixture.AppFactory.FakePublisher;
     protected IdHasher IdHasher = new (new TestAppSettings());
-    public Mock<ILogger> LoggerMock => _fixture.AppFactory.LoggerMock;
+    protected Mock<ILogger> LoggerMock => _fixture.AppFactory.LoggerMock;
 
     protected DateTime CurrentTime
     {

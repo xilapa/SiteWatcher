@@ -20,7 +20,7 @@ public sealed class UpdateAlertTestsBase : BaseTestFixture
     public DetailedAlertView XilapaAlert;
     public Alert XulipaAlert;
 
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
         optionsBuilder.SetInitialDate(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc));
     }

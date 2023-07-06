@@ -3,11 +3,11 @@ using SiteWatcher.Infra.Persistence;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
-public class CustomWebApplicationOptions
+public class BaseTestFixtureOptions
 {
-    public CustomWebApplicationOptions()
+    public BaseTestFixtureOptions()
     {
-        InitalDate = null;
+        InitialDate = null;
         _servicesToReplace = new Dictionary<Type, object>();
         DatabaseType = DatabaseType.SqliteInMemory;
     }
@@ -15,7 +15,7 @@ public class CustomWebApplicationOptions
     /// <summary>
     /// Date used on database seed. Must be in UTC.
     /// </summary>
-    public DateTime? InitalDate { get; set; }
+    public DateTime? InitialDate { get; set; }
 
     private readonly Dictionary<Type, object> _servicesToReplace;
 
@@ -34,32 +34,32 @@ public class CustomWebApplicationOptions
     public DatabaseType DatabaseType { get; set; }
 }
 
-public class CustomWebApplicationOptionsBuilder
+public class BaseTestFixtureOptionsBuilder
 {
-    private readonly CustomWebApplicationOptions _options;
+    private readonly BaseTestFixtureOptions _options;
 
-    public CustomWebApplicationOptionsBuilder()
+    public BaseTestFixtureOptionsBuilder()
     {
-        _options = new CustomWebApplicationOptions();
+        _options = new BaseTestFixtureOptions();
     }
 
-    public CustomWebApplicationOptionsBuilder SetInitialDate(DateTime date)
+    public BaseTestFixtureOptionsBuilder SetInitialDate(DateTime date)
     {
-        _options.InitalDate = date;
+        _options.InitialDate = date;
         return this;
     }
 
-    public CustomWebApplicationOptionsBuilder UseDatabase(DatabaseType databaseType)
+    public BaseTestFixtureOptionsBuilder UseDatabase(DatabaseType databaseType)
     {
         _options.DatabaseType = databaseType;
         return this;
     }
 
-    public CustomWebApplicationOptionsBuilder ReplaceService(Type serviceType, object service)
+    public BaseTestFixtureOptionsBuilder ReplaceService(Type serviceType, object service)
     {
         _options.ReplaceService(serviceType, service);
         return this;
     }
 
-    public CustomWebApplicationOptions Build() => _options;
+    public BaseTestFixtureOptions Build() => _options;
 }
