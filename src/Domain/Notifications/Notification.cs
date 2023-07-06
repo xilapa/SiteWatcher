@@ -57,7 +57,7 @@ public class Notification
         // Get Body and Subject
         var subject = NotificationMessageGenerator.GetSubject(_notificationData);
         var body = await NotificationMessageGenerator.GetBody(_notificationData);
-        // Create the email, the email will generate a domain event
+        // Create the email, the email will generate a domain message
         var recipient = new MailRecipient(_notificationData.UserName, _notificationData.Email, UserId!.Value);
         Email = new Email(body,htmlBody: true, subject, recipient, currentDate);
         EmailId = Email.Id;

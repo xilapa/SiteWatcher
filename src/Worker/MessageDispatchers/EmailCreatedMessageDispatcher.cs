@@ -1,6 +1,6 @@
 using MassTransit;
 using SiteWatcher.Application.Common.Messages;
-using SiteWatcher.Domain.Emails.Events;
+using SiteWatcher.Domain.Emails.Messages;
 
 namespace SiteWatcher.Worker.MessageDispatchers;
 

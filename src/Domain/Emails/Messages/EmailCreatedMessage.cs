@@ -2,7 +2,7 @@
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails.DTOs;
 
-namespace SiteWatcher.Domain.Emails.Events;
+namespace SiteWatcher.Domain.Emails.Messages;
 
 public sealed class EmailCreatedMessage : BaseMessage
 {

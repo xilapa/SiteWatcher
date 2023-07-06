@@ -3,7 +3,7 @@ using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication;
-using SiteWatcher.Domain.Emails.Events;
+using SiteWatcher.Domain.Emails.Messages;
 
 namespace SiteWatcher.Application.Emails.Messages;
 

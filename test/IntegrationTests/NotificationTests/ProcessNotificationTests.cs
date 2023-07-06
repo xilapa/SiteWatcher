@@ -10,7 +10,7 @@ using SiteWatcher.Domain.Alerts.Messages;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails.DTOs;
-using SiteWatcher.Domain.Emails.Events;
+using SiteWatcher.Domain.Emails.Messages;
 using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
