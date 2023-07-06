@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Emails.DTOs;
-using SiteWatcher.Domain.Emails.Events;
+using SiteWatcher.Domain.Emails.Messages;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Infra.Persistence;

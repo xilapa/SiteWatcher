@@ -1,7 +1,7 @@
 using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails.DTOs;
-using SiteWatcher.Domain.Emails.Events;
+using SiteWatcher.Domain.Emails.Messages;
 using SiteWatcher.Domain.Users;
 
 namespace SiteWatcher.Domain.Emails;
