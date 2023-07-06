@@ -38,7 +38,7 @@ public sealed class ExecuteAlertTestsBase : BaseTestFixture
         }
     }
 
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
         base.OnConfiguringTestServer(optionsBuilder);
         // TODO: Reconfigure Site to not be an owned type of Alert,

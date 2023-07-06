@@ -33,7 +33,7 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
     public AlertId AlertToUpdateId { get; private set; }
     public AlertId AlertToDeleteId { get; private set; }
 
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
         // Replace services to delete alert test
         IdHasherMock = new Mock<IIdHasher>();

@@ -21,7 +21,7 @@ public sealed class SearchAlertsTestsBase : BaseTestFixture
     public static SimpleAlertView XulipaBlueShorts;
     public static SimpleAlertView XulipaAletorio;
 
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseDatabase(DatabaseType.Postgres);
     }

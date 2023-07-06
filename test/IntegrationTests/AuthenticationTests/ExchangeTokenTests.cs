@@ -42,7 +42,7 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
         CodeChallenge = Convert.ToBase64String(codeVerifierHash);
     }
 
-    protected override void OnConfiguringTestServer(CustomWebApplicationOptionsBuilder optionsBuilder)
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
         // mock microsoft's auth service
         _authServiceMock
