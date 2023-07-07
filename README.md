@@ -120,7 +120,7 @@ To be able to "watch" the user-defined websites periodically, Sitewatcher worker
 - Implementing a full hexagonal architecture;
 - Increase test coverage to 80% at least;
 - Remove dependencies that make heavy use of reflection or have a high memory usage;
-~~- Move background email sendings from WebAPI to the worker using RabbitMQ;~~
+- ~~Move background email sendings from WebAPI to the worker using RabbitMQ;~~
 - Implement a "can crawl the site" validation (some sites block web crawlers) with a response sent by WebSockets using SignalR;
 - Move the email sending to a microservice written in golang;
 - Implement notifications by Telegram;
