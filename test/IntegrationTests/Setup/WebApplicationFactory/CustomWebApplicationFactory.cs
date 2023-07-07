@@ -26,6 +26,7 @@ using SiteWatcher.IntegrationTests.Utils;
 using SiteWatcher.Worker.MessageDispatchers;
 using StackExchange.Redis;
 using HttpClient = SiteWatcher.Infra.Http.HttpClient;
+using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -43,7 +44,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public readonly Mock<IHttpClientFactory> HttpClientFactoryMock;
     public readonly IAuthService AuthServiceForTokens;
     private readonly IGoogleSettings _testGoogleSettings;
-    private bool _enableMessageConsumers;
+    private bool _enableMasstransitTestHarness;
+    private bool _addMessageHandlers;
 
     public DateTime CurrentTime { get; set; }
     public IAppSettings TestSettings { get; }
@@ -76,7 +78,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         CurrentTime = options.InitialDate ?? DateTime.UtcNow;
         _servicesToReplace = options.ReplacementServices;
-        _enableMessageConsumers = options.EnableMessageConsumers;
+        _enableMasstransitTestHarness = options.EnableMasstransitTestHarness;
+        _addMessageHandlers = options.AddMessageHandlers;
 
         _databaseType = options.DatabaseType;
         _connectionString = connectionString;
@@ -122,6 +125,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IQueries),
             typeof(SiteWatcherContext)
         };
+
+        if (!_enableMasstransitTestHarness)
+            servicesToRemove = servicesToRemove.Append(typeof(IPublisher)).ToArray();
 
         // Only replace DapperQueries if using Sqlite
         if(_databaseType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
@@ -172,10 +178,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton<IEmailSettings>(new Mock<IEmailSettings>().Object);
 
         // Messaging
-        if (_enableMessageConsumers) services.AddMessageHandlers();
+        if (!_enableMasstransitTestHarness) services.AddSingleton<IPublisher>(FakePublisher);
+        if (_addMessageHandlers) services.AddMessageHandlers();
         services.AddMassTransitTestHarness(c =>
         {
-            if (_enableMessageConsumers) c.AddConsumers(typeof(EmailCreatedMessageDispatcher).Assembly);
+            if (!_enableMasstransitTestHarness) return;
+            c.AddConsumers(typeof(EmailCreatedMessageDispatcher).Assembly);
         });
     }
 

@@ -19,14 +19,12 @@ public sealed class EmailSendingBaseTests : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        // TestHarness should be used only once per test class
-        // https://masstransit.io/documentation/concepts/testing#test-harness-concepts
         TestHarness = AppFactory.Services.GetTestHarness();
     }
 
     protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.EnableMessageConsumers();
+        optionsBuilder.EnableMasstransitTestHarness();
     }
 }
 

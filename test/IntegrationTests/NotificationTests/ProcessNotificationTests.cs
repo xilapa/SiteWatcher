@@ -32,6 +32,11 @@ public sealed class ProcessNotificationTestBase : BaseTestFixture
             new AlertTriggered(Alert, TriggeringStatus.Success, AppFactory.CurrentTime)
         };
     }
+
+    protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddMessageHandlers();
+    }
 }
 
 public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNotificationTestBase>
