@@ -72,8 +72,8 @@ This project is currently using:
 <tr>
     <td> HashIds </td>
     <td> Testcontainers </td>
-    <td> RabbitMQ </td>
-    <td> CAP </td>
+    <td> Scrutor </td>
+    <td> Masstransit </td>
     <td> Fluid </td>
     <td> AngleSharp </td>
 </tr>
@@ -99,8 +99,12 @@ The cardinality is read top-down, e.g., the Notification aggregate has many Noti
 It's good to notice from the domain representation, that the NotificationAlerts entity is part of an N-N relationship between Alert and Notification aggregates. An alert can have many notifications and a notification can be related to many alerts.
 
 In some parts the design is based on the [Jason Taylor Clean Architecture template](https://github.com/jasontaylordev/CleanArchitecture "Jason Taylor Clean Architecture template"), his approach using MediatR to send Domain Events is very clean and well done.
+Some domain events are "Messages", these type of events are sent to a queue and processed in background by the worker. Those messages are related to:
+- Email sending;
+- User email confirmation;
+- User reactivation;
 
-To be able to "watch" the user-defined websites periodically, Sitewatcher has a worker that crawls websites and sends notification emails. Here's how it works:
+To be able to "watch" the user-defined websites periodically, Sitewatcher worker crawls websites and sends notification emails. Here's how it works:
 [![](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/worker.png)](https://raw.githubusercontent.com/xilapa/SiteWatcher/main/imgs/worker.png)
                 
 1. It reads the database from time to time, matching the possible frequencies available to get the alerts;
@@ -114,9 +118,9 @@ To be able to "watch" the user-defined websites periodically, Sitewatcher has a 
 - Remove dead code and unnecessary abstractions;
 - Improve the intelligent search using an algorithm like the Levenshtein distance, removing some search business rules from the database;
 - Implementing a full hexagonal architecture;
-- Increase test coverage;
+- Increase test coverage to 80% at least;
 - Remove dependencies that make heavy use of reflection or have a high memory usage;
-- Move background email sendings from WebAPI to the worker using RabbitMQ;
+~~- Move background email sendings from WebAPI to the worker using RabbitMQ;~~
 - Implement a "can crawl the site" validation (some sites block web crawlers) with a response sent by WebSockets using SignalR;
 - Move the email sending to a microservice written in golang;
 - Implement notifications by Telegram;
