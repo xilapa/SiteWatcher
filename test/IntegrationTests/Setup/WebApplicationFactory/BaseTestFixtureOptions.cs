@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using IntegrationTests.Setup;
 using SiteWatcher.Infra.Persistence;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -10,7 +11,8 @@ public sealed class BaseTestFixtureOptions
         InitialDate = null;
         _servicesToReplace = new Dictionary<Type, object>();
         DatabaseType = DatabaseType.SqliteInMemory;
-        EnableMessageConsumers = false;
+        EnableMasstransitTestHarness = false;
+        AddMessageHandlers = false;
     }
 
     /// <summary>
@@ -35,9 +37,11 @@ public sealed class BaseTestFixtureOptions
     public DatabaseType DatabaseType { get; set; }
 
     /// <summary>
-    /// Add the required services to test Message Handlers.
+    /// Add the required Masstransit configuration.
     /// </summary>
-    public bool EnableMessageConsumers { get; set; }
+    public bool EnableMasstransitTestHarness { get; set; }
+
+    public bool AddMessageHandlers { get; set; }
 }
 
 public sealed class BaseTestFixtureOptionsBuilder
@@ -67,9 +71,20 @@ public sealed class BaseTestFixtureOptionsBuilder
         return this;
     }
 
-    public BaseTestFixtureOptionsBuilder EnableMessageConsumers()
+    /// <summary>
+    /// TestHarness should be used only once per test class.
+    /// https://masstransit.io/documentation/concepts/testing#test-harness-concepts
+    /// </summary>
+    public BaseTestFixtureOptionsBuilder EnableMasstransitTestHarness()
     {
-        _options.EnableMessageConsumers = true;
+        _options.EnableMasstransitTestHarness = true;
+        _options.AddMessageHandlers = true;
+        return this;
+    }
+
+    public BaseTestFixtureOptionsBuilder AddMessageHandlers()
+    {
+        _options.AddMessageHandlers = true;
         return this;
     }
 

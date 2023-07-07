@@ -21,7 +21,7 @@ public sealed class EmailConfirmationTokenGeneratedTestBase : BaseTestFixture
 
     protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.EnableMessageConsumers();
+        optionsBuilder.EnableMasstransitTestHarness();
         var authServiceInstance = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
         EmailConfirmationTokenExpiration = (int)typeof(AuthService)
             .GetField("EmailConfirmationTokenExpiration", BindingFlags.Static | BindingFlags.NonPublic)!
@@ -31,8 +31,6 @@ public sealed class EmailConfirmationTokenGeneratedTestBase : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        // TestHarness should be used only once per test class
-        // https://masstransit.io/documentation/concepts/testing#test-harness-concepts
         TestHarness = AppFactory.Services.GetTestHarness();
     }
 }
