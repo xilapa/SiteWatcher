@@ -25,9 +25,9 @@ public abstract class BaseMessageHandler<T> : IMessageHandler<T> where T : BaseM
     {
         if (await Context.HasBeenProcessed(message.Id, _consumerName))
         {
-            _logger.LogInformation("{Date} Message with Id: {Message} has already been processed by {Consumer}",
-                Session.Now, message.Id, _consumerName);
-            return;
+            // Exception to check if masstansit outbox is really idempotent as it claims to be
+            throw new Exception(
+                $"{Session.Now} Message with Id: {message.Id} has already been processed by {_consumerName}");
         }
 
         Context.MarkMessageAsConsumed(message.Id, _consumerName);
