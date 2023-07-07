@@ -3,13 +3,14 @@ using SiteWatcher.Infra.Persistence;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
-public class BaseTestFixtureOptions
+public sealed class BaseTestFixtureOptions
 {
     public BaseTestFixtureOptions()
     {
         InitialDate = null;
         _servicesToReplace = new Dictionary<Type, object>();
         DatabaseType = DatabaseType.SqliteInMemory;
+        SetupMessaging = false;
     }
 
     /// <summary>
@@ -32,9 +33,14 @@ public class BaseTestFixtureOptions
     /// Database provider type. Defaults to Sqlite in memory.
     /// </summary>
     public DatabaseType DatabaseType { get; set; }
+
+    /// <summary>
+    /// Add the required services to test Message Handlers.
+    /// </summary>
+    public bool SetupMessaging { get; set; }
 }
 
-public class BaseTestFixtureOptionsBuilder
+public sealed class BaseTestFixtureOptionsBuilder
 {
     private readonly BaseTestFixtureOptions _options;
 
@@ -58,6 +64,12 @@ public class BaseTestFixtureOptionsBuilder
     public BaseTestFixtureOptionsBuilder ReplaceService(Type serviceType, object service)
     {
         _options.ReplaceService(serviceType, service);
+        return this;
+    }
+
+    public BaseTestFixtureOptionsBuilder SetupMessaging()
+    {
+        _options.SetupMessaging = true;
         return this;
     }
 

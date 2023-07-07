@@ -23,9 +23,9 @@ using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Utils;
+using SiteWatcher.Worker.MessageDispatchers;
 using StackExchange.Redis;
 using HttpClient = SiteWatcher.Infra.Http.HttpClient;
-using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -43,6 +43,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public readonly Mock<IHttpClientFactory> HttpClientFactoryMock;
     public readonly IAuthService AuthServiceForTokens;
     private readonly IGoogleSettings _testGoogleSettings;
+    private bool _setupMessaging;
+
     public DateTime CurrentTime { get; set; }
     public IAppSettings TestSettings { get; }
     public FakeCache FakeCache { get; }
@@ -74,6 +76,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         CurrentTime = options.InitialDate ?? DateTime.UtcNow;
         _servicesToReplace = options.ReplacementServices;
+        _setupMessaging = options.SetupMessaging;
 
         _databaseType = options.DatabaseType;
         _connectionString = connectionString;
@@ -116,8 +119,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IDapperContext),
             typeof(ILoggerFactory),
             typeof(IHttpClientFactory),
-            typeof(IPublisher),
-            typeof(IQueries)
+            typeof(IQueries),
+            typeof(SiteWatcherContext)
         };
 
         // Only replace DapperQueries if using Sqlite
@@ -140,7 +143,6 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         // AppSettings, GoogleSettings, DapperContext,
         // DapperQueries
         services.AddSingleton<ICache>(FakeCache);
-        services.AddSingleton<IPublisher>(FakePublisher);
 
         services.AddScoped<SiteWatcherContext>(srvc =>
         {
@@ -170,8 +172,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton<IEmailSettings>(new Mock<IEmailSettings>().Object);
 
         // Messaging
-        services.AddMessageHandlers();
-        services.AddMassTransitTestHarness();
+        if (_setupMessaging) services.AddMessageHandlers();
+        services.AddMassTransitTestHarness(c =>
+        {
+            if (_setupMessaging) c.AddConsumers(typeof(EmailCreatedMessageDispatcher).Assembly);
+        });
     }
 
     private void ConfigureOptionsReplacementServices(IServiceCollection services)
