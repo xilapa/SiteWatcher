@@ -29,7 +29,7 @@ public class SendReactivateAccountEmailCommandHandler : ICommandHandler<SendReac
         if(user is null)
             return Unit.Value;
 
-        user.GenerateUserActivationToken(_session.Now);
+        user.GenerateReactivationToken(_session.Now);
         await _context.SaveChangesAsync(CancellationToken.None);
         return Unit.Value;
     }
