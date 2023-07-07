@@ -51,8 +51,7 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
         {
             // If there is an error, try to disconnect,
             // set the smtp client to null and return the error
-            await TryDisconnectClient();
-            _smtpClient = null;
+            await DisconnectSmtpClient();
 
             return string.IsNullOrEmpty(e.Message) ?
                 $"Error sending the email: {e.InnerException?.Message ?? "No inner exception message"}"
@@ -62,7 +61,7 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
 
     private async Task<SmtpClient> GetSmtpClient(CancellationToken cancellationToken)
     {
-        _smtpClient ??= new SmtpClient();
+        _smtpClient = await CheckCurrentSmtpClient();
 
         if (!_smtpClient.IsConnected)
             await _smtpClient.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.Port, _emailSettings.UseSsl, cancellationToken);
@@ -73,14 +72,36 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
         return _smtpClient;
     }
 
-    private async Task TryDisconnectClient()
+    private async Task<SmtpClient> CheckCurrentSmtpClient()
+    {
+        if (_smtpClient == null) return new SmtpClient();
+
+        try
+        {
+            // Noop to check if the connection has timeout
+            await _smtpClient.NoOpAsync();
+        }
+        catch
+        {
+            await DisconnectSmtpClient();
+            return new SmtpClient();
+        }
+
+        return _smtpClient;
+    }
+
+    private async Task DisconnectSmtpClient()
     {
         if(_smtpClient == null)
             return;
         try
         {
             await _smtpClient.DisconnectAsync(quit: true);
+            _smtpClient.Dispose();
         }
-        catch { }
+        finally
+        {
+            _smtpClient = null;
+        }
     }
 }
