@@ -197,7 +197,7 @@ public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
     }
 
     [Fact]
-    public async Task EmailConfirmationTriggersEmailValidation()
+    public async Task UserRegistrationTriggersEmailValidation()
     {
         // Arrange
         EmailServiceMock.Invocations.Clear();

@@ -15,23 +15,26 @@ namespace IntegrationTests.EmailTests;
 public sealed class EmailSendingBaseTests : BaseTestFixture
 {
     internal ITestHarness TestHarness = null!;
+
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
+        // TestHarness should be used only once per test class
+        // https://masstransit.io/documentation/concepts/testing#test-harness-concepts
         TestHarness = AppFactory.Services.GetTestHarness();
     }
 
     protected override void OnConfiguringTestServer(BaseTestFixtureOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.SetupMessaging();
+        optionsBuilder.EnableMessageConsumers();
     }
 }
 
-public sealed class EmailSendingTests : BaseTest, IClassFixture<EmailSendingBaseTests>, IAsyncLifetime
+public sealed class EmailSendingTest : BaseTest, IClassFixture<EmailSendingBaseTests>, IAsyncLifetime
 {
     private readonly EmailSendingBaseTests _fixture;
 
-    public EmailSendingTests(EmailSendingBaseTests fixture) : base(fixture)
+    public EmailSendingTest(EmailSendingBaseTests fixture) : base(fixture)
     {
         _fixture = fixture;
     }
@@ -81,10 +84,7 @@ public sealed class EmailSendingTests : BaseTest, IClassFixture<EmailSendingBase
         EmailServiceMock
             .Verify(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
                 It.IsAny<MailRecipient[]>(), It.IsAny<CancellationToken>()), Times.Once);
-        (EmailServiceMock.Invocations.Single().Arguments[3] as MailRecipient[])?[0]
+        (EmailServiceMock.Invocations.Single().Arguments[2] as MailRecipient[])![0]
             .Should().BeEquivalentTo(mailRecipient);
     }
-
-    // test para criar e enviar email para confirmar email
-    // test para criar e enviar email de reativação
 }

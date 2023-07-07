@@ -10,7 +10,7 @@ public sealed class BaseTestFixtureOptions
         InitialDate = null;
         _servicesToReplace = new Dictionary<Type, object>();
         DatabaseType = DatabaseType.SqliteInMemory;
-        SetupMessaging = false;
+        EnableMessageConsumers = false;
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public sealed class BaseTestFixtureOptions
     /// <summary>
     /// Add the required services to test Message Handlers.
     /// </summary>
-    public bool SetupMessaging { get; set; }
+    public bool EnableMessageConsumers { get; set; }
 }
 
 public sealed class BaseTestFixtureOptionsBuilder
@@ -67,9 +67,9 @@ public sealed class BaseTestFixtureOptionsBuilder
         return this;
     }
 
-    public BaseTestFixtureOptionsBuilder SetupMessaging()
+    public BaseTestFixtureOptionsBuilder EnableMessageConsumers()
     {
-        _options.SetupMessaging = true;
+        _options.EnableMessageConsumers = true;
         return this;
     }
 

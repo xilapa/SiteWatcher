@@ -87,7 +87,7 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     [CommandValidationFilter]
     [HttpPut("send-reactivate-account-email")]
-    public async Task SendRectivateAccountEmail(SendReactivateAccountEmailCommand request) =>
+    public async Task SendReactivateAccountEmail(SendReactivateAccountEmailCommand request) =>
         await _mediator.Send(request);
 
     [AllowAnonymous]

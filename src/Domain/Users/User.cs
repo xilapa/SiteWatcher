@@ -84,8 +84,9 @@ public class User : BaseModel<UserId>
         return EmailConfirmed;
     }
 
-    public void GenerateUserActivationToken(DateTime currentDate)
+    public void GenerateReactivationToken(DateTime currentDate)
     {
+        if(Active) return;
         SecurityStamp = GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
         AddDomainEvent(new UserReactivationTokenGeneratedMessage(this, currentDate));

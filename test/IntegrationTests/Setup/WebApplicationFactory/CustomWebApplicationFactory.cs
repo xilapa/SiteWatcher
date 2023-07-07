@@ -43,7 +43,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public readonly Mock<IHttpClientFactory> HttpClientFactoryMock;
     public readonly IAuthService AuthServiceForTokens;
     private readonly IGoogleSettings _testGoogleSettings;
-    private bool _setupMessaging;
+    private bool _enableMessageConsumers;
 
     public DateTime CurrentTime { get; set; }
     public IAppSettings TestSettings { get; }
@@ -76,7 +76,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         CurrentTime = options.InitialDate ?? DateTime.UtcNow;
         _servicesToReplace = options.ReplacementServices;
-        _setupMessaging = options.SetupMessaging;
+        _enableMessageConsumers = options.EnableMessageConsumers;
 
         _databaseType = options.DatabaseType;
         _connectionString = connectionString;
@@ -172,10 +172,10 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton<IEmailSettings>(new Mock<IEmailSettings>().Object);
 
         // Messaging
-        if (_setupMessaging) services.AddMessageHandlers();
+        if (_enableMessageConsumers) services.AddMessageHandlers();
         services.AddMassTransitTestHarness(c =>
         {
-            if (_setupMessaging) c.AddConsumers(typeof(EmailCreatedMessageDispatcher).Assembly);
+            if (_enableMessageConsumers) c.AddConsumers(typeof(EmailCreatedMessageDispatcher).Assembly);
         });
     }
 
