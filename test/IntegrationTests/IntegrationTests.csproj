@@ -44,6 +44,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\WebAPI\WebAPI.csproj" />
+      <ProjectReference Include="..\..\src\Worker\Worker.csproj" />
     </ItemGroup>
 
     <ItemGroup>
