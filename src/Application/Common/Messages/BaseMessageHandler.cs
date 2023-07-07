@@ -30,10 +30,8 @@ public abstract class BaseMessageHandler<T> : IMessageHandler<T> where T : BaseM
             return;
         }
 
-        await using var transaction = await Context.BeginTransactionAsync(ct);
         Context.MarkMessageAsConsumed(message.Id, _consumerName);
         await Consume(message, ct);
-        await Context.CommitTransactionAsync(transaction, ct);
 
         _logger.LogInformation("{Date} Message with Id: {Message} has been processed by {Consumer}",
             Session.Now, message.Id, _consumerName);
