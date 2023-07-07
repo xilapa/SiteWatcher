@@ -41,23 +41,23 @@ public sealed class ExecuteAlertsCommandHandler
     {
         if (cmmd.Frequencies.Count == 0)
         {
-            _logger.LogInformation("{Date} - Execute Alerts: No Frequencies to execute", DateTime.UtcNow);
+            _logger.LogInformation("{Date} - Execute Alerts: No Frequencies to execute", _session.Now);
             return;
         }
 
         try
         {
-            _logger.LogInformation("{Date} - Execute Alerts Started: {Frequencies}", DateTime.UtcNow,
+            _logger.LogInformation("{Date} - Execute Alerts Started: {Frequencies}", _session.Now,
                 cmmd.Frequencies);
             await ExecuteAlertsLoop(cmmd.Frequencies, ct);
             await _cache.DeleteKeysWith(CacheKeys.AlertsKeyPrefix);
-            _logger.LogInformation("{Date} - Execute Alerts Finished: {Frequencies}", DateTime.UtcNow,
+            _logger.LogInformation("{Date} - Execute Alerts Finished: {Frequencies}", _session.Now,
                 cmmd.Frequencies);
         }
         catch(Exception e)
         {
             _logger.LogError(e, "{Date} - Execute Alerts Can't Finish: {Frequencies}, Exception: {msg}",
-                DateTime.UtcNow, cmmd.Frequencies, e.Message);
+                _session.Now, cmmd.Frequencies, e.Message);
         }
     }
 
@@ -72,6 +72,7 @@ public sealed class ExecuteAlertsCommandHandler
 
             if (usersWithAlerts.Length == 0)
             {
+                _logger.LogInformation("{Date} - Execute Alerts: No alerts to execute", _session.Now);
                 loop = false;
                 continue;
             }
@@ -89,7 +90,7 @@ public sealed class ExecuteAlertsCommandHandler
                 catch (Exception e)
                 {
                     _logger.LogError(e, "{Date} - Execute Alerts Error Saving Changes - User: {UserId}",
-                        DateTime.UtcNow, user.Id);
+                        _session.Now, user.Id);
                 }
             }
         }
@@ -100,7 +101,7 @@ public sealed class ExecuteAlertsCommandHandler
         foreach (var error in errors)
         {
             _logger.LogError(error.Exception, "{Date} - Execute Alerts Error - AlertId: {AlertId} - {Msg}",
-                DateTime.UtcNow, error.AlertId, error.Exception.Message);
+                _session.Now, error.AlertId, error.Exception.Message);
         }
     }
 }

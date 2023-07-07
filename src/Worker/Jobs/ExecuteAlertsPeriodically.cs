@@ -15,7 +15,7 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
     public ExecuteAlertsPeriodically(IServiceScopeFactory scopeProvider, IAppSettings settings)
     {
         _scopeFactory = scopeProvider;
-        _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromHours(1));
+        _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(10));
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
