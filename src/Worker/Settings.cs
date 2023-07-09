@@ -18,6 +18,8 @@ public class WorkerSettings
     public string DbConnectionString { get; set; } = null!;
 
     public string RedisConnectionString { get; set; } = null!;
+
+    public string FrontEndUrl { get; set; } = null!;
 }
 
 public class WorkerAppSettings : IAppSettings

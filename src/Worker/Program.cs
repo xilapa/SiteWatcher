@@ -51,7 +51,8 @@ var host = new HostBuilder()
             IsDevelopment = hostContext.HostingEnvironment.IsDevelopment(),
             ConnectionString = workerSettings!.DbConnectionString,
             InMemoryStorageAndQueue = workerSettings.UseInMemoryStorageAndQueue,
-            RedisConnectionString = workerSettings.RedisConnectionString
+            RedisConnectionString = workerSettings.RedisConnectionString,
+            FrontEndUrl = workerSettings.FrontEndUrl
         };
 
         serviceCollection
