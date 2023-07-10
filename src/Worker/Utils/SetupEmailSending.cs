@@ -11,7 +11,7 @@ public static class SetupEmailSending
     {
         services
         .AddSingleton<IEmailSettings>(settings)
-        .AddSingleton<IEmailServiceSingleton>(new EmailServiceSingleton(settings));
+        .AddSingleton<IEmailServiceSingleton, EmailServiceSingleton>();
         return services;
     }
 }

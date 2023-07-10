@@ -1,9 +1,9 @@
-using System.Threading.Channels;
 using MimeKit;
 using SiteWatcher.Application.Interfaces;
 using MailKit.Net.Smtp;
 using MimeKit.Text;
 using SiteWatcher.Common.Services;
+using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Emails.DTOs;
 
 namespace SiteWatcher.Infra.EmailSending;
@@ -12,20 +12,15 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
 {
     private SmtpClient? _smtpClient;
     private readonly IEmailSettings _emailSettings;
-    private readonly Channel<bool> _rateLimiter;
+    private readonly ISession _session;
+    private DateTime? _lastEmailSentDate;
+    private readonly TimeSpan _emailDelay;
 
-    public EmailServiceSingleton(IEmailSettings emailSettings)
+    public EmailServiceSingleton(IEmailSettings emailSettings, ISession session)
     {
         _emailSettings = emailSettings;
-        _rateLimiter = Channel.CreateBounded<bool>(1);
-        Task.Run(async () =>
-        {
-            while (true)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(emailSettings.EmailDelaySeconds));
-                _ = await _rateLimiter.Reader.ReadAsync();
-            }
-        });
+        _session = session;
+        _emailDelay = TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds);
     }
 
     public async Task<string?> SendEmailAsync(string subject, string body, MailRecipient[] recipients, CancellationToken cancellationToken)
@@ -42,9 +37,14 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
 
         try
         {
+            var timeSinceLastEmail = _session.Now - _lastEmailSentDate;
+            if (_lastEmailSentDate.HasValue && timeSinceLastEmail < _emailDelay)
+                await  Task.Delay(_emailDelay - timeSinceLastEmail.Value, cancellationToken);
+
             var smtpClient = await GetSmtpClient(cancellationToken);
             await smtpClient.SendAsync(msg, cancellationToken);
-            await _rateLimiter.Writer.WriteAsync(true, cancellationToken);
+
+            _lastEmailSentDate = _session.Now;
             return null;
         }
         catch (Exception e)
