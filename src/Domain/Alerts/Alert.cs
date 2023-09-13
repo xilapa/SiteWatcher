@@ -35,7 +35,7 @@ public class Alert : BaseModel<AlertId>
 
     public UserId UserId { get; private set; }
     public User User { get; set; } = null!;
-    public string Name { get; private set; } = null!;
+    public string Name { get;  set; } = null!;
     public Frequencies Frequency { get; private set; }
     public DateTime? LastVerification { get; private set; }
     public Site Site { get; private set; } = null!;
