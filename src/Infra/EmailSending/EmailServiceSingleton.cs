@@ -51,7 +51,7 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
         {
             // If there is an error, try to disconnect,
             // set the smtp client to null and return the error
-            await DisconnectSmtpClient();
+            await DisconnectSmtpClient(cancellationToken);
 
             return string.IsNullOrEmpty(e.Message) ?
                 $"Error sending the email: {e.InnerException?.Message ?? "No inner exception message"}"
@@ -61,7 +61,7 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
 
     private async Task<SmtpClient> GetSmtpClient(CancellationToken cancellationToken)
     {
-        _smtpClient = await CheckCurrentSmtpClient();
+        _smtpClient = await CheckCurrentSmtpClient(cancellationToken);
 
         if (!_smtpClient.IsConnected)
             await _smtpClient.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.Port, _emailSettings.UseSsl, cancellationToken);
@@ -72,31 +72,42 @@ public sealed class EmailServiceSingleton : IEmailServiceSingleton
         return _smtpClient;
     }
 
-    private async Task<SmtpClient> CheckCurrentSmtpClient()
+    private async Task<SmtpClient> CheckCurrentSmtpClient(CancellationToken cancellationToken)
     {
         if (_smtpClient == null) return new SmtpClient();
 
         try
         {
             // Noop to check if the connection has timeout
-            await _smtpClient.NoOpAsync();
+            await _smtpClient.NoOpAsync(cancellationToken);
         }
         catch
         {
-            await DisconnectSmtpClient();
+            await DisconnectSmtpClient(cancellationToken);
             return new SmtpClient();
         }
 
         return _smtpClient;
     }
 
-    private async Task DisconnectSmtpClient()
+    private async Task DisconnectSmtpClient(CancellationToken cancellationToken)
     {
-        if(_smtpClient == null)
-            return;
+        if(_smtpClient == null) return;
         try
         {
-            await _smtpClient.DisconnectAsync(quit: true);
+            await _smtpClient.DisconnectAsync(quit: true, cancellationToken);
+        }
+        finally
+        {
+            DisposeSmtpClient();
+        }
+    }
+
+    private void DisposeSmtpClient()
+    {
+        if(_smtpClient == null) return;
+        try
+        {
             _smtpClient.Dispose();
         }
         finally
