@@ -1,8 +1,8 @@
 ﻿namespace SiteWatcher.Domain.Alerts.Enums;
 
-public enum Rules
+public enum RuleType
 {
-    AnyChanges = 1,
-    Term,
-    Regex
+    AnyChanges = 'A',
+    Term = 'T',
+    Regex = 'R'
 }

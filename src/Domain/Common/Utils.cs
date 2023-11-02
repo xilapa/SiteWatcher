@@ -1,8 +1,6 @@
 ﻿using System.Buffers.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using SiteWatcher.Domain.Alerts.Entities.Rules;
-using SiteWatcher.Domain.Alerts.Enums;
 
 namespace SiteWatcher.Domain.Common;
 
@@ -15,18 +13,6 @@ public static class Utils
     private const byte SlashByte = (byte)'/';
     private const byte DefaultByte = default!;
     private const char HyphenChar = '-';
-    private static readonly Dictionary<Type, Rules> RulesTypeDictionary = new()
-    {
-        {typeof(AnyChangesRule), Rules.AnyChanges},
-        {typeof(TermRule), Rules.Term},
-        {typeof(RegexRule), Rules.Regex}
-    };
-    private static readonly Dictionary<char, Rules> RulesDiscriminatorDictionary = new()
-    {
-        {'A', Rules.AnyChanges},
-        {'T', Rules.Term},
-        {'R', Rules.Regex}
-    };
 
     public static string GenerateSafeRandomBase64String()
     {
@@ -80,10 +66,4 @@ public static class Utils
 
         return token[firstDotIdx..(firstDotIdx + secondDotIdx)];
     }
-
-    public static Rules? GetRuleEnumByType(Rule rule) =>
-        RulesTypeDictionary[rule.GetType()];
-
-    public static Rules? GetRuleEnumByTableDiscriminator(char discriminator) =>
-        RulesDiscriminatorDictionary[discriminator];
 }

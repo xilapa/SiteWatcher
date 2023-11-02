@@ -1,4 +1,5 @@
-﻿using SiteWatcher.Domain.Common;
+﻿using SiteWatcher.Domain.Alerts.Enums;
+using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Domain.Alerts.Entities.Rules;
@@ -15,6 +16,8 @@ public abstract class Rule : BaseModel<RuleId>
     }
 
     public bool FirstWatchDone { get; protected set; }
+
+    public RuleType RuleType { get; protected set; }
 
     /// <summary>
     /// Returns true if has detected changes

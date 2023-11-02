@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SiteWatcher.Domain.Alerts.Entities.Rules;
+using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
@@ -28,10 +29,15 @@ public class RuleMapping : BaseModelMapping<Rule, RuleId>
             .HasColumnType("boolean")
             .IsRequired();
 
-        builder.HasDiscriminator<char>(nameof(Rule))
-            .HasValue<AnyChangesRule>('A')
-            .HasValue<TermRule>('T')
-            .HasValue<RegexRule>('R');
+        builder.Property(r => r.RuleType)
+            .HasColumnName("Rule")
+            .HasColumnType("char")
+            .HasConversion<RuleConverter>();
+
+        builder.HasDiscriminator<char>("Rule")
+            .HasValue<AnyChangesRule>((char)RuleType.AnyChanges)
+            .HasValue<TermRule>((char)RuleType.Term)
+            .HasValue<RegexRule>((char)RuleType.Regex);
 
         builder.Property(nameof(Rule))
             .HasColumnType("char")

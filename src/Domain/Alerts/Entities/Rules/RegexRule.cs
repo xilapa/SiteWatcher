@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using SiteWatcher.Domain.Alerts.DTOs;
+using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.Entities.Rules;
@@ -9,6 +10,7 @@ public class RegexRule : Rule
     protected RegexRule()
     {
         RegexPattern = string.Empty;
+        RuleType = RuleType.Regex;
         _matches = new Matches();
     }
 
@@ -16,6 +18,7 @@ public class RegexRule : Rule
     {
         RegexPattern = regexPattern;
         NotifyOnDisappearance = notifyOnDisappearance;
+        RuleType = RuleType.Regex;
         _matches = new Matches();
     }
 

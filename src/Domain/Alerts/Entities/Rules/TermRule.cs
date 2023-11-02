@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using SiteWatcher.Domain.Alerts.DTOs;
+using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.Entities.Rules;
@@ -10,12 +11,14 @@ public class TermRule : Rule
     protected TermRule() : base()
     {
         _occurrences = new List<TermOccurrence>();
+        RuleType = RuleType.Term;
     }
 
     public TermRule(string term, DateTime currentDate) : base(currentDate)
     {
         Term = term;
         _occurrences = new List<TermOccurrence>();
+        RuleType = RuleType.Term;
     }
 
     public void Update(UpdateAlertInput updateAlertInput)
