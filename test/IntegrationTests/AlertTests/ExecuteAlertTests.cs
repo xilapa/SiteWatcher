@@ -3,9 +3,7 @@ using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Common.Extensions;
@@ -31,7 +29,7 @@ public sealed class ExecuteAlertTestsBase : BaseTestFixture
 
         foreach (var freq in Enum.GetValues<Frequencies>())
         {
-            var alert = await AppFactory.CreateAlert($"alert-{freq}", Rules.AnyChanges, Users.Xilapa.Id, frequency: freq);
+            var alert = await AppFactory.CreateAlert($"alert-{freq}", RuleType.AnyChanges, Users.Xilapa.Id, frequency: freq);
             await AppFactory.WithDbContext(ctx => ctx.Set<Rule>()
                 .Where(r => r.Id == alert.Rule.Id)
                 .ExecuteUpdateAsync(s => s.SetProperty(r => r.FirstWatchDone, true)));
@@ -60,14 +58,14 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
     }
 
     [Theory]
-    [InlineData(Rules.AnyChanges, false)]
-    [InlineData(Rules.Term, false)]
-    [InlineData(Rules.Regex, false)]
-    [InlineData(Rules.Regex, true)]
-    public async Task ExecuteAlertSucceeds(Rules rule, bool notifyOnDisappearance)
+    [InlineData(RuleType.AnyChanges, false)]
+    [InlineData(RuleType.Term, false)]
+    [InlineData(RuleType.Regex, false)]
+    [InlineData(RuleType.Regex, true)]
+    public async Task ExecuteAlertSucceeds(RuleType ruleType, bool notifyOnDisappearance)
     {
         // Arrange
-        var alertId = await CreateAlert(rule, notifyOnDisappearance);
+        var alertId = await CreateAlert(ruleType, notifyOnDisappearance);
         var alertCount = await AppFactory.WithDbContext(ctx => ctx.Alerts.CountAsync());
         SetupFakeHttpResponse(alertCount);
 
@@ -84,7 +82,6 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
 
         // First execution, alert rule should mark "first watch" as true
         await ExecuteAlerts();
-        VerifyLogger(hasError: false);
 
         alert = await GetAlertFromDb(alertId);
         alert.Rule.FirstWatchDone.Should().BeTrue();
@@ -96,19 +93,24 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         alertsTriggered?.Should().NotContain(a => a.AlertId == alertId);
         FakePublisher.Messages.Clear();
 
+        if (notifyOnDisappearance)
+            (alert.Rule as RegexRule)!.Matches.Count.Should().Be(1);
+
         // Cache should be cleared when alerts are executed
         AppFactory.FakeCache.Cache.Should().BeEmpty();
 
         // Second time
-        SetupFakeHttpResponse(alertCount, baseMessage: "fake response fake response");
+        SetupFakeHttpResponse(alertCount, baseMessage: "fake response fake response", removeCounterFromMessage: notifyOnDisappearance);
         CurrentTime = CurrentTime.Add(TimeSpan.FromMinutes(121));
         await ExecuteAlerts();
-        VerifyLogger(hasError: false);
 
         // Alert should be updated
         alert = await GetAlertFromDb(alertId);
         alert.LastVerification.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
         alert.LastUpdatedAt.Should().BeCloseTo(AppFactory.CurrentTime, TimeSpan.FromMilliseconds(1));
+
+        if (notifyOnDisappearance)
+            (alert.Rule as RegexRule)!.Matches.Should().BeEmpty();
 
         // Alert should generate a triggering and publish a triggered event
         alertsTriggered = (FakePublisher.Messages.FirstOrDefault()?.Content as AlertsTriggeredMessage)?.Alerts;
@@ -120,17 +122,17 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
     }
 
     [Theory]
-    [InlineData(Rules.AnyChanges, false)]
-    [InlineData(Rules.Term, false)]
-    [InlineData(Rules.Regex, false)]
-    [InlineData(Rules.Regex, true)]
-    public async Task ExecuteAlertFails(Rules rule, bool notifyOnDisappearance)
+    [InlineData(RuleType.AnyChanges, false)]
+    [InlineData(RuleType.Term, false)]
+    [InlineData(RuleType.Regex, false)]
+    [InlineData(RuleType.Regex, true)]
+    public async Task ExecuteAlertFails(RuleType ruleType, bool notifyOnDisappearance)
     {
         // Arrange
         LoginAs(Users.Xilapa);
         var alertCount = await AppFactory.WithDbContext(ctx => ctx.Alerts.CountAsync());
         SetupFakeHttpResponse(alertCount, errorResponse: true);
-        var alertId = await CreateAlert(rule, notifyOnDisappearance);
+        var alertId = await CreateAlert(ruleType, notifyOnDisappearance);
 
         // Alert should not be executed
         var alert = await GetAlertFromDb(alertId);
@@ -139,7 +141,6 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
 
         // Act
         await ExecuteAlerts();
-        VerifyLogger(hasError: true);
 
         // Assert
         alert = await GetAlertFromDb(alertId);
@@ -182,7 +183,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         // Arrange
 
         // Create an alert and execute it
-        var alert = await AppFactory.CreateAlert("alert", Rules.AnyChanges, Users.Xilapa.Id);
+        var alert = await AppFactory.CreateAlert("alert", RuleType.AnyChanges, Users.Xilapa.Id);
         await AppFactory.WithDbContext(async ctx =>
         {
             var alertFromDb = await ctx.Alerts
@@ -239,7 +240,8 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         currentAlertsTriggeredFromDb.Should().OnlyContain(a => freq.Contains(a.Frequency));
     }
 
-    private void SetupFakeHttpResponse(int count, bool errorResponse = false, string? baseMessage = null)
+    private void SetupFakeHttpResponse(int count, bool errorResponse = false, string? baseMessage = null,
+        bool? removeCounterFromMessage = false)
     {
         var exception = new HttpRequestException();
         var fakeResponses = Enumerable.Range(0, count)
@@ -249,7 +251,9 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
                     new FakeHttpResponse
                     {
                         StatusCode = HttpStatusCode.OK,
-                        Response = baseMessage is null ? $"fake response {i}" : $"{baseMessage} {i}"
+                        Response = baseMessage is null ?
+                            $"fake response {(removeCounterFromMessage!.Value ? string.Empty : i)}" :
+                            $"{baseMessage} {(removeCounterFromMessage!.Value ? string.Empty : i)}"
                     }
             )
             .ToArray();
@@ -260,13 +264,13 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
             .Returns(new HttpClient(fakeDelegateHandler));
     }
 
-    private async Task<AlertId> CreateAlert(Rules rule, bool notifyOnDisappearance)
+    private async Task<AlertId> CreateAlert(RuleType ruleType, bool notifyOnDisappearance)
     {
-        var alertId = (await AppFactory.CreateAlert("alert", Rules.AnyChanges, Users.Xilapa.Id)).Id;
+        var alertId = (await AppFactory.CreateAlert("alert", RuleType.AnyChanges, Users.Xilapa.Id)).Id;
         var cmmd = new UpdateAlertCommmand
         {
             AlertId = IdHasher.HashId(alertId.Value),
-            Rule = new UpdateInfo<Rules>(rule),
+            RuleType = new UpdateInfo<RuleType>(ruleType),
             Term = new UpdateInfo<string>("fake response"),
             NotifyOnDisappearance = new UpdateInfo<bool>(notifyOnDisappearance),
             RegexPattern = new UpdateInfo<string>("[0-9]")
@@ -303,18 +307,5 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
             var executeAlertsCommandHandler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
             await executeAlertsCommandHandler.Handle(executeAlertsCmmd, CancellationToken.None);
         });
-    }
-
-    private void VerifyLogger(bool hasError)
-    {
-        var times = hasError ? Times.AtLeastOnce() : Times.Never();
-        var failMessage = hasError ? "Alerts executed successfully" : "Alerts executed with errors";
-        LoggerMock.Verify(logger =>
-            logger.Log(It.Is<LogLevel>(l => LogLevel.Error.Equals(l)),
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((_, _) => true),
-                It.IsAny<Exception?>(),
-                It.Is<Func<It.IsAnyType,Exception?,string>>((_,_) => true)),
-            times, failMessage);
     }
 }

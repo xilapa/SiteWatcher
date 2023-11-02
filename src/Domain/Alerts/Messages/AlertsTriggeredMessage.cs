@@ -4,7 +4,6 @@ using SiteWatcher.Domain.Common.Messages;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
-using static SiteWatcher.Domain.Common.Utils;
 
 namespace SiteWatcher.Domain.Alerts.Messages;
 
@@ -40,7 +39,7 @@ public class AlertTriggered
         SiteUri = alert.Site.Uri.ToString();
         SiteName = alert.Site.Name;
         Frequency = alert.Frequency;
-        Rule = GetRuleEnumByType(alert.Rule)!.Value;
+        RuleType = alert.Rule.RuleType;
         Status = status;
         TriggeringDate = triggeringDate;
     }
@@ -50,7 +49,7 @@ public class AlertTriggered
     public string SiteUri { get; set; }
     public string SiteName { get; set; }
     public Frequencies Frequency { get; set; }
-    public Rules Rule { get; set; }
+    public RuleType RuleType { get; set; }
     public TriggeringStatus Status { get; set; }
     public DateTime TriggeringDate { get; set; }
 }

@@ -17,13 +17,13 @@ public static class AlertFactory
 
     private static Rule CreateRule(CreateAlertInput inputModel, DateTime currentDate)
     {
-        return inputModel.Rule switch
+        return inputModel.RuleType switch
         {
-            Rules.AnyChanges => new AnyChangesRule(currentDate),
-            Rules.Term => new TermRule(inputModel.Term!, currentDate),
-            Rules.Regex => new RegexRule(inputModel.RegexPattern!,
+            RuleType.AnyChanges => new AnyChangesRule(currentDate),
+            RuleType.Term => new TermRule(inputModel.Term!, currentDate),
+            RuleType.Regex => new RegexRule(inputModel.RegexPattern!,
                 inputModel.NotifyOnDisappearance!.Value, currentDate),
-            _ => throw new ArgumentOutOfRangeException(nameof(inputModel.Rule))
+            _ => throw new ArgumentOutOfRangeException(nameof(inputModel.RuleType))
         };
     }
 
@@ -31,9 +31,9 @@ public static class AlertFactory
     {
         return updateInput.Rule!.NewValue! switch
         {
-            Rules.AnyChanges => new AnyChangesRule(currentDate),
-            Rules.Term => new TermRule(updateInput.Term!.NewValue!, currentDate),
-            Rules.Regex => new RegexRule(updateInput.RegexPattern!.NewValue!,
+            RuleType.AnyChanges => new AnyChangesRule(currentDate),
+            RuleType.Term => new TermRule(updateInput.Term!.NewValue!, currentDate),
+            RuleType.Regex => new RegexRule(updateInput.RegexPattern!.NewValue!,
                 updateInput.NotifyOnDisappearance!.NewValue, currentDate),
             _ => throw new ArgumentOutOfRangeException(nameof(updateInput.Rule))
         };

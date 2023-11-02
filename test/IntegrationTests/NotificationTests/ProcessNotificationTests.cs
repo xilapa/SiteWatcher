@@ -27,7 +27,7 @@ public sealed class ProcessNotificationTestBase : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        Alert = await AppFactory.CreateAlert("alert to notify", Rules.Regex, Users.Xilapa.Id);
+        Alert = await AppFactory.CreateAlert("alert to notify", RuleType.Regex, Users.Xilapa.Id);
         AlertTriggereds = new[]
         {
             new AlertTriggered(Alert, TriggeringStatus.Success, AppFactory.CurrentTime)
@@ -87,7 +87,7 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
         // Check the email created
         notification.Email.UserId.Should().Be(user.Id);
         notification.Email.Recipient.Should().Be($"{user.Name}:{user.Email}");
-        var rule = _fixture.AlertTriggereds[0].Rule;
+        var rule = _fixture.AlertTriggereds[0].RuleType;
         AssertEmailBody(notification.Email.Body, language, rule , expected, notExpected);
 
         // Check the message published
@@ -139,7 +139,7 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
                 .SingleAsync());
     }
 
-    private void AssertEmailBody(string body, Language lang, Rules rule, string expected,
+    private void AssertEmailBody(string body, Language lang, RuleType ruleType, string expected,
         string notExpected)
     {
         body.Should().NotContain(notExpected);
@@ -150,6 +150,6 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
         body.Should()
             .Contain(LocalizedMessages.FrequencyString(lang, _fixture.Alert.Frequency));
         body.Should()
-            .Contain(LocalizedMessages.RuleString(lang, rule));
+            .Contain(LocalizedMessages.RuleString(lang, ruleType));
     }
 }

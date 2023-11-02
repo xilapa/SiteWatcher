@@ -33,7 +33,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)),
                 ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.SiteName)),
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)),
-                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule))
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RuleType))
             }
         };
 
@@ -45,7 +45,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                Rule = Rules.AnyChanges
+                RuleType = RuleType.AnyChanges
             },
             HttpStatusCode.Created,
             new DetailedAlertView
@@ -56,7 +56,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                     Site = new SiteView("store site","https://store.site.io/"),
                     Rule = new DetailedRuleView
                     {
-                        Rule = Rules.AnyChanges
+                        Rule = RuleType.AnyChanges
                     }
                 },
             null! // errors
@@ -70,7 +70,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                Rule = Rules.Term,
+                RuleType = RuleType.Term,
                 Term = "lookup term"
             },
             HttpStatusCode.Created,
@@ -82,7 +82,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                     Site = new SiteView("store site", "https://store.site.io/"),
                     Rule = new DetailedRuleView
                     {
-                        Rule = Rules.Term,
+                        Rule = RuleType.Term,
                         Term = "lookup term"
                     }
                 },

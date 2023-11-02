@@ -14,7 +14,7 @@ public sealed class SimpleAlertViewDto
     public DateTime? LastVerification { get; set; }
     public int TriggeringsCount { get; set; }
     public string? SiteName { get; set; }
-    public char Rule { get; set; }
+    public char RuleType { get; set; }
 
     public SimpleAlertView ToSimpleAlertView(IIdHasher idHasher) =>
         new ()
@@ -26,6 +26,6 @@ public sealed class SimpleAlertViewDto
             LastVerification = LastVerification,
             TriggeringsCount = TriggeringsCount,
             SiteName = SiteName,
-            Rule = Utils.GetRuleEnumByTableDiscriminator(Rule)!.Value
+            RuleType = (RuleType)RuleType
         };
 }

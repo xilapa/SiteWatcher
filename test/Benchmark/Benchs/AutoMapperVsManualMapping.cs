@@ -4,7 +4,6 @@ using BenchmarkDotNet.Attributes;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Common;
 using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.Infra.IdHasher;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
@@ -30,7 +29,7 @@ public class AutoMapperVsManualMapping
                 LastVerification = DateTime.Now.AddDays(-index),
                 TriggeringsCount = 12,
                 SiteName = $"Site name {index}",
-                Rule = index % 2 == 0 ? 'A' : 'T'
+                RuleType = index % 2 == 0 ? 'A' : 'T'
             });
         }
 
@@ -48,8 +47,6 @@ public class AutoMapperVsManualMapping
         {
             cfg.CreateMap(typeof(PaginatedList<>), typeof(PaginatedList<>));
             cfg.CreateMap<SimpleAlertViewDto, SimpleAlertView>()
-                .ForMember(opt => opt.Rule, opt =>
-                    opt.MapFrom(src => Utils.GetRuleEnumByTableDiscriminator(src.Rule)))
                 .AfterMap<HashIdMapping>();
         });
 

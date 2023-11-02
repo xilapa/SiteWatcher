@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.Entities.Rules;
@@ -9,11 +10,13 @@ public class AnyChangesRule : Rule
     protected AnyChangesRule() : base()
     {
         HtmlHash = string.Empty;
+        RuleType = RuleType.AnyChanges;
     }
 
     public AnyChangesRule(DateTime currentDate) : base(currentDate)
     {
         HtmlHash = string.Empty;
+        RuleType = RuleType.AnyChanges;
     }
 
     public string HtmlHash { get; private set; }

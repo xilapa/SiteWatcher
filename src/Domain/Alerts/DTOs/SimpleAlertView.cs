@@ -1,6 +1,5 @@
 ﻿using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.DTOs;
 
@@ -18,7 +17,7 @@ public class SimpleAlertView
         LastVerification = alert.LastVerification;
         TriggeringsCount = alert.Triggerings.Count;
         SiteName = alert.Site.Name;
-        Rule = Utils.GetRuleEnumByType(alert.Rule)!.Value;
+        RuleType = alert.Rule.RuleType;
     }
 
     public string? Id { get; set; }
@@ -28,7 +27,7 @@ public class SimpleAlertView
     public DateTime? LastVerification { get; set; }
     public int TriggeringsCount { get; set; }
     public string? SiteName { get; set; }
-    public Rules Rule { get; set; }
+    public RuleType RuleType { get; set; }
 
     public static SimpleAlertView FromAlert(Alert alert, IIdHasher idHasher) =>
         new(alert, idHasher);

@@ -11,7 +11,6 @@ using SiteWatcher.Domain.Common.Extensions;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
-using static SiteWatcher.Domain.Common.Utils;
 
 namespace SiteWatcher.Domain.Alerts;
 
@@ -106,10 +105,8 @@ public class Alert : BaseModel<AlertId>
 
     private void UpdateRule(UpdateAlertInput updateInput, DateTime updateDate)
     {
-        var currentRule = GetRuleEnumByType(Rule);
-
         // If the current rule is really new, then recreate it
-        if (updateInput.Rule is not null && !currentRule!.Value.Equals(updateInput.Rule.NewValue))
+        if (updateInput.Rule is not null && !Rule.RuleType.Equals(updateInput.Rule.NewValue))
         {
             Rule = AlertFactory.CreateRule(updateInput, updateDate);
             LastVerification = null;
@@ -118,7 +115,7 @@ public class Alert : BaseModel<AlertId>
 
         // Update term rule
         // TODO: move this null check to the TermWatch update method
-        if (currentRule.Equals(Rules.Term) && updateInput.Term is not null)
+        if (Rule.RuleType.Equals(RuleType.Term) && updateInput.Term is not null)
         {
             (Rule as TermRule)!.Update(updateInput);
             LastVerification = null;
@@ -126,7 +123,7 @@ public class Alert : BaseModel<AlertId>
         }
 
         // Update regex rule
-        if (currentRule.Equals(Rules.Regex))
+        if (Rule.RuleType.Equals(RuleType.Regex))
         {
             (Rule as RegexRule)!.Update(updateInput);
             LastVerification = null;

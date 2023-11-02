@@ -200,29 +200,29 @@ public static class LocalizedMessages
         };
     }
 
-    public static string RuleString(Language language, Rules rule)
+    public static string RuleString(Language language, RuleType ruleType)
     {
         return language switch
         {
-            Language.English => rule switch
+            Language.English => ruleType switch
             {
-                Rules.AnyChanges => "Monitoring rule: Any Changes",
-                Rules.Term => "Monitoring rule: Term",
-                Rules.Regex => "Monitoring rule: Regex Pattern",
+                RuleType.AnyChanges => "Monitoring rule: Any Changes",
+                RuleType.Term => "Monitoring rule: Term",
+                RuleType.Regex => "Monitoring rule: Regex Pattern",
                 _ => throw new NotImplementedException()
             },
-            Language.Spanish => rule switch
+            Language.Spanish => ruleType switch
             {
-                Rules.AnyChanges => "Regla de monitoreo: Algún cambio",
-                Rules.Term => "Regla de monitoreo: Algún cambio",
-                Rules.Regex => "Regla de monitoreo: Patrón de regex",
+                RuleType.AnyChanges => "Regla de monitoreo: Algún cambio",
+                RuleType.Term => "Regla de monitoreo: Algún cambio",
+                RuleType.Regex => "Regla de monitoreo: Patrón de regex",
                 _ => throw new NotImplementedException()
             },
-            Language.BrazilianPortuguese => rule switch
+            Language.BrazilianPortuguese => ruleType switch
             {
-                Rules.AnyChanges => "Regra de monitoramento: Quaisquer mudanças",
-                Rules.Term => "Regra de monitoramento: Termo",
-                Rules.Regex => "Regra de monitoramento: Padrão de regex",
+                RuleType.AnyChanges => "Regra de monitoramento: Quaisquer mudanças",
+                RuleType.Term => "Regra de monitoramento: Termo",
+                RuleType.Regex => "Regra de monitoramento: Padrão de regex",
                 _ => throw new NotImplementedException()
             },
             _ => throw new NotImplementedException()

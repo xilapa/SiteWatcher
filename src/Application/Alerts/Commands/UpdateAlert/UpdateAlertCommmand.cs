@@ -21,7 +21,7 @@ public class UpdateAlertCommmand
     public UpdateInfo<Frequencies>? Frequency { get; set; }
     public UpdateInfo<string>? SiteName { get; set; }
     public UpdateInfo<string>? SiteUri { get; set; }
-    public UpdateInfo<Rules>? Rule { get; set; }
+    public UpdateInfo<RuleType>? RuleType { get; set; }
 
     // Term watch
     public UpdateInfo<string>? Term { get; set; }
@@ -39,7 +39,7 @@ public class UpdateAlertCommmand
             Frequency,
             SiteName,
             SiteUri,
-            Rule,
+            RuleType,
             Term,
             NotifyOnDisappearance,
             RegexPattern

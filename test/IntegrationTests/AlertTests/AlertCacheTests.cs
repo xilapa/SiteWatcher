@@ -23,9 +23,9 @@ public sealed class AlertCacheTestsBase : BaseTestFixture
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
-        var alertToUpdate = await AppFactory.CreateAlert("alert", Rules.Term, Users.Xilapa.Id);
+        var alertToUpdate = await AppFactory.CreateAlert("alert", RuleType.Term, Users.Xilapa.Id);
         AlertToUpdateId = alertToUpdate.Id;
-        var alertToDelete = await AppFactory.CreateAlert("alert", Rules.Term, Users.Xilapa.Id);
+        var alertToDelete = await AppFactory.CreateAlert("alert", RuleType.Term, Users.Xilapa.Id);
         AlertToDeleteId = alertToDelete.Id;
     }
 
@@ -99,7 +99,7 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         {
             Frequency = Frequencies.EightHours,
             Name = "name",
-            Rule = Rules.AnyChanges,
+            RuleType = RuleType.AnyChanges,
             SiteName = "site",
             SiteUri = "http://site.test.io"
         };

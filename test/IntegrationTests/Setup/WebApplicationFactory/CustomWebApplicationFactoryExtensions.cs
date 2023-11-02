@@ -41,20 +41,20 @@ public static class CustomWebApplicationFactoryExtensions
     }
 
     public static async Task<Alert> CreateAlert(this CustomWebApplicationFactory<Program> appFactory, string name,
-        Rules rule, UserId userId, DateTime? currentDate = null, Frequencies? frequency = null)
+        RuleType ruleType, UserId userId, DateTime? currentDate = null, Frequencies? frequency = null)
     {
-        return await CreateAlert<Alert>(appFactory, name, rule, userId, currentDate, frequency: frequency);
+        return await CreateAlert<Alert>(appFactory, name, ruleType, userId, currentDate, frequency: frequency);
     }
 
     public static async Task<T> CreateAlert<T>(this CustomWebApplicationFactory<Program> appFactory, string name,
-        Rules rule, UserId userId, DateTime? currentDate = null, string? siteName = null,
+        RuleType ruleType, UserId userId, DateTime? currentDate = null, string? siteName = null,
         string? siteUri = null, Frequencies? frequency = null) where T : class
     {
         currentDate ??= appFactory.CurrentTime;
         var createAlertInput = new CreateAlertInput
         {
             Name = name,
-            Rule = rule,
+            RuleType = ruleType,
             Frequency = frequency ?? Frequencies.TwoHours,
             Term = "test term",
             SiteName = siteName ?? "test site",

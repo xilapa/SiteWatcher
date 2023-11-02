@@ -16,7 +16,7 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
                             cmmd.Frequency is null &&
                             cmmd.SiteName is null &&
                             cmmd.SiteUri is null &&
-                            cmmd.Rule is null &&
+                            cmmd.RuleType is null &&
                             cmmd.Term is null &&
                             cmmd.RegexPattern is null &&
                             cmmd.NotifyOnDisappearance is null))
@@ -61,22 +61,22 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.SiteUri)))
             .When(cmmd => cmmd.SiteUri is not null);
 
-        RuleFor(cmmd => cmmd.Rule!.NewValue)
+        RuleFor(cmmd => cmmd.RuleType!.NewValue)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Rule)))
-            .NotEqual(default(Rules))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Rule)))
-            .Must(wm => Enum.IsDefined(typeof(Rules), (int) wm))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule)))
-            .When(cmmd => cmmd.Rule is not null);
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.RuleType)))
+            .NotEqual(default(RuleType))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.RuleType)))
+            .Must(wm => Enum.IsDefined(typeof(RuleType), (int) wm))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RuleType)))
+            .When(cmmd => cmmd.RuleType is not null);
 
         // Term rule validation
         RuleFor(cmmd => cmmd.Term)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.Term)))
-            .When(cmmd => cmmd.Rule is not null
-                        && Rules.Term.Equals(cmmd.Rule.NewValue));
+            .When(cmmd => cmmd.RuleType is not null
+                        && RuleType.Term.Equals(cmmd.RuleType.NewValue));
 
         RuleFor(cmmd => cmmd.Term!.NewValue)
             .Cascade(CascadeMode.Stop)
@@ -86,8 +86,8 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
             .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateAlertCommmand.Term)))
             .MaximumLength(64)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(UpdateAlertCommmand.Term)))
-            .When(cmmd => cmmd.Rule is not null
-                          && Rules.Term.Equals(cmmd.Rule.NewValue)
+            .When(cmmd => cmmd.RuleType is not null
+                          && RuleType.Term.Equals(cmmd.RuleType.NewValue)
                           && cmmd.Term is not null);
 
         // Regex rule validation
@@ -95,8 +95,8 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
         RuleFor(cmmd => cmmd.RegexPattern)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.RegexPattern)))
-            .When(cmmd => cmmd.Rule is not null
-                            && Rules.Regex.Equals(cmmd.Rule.NewValue));
+            .When(cmmd => cmmd.RuleType is not null
+                            && RuleType.Regex.Equals(cmmd.RuleType.NewValue));
 
         RuleFor(cmmd => cmmd.RegexPattern!.NewValue)
             .Cascade(CascadeMode.Stop)
@@ -111,13 +111,13 @@ public class UpdateAlertCommmandValidator : AbstractValidator<UpdateAlertCommman
         RuleFor(cmmd => cmmd.NotifyOnDisappearance)
             .Must(updateNotifyOnDis => updateNotifyOnDis != null)
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
-            .When(cmmd => cmmd.Rule is not null
-                            && Rules.Regex.Equals(cmmd.Rule.NewValue));
+            .When(cmmd => cmmd.RuleType is not null
+                            && RuleType.Regex.Equals(cmmd.RuleType.NewValue));
 
         RuleFor(cmmd => cmmd.NotifyOnDisappearance!.NewValue)
             .Must(updateNotifyOnDis => updateNotifyOnDis != null)
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.NotifyOnDisappearance)))
-            .When(cmmd => cmmd.Rule is not null
-                            && Rules.Regex.Equals(cmmd.Rule.NewValue));
+            .When(cmmd => cmmd.RuleType is not null
+                            && RuleType.Regex.Equals(cmmd.RuleType.NewValue));
     }
 }

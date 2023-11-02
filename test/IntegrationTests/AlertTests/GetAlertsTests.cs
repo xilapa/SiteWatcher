@@ -37,7 +37,7 @@ public sealed class GetAlertsTestsBase : BaseTestFixture
         AppFactory.CurrentTime = StartingTime;
         for (var i = 0; i < 60; i++)
         {
-            var rule = i > 9 ? Rules.Term : Rules.AnyChanges;
+            var rule = i > 9 ? RuleType.Term : RuleType.AnyChanges;
             AppFactory.CurrentTime = AppFactory.CurrentTime.AddMinutes(5);
 
             // xilapa'll have odd alert ids

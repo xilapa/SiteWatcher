@@ -45,7 +45,7 @@ public sealed class AlertData
         SiteUri = alertTriggered.SiteUri;
         SiteName = alertTriggered.SiteName;
         Frequency = LocalizedMessages.FrequencyString(language, alertTriggered.Frequency);
-        Rule = LocalizedMessages.RuleString(language, alertTriggered.Rule);
+        Rule = LocalizedMessages.RuleString(language, alertTriggered.RuleType);
     }
 
     public string Name { get; }
