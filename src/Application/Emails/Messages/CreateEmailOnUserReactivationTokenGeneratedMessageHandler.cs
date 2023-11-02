@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MassTransit;
+using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
@@ -22,13 +23,13 @@ public class
         _authService = authService;
     }
 
-    protected override async Task Consume(UserReactivationTokenGeneratedMessage message, CancellationToken ct)
+    protected override async Task Handle(ConsumeContext<UserReactivationTokenGeneratedMessage> context)
     {
-        var link = $"{_appSettings.FrontEndUrl}/#/security/reactivate-account?t={message.ConfirmationToken}";
-        var email = EmailFactory.AccountActivation(message, link, Session.Now);
+        var link = $"{_appSettings.FrontEndUrl}/#/security/reactivate-account?t={context.Message.ConfirmationToken}";
+        var email = EmailFactory.AccountActivation(context.Message, link, Session.Now);
         Context.Emails.Add(email);
 
-        await _authService.SetAccountActivationTokenExpiration(message.ConfirmationToken, message.UserId);
-        await Context.SaveChangesAsync(ct);
+        await _authService.SetAccountActivationTokenExpiration(context.Message.ConfirmationToken, context.Message.UserId);
+        await Context.SaveChangesAsync(CancellationToken.None);
     }
 }

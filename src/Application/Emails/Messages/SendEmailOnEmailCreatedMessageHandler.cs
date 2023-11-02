@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MassTransit;
+using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -17,10 +18,16 @@ public class SendEmailOnEmailCreatedMessageHandler : BaseMessageHandler<EmailCre
         _emailService = emailService;
     }
 
-    protected override async Task Consume(EmailCreatedMessage message, CancellationToken ct)
+    protected override async Task Handle(ConsumeContext<EmailCreatedMessage> context)
     {
-        var error = await _emailService.SendEmailAsync(message.Subject, message.Body!, message.Recipients, ct);
+        var error = await _emailService
+            .SendEmailAsync(context.Message.Subject,
+                context.Message.Body!,
+                context.Message.Recipients,
+                context.CancellationToken);
+
         if (error != null) throw new Exception(error);
-        await Context.SaveChangesAsync(ct);
+
+        await Context.SaveChangesAsync(CancellationToken.None);
     }
 }

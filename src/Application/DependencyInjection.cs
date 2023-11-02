@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
-using SiteWatcher.Application.Common.Messages;
 
 namespace SiteWatcher.Application;
 
@@ -21,7 +21,7 @@ public static class DependencyInjection
         services.Scan(scan =>
         {
             scan.FromAssemblyOf<ThisAssembly>()
-                .AddClasses(c => c.AssignableTo(typeof(IMessageHandler<>)))
+                .AddClasses(c => c.AssignableTo(typeof(IConsumer<>)))
                 .UsingRegistrationStrategy(RegistrationStrategy.Skip)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime();

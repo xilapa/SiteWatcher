@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MassTransit;
+using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts.Messages;
@@ -17,14 +18,14 @@ public class ProcessNotificationOnAlertTriggeredMessageHandler : BaseMessageHand
         _settings = settings;
     }
 
-    protected override async Task Consume(AlertsTriggeredMessage message, CancellationToken ct)
+    protected override async Task Handle(ConsumeContext<AlertsTriggeredMessage> context)
     {
-        var notification = new Notification(message, Session.Now, _settings.FrontEndAuthUrl);
+        var notification = new Notification(context.Message, Session.Now, _settings.FrontEndAuthUrl);
 
         await notification.ProcessAndDispatch(Session.Now);
 
         Context.Notifications.Add(notification);
 
-        await Context.SaveChangesAsync(ct);
+        await Context.SaveChangesAsync(CancellationToken.None);
     }
 }

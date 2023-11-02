@@ -13,6 +13,7 @@ using ReflectionMagic;
 using SiteWatcher.Application;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Common.Queries;
+using SiteWatcher.Application.Emails.Messages;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
@@ -23,7 +24,6 @@ using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Utils;
-using SiteWatcher.Worker.MessageDispatchers;
 using StackExchange.Redis;
 using HttpClient = SiteWatcher.Infra.Http.HttpClient;
 using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
@@ -183,7 +183,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddMassTransitTestHarness(c =>
         {
             if (!_enableMasstransitTestHarness) return;
-            c.AddConsumers(typeof(EmailCreatedMessageDispatcher).Assembly);
+            c.AddConsumers(typeof(SendEmailOnEmailCreatedMessageHandler).Assembly);
         });
     }
 

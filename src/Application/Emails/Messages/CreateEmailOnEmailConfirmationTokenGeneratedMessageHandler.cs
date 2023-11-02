@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MassTransit;
+using Microsoft.Extensions.Logging;
 using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
@@ -21,13 +22,13 @@ public class CreateEmailOnEmailConfirmationTokenGeneratedMessageHandler : BaseMe
         _authService = authService;
     }
 
-    protected override async Task Consume(EmailConfirmationTokenGeneratedMessage message, CancellationToken ct)
+    protected override async Task Handle(ConsumeContext<EmailConfirmationTokenGeneratedMessage> context)
     {
-        var link = $"{_appSettings.FrontEndUrl}/#/security/confirm-email?t={message.ConfirmationToken}";
-        var email = EmailFactory.EmailConfirmation(message, link, Session.Now);
+        var link = $"{_appSettings.FrontEndUrl}/#/security/confirm-email?t={context.Message.ConfirmationToken}";
+        var email = EmailFactory.EmailConfirmation(context.Message, link, Session.Now);
         Context.Emails.Add(email);
 
-        await _authService.SetEmailConfirmationTokenExpiration(message.ConfirmationToken, message.UserId);
-        await Context.SaveChangesAsync(ct);
+        await _authService.SetEmailConfirmationTokenExpiration(context.Message.ConfirmationToken, context.Message.UserId);
+        await Context.SaveChangesAsync(CancellationToken.None);
     }
 }

@@ -4,14 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SiteWatcher.Application;
+using SiteWatcher.Application.Emails.Messages;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Application.Notifications.Messages;
 using SiteWatcher.Infra;
 using SiteWatcher.Worker;
-using SiteWatcher.Worker.Consumers;
 using SiteWatcher.Worker.Jobs;
-using SiteWatcher.Worker.MessageDispatchers;
 using SiteWatcher.Worker.Utils;
-using Worker.MessageDispatchers;
 
 var host = new HostBuilder()
     .ConfigureDefaults(args)
@@ -66,10 +65,10 @@ var host = new HostBuilder()
             .SetupDataProtection(appSettings)
             .SetupMassTransit(hostContext.Configuration, c =>
             {
-                c.AddConsumer<AlertsTriggeredMessageDispatcher>();
-                c.AddConsumer<EmailConfirmationTokenGeneratedMessageDispatcher>();
-                c.AddConsumer<UserReactivationTokenGeneratedMessageDispatcher>();
-                c.AddConsumer<EmailCreatedMessageDispatcher>()
+                c.AddConsumer<ProcessNotificationOnAlertTriggeredMessageHandler>();
+                c.AddConsumer<CreateEmailOnEmailConfirmationTokenGeneratedMessageHandler>();
+                c.AddConsumer<CreateEmailOnUserReactivationTokenGeneratedMessageHandler>();
+                c.AddConsumer<SendEmailOnEmailCreatedMessageHandler>()
                     .Endpoint(e => e.ConcurrentMessageLimit = 1);
             });
     })

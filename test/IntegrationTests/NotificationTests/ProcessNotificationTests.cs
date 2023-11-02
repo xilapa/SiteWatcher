@@ -1,7 +1,9 @@
 ﻿using FluentAssertions;
 using IntegrationTests.Setup;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using SiteWatcher.Application.Common.Messages;
 using SiteWatcher.Domain.Alerts;
 using SiteWatcher.Domain.Alerts.Entities.Triggerings;
@@ -120,8 +122,10 @@ public sealed class ProcessNotificationTests : BaseTest, IClassFixture<ProcessNo
     {
         await AppFactory.WithServiceProvider(async sp =>
         {
-            var handler = sp.GetRequiredService<IMessageHandler<AlertsTriggeredMessage>>();
-            await handler.Handle(message, CancellationToken.None);
+            var handler = sp.GetRequiredService<IConsumer<AlertsTriggeredMessage>>();
+            var contextMock = new Mock<ConsumeContext<AlertsTriggeredMessage>>();
+            contextMock.Setup(c => c.Message).Returns(message);
+            await handler.Consume(contextMock.Object);
         });
     }
 
