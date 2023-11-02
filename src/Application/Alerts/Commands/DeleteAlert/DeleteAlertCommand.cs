@@ -1,21 +1,23 @@
 ﻿using Mediator;
 using Microsoft.EntityFrameworkCore;
-using SiteWatcher.Application.Common.Commands;
+using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Results;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Authentication;
+using SiteWatcher.Domain.Common.Errors;
 using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.DeleteAlert;
 
-public class DeleteAlertCommand : ICommand<CommandResult>
+public class DeleteAlertCommand
 {
     public string? AlertId { get; set; }
 }
 
-public class DeleteAlertCommandHandler : ICommandHandler<DeleteAlertCommand, CommandResult>
+public class DeleteAlertCommandHandler : IApplicationHandler
 {
     private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
@@ -31,7 +33,7 @@ public class DeleteAlertCommandHandler : ICommandHandler<DeleteAlertCommand, Com
         _mediator = mediator;
     }
 
-    public async ValueTask<CommandResult> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
     {
         if(request.AlertId == null)
             return ReturnError();
@@ -49,9 +51,9 @@ public class DeleteAlertCommandHandler : ICommandHandler<DeleteAlertCommand, Com
         if (deleted != 0)
             await _mediator.Publish(new AlertsChangedEvent(_session.UserId!.Value), CancellationToken.None);
 
-        return deleted != 0 ? CommandResult.Empty() : ReturnError();
+        return deleted != 0 ? Result.Empty : ReturnError();
     }
 
-    private static CommandResult ReturnError() =>
-        CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
+    private static Error ReturnError() =>
+      Error.Validation(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
 }

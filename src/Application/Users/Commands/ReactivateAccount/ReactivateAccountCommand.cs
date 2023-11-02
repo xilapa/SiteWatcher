@@ -1,19 +1,20 @@
-﻿using Mediator;
-using Microsoft.EntityFrameworkCore;
-using SiteWatcher.Application.Common.Commands;
+﻿using Microsoft.EntityFrameworkCore;
+using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Common.Constants;
+using SiteWatcher.Application.Common.Results;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
+using SiteWatcher.Domain.Common.Errors;
 
 namespace SiteWatcher.Application.Users.Commands.ReactivateAccount;
 
-public class ReactivateAccountCommand : ICommand<CommandResult>
+public class ReactivateAccountCommand
 {
     public string? Token { get; set; }
 }
 
-public class ReactivateAccountCommandHandler : ICommandHandler<ReactivateAccountCommand, CommandResult>
+public class ReactivateAccountCommandHandler : IApplicationHandler
 {
     private readonly IAuthService _authService;
     private readonly ISiteWatcherContext _context;
@@ -26,7 +27,7 @@ public class ReactivateAccountCommandHandler : ICommandHandler<ReactivateAccount
         _session = session;
     }
 
-    public async ValueTask<CommandResult> Handle(ReactivateAccountCommand request, CancellationToken cancellationToken)
+    public async ValueTask<Result> Handle(ReactivateAccountCommand request, CancellationToken cancellationToken)
     {
         if(request.Token == null)
             return ReturnError();
@@ -44,9 +45,9 @@ public class ReactivateAccountCommandHandler : ICommandHandler<ReactivateAccount
             return ReturnError();
 
         await _context.SaveChangesAsync(CancellationToken.None);
-        return CommandResult.Empty();
+        return Result.Empty;
     }
 
-    private static CommandResult ReturnError() =>
-        CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
+    private static Error ReturnError() =>
+        Error.Validation(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 }

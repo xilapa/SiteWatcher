@@ -7,10 +7,7 @@ using SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 using SiteWatcher.Application.Alerts.Commands.SearchAlerts;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
-using SiteWatcher.Domain.Alerts.DTOs;
-using SiteWatcher.Domain.Common.DTOs;
 using SiteWatcher.WebAPI.Extensions;
-using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.WebAPI.Filters.Cache;
 
 namespace SiteWatcher.WebAPI.Controllers;
@@ -28,16 +25,20 @@ public class AlertController : ControllerBase
     }
 
     [HttpPost]
-    [CommandValidationFilter]
-    public async Task<IActionResult> CreateAlert(CreateAlertCommand request, CancellationToken ct) =>
-        Created(string.Empty, await _mediator.Send(request, ct));
+    public async Task<IActionResult> CreateAlert([FromServices] CreateAlertCommandHandler handlerHandler,
+        CreateAlertCommand request, CancellationToken ct)
+    {
+        var res = await handlerHandler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : Created(string.Empty, res.Value);
+    }
 
     [HttpGet]
     [CacheFilter]
-    public async Task<IActionResult> GetUserAlerts([FromQuery] GetUserAlertsQuery request, CancellationToken ct)
+    public async Task<IActionResult> GetUserAlerts([FromServices] GetUserAlertsQueryHandler handler,
+        [FromQuery] GetUserAlertsQuery request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(request, ct);
-        return commandResult.ToActionResult<PaginatedList<SimpleAlertView>>();
+        var res = await handler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : Ok(res.Value);
     }
 
     [HttpGet("{AlertId}/details")]
@@ -46,24 +47,27 @@ public class AlertController : ControllerBase
         Ok(await _mediator.Send(request, ct));
 
     [HttpDelete("{AlertId}")]
-    public async Task<IActionResult> DeleteAlert([FromRoute] DeleteAlertCommand request,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteAlert([FromServices] DeleteAlertCommandHandler handler,
+        [FromRoute] DeleteAlertCommand request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(request, cancellationToken);
-        return commandResult.ToActionResult();
+        var res = await handler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : NoContent();
     }
 
     [HttpPut]
-    [CommandValidationFilter]
-    public async Task<IActionResult> UpdateAlert([FromBody] UpdateAlertCommmand request, CancellationToken ct)
+    public async Task<IActionResult> UpdateAlert([FromServices] UpdateAlertCommandHandler commandHandler,
+        [FromBody] UpdateAlertCommmand request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(request, ct);
-        return commandResult.ToActionResult<DetailedAlertView>();
+        var res = await commandHandler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : Ok(res.Value);
     }
 
     [HttpGet("search")]
     [CacheFilter]
-    [CommandValidationFilter]
-    public async Task<IActionResult> SearchAlerts([FromQuery] SearchAlertQuery request, CancellationToken ct) =>
-        Ok(await _mediator.Send(request, ct));
+    public async Task<IActionResult> SearchAlerts([FromServices] SearchAlertQueryHandler handler,
+        [FromQuery] SearchAlertQuery request, CancellationToken ct)
+    {
+        var res = await handler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : Ok(res.Value);
+    }
 }

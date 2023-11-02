@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
 using Polly;
-using System;
-using System.Net.Http;
 
 namespace SiteWatcher.Infra.Http;
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using IntegrationTests.Setup;
 using SiteWatcher.Infra.Persistence;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;

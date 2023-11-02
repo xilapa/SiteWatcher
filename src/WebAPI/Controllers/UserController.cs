@@ -11,7 +11,6 @@ using SiteWatcher.Application.Users.Commands.ReactivateAccount;
 using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
-using SiteWatcher.WebAPI.Filters;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Infra.Authorization.Constants;
 using SiteWatcher.WebAPI.Extensions;
@@ -41,19 +40,25 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [CommandValidationFilter]
     [Route("register")]
     [Authorize(Policy = Policies.ValidRegisterData)]
-    public async Task<IActionResult> Register(RegisterUserCommand request)
+    public async Task<IActionResult> Register([FromServices] RegisterUserCommandHandler handler,
+        RegisterUserCommand request, CancellationToken ct)
     {
-        request.GoogleId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
-        request.AuthEmail = HttpContext.User.Claims.FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
-        RegisterUserResult commandResult = await _mediator.Send(request);
-        return commandResult switch
+        request.GoogleId = HttpContext.User.Claims
+            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.GoogleId)?.Value;
+        request.AuthEmail = HttpContext.User.Claims
+            .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Email)?.Value;
+
+        var res = await handler.Handle(request, ct);
+
+        if (res.Error != null) return res.Error.ToActionResult();
+
+        return res.Value switch
         {
             AlreadyExists => Conflict(),
             Registered registered => Created(string.Empty, registered),
-            _ => throw new ArgumentOutOfRangeException(nameof(commandResult))
+            _ => throw new ArgumentOutOfRangeException(nameof(res.Value))
         };
     }
 
@@ -64,19 +69,20 @@ public class UserController : ControllerBase
 
     [AllowAnonymous]
     [HttpPut("confirm-email")]
-    public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand request)
+    public async Task<IActionResult> ConfirmEmail([FromServices] ConfirmEmailCommandHandler handler,
+        ConfirmEmailCommand request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(request);
-        return commandResult.ToActionResult();
+        var res = await handler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : NoContent();
     }
 
     [Authorize]
     [HttpPut]
-    [CommandValidationFilter]
-    public async Task<IActionResult> UpdateUser(UpdateUserCommand request)
+    public async Task<IActionResult> UpdateUser([FromServices] UpdateUserCommandHandler handler,
+        UpdateUserCommand request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(request);
-        return commandResult.ToActionResult<UpdateUserResult>();
+        var res = await handler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : Ok(res.Value);
     }
 
     [Authorize]
@@ -85,17 +91,22 @@ public class UserController : ControllerBase
         await _mediator.Send(new DeactivateAccountCommand());
 
     [AllowAnonymous]
-    [CommandValidationFilter]
     [HttpPut("send-reactivate-account-email")]
-    public async Task SendReactivateAccountEmail(SendReactivateAccountEmailCommand request) =>
-        await _mediator.Send(request);
+    public async Task<IActionResult> SendReactivateAccountEmail(
+        [FromServices] SendReactivateAccountEmailCommandHandler handler,
+        SendReactivateAccountEmailCommand request, CancellationToken ct)
+    {
+        var res = await handler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : Ok();
+    }
 
     [AllowAnonymous]
     [HttpPut("reactivate-account")]
-    public async Task<IActionResult> ReactivateAccount(ReactivateAccountCommand request)
+    public async Task<IActionResult> ReactivateAccount([FromServices] ReactivateAccountCommandHandler handler,
+        ReactivateAccountCommand request, CancellationToken ct)
     {
-        var commandResult = await _mediator.Send(request);
-        return commandResult.ToActionResult();
+        var res = await handler.Handle(request, ct);
+        return res.Error != null ? res.Error.ToActionResult() : NoContent();
     }
 
     [Authorize]

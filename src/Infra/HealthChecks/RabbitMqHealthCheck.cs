@@ -1,9 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using RabbitMQ.Client;
 using SiteWatcher.Infra.Messaging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SiteWatcher.Infra.HealthChecks;
 

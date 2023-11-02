@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Moq;
 using ReflectionMagic;
-using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Services;

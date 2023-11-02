@@ -1,4 +1,6 @@
-﻿using Mediator;
+﻿using FluentValidation;
+using SiteWatcher.Application.Common.Command;
+using SiteWatcher.Application.Common.Results;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts;
@@ -8,7 +10,7 @@ using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
-public class CreateAlertCommand : ICommand<DetailedAlertView>
+public sealed class CreateAlertCommand
 {
     public string Name { get; set; } = null!;
     public Frequencies Frequency { get; set; }
@@ -34,24 +36,25 @@ public class CreateAlertCommand : ICommand<DetailedAlertView>
             command.RegexPattern);
 }
 
-public class CreateAlertCommandHandler : ICommandHandler<CreateAlertCommand, DetailedAlertView>
+public sealed class CreateAlertCommandHandler : BaseHandler<CreateAlertCommand, Result<DetailedAlertView>>
 {
     private readonly ISession _session;
     private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
 
-    public CreateAlertCommandHandler(ISession session, ISiteWatcherContext context, IIdHasher idHasher)
+    public CreateAlertCommandHandler(ISession session, ISiteWatcherContext context, IIdHasher idHasher,
+        IValidator<CreateAlertCommand> validator) : base(validator)
     {
         _session = session;
         _context = context;
         _idHasher = idHasher;
     }
 
-    public async ValueTask<DetailedAlertView> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
+    protected override async Task<Result<DetailedAlertView>> HandleCommand(CreateAlertCommand command, CancellationToken ct)
     {
-        var alert = AlertFactory.Create(request, _session.UserId!.Value, _session.Now);
+        var alert = AlertFactory.Create(command, _session.UserId!.Value, _session.Now);
         _context.Alerts.Add(alert);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(ct);
         return DetailedAlertView.FromAlert(alert, _idHasher);
     }
 }

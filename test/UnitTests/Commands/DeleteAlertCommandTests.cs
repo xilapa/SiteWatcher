@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
-using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Alerts;
@@ -27,10 +26,10 @@ public sealed class DeleteAlertCommandTests
         var command = new DeleteAlertCommand {AlertId = "invalidId"};
 
         // Act
-        var result = await handler.Handle(command, default) as ErrorResult;
+        var result = await handler.Handle(command, default);
 
         // Assert
-        result!.Errors.Count().Should().Be(1);
-        result.Errors.First().Should().Be(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
+        result.Error!.Messages.Length.Should().Be(1);
+        result.Error.Messages[0].Should().Be(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
     }
 }

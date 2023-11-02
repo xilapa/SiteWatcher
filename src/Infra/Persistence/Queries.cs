@@ -93,19 +93,19 @@ public class Queries : IQueries
 
     #endregion
 
-    public QueryResult GetUserByGoogleId(string googleId)
+    public DbQuery GetUserByGoogleId(string googleId)
     {
         var parameters = new Dictionary<string, object> { { "googleId", googleId } };
-        return new QueryResult(GetUserByGoogleIdQuery, parameters);
+        return new DbQuery(GetUserByGoogleIdQuery, parameters);
     }
 
-    public QueryResult GetUserById(UserId userId)
+    public DbQuery GetUserById(UserId userId)
     {
         var parameters = new Dictionary<string, object> { { "userId", userId.Value } };
-        return new QueryResult(GetUserByIdQuery, parameters);
+        return new DbQuery(GetUserByIdQuery, parameters);
     }
 
-    public QueryResult GetSimpleAlertViewListByUserId(UserId userId, AlertId? lastAlertId, int take)
+    public DbQuery GetSimpleAlertViewListByUserId(UserId userId, AlertId? lastAlertId, int take)
     {
         var parameters = new Dictionary<string, object>
         {
@@ -113,20 +113,20 @@ public class Queries : IQueries
             { "lastAlertId", lastAlertId?.Value ?? 0 },
             { "take", take }
         };
-        return new QueryResult(GetSimpleAlertViewListByUserIdQuery, parameters);
+        return new DbQuery(GetSimpleAlertViewListByUserIdQuery, parameters);
     }
 
-    public QueryResult GetAlertDetails(UserId userId, AlertId alertId)
+    public DbQuery GetAlertDetails(UserId userId, AlertId alertId)
     {
         var parameters = new Dictionary<string, object>
         {
             { "userId", userId.Value },
             { "alertId", alertId.Value }
         };
-        return new QueryResult(GetAlertDetailsQuery, parameters);
+        return new DbQuery(GetAlertDetailsQuery, parameters);
     }
 
-    public QueryResult SearchSimpleAlerts(UserId userId, string[] searchTerms, int take)
+    public DbQuery SearchSimpleAlerts(UserId userId, string[] searchTerms, int take)
     {
         var query = _searchSimpleAlertsQueryCache.GetOrAdd(searchTerms.Length, GenerateSearchSimpleAlertsQuery);
         var parameters = new Dictionary<string, object> {{"userId", userId}};
@@ -136,7 +136,7 @@ public class Queries : IQueries
             parameters.Add($"searchTermWildCards{i}", $"%{searchTerms[i]}%");
             parameters.Add($"searchTerm{i}", searchTerms[i]);
         }
-        return new QueryResult(query, parameters);
+        return new DbQuery(query, parameters);
     }
 
     private static string GenerateSearchSimpleAlertsQuery(int searchTermsLenght)
