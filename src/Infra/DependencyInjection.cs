@@ -14,6 +14,7 @@ using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Infra.Authorization;
 using SiteWatcher.Infra.Cache;
 using SiteWatcher.Infra.DapperRepositories;
+using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.Messaging;
 using SiteWatcher.Infra.Persistence;
 using StackExchange.Redis;
@@ -133,6 +134,14 @@ public static class DependencyInjection
     public static IServiceCollection AddAuthService(this IServiceCollection services)
     {
         services.AddScoped<IAuthService,AuthService>();
+        return services;
+    }
+
+    public static IServiceCollection SetupEmail(this IServiceCollection services, EmailSettings settings)
+    {
+        services
+            .AddSingleton<EmailSettings>(settings)
+            .AddSingleton<IEmailServiceSingleton, EmailServiceSingleton>();
         return services;
     }
 }

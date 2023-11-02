@@ -1,5 +1,4 @@
 using MimeKit;
-using SiteWatcher.Application.Interfaces;
 using MailKit.Net.Smtp;
 using MimeKit.Text;
 using SiteWatcher.Common.Services;
@@ -11,12 +10,12 @@ namespace SiteWatcher.Infra.EmailSending;
 public sealed class EmailServiceSingleton : IEmailServiceSingleton
 {
     private SmtpClient? _smtpClient;
-    private readonly IEmailSettings _emailSettings;
+    private readonly EmailSettings _emailSettings;
     private readonly ISession _session;
     private DateTime? _lastEmailSentDate;
     private readonly TimeSpan _emailDelay;
 
-    public EmailServiceSingleton(IEmailSettings emailSettings, ISession session)
+    public EmailServiceSingleton(EmailSettings emailSettings, ISession session)
     {
         _emailSettings = emailSettings;
         _session = session;

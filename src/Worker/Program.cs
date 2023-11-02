@@ -8,6 +8,7 @@ using SiteWatcher.Application.Emails.Messages;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Notifications.Messages;
 using SiteWatcher.Infra;
+using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Worker;
 using SiteWatcher.Worker.Jobs;
 using SiteWatcher.Worker.Utils;

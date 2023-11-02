@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.HealthChecks;
 using SiteWatcher.Infra.Messaging;
 

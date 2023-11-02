@@ -1,17 +1,14 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Infra.EmailSending;
 
 namespace SiteWatcher.Infra.HealthChecks;
 
 public sealed class EmailHealthCheck : IHealthCheck
 {
-    private readonly IEmailSettings _settings;
+    private readonly EmailSettings _settings;
 
-    public EmailHealthCheck(IEmailSettings settings)
+    public EmailHealthCheck(EmailSettings settings)
     {
         _settings = settings;
     }

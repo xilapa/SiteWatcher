@@ -21,6 +21,7 @@ using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Infra;
 using SiteWatcher.Infra.Authorization;
+using SiteWatcher.Infra.EmailSending;
 using SiteWatcher.Infra.Persistence;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Utils;
@@ -117,7 +118,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(ISession),
             typeof(IAppSettings),
             typeof(IGoogleSettings),
-            typeof(IEmailSettings),
+            typeof(EmailSettings),
             typeof(IEmailServiceSingleton),
             typeof(IDapperContext),
             typeof(ILoggerFactory),
@@ -175,7 +176,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         // Email
         services.AddSingleton<IEmailServiceSingleton>(EmailServiceMock.Object);
-        services.AddSingleton<IEmailSettings>(new Mock<IEmailSettings>().Object);
+        services.AddSingleton(new EmailSettings());
 
         // Messaging
         if (!_enableMasstransitTestHarness) services.AddSingleton<IPublisher>(FakePublisher);
