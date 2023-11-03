@@ -1,24 +1,21 @@
-﻿using Mediator;
-using SiteWatcher.Domain.Authentication;
+﻿using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Users.Events;
 
 namespace SiteWatcher.Application.Users.EventHandlers;
 
-public class UserUpdatedEventHandler : INotificationHandler<UserUpdatedEvent>
+public class UserUpdatedEventHandler : IApplicationHandler
 {
     private readonly ICache _cache;
-    private readonly ISession _session;
 
-    public UserUpdatedEventHandler(ICache cache, ISession session)
+    public UserUpdatedEventHandler(ICache cache)
     {
         _cache = cache;
-        _session = session;
     }
 
-    public async ValueTask Handle(UserUpdatedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(UserUpdatedEvent notification, CancellationToken cancellationToken)
     {
-        await _cache.DeleteKeyAsync(CacheKeys.UserInfo(_session.UserId!.Value));
+        await _cache.DeleteKeyAsync(CacheKeys.UserInfo(notification.UserId));
     }
 }

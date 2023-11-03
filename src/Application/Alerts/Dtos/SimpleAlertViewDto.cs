@@ -1,7 +1,6 @@
 ﻿using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
 using SiteWatcher.Domain.Alerts.Enums;
-using SiteWatcher.Domain.Common;
 
 namespace Application.Alerts.Dtos;
 

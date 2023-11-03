@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using MassTransit.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Application.Users.Commands.RegisterUser;
 using SiteWatcher.Domain.Emails.Messages;
-using SiteWatcher.Domain.Users;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.Domain.Users.Messages;
 using SiteWatcher.Infra.Authorization;
@@ -60,16 +60,24 @@ public sealed class EmailConfirmationTokenGeneratedTest : BaseTest, IAsyncLifeti
     public async Task CreateAndSendEmailOnEmailConfirmationTokenGenerated()
     {
         // Arrange
-        var user = new User("googleId", "name", "email", "authEmail", Language.English,
-            Theme.Light, CurrentTime);
+        var registerInput = new RegisterUserCommand
+        {
+            Email = "email-test-xilapa@email.com",
+            Language = Language.English,
+            Theme = Theme.Light,
+            AuthEmail = "authEmail@email.com",
+            Name = "name",
+            GoogleId = "googleId"
+        };
 
         // Act
         await AppFactory.WithServiceProvider(async sp =>
         {
-            var context = sp.GetRequiredService<ISiteWatcherContext>();
-            context.Users.Add(user);
-            await context.SaveChangesAsync(CancellationToken.None);
+            var userRegisterHandler = sp.GetRequiredService<RegisterUserCommandHandler>();
+            await userRegisterHandler.Handle(registerInput, CancellationToken.None);
         });
+
+        var user = await AppFactory.WithDbContext(ctx => ctx.Users.FirstAsync(u => u.Email == registerInput.Email));
 
         await _fixture.TestHarness.InactivityTask; // await until all messages are consumed
 

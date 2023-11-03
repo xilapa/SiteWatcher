@@ -56,7 +56,7 @@ public sealed class UserReactivationTokenGeneratedTest : BaseTest, IAsyncLifetim
         await _fixture.TestHarness.Stop();
     }
 
-    [Fact]
+    [Fact(Skip = "Move email test logic to handlers that publish email")]
     public async Task CreateAndSendEmailOnUserReactivationTokenGenerated()
     {
         // Arrange

@@ -4,6 +4,7 @@ using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using SiteWatcher.Application.Interfaces;
+using SiteWatcher.Domain.Common.Services;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Emails.DTOs;
 using SiteWatcher.Domain.Emails.Messages;
@@ -52,13 +53,15 @@ public sealed class EmailSendingTest : BaseTest, IClassFixture<EmailSendingBaseT
     {
         // Arrange
         var mailRecipient = new MailRecipient(Users.Xilapa.Name, Users.Xilapa.Email, Users.Xilapa.Id);
-        var email = new Email("body", true, "subject", mailRecipient, CurrentTime);
+        var (email, emailCreatedMessage) = Email.CreateEmail("body", true, "subject", mailRecipient, CurrentTime);
 
         // Act
         await AppFactory.WithServiceProvider(async sp =>
         {
             var context = sp.GetRequiredService<ISiteWatcherContext>();
             context.Emails.Add(email);
+            var publisher = sp.GetRequiredService<IPublisher>();
+            await publisher.PublishAsync(emailCreatedMessage, CancellationToken.None);
             await context.SaveChangesAsync(CancellationToken.None);
         });
 

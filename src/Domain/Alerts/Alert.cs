@@ -20,7 +20,15 @@ public class Alert : BaseModel<AlertId>
     protected Alert()
     { }
 
-    public Alert(UserId userId, string name, Frequencies frequency, DateTime currentDate, Site site, Rule rule)
+    public static (Alert, AlertsChangedEvent) Create(UserId userId, string name, Frequencies frequency,
+        DateTime currentDate, Site site, Rule rule)
+    {
+        var alert = new Alert(userId, name, frequency, currentDate, site, rule);
+        var alertsChangedEvent = new AlertsChangedEvent(userId);
+        return (alert, alertsChangedEvent);
+    }
+
+    private Alert(UserId userId, string name, Frequencies frequency, DateTime currentDate, Site site, Rule rule)
         : base(new AlertId(), currentDate)
     {
         UserId = userId;
@@ -29,7 +37,6 @@ public class Alert : BaseModel<AlertId>
         Site = site;
         Rule = rule;
         GenerateSearchField();
-        AddDomainEvent(new AlertsChangedEvent(UserId));
     }
 
     public UserId UserId { get; private set; }
@@ -58,7 +65,7 @@ public class Alert : BaseModel<AlertId>
             LastVerification = updateAlertDto.LastVerification
         };
 
-    public void Update(UpdateAlertInput updateInput, DateTime updateDate)
+    public AlertsChangedEvent Update(UpdateAlertInput updateInput, DateTime updateDate)
     {
         var regenerateSearchField = false;
 
@@ -86,7 +93,7 @@ public class Alert : BaseModel<AlertId>
 
         LastUpdatedAt = updateDate;
 
-        AddDomainEvent(new AlertsChangedEvent(UserId));
+        return new AlertsChangedEvent(UserId);
     }
 
     private void UpdateSite(UpdateAlertInput updateInput)

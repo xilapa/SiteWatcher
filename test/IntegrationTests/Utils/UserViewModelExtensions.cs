@@ -8,9 +8,10 @@ public static class UserViewModelExtensions
 {
     public static User ToModel(this UserViewModel userViewModel, DateTime currentDate)
     {
-        var user = new User(userViewModel.GetGoogleId(), userViewModel.Name,
-            userViewModel.Email, userViewModel.EmailConfirmed ? userViewModel.Email : "anotherEmail",
-            userViewModel.Language, userViewModel.Theme, currentDate);
+        var registerInput = new RegisterUserInput(userViewModel.Name, userViewModel.Email, userViewModel.Language,
+            userViewModel.Theme, userViewModel.GetGoogleId(),
+            userViewModel.EmailConfirmed ? userViewModel.Email : "anotherEmail");
+        var (user, _) = User.Create(registerInput, currentDate);
 
         user.AsDynamic().Id = userViewModel.Id;
         return user;

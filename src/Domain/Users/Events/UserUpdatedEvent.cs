@@ -1,9 +1,8 @@
-﻿using SiteWatcher.Domain.Common.Events;
-using SiteWatcher.Domain.Common.ValueObjects;
+﻿using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Domain.Users.Events;
 
-public class UserUpdatedEvent : BaseEvent
+public class UserUpdatedEvent
 {
     public UserUpdatedEvent(UserId userId)
     {

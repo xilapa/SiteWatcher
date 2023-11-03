@@ -62,7 +62,7 @@ public static class CustomWebApplicationFactoryExtensions
             RegexPattern = "[a-z]+",
             NotifyOnDisappearance = false
         };
-        var alert = AlertFactory.Create(createAlertInput, userId, currentDate.Value);
+        var (alert, _) = AlertFactory.Create(createAlertInput, userId, currentDate.Value);
         await WithDbContext(appFactory, async ctx =>
         {
             ctx.Add(alert);

@@ -1,5 +1,4 @@
 ﻿using System.Data.Common;
-using Mediator;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
@@ -12,8 +11,8 @@ public class SqliteContext : SiteWatcherContext
 {
     private readonly DbConnection _connection;
 
-    public SqliteContext(IAppSettings appSettings, IMediator mediator, DbConnection connection) :
-        base(appSettings, mediator)
+    public SqliteContext(IAppSettings appSettings, DbConnection connection) :
+        base(appSettings)
     {
         _connection = connection;
     }

@@ -1,7 +1,6 @@
 ﻿using System.Data.Common;
 using System.Runtime.CompilerServices;
 using MassTransit;
-using Mediator;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -37,7 +36,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private IDictionary<Type, object>? _servicesToReplace;
 
     private string _connectionString;
-    private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;
+    private Func<IAppSettings, SiteWatcherContext> _contextFactory;
     private DatabaseType _databaseType;
 
     private readonly ILoggerFactory _loggerFactory;
@@ -87,12 +86,12 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         _contextFactory = options.DatabaseType switch
         {
-            DatabaseType.SqliteInMemory => (appSettings, mediator) =>
-                new SqliteContext(appSettings, mediator, dbConnection!),
-            DatabaseType.SqliteOnDisk => (appSettings, mediator) =>
-                new SqliteContext(appSettings, mediator, dbConnection!),
-            DatabaseType.Postgres => (appSettings, mediator) =>
-                new PostgresTestContext(appSettings, mediator, _connectionString),
+            DatabaseType.SqliteInMemory => appSettings =>
+                new SqliteContext(appSettings, dbConnection!),
+            DatabaseType.SqliteOnDisk => appSettings =>
+                new SqliteContext(appSettings, dbConnection!),
+            DatabaseType.Postgres => appSettings =>
+                new PostgresTestContext(appSettings, _connectionString),
             _ => throw new ArgumentOutOfRangeException(nameof(options.DatabaseType))
         };
     }
@@ -154,8 +153,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddScoped<SiteWatcherContext>(srvc =>
         {
             var appSettings = srvc.GetRequiredService<IAppSettings>();
-            var mediator = srvc.GetRequiredService<IMediator>();
-            return _contextFactory(appSettings, mediator);
+            return _contextFactory(appSettings);
         });
 
         services.AddScoped<ISession>(srvc =>
@@ -170,7 +168,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton<IQueries>(new Queries(_databaseType));
 
         // Execute AlertServices
-        services.AddScoped<IUserAlertsService, UserAlertsService>();
+        services.AddScoped<UserAlertsService>();
         services.AddScoped<ExecuteAlertsCommandHandler>();
         services.AddScoped<IHttpClient, HttpClient>();
 
@@ -205,11 +203,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         }
     }
 
-    public SiteWatcherContext GetContext()
-    {
-        var mediatorMock = new Mock<IMediator>();
-        return _contextFactory(TestSettings, mediatorMock.Object);
-    }
+    public SiteWatcherContext GetContext() => _contextFactory(TestSettings);
 
     private IAuthService CreateAuthServiceForTokens()
     {

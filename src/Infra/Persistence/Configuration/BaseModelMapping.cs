@@ -21,7 +21,5 @@ public abstract class BaseModelMapping<TModel,IdType> : IEntityTypeConfiguration
         builder.Property(m => m.LastUpdatedAt)
                 .HasColumnType("timestamptz")
                 .IsRequired();
-
-        builder.Ignore(m => m.DomainEvents);
     }
 }

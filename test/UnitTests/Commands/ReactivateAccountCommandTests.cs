@@ -8,6 +8,7 @@ using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
+using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
 
 namespace UnitTests.Commands;
@@ -28,7 +29,7 @@ public sealed class ReactivateAccountCommandTests
             .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))
             .ReturnsAsync(new UserId(Guid.NewGuid()));
 
-        var commandHandler = new ReactivateAccountCommandHandler(_authServiceMock.Object, mockContext.Object, null!);
+        var commandHandler = new ReactivateAccountCommandHandler(_authServiceMock.Object, mockContext.Object, null!, null!);
         var command = new ReactivateAccountCommand {Token = "token"};
 
         // Act
@@ -46,8 +47,9 @@ public sealed class ReactivateAccountCommandTests
     public async Task UserCantReactivateAccountlWithInvalidToken()
     {
         // Arrange
-        var user = new User("googleId", "name", "email", "authEmail",
-            Language.BrazilianPortuguese, Theme.Light, DateTime.Now);
+        var registerInput = new RegisterUserInput("name", "email", Language.BrazilianPortuguese, Theme.Light,
+            "googleId", "authEmail");
+        var (user, _) = User.Create(registerInput, DateTime.Now);
         user.Deactivate(DateTime.Now);
 
         var userDbSetMock = new[] { user }.AsQueryable().BuildMockDbSet();
@@ -59,7 +61,7 @@ public sealed class ReactivateAccountCommandTests
             .ReturnsAsync(user.Id);
 
         var session = new Mock<ISession>().Object;
-        var commandHandler = new ReactivateAccountCommandHandler(_authServiceMock.Object, contextMock.Object, session);
+        var commandHandler = new ReactivateAccountCommandHandler(_authServiceMock.Object, contextMock.Object, session, null!);
         var command = new ReactivateAccountCommand {Token = "INVALID_TOKEN"};
 
         // Act

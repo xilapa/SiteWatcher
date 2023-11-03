@@ -15,16 +15,18 @@ public sealed class UserTests
     {
         // Arrange
         // Act
-        var user = new User("googleId", "name", email, authEmail, Language.English, Theme.Dark, DateTime.Now);
+        var registerInput = new RegisterUserInput("name", email, Language.BrazilianPortuguese, Theme.Light,
+            "googleId", authEmail);
+        var (user, @event) = User.Create(registerInput, DateTime.Now);
 
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);
 
         // Check email confirmation message
         if (!emailConfirmed)
-            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
+            @event.Should().NotBeNull();
         else
-            user.DomainEvents.Should().BeEmpty();
+            @event.Should().BeNull();
     }
 
     [Theory]
@@ -34,8 +36,9 @@ public sealed class UserTests
     public void UserEmailConfirmedAfterUpdate(string email, string authEmail, string newEmail, bool emailConfirmed)
     {
         // Arrange
-        var user = new User("googleId", "name", email, authEmail, Language.English, Theme.Dark, DateTime.Now);
-        user.ClearDomainEvents();
+        var registerInput = new RegisterUserInput("name", email, Language.BrazilianPortuguese, Theme.Light,
+            "googleId", authEmail);
+        var (user, @event) = User.Create(registerInput, DateTime.Now);
         var userUpdate = new UpdateUserInput
         {
             Name = "name",
@@ -52,9 +55,9 @@ public sealed class UserTests
 
         // Check email confirmation message
         if (!emailConfirmed)
-            user.DomainEvents.Should().ContainSingle(e => e is EmailConfirmationTokenGeneratedMessage);
+            @event.Should().NotBeNull();
         else
-            user.DomainEvents.Should().NotContain(e => e is EmailConfirmationTokenGeneratedMessage);
+            @event.Should().BeNull();
     }
 
     [Fact]
@@ -63,8 +66,9 @@ public sealed class UserTests
         // Arrange
 
         // Act
-        var user = new User("googleId", "name", "email", "email",
-            Language.English, Theme.Dark, DateTime.UtcNow);
+        var registerInput = new RegisterUserInput("name", "email", Language.BrazilianPortuguese, Theme.Light,
+            "googleId", "authEmail");
+        var (user, _) = User.Create(registerInput, DateTime.Now);
 
         // Assert
         Guid.Empty

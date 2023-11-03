@@ -1,5 +1,5 @@
-﻿using Mediator;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using SiteWatcher.Application.Alerts.EventHandlers;
 using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Common.Results;
@@ -22,15 +22,15 @@ public class DeleteAlertCommandHandler : IApplicationHandler
     private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
     private readonly ISession _session;
-    private readonly IMediator _mediator;
+    private readonly AlertsChangedEventHandler _alertsChangedEventHandler;
 
     public DeleteAlertCommandHandler(ISiteWatcherContext context, IIdHasher idHasher, ISession session,
-        IMediator mediator)
+        AlertsChangedEventHandler alertsChangedEventHandler)
     {
         _context = context;
         _idHasher = idHasher;
         _session = session;
-        _mediator = mediator;
+        _alertsChangedEventHandler = alertsChangedEventHandler;
     }
 
     public async Task<Result> Handle(DeleteAlertCommand request, CancellationToken cancellationToken)
@@ -49,7 +49,7 @@ public class DeleteAlertCommandHandler : IApplicationHandler
             .ExecuteDeleteAsync(cancellationToken);
 
         if (deleted != 0)
-            await _mediator.Publish(new AlertsChangedEvent(_session.UserId!.Value), CancellationToken.None);
+            await _alertsChangedEventHandler.Handle(new AlertsChangedEvent(_session.UserId!.Value), CancellationToken.None);
 
         return deleted != 0 ? Result.Empty : ReturnError();
     }

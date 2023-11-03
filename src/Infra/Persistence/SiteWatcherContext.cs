@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using MassTransit;
-using Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
@@ -11,21 +10,18 @@ using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Notifications;
 using SiteWatcher.Domain.Users;
-using SiteWatcher.Infra.Extensions;
 
 namespace SiteWatcher.Infra;
 
 public class SiteWatcherContext : DbContext, ISiteWatcherContext
 {
     private readonly IAppSettings _appSettings;
-    private readonly IMediator _mediator;
     private IDbContextTransaction? _currentTransaction;
     public const string Schema = "sw";
 
-    public SiteWatcherContext(IAppSettings appSettings, IMediator mediator)
+    public SiteWatcherContext(IAppSettings appSettings)
     {
         _appSettings = appSettings;
-        _mediator = mediator;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -108,7 +104,6 @@ public class SiteWatcherContext : DbContext, ISiteWatcherContext
     {
         try
         {
-            await _mediator.DispatchDomainEventsAndMessages(this, ct);
             return await base.SaveChangesAsync(ct);
         }
         catch (DbUpdateException ex)

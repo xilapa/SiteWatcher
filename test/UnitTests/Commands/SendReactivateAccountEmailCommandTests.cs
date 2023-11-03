@@ -24,7 +24,7 @@ public sealed class SendReactivateAccountEmailCommandTests
             .Returns(new ValidationResult());
 
         var commandHandler =
-            new SendReactivateAccountEmailCommandHandler(contextMock.Object, null!, validatorMock.Object);
+            new SendReactivateAccountEmailCommandHandler(contextMock.Object, null!, validatorMock.Object, null!);
 
         // Act
         await commandHandler.Handle(new SendReactivateAccountEmailCommand(), default);

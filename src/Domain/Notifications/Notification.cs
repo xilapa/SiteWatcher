@@ -4,6 +4,7 @@ using SiteWatcher.Domain.Alerts.Messages;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Emails;
 using SiteWatcher.Domain.Emails.DTOs;
+using SiteWatcher.Domain.Emails.Messages;
 using SiteWatcher.Domain.Users;
 
 namespace SiteWatcher.Domain.Notifications;
@@ -52,15 +53,17 @@ public class Notification
     /// <summary>
     /// Process notification messages and dispatch them with Domain Events.
     /// </summary>
-    public async Task ProcessAndDispatch(DateTime currentDate)
+    public async Task<EmailCreatedMessage> ProcessAndDispatch(DateTime currentDate)
     {
         // Get Body and Subject
         var subject = NotificationMessageGenerator.GetSubject(_notificationData);
         var body = await NotificationMessageGenerator.GetBody(_notificationData);
         // Create the email, the email will generate a domain message
         var recipient = new MailRecipient(_notificationData.UserName, _notificationData.Email, UserId!.Value);
-        Email = new Email(body,htmlBody: true, subject, recipient, currentDate);
+        var (email, emailCreatedMessage) = Email.CreateEmail(body,htmlBody: true, subject, recipient, currentDate);
+        Email = email;
         EmailId = Email.Id;
+        return emailCreatedMessage;
     }
 }
 

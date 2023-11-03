@@ -19,7 +19,15 @@ public class User : BaseModel<UserId>
         Emails = new List<Email>();
     }
 
-    public User(string googleId, string name, string email, string authEmail, Language language, Theme theme,
+    public static (User, EmailConfirmationTokenGeneratedMessage?) Create(RegisterUserInput registerInput, DateTime currentDate)
+    {
+        var user = new User(registerInput.GoogleId, registerInput.Name, registerInput.Email, registerInput.AuthEmail,
+            registerInput.Language, registerInput.Theme, currentDate);
+        var emailConfirmationMessage = user.GenerateEmailConfirmationToken(currentDate);
+        return (user, emailConfirmationMessage);
+    }
+
+    private User(string googleId, string name, string email, string authEmail, Language language, Theme theme,
         DateTime currentDate) : base(UserId.New(), currentDate)
     {
         GoogleId = googleId;
@@ -30,8 +38,6 @@ public class User : BaseModel<UserId>
         Theme = theme;
         Alerts = new List<Alert>();
         Emails = new List<Email>();
-
-        GenerateEmailConfirmationToken(currentDate);
     }
 
     public string GoogleId { get; } = null!;
@@ -44,7 +50,7 @@ public class User : BaseModel<UserId>
     public ICollection<Alert> Alerts { get; init; }
     public ICollection<Email> Emails { get; set; }
 
-    public void Update(UpdateUserInput updatedValues, DateTime updateDate)
+    public (UserUpdatedEvent, EmailConfirmationTokenGeneratedMessage?) Update(UpdateUserInput updatedValues, DateTime updateDate)
     {
         Name = updatedValues.Name;
         if (EmailConfirmed) EmailConfirmed = updatedValues.Email == Email;
@@ -53,60 +59,51 @@ public class User : BaseModel<UserId>
         Theme = updatedValues.Theme;
         LastUpdatedAt = updateDate;
 
-        GenerateEmailConfirmationToken(updateDate);
-        AddDomainEvent(new UserUpdatedEvent(Id));
+        return (new UserUpdatedEvent(Id), GenerateEmailConfirmationToken(updateDate));
     }
 
-    public void Deactivate(DateTime deactivateDate)
+    public UserUpdatedEvent Deactivate(DateTime deactivateDate)
     {
         Active = false;
         LastUpdatedAt = deactivateDate;
-        AddDomainEvent(new UserUpdatedEvent(Id));
+        return new UserUpdatedEvent(Id);
     }
 
-    public void GenerateEmailConfirmationToken(DateTime currentDate)
+    public EmailConfirmationTokenGeneratedMessage? GenerateEmailConfirmationToken(DateTime currentDate)
     {
-        if (EmailConfirmed) return;
+        if (EmailConfirmed) return null;
         SecurityStamp = GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
-        AddDomainEvent(new EmailConfirmationTokenGeneratedMessage(this, currentDate));
+        return new EmailConfirmationTokenGeneratedMessage(this, currentDate);
     }
 
-    public bool ConfirmEmail(string token, DateTime currentDate)
+    public (bool emailConfirmed, UserUpdatedEvent) ConfirmEmail(string token, DateTime currentDate)
     {
         if (token == SecurityStamp)
             EmailConfirmed = true;
 
         SecurityStamp = null;
         LastUpdatedAt = currentDate;
-        AddDomainEvent(new UserUpdatedEvent(Id));
 
-        return EmailConfirmed;
+        return (EmailConfirmed, new UserUpdatedEvent(Id));
     }
 
-    public void GenerateReactivationToken(DateTime currentDate)
+    public UserReactivationTokenGeneratedMessage? GenerateReactivationToken(DateTime currentDate)
     {
-        if(Active) return;
+        if (Active) return null;
         SecurityStamp = GenerateSafeRandomBase64String();
         LastUpdatedAt = currentDate;
-        AddDomainEvent(new UserReactivationTokenGeneratedMessage(this, currentDate));
+        return new UserReactivationTokenGeneratedMessage(this, currentDate);
     }
 
-    public bool ReactivateAccount(string token, DateTime currentDate)
+    public (bool active, UserUpdatedEvent)  ReactivateAccount(string token, DateTime currentDate)
     {
         if (token == SecurityStamp)
             Active = true;
 
         SecurityStamp = null;
         LastUpdatedAt = currentDate;
-        AddDomainEvent(new UserUpdatedEvent(Id));
 
-        return Active;
-    }
-
-    public static User FromInputModel(RegisterUserInput registerInput, DateTime currentDate)
-    {
-        return new User(registerInput.GoogleId, registerInput.Name, registerInput.Email, registerInput.AuthEmail,
-            registerInput.Language, registerInput.Theme, currentDate);
+        return (Active, new UserUpdatedEvent(Id));
     }
 }

@@ -1,8 +1,6 @@
-﻿using SiteWatcher.Domain.Common.Events;
+﻿namespace SiteWatcher.Domain.Common.Messages;
 
-namespace SiteWatcher.Domain.Common.Messages;
-
-public abstract class BaseMessage : BaseEvent
+public abstract class BaseMessage
 {
     public string Id { get; set; }
 }
