@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="MassTransit.Abstractions" />
-    <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Roslynator.Analyzers">
       <PrivateAssets>all</PrivateAssets>

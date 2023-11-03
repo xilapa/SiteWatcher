@@ -1,10 +1,10 @@
-﻿using Mediator;
+﻿using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 
 namespace SiteWatcher.Application.Authentication.Commands.ExchangeToken;
 
-public sealed class ExchangeCodeCommand : ICommand<AuthenticationResult?>
+public sealed class ExchangeCodeCommand 
 {
     public string? Code { get; set; }
     public string? CodeVerifier { get; set; }
@@ -17,7 +17,7 @@ public sealed class ExchangeCodeCommand : ICommand<AuthenticationResult?>
     }
 }
 
-public sealed class ExchangeCodeCommandHandler : ICommandHandler<ExchangeCodeCommand, AuthenticationResult?>
+public sealed class ExchangeCodeCommandHandler : IApplicationHandler
 {
     private readonly IAuthService _authService;
 

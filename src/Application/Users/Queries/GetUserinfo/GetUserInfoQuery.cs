@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using Mediator;
+using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
@@ -9,7 +9,7 @@ using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Application.Users.Commands.GetUserinfo;
 
-public sealed class GetUserInfoQuery : IQuery<UserViewModel?>, ICacheable
+public sealed class GetUserInfoQuery : IApplicationHandler, ICacheable
 {
     public TimeSpan Expiration => TimeSpan.FromMinutes(15);
     public string HashFieldName => string.Empty;
@@ -18,7 +18,7 @@ public sealed class GetUserInfoQuery : IQuery<UserViewModel?>, ICacheable
         CacheKeys.UserInfo(session.UserId!.Value);
 }
 
-public sealed class GetUserInfoQueryHandler : IQueryHandler<GetUserInfoQuery, UserViewModel?>
+public sealed class GetUserInfoQueryHandler : IApplicationHandler
 {
     private readonly IDapperContext _context;
     private readonly IQueries _queries;

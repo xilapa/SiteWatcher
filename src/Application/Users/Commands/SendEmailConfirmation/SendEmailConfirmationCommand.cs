@@ -1,15 +1,12 @@
-﻿using Mediator;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 
 namespace SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
 
-public class SendEmailConfirmationCommand : ICommand
-{ }
-
-public class SendEmailConfirmationCommandHandler : ICommandHandler<SendEmailConfirmationCommand>
+public class SendEmailConfirmationCommandHandler : IApplicationHandler
 {
     private readonly ISession _session;
     private readonly ISiteWatcherContext _context;
@@ -22,16 +19,15 @@ public class SendEmailConfirmationCommandHandler : ICommandHandler<SendEmailConf
         _publisher = publisher;
     }
 
-    public async ValueTask<Unit> Handle(SendEmailConfirmationCommand request, CancellationToken ct)
+    public async Task Handle(CancellationToken ct)
     {
         var user = await _context.Users
             .FirstOrDefaultAsync(u => u.Id == _session.UserId && u.Active && !u.EmailConfirmed, ct);
-        if(user is null) return Unit.Value;
+        if(user is null) return;
 
         var emailConfirmationTokenGeneratedMessage = user.GenerateEmailConfirmationToken(_session.Now);
         if (emailConfirmationTokenGeneratedMessage != null)
             await _publisher.PublishAsync(emailConfirmationTokenGeneratedMessage, ct);
         await _context.SaveChangesAsync(ct);
-        return Unit.Value;
     }
 }

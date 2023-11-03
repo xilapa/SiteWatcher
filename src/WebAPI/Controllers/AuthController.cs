@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Mediator;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +14,10 @@ namespace SiteWatcher.WebAPI.Controllers;
 [Route("auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly IAppSettings _appSettings;
 
-    public AuthController(IMediator mediator, IAppSettings appSettings)
+    public AuthController(IAppSettings appSettings)
     {
-        _mediator = mediator;
         _appSettings = appSettings;
     }
 
@@ -43,7 +40,8 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("google")]
-    public async Task<IActionResult> GoogleAuthCallback(CancellationToken ct)
+    public async Task<IActionResult> GoogleAuthCallback([FromServices] AuthenticationCommandHandler handler,
+        CancellationToken ct)
     {
         var authRes = await HttpContext.AuthenticateAsync(AuthenticationDefaults.Schemes.Google);
         if (!authRes.Succeeded) return Unauthorized();
@@ -60,7 +58,7 @@ public class AuthController : ControllerBase
             CodeChallenge = codeChallenge ?? string.Empty
         };
 
-        var authCodeRes = await _mediator.Send(authCommand, ct);
+        var authCodeRes = await handler.Handle(authCommand, ct);
         if (!authCodeRes.Success()) return Unauthorized();
         var redirectUrl = $"{_appSettings.FrontEndAuthUrl}?code={authCodeRes.Code}";
         return Redirect(redirectUrl);
@@ -68,10 +66,11 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("exchange-code")]
-    public async Task<IActionResult> ExchangeCode([FromBody] ExchangeCodeCommand request, CancellationToken ct)
+    public async Task<IActionResult> ExchangeCode([FromServices] ExchangeCodeCommandHandler handler,
+        [FromBody] ExchangeCodeCommand request, CancellationToken ct)
     {
         await HttpContext.SignOutAsync(AuthenticationDefaults.Schemes.Cookie);
-        var authRes = await _mediator.Send(request, ct);
+        var authRes = await handler.Handle(request, ct);
         if (authRes == null) return Unauthorized();
         return Ok(authRes);
     }

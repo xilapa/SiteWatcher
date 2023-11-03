@@ -1,13 +1,10 @@
-﻿using Mediator;
+﻿using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 
 namespace SiteWatcher.Application.Users.Commands.LogoutUserOfAllDevices;
 
-public class LogoutUserOfAllDevicesCommand : ICommand
-{ }
-
-public class LogoutUserOfAllDevicesCommandHandler : ICommandHandler<LogoutUserOfAllDevicesCommand>
+public class LogoutUserOfAllDevicesCommandHandler : IApplicationHandler
 {
     private readonly IAuthService _authService;
     private readonly ISession _session;
@@ -18,9 +15,6 @@ public class LogoutUserOfAllDevicesCommandHandler : ICommandHandler<LogoutUserOf
         _session = session;
     }
 
-    public async ValueTask<Unit> Handle(LogoutUserOfAllDevicesCommand request, CancellationToken cancellationToken)
-    {
+    public async Task Handle(CancellationToken cancellationToken) =>
         await _authService.InvalidateCurrenUser(_session);
-        return Unit.Value;
-    }
 }

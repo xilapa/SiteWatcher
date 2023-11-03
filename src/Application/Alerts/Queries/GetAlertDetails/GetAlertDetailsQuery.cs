@@ -1,6 +1,6 @@
 ﻿using Application.Alerts.Dtos;
 using Dapper;
-using Mediator;
+using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -11,7 +11,7 @@ using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetAlertDetails;
 
-public class GetAlertDetailsQuery : IQuery<AlertDetails?>, ICacheable
+public class GetAlertDetailsQuery : ICacheable
 {
     public string? AlertId { get; set; }
 
@@ -25,7 +25,7 @@ public class GetAlertDetailsQuery : IQuery<AlertDetails?>, ICacheable
         CacheKeys.UserAlerts(session.UserId!.Value);
 }
 
-public class GetAlertDetailsQueryHandler : IQueryHandler<GetAlertDetailsQuery, AlertDetails?>
+public class GetAlertDetailsQueryHandler : IApplicationHandler
 {
     private readonly ISession _session;
     private readonly IDapperContext _context;

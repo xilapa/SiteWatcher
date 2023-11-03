@@ -11,7 +11,6 @@
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="Fluid.Core" />
-    <PackageReference Include="Mediator.Abstractions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Roslynator.Analyzers">
       <PrivateAssets>all</PrivateAssets>

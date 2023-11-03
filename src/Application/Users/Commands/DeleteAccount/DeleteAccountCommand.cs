@@ -1,17 +1,13 @@
-﻿using Mediator;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Emails;
-using ICommand = Mediator.ICommand;
 using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 
 namespace SiteWatcher.Application.Users.Commands.DeleteUser;
 
-public class DeleteAccountCommand : ICommand
-{ }
-
-public class DeleteAccountCommandHandler : ICommandHandler<DeleteAccountCommand>
+public class DeleteAccountCommandHandler : IApplicationHandler
 {
     private readonly ISiteWatcherContext _context;
     private readonly ISession _session;
@@ -24,10 +20,10 @@ public class DeleteAccountCommandHandler : ICommandHandler<DeleteAccountCommand>
         _publisher = publisher;
     }
 
-    public async ValueTask<Unit> Handle(DeleteAccountCommand request, CancellationToken ct)
+    public async Task Handle(CancellationToken ct)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == _session.UserId && u.Active, ct);
-        if (user == null) return Unit.Value;
+        if (user == null) return;
 
         _context.Users.Remove(user);
 
@@ -36,6 +32,5 @@ public class DeleteAccountCommandHandler : ICommandHandler<DeleteAccountCommand>
         await _publisher.PublishAsync(emailCreatedMessage, ct);
 
         await _context.SaveChangesAsync(ct);
-        return Unit.Value;
     }
 }
