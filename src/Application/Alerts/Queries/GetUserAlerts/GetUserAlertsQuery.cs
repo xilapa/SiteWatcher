@@ -1,8 +1,8 @@
 ﻿using Application.Alerts.Dtos;
 using Dapper;
-using SiteWatcher.Application.Common.Command;
+using Mediator;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Queries;
-using SiteWatcher.Application.Common.Results;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts.DTOs;
@@ -13,7 +13,7 @@ using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
 
-public class GetUserAlertsQuery : ICacheable
+public class GetUserAlertsQuery : IQuery<CommandResult>, ICacheable
 {
     public string? LastAlertId { get; set; }
     public int Take { get; set; } = 10;
@@ -27,7 +27,7 @@ public class GetUserAlertsQuery : ICacheable
     public TimeSpan Expiration => TimeSpan.FromMinutes(60);
 }
 
-public class GetUserAlertsQueryHandler : IApplicationHandler
+public class GetUserAlertsQueryHandler : IQueryHandler<GetUserAlertsQuery, CommandResult>
 {
     private readonly IIdHasher _idHasher;
     private readonly ISession _session;
@@ -42,10 +42,10 @@ public class GetUserAlertsQueryHandler : IApplicationHandler
         _queries = queries;
     }
 
-    public async Task<Result<PaginatedList<SimpleAlertView>>> Handle(GetUserAlertsQuery request, CancellationToken cancellationToken)
+    public async ValueTask<CommandResult> Handle(GetUserAlertsQuery request, CancellationToken cancellationToken)
     {
         if (request.Take == 0)
-            return Result<PaginatedList<SimpleAlertView>>.Empty;
+            return CommandResult.Empty();
 
         var take = request.Take > 50 ? 50 : request.Take;
         var lastAlertId = _idHasher.DecodeId(request.LastAlertId!);
@@ -70,6 +70,6 @@ public class GetUserAlertsQueryHandler : IApplicationHandler
                 return result;
             });
 
-        return paginatedListAlerts;
+        return CommandResult.FromValue(paginatedListAlerts);
     }
 }

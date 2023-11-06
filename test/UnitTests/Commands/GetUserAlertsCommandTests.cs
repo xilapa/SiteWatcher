@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.GetUserAlerts;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Interfaces;
 
 namespace UnitTests.Commands;
@@ -20,7 +21,7 @@ public sealed class GetUserAlertsCommandTests
         var result = await handler.Handle(command, default);
 
         // Assert
-        result.Value.Should().BeNull();
+        result.Should().BeAssignableTo<EmptyResult>();
         dapperContextMock
             .Verify(r =>
                 r.UsingConnectionAsync(It.IsAny<Func<IDbConnection,Task<It.IsAnyType>>>()),

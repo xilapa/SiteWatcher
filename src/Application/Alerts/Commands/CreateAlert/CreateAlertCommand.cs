@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using SiteWatcher.Application.Common.Command;
-using SiteWatcher.Application.Common.Results;
+﻿using Mediator;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Alerts;
@@ -10,7 +8,7 @@ using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.Alerts.Commands.CreateAlert;
 
-public sealed class CreateAlertCommand
+public class CreateAlertCommand : ICommand<DetailedAlertView>
 {
     public string Name { get; set; } = null!;
     public Frequencies Frequency { get; set; }
@@ -36,25 +34,24 @@ public sealed class CreateAlertCommand
             command.RegexPattern);
 }
 
-public sealed class CreateAlertCommandHandler : BaseHandler<CreateAlertCommand, Result<DetailedAlertView>>
+public class CreateAlertCommandHandler : ICommandHandler<CreateAlertCommand, DetailedAlertView>
 {
     private readonly ISession _session;
     private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
 
-    public CreateAlertCommandHandler(ISession session, ISiteWatcherContext context, IIdHasher idHasher,
-        IValidator<CreateAlertCommand> validator) : base(validator)
+    public CreateAlertCommandHandler(ISession session, ISiteWatcherContext context, IIdHasher idHasher)
     {
         _session = session;
         _context = context;
         _idHasher = idHasher;
     }
 
-    protected override async Task<Result<DetailedAlertView>> HandleCommand(CreateAlertCommand command, CancellationToken ct)
+    public async ValueTask<DetailedAlertView> Handle(CreateAlertCommand request, CancellationToken cancellationToken)
     {
-        var alert = AlertFactory.Create(command, _session.UserId!.Value, _session.Now);
+        var alert = AlertFactory.Create(request, _session.UserId!.Value, _session.Now);
         _context.Alerts.Add(alert);
-        await _context.SaveChangesAsync(ct);
+        await _context.SaveChangesAsync(cancellationToken);
         return DetailedAlertView.FromAlert(alert, _idHasher);
     }
 }

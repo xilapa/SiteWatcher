@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
-using FluentValidation;
-using FluentValidation.Results;
 using MockQueryable.Moq;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
@@ -13,17 +12,15 @@ using SiteWatcher.Domain.Common.ValueObjects;
 
 namespace UnitTests.Commands;
 
+
+
 public sealed class UpdateAlertCommandTests
 {
     private readonly Mock<IIdHasher> _hasherMock;
-    private readonly Mock<IValidator<UpdateAlertCommmand>> _validatorMock;
 
     public UpdateAlertCommandTests()
     {
         _hasherMock = new Mock<IIdHasher>();
-        _validatorMock = new Mock<IValidator<UpdateAlertCommmand>>();
-        _validatorMock.Setup(v => v.Validate(It.IsAny<UpdateAlertCommmand>()))
-            .Returns(new ValidationResult());
     }
 
     public static TheoryData<int> InvalidIds => new()
@@ -40,15 +37,14 @@ public sealed class UpdateAlertCommandTests
         _hasherMock.Setup(h => h.DecodeId(It.IsAny<string>()))
             .Returns(alertId);
 
-        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, null!, null!, _validatorMock.Object);
+        var handler = new UpdateAlertCommandHandler(_hasherMock.Object,null!, null!);
         var command = new UpdateAlertCommmand();
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Error!.Messages.Length.Should().Be(1);
-        result.Error.Messages[0]
+        result!.Errors
             .Should()
             .BeEquivalentTo(ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.AlertId)));
     }
@@ -67,16 +63,14 @@ public sealed class UpdateAlertCommandTests
         var sessionMock = new Mock<ISession>();
         sessionMock.Setup(s => s.UserId).Returns(UserId.Empty);
 
-        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, contextMock.Object, sessionMock.Object,
-            _validatorMock.Object);
+        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, contextMock.Object, sessionMock.Object);
         var command = new UpdateAlertCommmand();
 
         // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Error!.Messages.Length.Should().Be(1);
-        result.Error.Messages[0]
+        result!.Errors
             .Should()
             .BeEquivalentTo(ApplicationErrors.ALERT_DO_NOT_EXIST);
 

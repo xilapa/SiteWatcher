@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace SiteWatcher.Infra.Persistence.Configuration;
 

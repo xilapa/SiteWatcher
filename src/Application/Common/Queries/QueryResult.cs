@@ -1,8 +1,8 @@
 ﻿namespace SiteWatcher.Application.Common.Queries;
 
-public sealed class DbQuery
+public sealed class QueryResult
 {
-    public DbQuery(string sql, Dictionary<string, object> parameters)
+    public QueryResult(string sql, Dictionary<string, object> parameters)
     {
         Sql = sql;
         Parameters = parameters;

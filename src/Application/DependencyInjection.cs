@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
-using SiteWatcher.Application.Common.Command;
 
 namespace SiteWatcher.Application;
 
@@ -14,14 +13,6 @@ public static class DependencyInjection
             opts.Namespace = "SiteWatcher.Application.Mediator";
             opts.ServiceLifetime = ServiceLifetime.Scoped;
         });
-
-        services.Scan(scan =>
-        {
-            scan.FromAssemblyOf<ThisAssembly>()
-                .AddClasses(c => c.AssignableTo<IApplicationHandler>())
-                .AsSelf();
-        });
-
         return services;
     }
 

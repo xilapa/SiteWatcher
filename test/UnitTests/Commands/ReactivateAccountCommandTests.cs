@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using MockQueryable.Moq;
 using Moq;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ReactivateAccount;
@@ -14,7 +15,12 @@ namespace UnitTests.Commands;
 
 public sealed class ReactivateAccountCommandTests
 {
-    private readonly Mock<IAuthService> _authServiceMock = new();
+    private readonly Mock<IAuthService> _authServiceMock;
+
+    public ReactivateAccountCommandTests()
+    {
+        _authServiceMock = new Mock<IAuthService>();
+    }
 
     [Fact]
     public async Task CantReactiveAccountIfUserDoesNotExists()
@@ -32,13 +38,13 @@ public sealed class ReactivateAccountCommandTests
         var command = new ReactivateAccountCommand {Token = "token"};
 
         // Act
-        var result = await commandHandler.Handle(command, CancellationToken.None);
+        var result = await commandHandler.Handle(command, CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Error!.Messages
-            .Length.Should().Be(1);
+        result!.Errors
+            .Count().Should().Be(1);
 
-        result.Error.Messages[0]
+        result.Errors.First()
             .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
     }
 
@@ -63,13 +69,13 @@ public sealed class ReactivateAccountCommandTests
         var command = new ReactivateAccountCommand {Token = "INVALID_TOKEN"};
 
         // Act
-        var result = await commandHandler.Handle(command, CancellationToken.None);
+        var result = await commandHandler.Handle(command, CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Error!.Messages
-            .Length.Should().Be(1);
+        result!.Errors
+            .Count().Should().Be(1);
 
-        result.Error.Messages[0]
+        result.Errors.First()
             .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 
         user.Active.Should().BeFalse();

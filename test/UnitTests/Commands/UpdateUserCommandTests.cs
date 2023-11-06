@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
-using FluentValidation;
-using FluentValidation.Results;
 using MockQueryable.Moq;
 using Moq;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
@@ -23,21 +22,17 @@ public sealed class UpdateUserCommandTests
         contextMock.Setup(c => c.Users).Returns(dbSetMock.Object);
         var session = new Mock<ISession>().Object;
 
-        var validatorMock = new Mock<IValidator<UpdateUserCommand>>();
-        validatorMock.Setup(v => v.Validate(It.IsAny<UpdateUserCommand>()))
-            .Returns(new ValidationResult());
-
-        var commandHandler =
-            new UpdateUserCommandHandler(contextMock.Object, session, new FakeCache(), validatorMock.Object);
+        var commandHandler = new UpdateUserCommandHandler(contextMock.Object, session, new FakeCache());
 
         // Act
-        var result = await commandHandler.Handle(new UpdateUserCommand(), CancellationToken.None);
+        var result = await commandHandler.Handle(new UpdateUserCommand(), CancellationToken.None) as ErrorResult;
 
         // Assert
 
-        result.Error!.Messages.Length.Should().Be(1);
-        result.Error.Messages[0]
-            .Should()
-            .Be(ApplicationErrors.USER_DO_NOT_EXIST);
+        result!.Errors
+            .Count().Should().Be(1);
+
+        result.Errors.First()
+            .Should().Be(ApplicationErrors.USER_DO_NOT_EXIST);
     }
 }

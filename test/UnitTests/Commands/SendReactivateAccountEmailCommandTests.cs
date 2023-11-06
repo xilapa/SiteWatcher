@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using MockQueryable.Moq;
+﻿using MockQueryable.Moq;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
@@ -15,16 +13,9 @@ public sealed class SendReactivateAccountEmailCommandTests
     {
         // Arrange
         var dbsetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
-
         var contextMock = new Mock<ISiteWatcherContext>();
         contextMock.Setup(c => c.Users).Returns(dbsetMock.Object);
-
-        var validatorMock = new Mock<IValidator<SendReactivateAccountEmailCommand>>();
-        validatorMock.Setup(v => v.Validate(It.IsAny<SendReactivateAccountEmailCommand>()))
-            .Returns(new ValidationResult());
-
-        var commandHandler =
-            new SendReactivateAccountEmailCommandHandler(contextMock.Object, null!, validatorMock.Object);
+        var commandHandler = new SendReactivateAccountEmailCommandHandler(contextMock.Object, null!);
 
         // Act
         await commandHandler.Handle(new SendReactivateAccountEmailCommand(), default);

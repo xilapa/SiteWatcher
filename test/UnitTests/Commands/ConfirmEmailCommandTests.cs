@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using MockQueryable.Moq;
 using Moq;
+using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.ConfirmEmail;
@@ -15,8 +16,13 @@ namespace UnitTests.Commands;
 
 public sealed class ConfirmEmailCommandTests
 {
-    private readonly Mock<IAuthService> _authServiceMock = new();
+    private readonly Mock<IAuthService> _authServiceMock;
     private SqliteContext _context = null!;
+
+    public ConfirmEmailCommandTests()
+    {
+        _authServiceMock = new Mock<IAuthService>();
+    }
 
     [Fact]
     public async Task CantConfirmEmailIfUserDoesNotExists()
@@ -28,11 +34,11 @@ public sealed class ConfirmEmailCommandTests
         var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, _context, null!);
 
         // Act
-        var result = await commandHandler.Handle(new ConfirmEmailCommand(), CancellationToken.None);
+        var result = await commandHandler.Handle(new ConfirmEmailCommand(), CancellationToken.None) as ErrorResult;
 
         // Assert
-        result.Error!.Messages.Length.Should().Be(1);
-        result.Error.Messages[0]
+        result!.Errors.Count().Should().Be(1);
+        result.Errors.First()
             .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
     }
 
@@ -55,14 +61,14 @@ public sealed class ConfirmEmailCommandTests
         var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, contextMock.Object, sessionMock.Object);
 
         // Act
-        var result = await commandHandler.Handle(new ConfirmEmailCommand {Token = "INVALID_TOKEN"}, CancellationToken.None);
+        var result = await commandHandler.Handle(new ConfirmEmailCommand {Token = "INVALID_TOKEN"}, CancellationToken.None) as ErrorResult;
 
         // Assert
 
-        result.Error!.Messages
-            .Length.Should().Be(1);
+        result!.Errors
+            .Count().Should().Be(1);
 
-        result.Error.Messages[0]
+        result.Errors.First()
             .Should().Be(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 
         user.EmailConfirmed.Should().BeFalse();

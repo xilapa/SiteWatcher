@@ -1,6 +1,4 @@
-using FluentValidation;
-using SiteWatcher.Application.Common.Command;
-using SiteWatcher.Application.Common.Results;
+using Mediator;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
@@ -11,7 +9,7 @@ using SiteWatcher.Domain.Users.Enums;
 
 namespace SiteWatcher.Application.Users.Commands.RegisterUser;
 
-public class RegisterUserCommand
+public class RegisterUserCommand : ICommand<RegisterUserResult>
 {
     public string? Name { get; set; }
     public string? Email { get; set; }
@@ -23,29 +21,29 @@ public class RegisterUserCommand
     public RegisterUserInput ToInputModel() => new (Name!, Email!, Language, Theme, GoogleId, AuthEmail);
 }
 
-public class RegisterUserCommandHandler : BaseHandler<RegisterUserCommand, Result<RegisterUserResult>>
+public class RegisterUserCommandHandler : ICommandHandler<RegisterUserCommand, RegisterUserResult>
 {
     private readonly ISiteWatcherContext _context;
     private readonly IAuthService _authService;
     private readonly ISession _session;
 
     public RegisterUserCommandHandler(ISiteWatcherContext context, IAuthService authService,
-        ISession session, IValidator<RegisterUserCommand> validator) : base(validator)
+        ISession session)
     {
         _context = context;
         _authService = authService;
         _session = session;
     }
 
-    protected override async Task<Result<RegisterUserResult>> HandleCommand(RegisterUserCommand command, CancellationToken ct)
+    public async ValueTask<RegisterUserResult> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var user = User.FromInputModel(command.ToInputModel(), _session.Now);
+        var user = User.FromInputModel(request.ToInputModel(), _session.Now);
 
         // TODO: remove this exception, not rely on database for a business rule
         try
         {
             _context.Users.Add(user);
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync(cancellationToken);
         }
         catch (UniqueViolationException)
         {

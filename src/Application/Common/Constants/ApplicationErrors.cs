@@ -2,6 +2,7 @@ namespace SiteWatcher.Application.Common.Constants;
 
 public static class ApplicationErrors
 {
+    // TODO: Translate error messages at the fronteend
     public static readonly string INTERNAL_ERROR = "An error has occurred.";
     public static readonly string NAME_MUST_HAVE_ONLY_LETTERS = "Username must only have letters.";
     public static readonly string USER_DO_NOT_EXIST = "User does not exist.";
