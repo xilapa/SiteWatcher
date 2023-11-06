@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="FluentValidation" Version="11.7.1" />
+    <PackageVersion Include="FluentValidation" Version="11.8.0" />
     <PackageVersion Include="MassTransit" Version="8.1.1" />
     <PackageVersion Include="MassTransit.Abstractions" Version="8.1.1" />
     <PackageVersion Include="MassTransit.Analyzers" Version="8.1.1">
