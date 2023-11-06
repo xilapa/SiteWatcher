@@ -15,7 +15,7 @@ public sealed class DeactivateAccountCommandTests
         var dbSetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
         contextMock.Setup(c => c.Users).Returns(dbSetMock.Object);
-        var commandHandler = new DeactivateAccountCommandHandler(contextMock.Object, null!, null!);
+        var commandHandler = new DeactivateAccountCommandHandler(contextMock.Object, null!);
 
         // Act
         await commandHandler.Handle(new DeactivateAccountCommand(), default);

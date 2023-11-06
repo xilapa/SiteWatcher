@@ -15,7 +15,7 @@ public sealed class SendEmailConfirmationCommandTests
         var dbsetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
         contextMock.Setup(c => c.Users).Returns(dbsetMock.Object);
-        var commandHandler = new SendEmailConfirmationCommandHandler(null!, contextMock.Object, null!);
+        var commandHandler = new SendEmailConfirmationCommandHandler(null!, contextMock.Object);
 
         // Act
         await commandHandler.Handle(new SendEmailConfirmationCommand(), default);

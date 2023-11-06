@@ -14,7 +14,7 @@ public static class JobConfigurator
     public static IServiceCollection SetupJobs(this IServiceCollection serviceCollection, WorkerSettings settings)
     {
         serviceCollection
-            .AddScoped<UserAlertsService>()
+            .AddScoped<IUserAlertsService, UserAlertsService>()
             .AddAuthService()
             .AddHttpClient()
             .AddScoped<IHttpClient, HttpClient>()

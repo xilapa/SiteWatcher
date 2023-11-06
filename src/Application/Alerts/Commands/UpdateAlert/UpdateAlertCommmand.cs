@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using SiteWatcher.Application.Alerts.EventHandlers;
 using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Common.Extensions;
@@ -53,15 +52,13 @@ public class UpdateAlertCommandHandler : BaseHandler<UpdateAlertCommmand, Result
     private readonly IIdHasher _idHasher;
     private readonly ISiteWatcherContext _context;
     private readonly ISession _session;
-    private readonly AlertsChangedEventHandler _alertsChangedEventHandler;
 
     public UpdateAlertCommandHandler(IIdHasher idHasher, ISiteWatcherContext context, ISession session,
-        AlertsChangedEventHandler alertsChangedEventHandler, IValidator<UpdateAlertCommmand> validator) : base(validator)
+        IValidator<UpdateAlertCommmand> validator) : base(validator)
     {
         _idHasher = idHasher;
         _context = context;
         _session = session;
-        _alertsChangedEventHandler = alertsChangedEventHandler;
     }
 
     protected override async Task<Result<DetailedAlertView>> HandleCommand(UpdateAlertCommmand command, CancellationToken ct)
@@ -74,10 +71,8 @@ public class UpdateAlertCommandHandler : BaseHandler<UpdateAlertCommmand, Result
         var alert = await _context.GetAlertForUpdateAsync(updateInfo.AlertId, _session.UserId!.Value, ct);
         if (alert is null) return Error.Validation(ApplicationErrors.ALERT_DO_NOT_EXIST);
 
-        var alertsChangedEvent =  alert.Update(updateInfo, _session.Now);
+        alert.Update(updateInfo, _session.Now);
         await _context.SaveChangesAsync(CancellationToken.None);
-
-        await _alertsChangedEventHandler.Handle(alertsChangedEvent, ct);
 
         return DetailedAlertView.FromAlert(alert, _idHasher);
     }

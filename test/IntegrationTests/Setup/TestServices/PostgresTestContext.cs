@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mediator;
+using Microsoft.EntityFrameworkCore;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Infra;
 
@@ -8,8 +9,8 @@ public class PostgresTestContext : SiteWatcherContext
 {
     private readonly string _connectionString;
 
-    public PostgresTestContext(IAppSettings appSettings, string connectionString) :
-        base(appSettings)
+    public PostgresTestContext(IAppSettings appSettings, IMediator mediator, string connectionString) :
+        base(appSettings, mediator)
     {
         _connectionString = connectionString;
     }

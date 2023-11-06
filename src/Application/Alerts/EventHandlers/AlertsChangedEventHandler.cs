@@ -1,11 +1,11 @@
-﻿using SiteWatcher.Application.Common.Command;
+﻿using Mediator;
 using SiteWatcher.Domain.Alerts.Events;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Services;
 
 namespace SiteWatcher.Application.Alerts.EventHandlers;
 
-public class AlertsChangedEventHandler : IApplicationHandler
+public class AlertsChangedEventHandler : INotificationHandler<AlertsChangedEvent>
 {
     private readonly ICache _cache;
 

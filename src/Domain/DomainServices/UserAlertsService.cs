@@ -5,7 +5,7 @@ using SiteWatcher.Domain.Users;
 
 namespace SiteWatcher.Domain.DomainServices;
 
-public sealed class UserAlertsService
+public sealed class UserAlertsService : IUserAlertsService
 {
     private readonly IHttpClient _httpClient;
 
@@ -14,13 +14,7 @@ public sealed class UserAlertsService
         _httpClient = httpClient;
     }
 
-    /// <summary>
-    /// Executes all user alerts. If there are no notification for the user, null is returned.
-    /// </summary>
-    /// <param name="user">User with the alerts and rules loaded</param>
-    /// <param name="currentTime">Current time</param>
-    /// <param name="ct">Cancellation token</param>
-    public async Task<AlertExecutionStatus> ExecuteAlerts(User user, DateTime currentTime, CancellationToken ct)
+    public async Task<List<AlertExecutionError>> ExecuteAlerts(User user, DateTime currentTime, CancellationToken ct)
     {
         var alertsTriggered = new List<AlertTriggered>();
         var errors = new List<AlertExecutionError>();
@@ -39,24 +33,25 @@ public sealed class UserAlertsService
             }
         }
 
-        return new AlertExecutionStatus(new AlertsTriggeredMessage(user, alertsTriggered, currentTime), errors);
+        if (alertsTriggered.Count != 0)
+            user.AddDomainEvent(new AlertsTriggeredMessage(user, alertsTriggered, currentTime));
+        return errors;
     }
-}
-
-public sealed class AlertExecutionStatus
-{
-    public AlertExecutionStatus(AlertsTriggeredMessage alertsTriggered, List<AlertExecutionError> errors)
-    {
-        AlertsTriggered = alertsTriggered;
-        Errors = errors;
-    }
-
-    public AlertsTriggeredMessage AlertsTriggered { get; }
-    public List<AlertExecutionError> Errors { get; }
 }
 
 public sealed class AlertExecutionError
 {
     public AlertId AlertId { get; set; }
     public Exception Exception { get; set; } = null!;
+}
+
+public interface IUserAlertsService
+{
+    /// <summary>
+    /// Executes all user alerts. If there are no notification for the user, null is returned.
+    /// </summary>
+    /// <param name="user">User with the alerts and rules loaded</param>
+    /// <param name="currentTime">Current time</param>
+    /// <param name="ct">Cancellation token</param>
+    Task<List<AlertExecutionError>> ExecuteAlerts(User user, DateTime currentTime, CancellationToken ct);
 }

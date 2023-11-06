@@ -40,7 +40,7 @@ public sealed class UpdateAlertCommandTests
         _hasherMock.Setup(h => h.DecodeId(It.IsAny<string>()))
             .Returns(alertId);
 
-        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, null!, null!, null!, _validatorMock.Object);
+        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, null!, null!, _validatorMock.Object);
         var command = new UpdateAlertCommmand();
 
         // Act
@@ -67,7 +67,7 @@ public sealed class UpdateAlertCommandTests
         var sessionMock = new Mock<ISession>();
         sessionMock.Setup(s => s.UserId).Returns(UserId.Empty);
 
-        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, contextMock.Object, sessionMock.Object, null!,
+        var handler = new UpdateAlertCommandHandler(_hasherMock.Object, contextMock.Object, sessionMock.Object,
             _validatorMock.Object);
         var command = new UpdateAlertCommmand();
 

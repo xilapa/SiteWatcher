@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using SiteWatcher.Application.Alerts.EventHandlers;
 using SiteWatcher.Application.Common.Command;
 using SiteWatcher.Application.Common.Results;
 using SiteWatcher.Application.Interfaces;
@@ -42,22 +41,19 @@ public sealed class CreateAlertCommandHandler : BaseHandler<CreateAlertCommand, 
     private readonly ISession _session;
     private readonly ISiteWatcherContext _context;
     private readonly IIdHasher _idHasher;
-    private readonly AlertsChangedEventHandler _alertsChangedEventHandler;
 
     public CreateAlertCommandHandler(ISession session, ISiteWatcherContext context, IIdHasher idHasher,
-        IValidator<CreateAlertCommand> validator, AlertsChangedEventHandler publisher) : base(validator)
+        IValidator<CreateAlertCommand> validator) : base(validator)
     {
         _session = session;
         _context = context;
         _idHasher = idHasher;
-        _alertsChangedEventHandler = publisher;
     }
 
     protected override async Task<Result<DetailedAlertView>> HandleCommand(CreateAlertCommand command, CancellationToken ct)
     {
-        var (alert, alertsChangedEvent) = AlertFactory.Create(command, _session.UserId!.Value, _session.Now);
+        var alert = AlertFactory.Create(command, _session.UserId!.Value, _session.Now);
         _context.Alerts.Add(alert);
-        await _alertsChangedEventHandler.Handle(alertsChangedEvent, ct);
         await _context.SaveChangesAsync(ct);
         return DetailedAlertView.FromAlert(alert, _idHasher);
     }

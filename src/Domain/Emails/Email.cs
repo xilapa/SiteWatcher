@@ -12,39 +12,25 @@ public class Email : BaseModel<EmailId>
     protected Email()
     {  }
 
-    public static (Email, EmailCreatedMessage) CreateEmail(string body, bool htmlBody, string subject,
-        MailRecipient recipient, DateTime currentDate)
-    {
-        var email = new Email(body, subject, recipient, currentDate);
-        var emailCreatedMessage = new EmailCreatedMessage(email.Id, subject, body, htmlBody, recipient, currentDate);
-        return (email, emailCreatedMessage);
-    }
-
-    public static (Email, EmailCreatedMessage) CreateEmail(string body, bool htmlBody, string subject, User user,
-        DateTime currentDate)
-    {
-        var email = new Email(body, subject, user, currentDate);
-        var recipient = new MailRecipient(user.Name, user.Email, user.Id);
-        var emailCreatedMessage = new EmailCreatedMessage(email.Id, subject, body, htmlBody, recipient, currentDate);
-        return (email, emailCreatedMessage);
-    }
-
-    private Email(string body, string subject, MailRecipient recipient, DateTime currentDate) :
+    public Email(string body, bool htmlBody, string subject, MailRecipient recipient, DateTime currentDate) :
         base(EmailId.New(), currentDate)
     {
         Subject = subject;
         Body = body;
         Recipient = $"{recipient.Name}:{recipient.Email}";
         UserId = recipient.UserId;
+        AddDomainEvent(new EmailCreatedMessage(Id,subject, body, htmlBody, recipient, currentDate));
     }
 
-    private Email(string body, string subject, User user, DateTime currentDate) :
+    public Email(string body, bool htmlBody, string subject, User user, DateTime currentDate) :
         base(EmailId.New(), currentDate)
     {
         Subject = subject;
         Body = body;
         Recipient = $"{user.Name}:{user.Email}";
         UserId = user.Id;
+        var recipient = new MailRecipient(user.Name, user.Email, user.Id);
+        AddDomainEvent(new EmailCreatedMessage(Id,subject, body, htmlBody, recipient, currentDate));
     }
 
     public string Recipient { get; }

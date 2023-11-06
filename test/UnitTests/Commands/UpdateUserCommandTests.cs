@@ -8,6 +8,7 @@ using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.UpdateUser;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Users;
+using SiteWatcher.IntegrationTests.Setup.TestServices;
 
 namespace UnitTests.Commands;
 
@@ -27,7 +28,7 @@ public sealed class UpdateUserCommandTests
             .Returns(new ValidationResult());
 
         var commandHandler =
-            new UpdateUserCommandHandler(contextMock.Object, session, validatorMock.Object, null!, null!);
+            new UpdateUserCommandHandler(contextMock.Object, session, new FakeCache(), validatorMock.Object);
 
         // Act
         var result = await commandHandler.Handle(new UpdateUserCommand(), CancellationToken.None);

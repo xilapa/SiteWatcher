@@ -8,7 +8,6 @@ using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Authentication.Services;
 using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.Users;
-using SiteWatcher.Domain.Users.DTOs;
 using SiteWatcher.Domain.Users.Enums;
 using SiteWatcher.IntegrationTests.Setup.TestServices;
 
@@ -26,7 +25,7 @@ public sealed class ConfirmEmailCommandTests
         _authServiceMock
             .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))
             .ReturnsAsync(new UserId());
-        var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, _context, null!, null!);
+        var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, _context, null!);
 
         // Act
         var result = await commandHandler.Handle(new ConfirmEmailCommand(), CancellationToken.None);
@@ -41,9 +40,8 @@ public sealed class ConfirmEmailCommandTests
     public async Task UserCantConfirmEmailWithInvalidToken()
     {
         // Arrange
-        var registerInput = new RegisterUserInput("name", "email", Language.BrazilianPortuguese, Theme.Light,
-            "googleId", "authEmail");
-        var (user, _) = User.Create(registerInput, DateTime.Now);
+        var user = new User("googleId", "name", "email", "authEmail",
+            Language.BrazilianPortuguese, Theme.Light, DateTime.Now);
 
         var userDbSetMock = new[] { user }.AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
@@ -54,7 +52,7 @@ public sealed class ConfirmEmailCommandTests
             .ReturnsAsync(user.Id);
 
         var sessionMock = new Mock<ISession>();
-        var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, contextMock.Object, sessionMock.Object, null!);
+        var commandHandler = new ConfirmEmailCommandHandler(_authServiceMock.Object, contextMock.Object, sessionMock.Object);
 
         // Act
         var result = await commandHandler.Handle(new ConfirmEmailCommand {Token = "INVALID_TOKEN"}, CancellationToken.None);

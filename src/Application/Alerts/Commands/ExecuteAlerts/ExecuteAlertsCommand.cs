@@ -22,20 +22,18 @@ public sealed class ExecuteAlertsCommand
 public sealed class ExecuteAlertsCommandHandler
 {
     private readonly ISiteWatcherContext _context;
-    private readonly UserAlertsService _userAlertsService;
+    private readonly IUserAlertsService _userAlertsService;
     private readonly ISession _session;
     private readonly ICache _cache;
-    private readonly IPublisher _publisher;
     private readonly ILogger<ExecuteAlertsCommandHandler> _logger;
 
-    public ExecuteAlertsCommandHandler(ISiteWatcherContext context, UserAlertsService userAlertsService,
-            ISession session, ICache cache, IPublisher publisher, ILogger<ExecuteAlertsCommandHandler> logger)
+    public ExecuteAlertsCommandHandler(ISiteWatcherContext context, IUserAlertsService userAlertsService,
+            ISession session, ICache cache, ILogger<ExecuteAlertsCommandHandler> logger)
     {
         _context = context;
         _userAlertsService = userAlertsService;
         _session = session;
         _cache = cache;
-        _publisher = publisher;
         _logger = logger;
     }
 
@@ -85,11 +83,8 @@ public sealed class ExecuteAlertsCommandHandler
             {
                 try
                 {
-                    var executionStatus = await _userAlertsService.ExecuteAlerts(user,_session.Now, ct);
-                    if (executionStatus.Errors.Count != 0) LogAlertExecutionErrors(executionStatus.Errors);
-
-                    await _publisher.PublishAsync(executionStatus.AlertsTriggered, ct);
-
+                    var errors = await _userAlertsService.ExecuteAlerts(user,_session.Now, ct);
+                    if (errors.Count != 0) LogAlertExecutionErrors(errors);
                     await _context.SaveChangesAsync(ct);
                 }
                 catch (Exception e)
