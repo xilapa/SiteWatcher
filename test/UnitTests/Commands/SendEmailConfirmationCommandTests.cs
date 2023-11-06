@@ -18,7 +18,7 @@ public sealed class SendEmailConfirmationCommandTests
         var commandHandler = new SendEmailConfirmationCommandHandler(null!, contextMock.Object, null!);
 
         // Act
-        await commandHandler.Handle(default);
+        await commandHandler.Handle(new SendEmailConfirmationCommand(), default);
 
         // Assert
         contextMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()),

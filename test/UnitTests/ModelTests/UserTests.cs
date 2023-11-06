@@ -38,7 +38,7 @@ public sealed class UserTests
         // Arrange
         var registerInput = new RegisterUserInput("name", email, Language.BrazilianPortuguese, Theme.Light,
             "googleId", authEmail);
-        var (user, _) = User.Create(registerInput, DateTime.Now);
+        var (user, @event) = User.Create(registerInput, DateTime.Now);
         var userUpdate = new UpdateUserInput
         {
             Name = "name",
@@ -48,7 +48,7 @@ public sealed class UserTests
         };
 
         // Act
-        var (_, @event) = user.Update(userUpdate, DateTime.Now);
+        user.Update(userUpdate, DateTime.Now);
 
         // Assert
         user.EmailConfirmed.Should().Be(emailConfirmed);

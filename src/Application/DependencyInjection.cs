@@ -9,6 +9,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
+        services.AddMediator(opts =>
+        {
+            opts.Namespace = "SiteWatcher.Application.Mediator";
+            opts.ServiceLifetime = ServiceLifetime.Scoped;
+        });
+
         services.Scan(scan =>
         {
             scan.FromAssemblyOf<ThisAssembly>()

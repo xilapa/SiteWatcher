@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Mediator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SiteWatcher.Application.Alerts.Commands.CreateAlert;
 using SiteWatcher.Application.Alerts.Commands.DeleteAlert;
@@ -16,6 +17,13 @@ namespace SiteWatcher.WebAPI.Controllers;
 [Route("alert")]
 public class AlertController : ControllerBase
 {
+    private readonly IMediator _mediator;
+
+    public AlertController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateAlert([FromServices] CreateAlertCommandHandler handlerHandler,
         CreateAlertCommand request, CancellationToken ct)
@@ -35,9 +43,8 @@ public class AlertController : ControllerBase
 
     [HttpGet("{AlertId}/details")]
     [CacheFilter]
-    public async Task<IActionResult> GetAlertDetails([FromServices]GetAlertDetailsQueryHandler handler,
-        [FromRoute] GetAlertDetailsQuery request, CancellationToken ct) =>
-        Ok(await handler.Handle(request, ct));
+    public async Task<IActionResult> GetAlertDetails([FromRoute] GetAlertDetailsQuery request, CancellationToken ct) =>
+        Ok(await _mediator.Send(request, ct));
 
     [HttpDelete("{AlertId}")]
     public async Task<IActionResult> DeleteAlert([FromServices] DeleteAlertCommandHandler handler,

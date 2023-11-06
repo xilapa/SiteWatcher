@@ -1,3 +1,4 @@
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using SiteWatcher.Application.Users.Commands.ActivateAccount;
@@ -21,12 +22,19 @@ namespace SiteWatcher.WebAPI.Controllers;
 [Route("user")]
 public class UserController : ControllerBase
 {
+    private readonly IMediator _mediator;
+
+    public UserController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
     [HttpGet]
     [Authorize]
     [CacheFilter(ResponseCache: false)]
-    public async Task<IActionResult> GetUserInfo([FromServices]GetUserInfoQueryHandler handler, [FromRoute] GetUserInfoQuery request, CancellationToken ct)
+    public async Task<IActionResult> GetUserInfo([FromRoute] GetUserInfoQuery request, CancellationToken ct)
     {
-        var res = await handler.Handle(request, ct);
+        var res = await _mediator.Send(request, ct);
         if (res == null) return NotFound();
         return Ok(res);
     }
@@ -56,8 +64,8 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpPut("resend-confirmation-email")]
-    public async Task ResendConfirmationEmail([FromServices]SendEmailConfirmationCommandHandler handler, CancellationToken ct) =>
-        await handler.Handle(ct);
+    public async Task ResendConfirmationEmail() =>
+        await _mediator.Send(new SendEmailConfirmationCommand());
 
     [AllowAnonymous]
     [HttpPut("confirm-email")]
@@ -79,8 +87,8 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpPut("deactivate")]
-    public async Task DeactivateAccount([FromServices] DeactivateAccountCommandHandler handle, CancellationToken ct) =>
-        await handle.Handle(ct);
+    public async Task DeactivateAccount() =>
+        await _mediator.Send(new DeactivateAccountCommand());
 
     [AllowAnonymous]
     [HttpPut("send-reactivate-account-email")]
@@ -103,11 +111,11 @@ public class UserController : ControllerBase
 
     [Authorize]
     [HttpDelete]
-    public async Task DeleteAccount([FromServices] DeleteAccountCommandHandler handler, CancellationToken ct) =>
-        await handler.Handle(ct);
+    public async Task DeleteAccount() =>
+        await _mediator.Send(new DeleteAccountCommand());
 
     [Authorize]
     [HttpPost("logout-all-devices")]
-    public async Task LogoutOfAllDevices([FromServices]LogoutUserOfAllDevicesCommandHandler handler, CancellationToken ct) =>
-        await handler.Handle(ct);
+    public async Task LogoutOfAllDevices() =>
+        await _mediator.Send(new LogoutUserOfAllDevicesCommand());
 }

@@ -18,7 +18,7 @@ public sealed class DeactivateAccountCommandTests
         var commandHandler = new DeactivateAccountCommandHandler(contextMock.Object, null!, null!);
 
         // Act
-        await commandHandler.Handle(default);
+        await commandHandler.Handle(new DeactivateAccountCommand(), default);
 
         // Assert
         contextMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()),

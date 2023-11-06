@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Domain.Authentication;
-using SiteWatcher.Application.Common.Command;
+using Mediator;
 using SiteWatcher.Application.Common.Constants;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Interfaces;
@@ -10,7 +10,7 @@ using SiteWatcher.Domain.Users.DTOs;
 
 namespace SiteWatcher.Application.Authentication.Commands.Authentication;
 
-public class AuthenticationCommand
+public class AuthenticationCommand : ICommand<AuthCodeResult>
 {
     public string? GoogleId { get; set; }
     public string? Email { get; set; }
@@ -39,7 +39,7 @@ public class AuthenticationCommand
     }
 }
 
-public class AuthenticationCommandHandler : IApplicationHandler
+public class AuthenticationCommandHandler : ICommandHandler<AuthenticationCommand, AuthCodeResult>
 {
     private readonly IDapperContext _context;
     private readonly IQueries _queries;
