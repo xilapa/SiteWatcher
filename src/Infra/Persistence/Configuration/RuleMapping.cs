@@ -29,18 +29,14 @@ public class RuleMapping : BaseModelMapping<Rule, RuleId>
             .HasColumnType("boolean")
             .IsRequired();
 
+        builder.HasDiscriminator(r => r.RuleType)
+            .HasValue<AnyChangesRule>(RuleType.AnyChanges)
+            .HasValue<TermRule>(RuleType.Term)
+            .HasValue<RegexRule>(RuleType.Regex);
+
         builder.Property(r => r.RuleType)
-            .HasColumnName("Rule")
             .HasColumnType("char")
-            .HasConversion<RuleConverter>();
-
-        builder.HasDiscriminator<char>("Rule")
-            .HasValue<AnyChangesRule>((char)RuleType.AnyChanges)
-            .HasValue<TermRule>((char)RuleType.Term)
-            .HasValue<RegexRule>((char)RuleType.Regex);
-
-        builder.Property(nameof(Rule))
-            .HasColumnType("char")
+            .HasConversion<RuleConverter>()
             .IsRequired();
     }
 }
