@@ -66,12 +66,13 @@ public static class SiteWatcherContextExtensions
             .AsNoTracking()
             .AnyAsync(i => i.Consumer == consumerName && i.MessageId == messageId);
 
-    public static void MarkMessageAsConsumed(this ISiteWatcherContext context, string messageId, string consumerName)
+    public static void MarkMessageAsConsumed(this ISiteWatcherContext context, string messageId, string consumerName, DateTime currentDate)
     {
         var idemPotencyConsumer = new IdempotentConsumer
         {
             MessageId = messageId,
             Consumer = consumerName,
+            DateCreated = currentDate
         };
         context.IdempotentConsumers.Add(idemPotencyConsumer);
     }
