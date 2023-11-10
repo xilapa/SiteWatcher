@@ -58,7 +58,7 @@ public class Queries : IQueries
                 a.""Frequency"",
                 a.""LastVerification"",
                 a.""Site_Name"" SiteName,
-                r.""Rule"" RuleType,
+                r.""RuleType"",
                 COUNT(t.""Id"") TriggeringsCount
             FROM 
             ""sw"".""Alerts"" a
@@ -161,7 +161,7 @@ public class Queries : IQueries
                 a.""Frequency"",
                 a.""LastVerification"",
                 a.""Site_Name"" SiteName,
-                r.""Rule"" RuleType
+                r.""RuleType""
             FROM 
                 ""sw"".""Alerts"" a
                     INNER JOIN ""sw"".""Rules"" r 
