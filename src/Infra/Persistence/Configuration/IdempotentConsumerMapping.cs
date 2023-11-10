@@ -17,5 +17,10 @@ public class IdempotentConsumerMapping : IEntityTypeConfiguration<IdempotentCons
 
         builder.Property(i => i.Consumer)
             .HasColumnType("varchar(128)");
+
+        builder.Property(i => i.DateCreated)
+            .HasColumnType("timestamptz")
+            .HasDefaultValueSql("timezone('utc', now())")
+            .IsRequired();
     }
 }
