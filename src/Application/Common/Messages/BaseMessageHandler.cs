@@ -33,6 +33,7 @@ public abstract class BaseMessageHandler<T> : IConsumer<T> where T : BaseMessage
 
         await Handle(context);
         Context.MarkMessageAsConsumed(context.Message.Id, _consumerName, Session.Now);
+        await Context.SaveChangesAsync(CancellationToken.None);
 
         _logger.LogInformation("{Date} Message with Id: {Message} has been processed by {Consumer}",
             Session.Now, context.Message.Id, _consumerName);
