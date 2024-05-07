@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using MockQueryable.Moq;
+using MockQueryable.NSubstitute;
 using Moq;
 using SiteWatcher.Application.Alerts.Commands.UpdateAlert;
 using SiteWatcher.Application.Common.Commands;
@@ -58,7 +58,7 @@ public sealed class UpdateAlertCommandTests
 
         var alertDbSetMock = Array.Empty<Alert>().AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
-        contextMock.Setup(c => c.Alerts).Returns(alertDbSetMock.Object);
+        contextMock.Setup(c => c.Alerts).Returns(alertDbSetMock);
 
         var sessionMock = new Mock<ISession>();
         sessionMock.Setup(s => s.UserId).Returns(UserId.Empty);

@@ -1,4 +1,4 @@
-﻿using MockQueryable.Moq;
+﻿using MockQueryable.NSubstitute;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.DeactivateAccount;
@@ -14,7 +14,7 @@ public sealed class DeactivateAccountCommandTests
         // Arrange
         var dbSetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
-        contextMock.Setup(c => c.Users).Returns(dbSetMock.Object);
+        contextMock.Setup(c => c.Users).Returns(dbSetMock);
         var commandHandler = new DeactivateAccountCommandHandler(contextMock.Object, null!);
 
         // Act

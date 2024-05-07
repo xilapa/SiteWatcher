@@ -1,4 +1,4 @@
-﻿using MockQueryable.Moq;
+﻿using MockQueryable.NSubstitute;
 using Moq;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Application.Users.Commands.SendEmailConfirmation;
@@ -14,7 +14,7 @@ public sealed class SendEmailConfirmationCommandTests
         // Arrange
         var dbsetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
-        contextMock.Setup(c => c.Users).Returns(dbsetMock.Object);
+        contextMock.Setup(c => c.Users).Returns(dbsetMock);
         var commandHandler = new SendEmailConfirmationCommandHandler(null!, contextMock.Object);
 
         // Act

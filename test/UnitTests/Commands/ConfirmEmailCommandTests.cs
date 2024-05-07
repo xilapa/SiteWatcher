@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using MockQueryable.Moq;
+using MockQueryable.NSubstitute;
 using Moq;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
@@ -51,7 +51,7 @@ public sealed class ConfirmEmailCommandTests
 
         var userDbSetMock = new[] { user }.AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
-        contextMock.Setup(c => c.Users).Returns(userDbSetMock.Object);
+        contextMock.Setup(c => c.Users).Returns(userDbSetMock);
 
         _authServiceMock
             .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))

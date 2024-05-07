@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using MockQueryable.Moq;
+using MockQueryable.NSubstitute;
 using Moq;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
@@ -19,7 +19,7 @@ public sealed class UpdateUserCommandTests
         // Arrange
         var dbSetMock = Array.Empty<User>().AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
-        contextMock.Setup(c => c.Users).Returns(dbSetMock.Object);
+        contextMock.Setup(c => c.Users).Returns(dbSetMock);
         var session = new Mock<ISession>().Object;
 
         var commandHandler = new UpdateUserCommandHandler(contextMock.Object, session, new FakeCache());

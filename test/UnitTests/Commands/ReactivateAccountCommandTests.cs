@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using MockQueryable.Moq;
+using MockQueryable.NSubstitute;
 using Moq;
 using SiteWatcher.Application.Common.Commands;
 using SiteWatcher.Application.Common.Constants;
@@ -28,7 +28,7 @@ public sealed class ReactivateAccountCommandTests
         // Arrange
         var userRepository = Array.Empty<User>().AsQueryable().BuildMockDbSet();
         var mockContext = new Mock<ISiteWatcherContext>();
-        mockContext.Setup(c => c.Users).Returns(userRepository.Object);
+        mockContext.Setup(c => c.Users).Returns(userRepository);
 
         _authServiceMock
             .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))
@@ -58,7 +58,7 @@ public sealed class ReactivateAccountCommandTests
 
         var userDbSetMock = new[] { user }.AsQueryable().BuildMockDbSet();
         var contextMock = new Mock<ISiteWatcherContext>();
-        contextMock.Setup(c => c.Users).Returns(userDbSetMock.Object);
+        contextMock.Setup(c => c.Users).Returns(userDbSetMock);
 
         _authServiceMock
             .Setup(a => a.GetUserIdFromConfirmationToken(It.IsAny<string>()))
