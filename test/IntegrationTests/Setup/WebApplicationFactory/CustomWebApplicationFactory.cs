@@ -14,6 +14,7 @@ using SiteWatcher.Application;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
 using SiteWatcher.Application.Common.Queries;
 using SiteWatcher.Application.Emails.Messages;
+using SiteWatcher.Application.IdempotentConsumers;
 using SiteWatcher.Application.Interfaces;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.Authentication.Services;
@@ -186,6 +187,9 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             if (!_enableMasstransitTestHarness) return;
             c.AddConsumers(typeof(SendEmailOnEmailCreatedMessageHandler).Assembly);
         });
+
+        // IdempotentConsumers
+        services.AddScoped<CleanIdempotentConsumers>();
     }
 
     private void ConfigureOptionsReplacementServices(IServiceCollection services)
