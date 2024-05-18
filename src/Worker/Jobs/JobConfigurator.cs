@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SiteWatcher.Application;
 using SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
+using SiteWatcher.Application.IdempotentConsumers;
 using SiteWatcher.Common.Services;
 using SiteWatcher.Domain.DomainServices;
 using SiteWatcher.Infra;
@@ -26,8 +27,11 @@ public static class JobConfigurator
         if (!settings.EnableJobs)
             return serviceCollection;
 
-        serviceCollection.AddHostedService<ExecuteAlertsPeriodically>();
-        serviceCollection.AddScoped<ExecuteAlertsCommandHandler>();
+        serviceCollection
+            .AddHostedService<ExecuteAlertsPeriodically>()
+            .AddScoped<ExecuteAlertsCommandHandler>()
+            .AddHostedService<CleanIdempotentConsumersPeriodically>()
+            .AddScoped<CleanIdempotentConsumers>();
 
         return serviceCollection;
     }
