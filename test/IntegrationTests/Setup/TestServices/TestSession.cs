@@ -10,6 +10,8 @@ public class TestSession : Session
         _currentTime = currentTime;
     }
 
-    private readonly DateTime _currentTime;
+    private DateTime _currentTime;
     public override DateTime Now => _currentTime;
+
+    public void SetNewDate(DateTime newDate) => _currentTime = newDate;
 }
