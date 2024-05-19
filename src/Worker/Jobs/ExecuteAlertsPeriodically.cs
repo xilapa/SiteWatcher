@@ -18,19 +18,21 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
         _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(10));
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
-         Task.Run(async () =>
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) => 
+        ExecuteAlerts(stoppingToken);
+
+    private async Task ExecuteAlerts(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await using var scope = _scopeFactory.CreateAsyncScope();
-                var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
-                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
+            var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
-                var frequencies = AlertFrequencies.GetCurrentFrequencies(session.Now);
-                await handler.Handle(new ExecuteAlertsCommand(frequencies), stoppingToken);
+            var frequencies = AlertFrequencies.GetCurrentFrequencies(session.Now);
+            await handler.Handle(new ExecuteAlertsCommand(frequencies), cancellationToken);
 
-                await _timer.WaitForNextTickAsync(stoppingToken);
-            }
-        }, stoppingToken);
+            await _timer.WaitForNextTickAsync(cancellationToken);
+        }
+    }
 }

@@ -17,16 +17,18 @@ public sealed class CleanIdempotentConsumersPeriodically : BackgroundService
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
-        Task.Run(async () =>
+        CleanIdempotentConsumers(stoppingToken);
+
+    private async Task CleanIdempotentConsumers(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                await using var scope = _scopeFactory.CreateAsyncScope();
-                var handler = scope.ServiceProvider.GetRequiredService<CleanIdempotentConsumers>();
+            await using var scope = _scopeFactory.CreateAsyncScope();
+            var handler = scope.ServiceProvider.GetRequiredService<CleanIdempotentConsumers>();
 
-                await handler.Clean(stoppingToken);
+            await handler.Clean(cancellationToken);
 
-                await _timer.WaitForNextTickAsync(stoppingToken);
-            }
-        }, stoppingToken);
+            await _timer.WaitForNextTickAsync(cancellationToken);
+        }
+    }
 }
