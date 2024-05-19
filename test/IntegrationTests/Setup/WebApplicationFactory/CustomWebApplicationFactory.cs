@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using ReflectionMagic;
@@ -55,7 +56,8 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     public FakePublisher FakePublisher { get; }
     public Mock<ILogger> LoggerMock { get; }
 
-    public CustomWebApplicationFactory(BaseTestFixtureOptions options, string connectionString, DbConnection? dbConnection)
+    public CustomWebApplicationFactory(BaseTestFixtureOptions options, string connectionString,
+        DbConnection? dbConnection)
     {
         var loggerFactoryMock = new Mock<ILoggerFactory>();
         LoggerMock = new Mock<ILogger>();
@@ -63,7 +65,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             .Returns(LoggerMock.Object);
         _loggerFactory = loggerFactoryMock.Object;
 
-        EmailServiceMock = EmailServiceMock = new Mock<IEmailServiceSingleton>();
+        EmailServiceMock = new Mock<IEmailServiceSingleton>();
         HttpClientFactoryMock = new Mock<IHttpClientFactory>();
 
         SetTestSettings(options, connectionString, dbConnection);
@@ -128,11 +130,13 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(SiteWatcherContext)
         };
 
+        RemoveMasstransitServices(services);
+
         if (!_enableMasstransitTestHarness)
             servicesToRemove = servicesToRemove.Append(typeof(IPublisher)).ToArray();
 
         // Only replace DapperQueries if using Sqlite
-        if(_databaseType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
+        if (_databaseType is DatabaseType.SqliteInMemory or DatabaseType.SqliteOnDisk)
             servicesToRemove = servicesToRemove.Append(typeof(IQueries)).ToArray();
 
         var descriptorsToRemove = services
@@ -230,5 +234,20 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         testSessionInstace.AsDynamic()._currentTime = CurrentTime;
 
         return authServiceInstance;
+    }
+
+    private static void RemoveMasstransitServices(IServiceCollection services)
+    {
+        var masstransitHostedServices = services
+            .Where(d => d.ServiceType == typeof(IHostedService) &&
+                        d.ImplementationType!.Namespace!.Contains("MassTransit", StringComparison.OrdinalIgnoreCase)
+            ).ToArray();
+
+        var masstransitServices = services.Where(d =>
+                d.ServiceType.Namespace!.Contains("MassTransit", StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        foreach (var service in masstransitHostedServices.Union(masstransitServices))
+            services.Remove(service);
     }
 }
