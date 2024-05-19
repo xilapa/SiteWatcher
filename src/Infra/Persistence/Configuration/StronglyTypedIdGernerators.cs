@@ -18,7 +18,7 @@ internal class AlertIdGenerator : StrongIdIntGenerator<AlertId>
 
 public class AlertIdValueGeneratorFactory : ValueGeneratorFactory
 {
-    public override ValueGenerator Create(IProperty property, IEntityType entityType)
+    public override ValueGenerator Create(IProperty property, ITypeBase typeBase)
     {
         return new AlertIdGenerator();
     }
@@ -33,7 +33,7 @@ internal class RuleIdGenerator : StrongIdIntGenerator<RuleId>
 
 public class RuleIdValueGeneratorFactory : ValueGeneratorFactory
 {
-    public override ValueGenerator Create(IProperty property, IEntityType entityType)
+    public override ValueGenerator Create(IProperty property, ITypeBase typeBase)
     {
         return new RuleIdGenerator();
     }
@@ -48,7 +48,7 @@ internal class NotificationIdGenerator : StrongIdIntGenerator<NotificationId>
 
 public class NotificationIdValueGeneratorFactory : ValueGeneratorFactory
 {
-    public override ValueGenerator Create(IProperty property, IEntityType entityType)
+    public override ValueGenerator Create(IProperty property, ITypeBase typeBase)
     {
         return new NotificationIdGenerator();
     }

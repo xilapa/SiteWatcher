@@ -20,7 +20,7 @@ jobs:
       - name: Install dotnet 3.1 (sonar dependency)
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '8.0.x'
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
