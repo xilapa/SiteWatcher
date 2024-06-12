@@ -5,7 +5,7 @@ import { MessageService } from "primeng/api";
 import { DynamicDialogConfig, DynamicDialogRef } from "primeng/dynamicdialog";
 import { utils } from "../../core/utils/utils";
 import { DetailedAlertView } from "../common/alert";
-import { Rules } from "../common/e-watch-mode";
+import { Rules } from "../common/e-rule-type";
 import { AlertService } from "../service/alert.service";
 
 @Component({

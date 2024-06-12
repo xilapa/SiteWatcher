@@ -1,7 +1,7 @@
 ﻿export enum Rules{
-    AnyChanges = 1,
-    Term,
-    Regex
+    AnyChanges = 65,
+    Term = 84,
+    Regex = 82
 }
 
 export class RuleUtils{

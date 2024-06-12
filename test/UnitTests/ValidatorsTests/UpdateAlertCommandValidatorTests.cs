@@ -38,7 +38,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 Frequency = new UpdateInfo<Frequencies>(),
                 SiteName = new UpdateInfo<string>(),
                 SiteUri = new UpdateInfo<string>(),
-                RuleType = new UpdateInfo<RuleType>()
+                Rule = new UpdateInfo<RuleType>()
             },
             new[]
             {
@@ -46,7 +46,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)),
                 ApplicationErrors.ValueIsNullOrEmpty(nameof(UpdateAlertCommmand.SiteName)),
                 ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.SiteUri)),
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.RuleType))
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Rule))
             }
         };
 
@@ -59,7 +59,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 Frequency = new UpdateInfo<Frequencies>(default),
                 SiteName = new UpdateInfo<string>("ab"),
                 SiteUri = new UpdateInfo<string>("ab"),
-                RuleType = new UpdateInfo<RuleType>(default)
+                Rule = new UpdateInfo<RuleType>(default)
             },
             new[]
             {
@@ -67,7 +67,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)),
                 ApplicationErrors.ValueBellowMinimumLength(nameof(UpdateAlertCommmand.SiteName)),
                 ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.SiteUri)),
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.RuleType))
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Rule))
             }
         };
 
@@ -80,7 +80,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcdefghijklmnopqrstuvxzwyk1234567890abcdefghijklmnopqrstuvxzwyk1"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                RuleType = new UpdateInfo<RuleType>(RuleType.Term)
+                Rule = new UpdateInfo<RuleType>(RuleType.Term)
             },
             new[]
             {
@@ -99,7 +99,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                RuleType = new UpdateInfo<RuleType>(RuleType.Term),
+                Rule = new UpdateInfo<RuleType>(RuleType.Term),
                 Term = new UpdateInfo<string?>()
             },
             new[]
@@ -117,7 +117,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                RuleType = new UpdateInfo<RuleType>(RuleType.Term),
+                Rule = new UpdateInfo<RuleType>(RuleType.Term),
                 Term = new UpdateInfo<string?>(null)
             },
             new[]
@@ -135,7 +135,7 @@ public sealed class UpdateAlertCommandValidatorTests
                 Frequency = new UpdateInfo<Frequencies>(Frequencies.EightHours),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                RuleType = new UpdateInfo<RuleType>(RuleType.Term),
+                Rule = new UpdateInfo<RuleType>(RuleType.Term),
                 Term = new UpdateInfo<string?>("term")
             },
             Array.Empty<string>()
@@ -150,12 +150,12 @@ public sealed class UpdateAlertCommandValidatorTests
                 Frequency = new UpdateInfo<Frequencies>((Frequencies) 989),
                 SiteName = new UpdateInfo<string>("abcde"),
                 SiteUri = new UpdateInfo<string>("http://site.new"),
-                RuleType = new UpdateInfo<RuleType>((RuleType) 989)
+                Rule = new UpdateInfo<RuleType>((RuleType) 989)
             },
             new []
             {
                 ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Frequency)),
-                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.RuleType))
+                ApplicationErrors.ValueIsInvalid(nameof(UpdateAlertCommmand.Rule))
             }
         };
     }

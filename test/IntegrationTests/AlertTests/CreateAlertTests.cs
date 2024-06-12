@@ -33,7 +33,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Frequency)),
                 ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.SiteName)),
                 ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)),
-                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RuleType))
+                ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule))
             }
         };
 
@@ -45,7 +45,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                RuleType = RuleType.AnyChanges
+                Rule = RuleType.AnyChanges
             },
             HttpStatusCode.Created,
             new DetailedAlertView
@@ -70,7 +70,7 @@ public sealed class CreateAlertTests : BaseTest, IClassFixture<BaseTestFixture>
                 Frequency = Frequencies.TwentyFourHours,
                 SiteName = "store site",
                 SiteUri = "https://store.site.io",
-                RuleType = RuleType.Term,
+                Rule = RuleType.Term,
                 Term = "lookup term"
             },
             HttpStatusCode.Created,
