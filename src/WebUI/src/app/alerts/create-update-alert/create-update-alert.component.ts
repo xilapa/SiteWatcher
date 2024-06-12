@@ -4,15 +4,15 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { ActivatedRoute, Router } from "@angular/router";
 import { TranslocoService } from "@ngneat/transloco";
 import { MessageService } from "primeng/api";
-import { finalize, Subscription } from "rxjs";
-import { regexRuleValidator } from "src/app/common/validators/watch-mode-regex.validator";
+import { Subscription, finalize } from "rxjs";
+import { regexRuleValidator } from "src/app/common/validators/rule-type-regex.validator";
+import { termRuleValidator } from "../../common/validators/rule-type-term.validator";
 import { uriValidator } from "../../common/validators/uri.validator";
-import { termRuleValidator } from "../../common/validators/watch-mode-term.validator";
 import { DropdownOption } from "../../core/interfaces/dropdown-option";
 import { utils } from "../../core/utils/utils";
 import { AlertUtils, CreateUpdateAlertModel, DetailedAlertView } from "../common/alert";
 import { EAlertFrequency } from "../common/e-alert-frequency";
-import { Rules } from '../common/e-watch-mode';
+import { Rules } from '../common/e-rule-type';
 import { AlertService } from "../service/alert.service";
 
 @Component({

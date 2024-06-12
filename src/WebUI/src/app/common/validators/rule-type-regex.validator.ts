@@ -1,5 +1,5 @@
 import { AbstractControl, ValidationErrors } from "@angular/forms";
-import { Rules } from "../../alerts/common/e-watch-mode";
+import { Rules } from "../../alerts/common/e-rule-type";
 
 export const regexRuleValidator = (control: AbstractControl): ValidationErrors | null => {
     const rule = (control.parent?.get('rule')?.value as Rules);

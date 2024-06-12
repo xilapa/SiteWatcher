@@ -1,5 +1,5 @@
 ﻿import { AlertFrequencyUtils, EAlertFrequency } from "./e-alert-frequency";
-import { RuleUtils, Rules } from "./e-watch-mode";
+import { RuleUtils, Rules } from "./e-rule-type";
 
 export interface CreateUpdateAlertModel {
     name: string,
