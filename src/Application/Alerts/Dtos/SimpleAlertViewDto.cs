@@ -26,6 +26,6 @@ public sealed class SimpleAlertViewDto
             LastVerification = LastVerification,
             TriggeringsCount = TriggeringsCount,
             SiteName = SiteName,
-            RuleType = (RuleType)RuleType
+            Rule = (RuleType)RuleType
         };
 }

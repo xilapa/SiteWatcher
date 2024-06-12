@@ -270,7 +270,7 @@ public sealed class ExecuteAlertTests : BaseTest, IClassFixture<ExecuteAlertTest
         var cmmd = new UpdateAlertCommmand
         {
             AlertId = IdHasher.HashId(alertId.Value),
-            RuleType = new UpdateInfo<RuleType>(ruleType),
+            Rule = new UpdateInfo<RuleType>(ruleType),
             Term = new UpdateInfo<string>("fake response"),
             NotifyOnDisappearance = new UpdateInfo<bool>(notifyOnDisappearance),
             RegexPattern = new UpdateInfo<string>("[0-9]")

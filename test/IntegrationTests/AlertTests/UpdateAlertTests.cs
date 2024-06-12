@@ -56,7 +56,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwentyFourHours},
-                RuleType = new UpdateInfo<RuleType> {NewValue = RuleType.Term},
+                Rule = new UpdateInfo<RuleType> {NewValue = RuleType.Term},
                 Term = new UpdateInfo<string> {NewValue = "new term"}
             }
         };
@@ -70,7 +70,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name2"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated2.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwentyFourHours},
-                RuleType = new UpdateInfo<RuleType> {NewValue = RuleType.Term},
+                Rule = new UpdateInfo<RuleType> {NewValue = RuleType.Term},
                 Term = new UpdateInfo<string> {NewValue = "new term2"}
             }
         };
@@ -84,7 +84,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name3"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated3.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
-                RuleType = new UpdateInfo<RuleType> {NewValue = RuleType.Regex},
+                Rule = new UpdateInfo<RuleType> {NewValue = RuleType.Regex},
                 RegexPattern = new UpdateInfo<string> {NewValue = "[0-9]"},
                NotifyOnDisappearance = new UpdateInfo<bool>(true)
             }
@@ -99,7 +99,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name4"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated4.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
-                RuleType = new UpdateInfo<RuleType> {NewValue = RuleType.Regex},
+                Rule = new UpdateInfo<RuleType> {NewValue = RuleType.Regex},
                 RegexPattern = new UpdateInfo<string> {NewValue = "hello"},
                 NotifyOnDisappearance = new UpdateInfo<bool>(false)
             }
@@ -114,7 +114,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name5"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated5.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.TwoHours},
-                RuleType = new UpdateInfo<RuleType> {NewValue = RuleType.AnyChanges}
+                Rule = new UpdateInfo<RuleType> {NewValue = RuleType.AnyChanges}
             }
         };
 
@@ -127,7 +127,7 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
                 SiteName = new UpdateInfo<string> {NewValue = "Updated site name6"},
                 SiteUri = new UpdateInfo<string> {NewValue = "https://new-site-updated6.com"},
                 Frequency = new UpdateInfo<Frequencies> {NewValue = Frequencies.FourHours},
-                RuleType = new UpdateInfo<RuleType> {NewValue = RuleType.AnyChanges},
+                Rule = new UpdateInfo<RuleType> {NewValue = RuleType.AnyChanges},
                 Term = new UpdateInfo<string> {NewValue = "new term6"}
             }
         };
@@ -154,21 +154,21 @@ public sealed class UpdateAlertTests : BaseTest, IClassFixture<UpdateAlertTestsB
         detailedAlert.Site.Uri.Should().StartWith(updateCommand.SiteUri!.NewValue);
         detailedAlert.CreatedAt.Should().Be(_fixture.XilapaAlert.CreatedAt);
         detailedAlert.Frequency.Should().Be(updateCommand.Frequency!.NewValue);
-        detailedAlert.Rule!.Rule.Should().Be(updateCommand.RuleType!.NewValue);
+        detailedAlert.Rule!.Rule.Should().Be(updateCommand.Rule!.NewValue);
 
         // Term rule
         detailedAlert.Rule.Term
             .Should()
-            .Be(RuleType.Term.Equals(updateCommand.RuleType!.NewValue) ? updateCommand.Term!.NewValue : null);
+            .Be(RuleType.Term.Equals(updateCommand.Rule!.NewValue) ? updateCommand.Term!.NewValue : null);
 
         // Regex rule
         detailedAlert.Rule.RegexPattern
             .Should()
-            .Be(RuleType.Regex.Equals(updateCommand.RuleType!.NewValue) ? updateCommand.RegexPattern!.NewValue : null);
+            .Be(RuleType.Regex.Equals(updateCommand.Rule!.NewValue) ? updateCommand.RegexPattern!.NewValue : null);
 
         detailedAlert.Rule.NotifyOnDisappearance
             .Should()
-            .Be(RuleType.Regex.Equals(updateCommand.RuleType!.NewValue) ? updateCommand.NotifyOnDisappearance!.NewValue : null);
+            .Be(RuleType.Regex.Equals(updateCommand.Rule!.NewValue) ? updateCommand.NotifyOnDisappearance!.NewValue : null);
 
         // Checking alert update date on db
         (await AppFactory.WithDbContext(async ctx =>

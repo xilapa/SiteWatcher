@@ -17,7 +17,7 @@ public class SimpleAlertView
         LastVerification = alert.LastVerification;
         TriggeringsCount = alert.Triggerings.Count;
         SiteName = alert.Site.Name;
-        RuleType = alert.Rule.RuleType;
+        Rule = alert.Rule.RuleType;
     }
 
     public string? Id { get; set; }
@@ -27,7 +27,7 @@ public class SimpleAlertView
     public DateTime? LastVerification { get; set; }
     public int TriggeringsCount { get; set; }
     public string? SiteName { get; set; }
-    public RuleType RuleType { get; set; }
+    public RuleType Rule { get; set; }
 
     public static SimpleAlertView FromAlert(Alert alert, IIdHasher idHasher) =>
         new(alert, idHasher);

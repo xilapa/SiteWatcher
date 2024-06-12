@@ -40,14 +40,14 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .Must(uri => Uri.IsWellFormedUriString(uri, UriKind.Absolute))
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.SiteUri)));
 
-        RuleFor(cmmd => cmmd.RuleType)
+        RuleFor(cmmd => cmmd.Rule)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RuleType)))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule)))
             .NotEqual(default(RuleType))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RuleType)))
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule)))
             .Must(wm => Enum.IsDefined(typeof(RuleType), (int) wm))
-            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RuleType)));
+            .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.Rule)));
 
         // Term watch validation
         RuleFor<string>(cmmd => cmmd.Term)
@@ -58,7 +58,7 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .WithMessage(ApplicationErrors.ValueBellowMinimumLength(nameof(CreateAlertCommand.Term)))
             .MaximumLength(64)
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.Term)))
-            .When(cmmd => RuleType.Term.Equals(cmmd.RuleType));
+            .When(cmmd => RuleType.Term.Equals(cmmd.Rule));
 
         // Regex rule validation
         RuleFor<string>(cmmd => cmmd.RegexPattern)
@@ -69,12 +69,12 @@ public class CreateAlertCommandValidator : AbstractValidator<CreateAlertCommand>
             .WithMessage(ApplicationErrors.ValueAboveMaximumLength(nameof(CreateAlertCommand.RegexPattern)))
             .IsValidRegex()
             .WithMessage(ApplicationErrors.ValueIsInvalid(nameof(CreateAlertCommand.RegexPattern)))
-            .When(cmmd => RuleType.Regex.Equals(cmmd.RuleType));
+            .When(cmmd => RuleType.Regex.Equals(cmmd.Rule));
 
         RuleFor(cmmd => cmmd.NotifyOnDisappearance)
             .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .WithMessage(ApplicationErrors.ValueIsNullOrEmpty(nameof(CreateAlertCommand.NotifyOnDisappearance)))
-            .When(cmmd => RuleType.Regex.Equals(cmmd.RuleType));
+            .When(cmmd => RuleType.Regex.Equals(cmmd.Rule));
     }
 }

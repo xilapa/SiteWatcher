@@ -99,7 +99,7 @@ public class AlertCacheTests : BaseTest, IClassFixture<AlertCacheTestsBase>
         {
             Frequency = Frequencies.EightHours,
             Name = "name",
-            RuleType = RuleType.AnyChanges,
+            Rule = RuleType.AnyChanges,
             SiteName = "site",
             SiteUri = "http://site.test.io"
         };

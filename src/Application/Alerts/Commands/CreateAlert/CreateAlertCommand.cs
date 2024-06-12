@@ -14,7 +14,7 @@ public class CreateAlertCommand : ICommand<DetailedAlertView>
     public Frequencies Frequency { get; set; }
     public string SiteName { get; set; } = null!;
     public string SiteUri { get; set; } = null!;
-    public RuleType RuleType { get; set; }
+    public RuleType Rule { get; set; }
 
     // Term watch
     public string? Term { get; set; }
@@ -28,7 +28,7 @@ public class CreateAlertCommand : ICommand<DetailedAlertView>
             command.Frequency,
             command.SiteName,
             command.SiteUri,
-            command.RuleType,
+            command.Rule,
             command.Term,
             command.NotifyOnDisappearance,
             command.RegexPattern);
