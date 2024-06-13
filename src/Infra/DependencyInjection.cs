@@ -105,9 +105,9 @@ public static class DependencyInjection
                     o.Username(rabbitMqSettings.UserName);
                     o.PublisherConfirmation = true;
                 });
-                cfg.PrefetchCount = 7;
-                cfg.ConcurrentMessageLimit = 5;
-                cfg.UseMessageRetry(r => r.Interval(3, 3));
+                cfg.PrefetchCount = 10;
+                cfg.ConcurrentMessageLimit = 3;
+                cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(30)));
                 cfg.ConfigureEndpoints(b);
             });
         });
