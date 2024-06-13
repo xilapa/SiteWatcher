@@ -9,8 +9,8 @@ using SiteWatcher.Domain.Users.Messages;
 
 namespace SiteWatcher.Application.Emails.Messages;
 
-public class
-    CreateEmailOnUserReactivationTokenGeneratedMessageHandler : BaseMessageHandler<UserReactivationTokenGeneratedMessage>
+public sealed class CreateEmailOnUserReactivationTokenGeneratedMessageHandler
+    : BaseMessageHandler<UserReactivationTokenGeneratedMessage>
 {
     private readonly IAppSettings _appSettings;
     private readonly IAuthService _authService;
