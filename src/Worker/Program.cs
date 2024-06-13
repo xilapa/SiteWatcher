@@ -50,7 +50,6 @@ var host = new HostBuilder()
         {
             IsDevelopment = hostContext.HostingEnvironment.IsDevelopment(),
             ConnectionString = workerSettings!.DbConnectionString,
-            InMemoryStorageAndQueue = workerSettings.UseInMemoryStorageAndQueue,
             RedisConnectionString = workerSettings.RedisConnectionString,
             FrontEndUrl = workerSettings.FrontEndUrl
         };
@@ -60,7 +59,6 @@ var host = new HostBuilder()
             .Configure<WorkerSettings>(hostContext.Configuration)
             .AddDataContext(addMigrator: false)
             .SetupJobs(workerSettings)
-            .AddMessageHandlers()
             .SetupEmail(emailSettings!)
             .AddRedisCache(appSettings)
             .SetupDataProtection(appSettings)

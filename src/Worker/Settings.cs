@@ -8,9 +8,6 @@ public class WorkerSettings
     [ConfigurationKeyName("Worker_EnableJobs")]
     public bool EnableJobs { get; set; }
 
-    [ConfigurationKeyName("Worker_UseInMemoryStorageAndQueue")]
-    public bool UseInMemoryStorageAndQueue { get; set; }
-
     [ConfigurationKeyName("Worker_SiteWatcherUri")]
     public string SiteWatcherUri { get; set; } = null!;
 
