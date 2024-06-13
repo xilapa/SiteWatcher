@@ -43,7 +43,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     private DatabaseType _databaseType;
 
     private readonly ILoggerFactory _loggerFactory;
-    public readonly Mock<IEmailServiceSingleton> EmailServiceMock;
+    public readonly Mock<IEmailService> EmailServiceMock;
     public readonly Mock<IHttpClientFactory> HttpClientFactoryMock;
     public readonly IAuthService AuthServiceForTokens;
     private readonly IGoogleSettings _testGoogleSettings;
@@ -65,7 +65,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             .Returns(LoggerMock.Object);
         _loggerFactory = loggerFactoryMock.Object;
 
-        EmailServiceMock = new Mock<IEmailServiceSingleton>();
+        EmailServiceMock = new Mock<IEmailService>();
         HttpClientFactoryMock = new Mock<IHttpClientFactory>();
 
         SetTestSettings(options, connectionString, dbConnection);
@@ -122,7 +122,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             typeof(IAppSettings),
             typeof(IGoogleSettings),
             typeof(EmailSettings),
-            typeof(IEmailServiceSingleton),
+            typeof(IEmailService),
             typeof(IDapperContext),
             typeof(ILoggerFactory),
             typeof(IHttpClientFactory),
@@ -180,7 +180,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddScoped<IHttpClient, HttpClient>();
 
         // Email
-        services.AddSingleton<IEmailServiceSingleton>(EmailServiceMock.Object);
+        services.AddSingleton<IEmailService>(EmailServiceMock.Object);
         services.AddSingleton(new EmailSettings());
 
         // Messaging

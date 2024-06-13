@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
 namespace SiteWatcher.Infra.HealthChecks;
@@ -19,7 +16,7 @@ public sealed class PostgresConnectionHealthCheck : IHealthCheck
     {
         var fiveSecondsToken = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
-        using var connection = new NpgsqlConnection(_connectionString);
+        await using var connection = new NpgsqlConnection(_connectionString);
 
         try
         {

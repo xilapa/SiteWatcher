@@ -9,7 +9,7 @@ using SiteWatcher.Domain.Users.Messages;
 
 namespace SiteWatcher.Application.Emails.Messages;
 
-public class CreateEmailOnEmailConfirmationTokenGeneratedMessageHandler : BaseMessageHandler<EmailConfirmationTokenGeneratedMessage>
+public sealed class CreateEmailOnEmailConfirmationTokenGeneratedMessageHandler : BaseMessageHandler<EmailConfirmationTokenGeneratedMessage>
 {
     private readonly IAppSettings _appSettings;
     private readonly IAuthService _authService;

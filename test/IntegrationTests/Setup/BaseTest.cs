@@ -21,7 +21,7 @@ namespace IntegrationTests.Setup;
 public abstract class BaseTest
 {
     private readonly BaseTestFixture _fixture;
-    protected Mock<IEmailServiceSingleton> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
+    protected Mock<IEmailService> EmailServiceMock => _fixture.AppFactory.EmailServiceMock;
     protected Mock<IHttpClientFactory> HttpClientFactoryMock => _fixture.AppFactory.HttpClientFactoryMock;
     protected FakeCache FakeCache => _fixture.AppFactory.FakeCache;
     protected FakePublisher FakePublisher => _fixture.AppFactory.FakePublisher;

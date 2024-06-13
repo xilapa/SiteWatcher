@@ -8,7 +8,7 @@ using SiteWatcher.Domain.Notifications;
 
 namespace SiteWatcher.Application.Notifications.Messages;
 
-public class ProcessNotificationOnAlertTriggeredMessageHandler : BaseMessageHandler<AlertsTriggeredMessage>
+public sealed class ProcessNotificationOnAlertTriggeredMessageHandler : BaseMessageHandler<AlertsTriggeredMessage>
 {
     private readonly IAppSettings _settings;
 
