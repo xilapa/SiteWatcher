@@ -2,7 +2,7 @@ using SiteWatcher.Domain.Emails.DTOs;
 
 namespace SiteWatcher.Common.Services;
 
-public interface IEmailServiceSingleton
+public interface IEmailService
 {
     /// <summary>
     /// Send the email and return the error message, if any.
@@ -12,5 +12,5 @@ public interface IEmailServiceSingleton
     /// <param name="recipients">Email recipients</param>
     /// <param name="cancellationToken">Cancelation Token</param>
     /// <returns></returns>
-    Task<string?> SendEmailAsync(string subject, string body, MailRecipient[] recipients, CancellationToken cancellationToken);
+    Task SendEmailAsync(string subject, string body, MailRecipient[] recipients, CancellationToken cancellationToken);
 }

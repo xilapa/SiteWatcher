@@ -8,26 +8,22 @@ using SiteWatcher.Domain.Emails.Messages;
 
 namespace SiteWatcher.Application.Emails.Messages;
 
-public class SendEmailOnEmailCreatedMessageHandler : BaseMessageHandler<EmailCreatedMessage>
+public sealed class SendEmailOnEmailCreatedMessageHandler : BaseMessageHandler<EmailCreatedMessage>
 {
-    private readonly IEmailServiceSingleton _emailService;
+    private readonly IEmailService _emailService;
 
     public SendEmailOnEmailCreatedMessageHandler(ISiteWatcherContext context, ILogger<EmailCreatedMessage> logger,
-        ISession session, IEmailServiceSingleton emailService) : base(context, logger, session)
+        ISession session, IEmailService emailService) : base(context, logger, session)
     {
         _emailService = emailService;
     }
 
-    protected override async Task Handle(ConsumeContext<EmailCreatedMessage> context)
+    protected override Task Handle(ConsumeContext<EmailCreatedMessage> context)
     {
-        var error = await _emailService
+        return _emailService
             .SendEmailAsync(context.Message.Subject,
                 context.Message.Body!,
                 context.Message.Recipients,
                 context.CancellationToken);
-
-        if (error != null) throw new Exception(error);
-
-        await Context.SaveChangesAsync(CancellationToken.None);
     }
 }

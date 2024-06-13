@@ -141,7 +141,8 @@ public static class DependencyInjection
     {
         services
             .AddSingleton<EmailSettings>(settings)
-            .AddSingleton<IEmailServiceSingleton, EmailServiceSingleton>();
+            .AddScoped<IEmailService, EmailService>()
+            .AddSingleton<EmailThrottler>();
         return services;
     }
 }
