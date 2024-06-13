@@ -1,14 +1,14 @@
-﻿using SiteWatcher.Infra.Authorization;
+﻿using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Infra.EmailSending;
 
 public sealed class EmailThrottler
 {
-    private readonly Session _session;
+    private readonly ISession _session;
     private DateTime? _lastSentDate;
     private readonly TimeSpan _delay;
 
-    public EmailThrottler(EmailSettings emailSettings, Session session)
+    public EmailThrottler(EmailSettings emailSettings, ISession session)
     {
         _session = session;
         _delay = TimeSpan.FromSeconds(emailSettings.EmailDelaySeconds);

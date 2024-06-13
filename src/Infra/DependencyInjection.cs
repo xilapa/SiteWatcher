@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using Dapper;
+using MailKit.Net.Smtp;
 using MassTransit;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
@@ -94,6 +95,8 @@ public static class DependencyInjection
                 o.QueryMessageLimit = 100;
             });
 
+            opts.AddDelayedMessageScheduler();
+
             configureConsumers?.Invoke(opts);
             opts.SetEndpointNameFormatter(new CustomEndpointNameFormatter());
 
@@ -107,7 +110,14 @@ public static class DependencyInjection
                 });
                 cfg.PrefetchCount = 10;
                 cfg.ConcurrentMessageLimit = 3;
-                cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(30)));
+
+                cfg.UseScheduledRedelivery(r =>
+                    r.Interval(3, TimeSpan.FromMinutes(5)));
+
+                cfg.UseMessageRetry(r =>
+                    r.Intervals(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10)));
+
+                cfg.UseDelayedMessageScheduler();
                 cfg.ConfigureEndpoints(b);
             });
         });
@@ -142,7 +152,12 @@ public static class DependencyInjection
         services
             .AddSingleton<EmailSettings>(settings)
             .AddScoped<IEmailService, EmailService>()
-            .AddSingleton<EmailThrottler>();
+            .AddSingleton<EmailThrottler>(_ =>
+            {
+                var session = new Session(null!);
+                return new EmailThrottler(settings, session);
+            })
+            .AddTransient<ISmtpClient, SmtpClient>();
         return services;
     }
 }
