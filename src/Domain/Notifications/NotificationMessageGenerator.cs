@@ -31,13 +31,13 @@ public static class NotificationMessageGenerator
     public static string GetSubject(NotificationData notificationData) =>
         LocalizedMessages.AlertNotificationMessageSubject(notificationData.Language);
 
-    public static async Task<string> GetBody(NotificationData notificationData)
+    public static ValueTask<string> GetBody(NotificationData notificationData)
     {
         var templateOptions = new TemplateOptions();
         templateOptions.MemberAccessStrategy.Register<NotificationData>();
         templateOptions.MemberAccessStrategy.Register<AlertData>();
         var templateContext = new TemplateContext(notificationData, templateOptions);
         var parsedTemplate = _parsedTemplates.Value[notificationData.Language];
-        return await parsedTemplate.RenderAsync(templateContext);
+        return parsedTemplate.RenderAsync(templateContext);
     }
 }
