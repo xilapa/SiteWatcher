@@ -8,7 +8,7 @@ public static class HtmlUtils
 {
     private static readonly HtmlParser _htmlParser = new();
     private static readonly IMarkupFormatter _markupFormatter = new CustomMarkupFormatter();
-    private static readonly string[] _tagsToRemove = { "SCRIPT", "NOSCRIPT", "STYLE", "META", "TITLE", "LINK", "IMG" };
+    private static readonly string[] _tagsToRemove = ["SCRIPT", "NOSCRIPT", "STYLE", "META", "TITLE", "LINK", "IMG"];
 
     public static async Task<string> ExtractText(Stream html)
     {
