@@ -4,10 +4,10 @@ using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.Entities.Rules;
 
-public class AnyChangesRule : Rule
+public sealed class AnyChangesRule : Rule
 {
     // ctor for EF
-    protected AnyChangesRule() : base()
+    private AnyChangesRule()
     {
         HtmlHash = string.Empty;
         RuleType = RuleType.AnyChanges;
@@ -25,7 +25,6 @@ public class AnyChangesRule : Rule
     {
         var shaHasher = SHA256.Create();
         var hashedBytes = await shaHasher.ComputeHashAsync(html);
-        await html.DisposeAsync();
 
         // Create an hexadecimal string
         var stringBuilder = StringBuilderCache.Acquire(64);
