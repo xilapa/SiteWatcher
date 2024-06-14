@@ -5,9 +5,9 @@ using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.Entities.Rules;
 
-public class RegexRule : Rule
+public sealed class RegexRule : Rule
 {
-    protected RegexRule()
+    private RegexRule()
     {
         RegexPattern = string.Empty;
         RuleType = RuleType.Regex;
@@ -45,7 +45,6 @@ public class RegexRule : Rule
     public override async Task<bool> Execute(Stream html)
     {
         var htmlExtractedText = await HtmlUtils.ExtractText(html);
-        await html.DisposeAsync();
 
         var regexMatches = Regex
             .Matches(htmlExtractedText, RegexPattern, RegexOptions.IgnoreCase)

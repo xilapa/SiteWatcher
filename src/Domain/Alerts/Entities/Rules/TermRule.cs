@@ -5,10 +5,10 @@ using SiteWatcher.Domain.Common;
 
 namespace SiteWatcher.Domain.Alerts.Entities.Rules;
 
-public class TermRule : Rule
+public sealed class TermRule : Rule
 {
     // ctor for EF
-    protected TermRule() : base()
+    private TermRule()
     {
         _occurrences = new List<TermOccurrence>();
         RuleType = RuleType.Term;
@@ -30,7 +30,6 @@ public class TermRule : Rule
     public override async Task<bool> Execute(Stream html)
     {
         var htmlExtractedText = await HtmlUtils.ExtractText(html);
-        await html.DisposeAsync();
 
         // TODO: save the term occurrence count and compare
         var matches = Regex.Matches(htmlExtractedText, Term, RegexOptions.IgnoreCase);

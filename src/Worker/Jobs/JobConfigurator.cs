@@ -18,7 +18,7 @@ public static class JobConfigurator
             .AddScoped<IUserAlertsService, UserAlertsService>()
             .AddAuthService()
             .AddHttpClient()
-            .AddScoped<IHttpClient, HttpClient>()
+            .AddTransient<IHttpClient, HttpClient>()
             .AddSingletonSession()
             .AddApplication()
             .AddIdHasher()

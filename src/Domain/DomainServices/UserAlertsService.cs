@@ -22,7 +22,7 @@ public sealed class UserAlertsService : IUserAlertsService
         {
             try
             {
-                var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
+                await using var htmlStream = await _httpClient.GetStreamAsync(alert.Site.Uri, ct);
                 var alertTriggered = await alert.ExecuteRule(htmlStream, currentTime);
                 if (alertTriggered != null)
                     alertsTriggered.Add(alertTriggered);
