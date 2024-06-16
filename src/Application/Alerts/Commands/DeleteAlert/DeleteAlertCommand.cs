@@ -52,6 +52,6 @@ public class DeleteAlertCommandHandler : ICommandHandler<DeleteAlertCommand, Com
         return deleted != 0 ? CommandResult.Empty() : ReturnError();
     }
 
-    private static CommandResult ReturnError() =>
+    private static ErrorResult ReturnError() =>
         CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(DeleteAlertCommand.AlertId)));
 }

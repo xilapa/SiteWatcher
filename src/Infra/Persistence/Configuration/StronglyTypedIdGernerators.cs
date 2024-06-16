@@ -11,12 +11,12 @@ internal abstract class StrongIdIntGenerator<T> : ValueGenerator<T> where T : st
 }
 
 #region AlertId
-internal class AlertIdGenerator : StrongIdIntGenerator<AlertId>
+internal sealed class AlertIdGenerator : StrongIdIntGenerator<AlertId>
 {
     public override AlertId Next(EntityEntry entry) => new(-1);
 }
 
-public class AlertIdValueGeneratorFactory : ValueGeneratorFactory
+public sealed class AlertIdValueGeneratorFactory : ValueGeneratorFactory
 {
     public override ValueGenerator Create(IProperty property, ITypeBase typeBase)
     {
@@ -26,12 +26,12 @@ public class AlertIdValueGeneratorFactory : ValueGeneratorFactory
 #endregion
 
 #region RuleId
-internal class RuleIdGenerator : StrongIdIntGenerator<RuleId>
+internal sealed class RuleIdGenerator : StrongIdIntGenerator<RuleId>
 {
     public override RuleId Next(EntityEntry entry) => new(-1);
 }
 
-public class RuleIdValueGeneratorFactory : ValueGeneratorFactory
+public sealed class RuleIdValueGeneratorFactory : ValueGeneratorFactory
 {
     public override ValueGenerator Create(IProperty property, ITypeBase typeBase)
     {
@@ -41,16 +41,8 @@ public class RuleIdValueGeneratorFactory : ValueGeneratorFactory
 #endregion
 
 #region NotificationId
-internal class NotificationIdGenerator : StrongIdIntGenerator<NotificationId>
+internal sealed class NotificationIdGenerator : StrongIdIntGenerator<NotificationId>
 {
     public override NotificationId Next(EntityEntry entry) => new ();
-}
-
-public class NotificationIdValueGeneratorFactory : ValueGeneratorFactory
-{
-    public override ValueGenerator Create(IProperty property, ITypeBase typeBase)
-    {
-        return new NotificationIdGenerator();
-    }
 }
 #endregion

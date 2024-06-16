@@ -5,7 +5,7 @@ using SiteWatcher.Domain.Authentication;
 
 namespace SiteWatcher.Application.IdempotentConsumers;
 
-public sealed class CleanIdempotentConsumers
+public sealed partial class CleanIdempotentConsumers
 {
     private readonly ISiteWatcherContext _context;
     private readonly ILogger<CleanIdempotentConsumers> _logger;
@@ -26,7 +26,9 @@ public sealed class CleanIdempotentConsumers
             .Where(i => i.DateCreated < fiveDaysEarlier)
             .ExecuteDeleteAsync(cancellationToken);
 
-        _logger.LogInformation("{Date} - IdempotentConsumers cleaned: {Rows} rows deleted",
-            _session.Now, rowsDeleted);
+        LogIdempotentConsumersCleaned(_session.Now, rowsDeleted);
     }
+
+    [LoggerMessage(LogLevel.Information, "{Date} - IdempotentConsumers cleaned: {Rows} rows deleted")]
+    public partial void LogIdempotentConsumersCleaned(DateTime date, int rows);
 }

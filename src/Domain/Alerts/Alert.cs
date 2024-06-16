@@ -46,6 +46,8 @@ public class Alert : BaseModel<AlertId>
 
     public string SearchField { get; private set; } = null!;
 
+    private readonly Regex _splitWordsRegex = new ("\\W", RegexOptions.Compiled, TimeSpan.FromSeconds(3));
+
     public static Alert GetModelForUpdate(UpdateAlertDto updateAlertDto) =>
         new()
         {
@@ -135,14 +137,14 @@ public class Alert : BaseModel<AlertId>
     private void GenerateSearchField()
     {
         // Separating name parts ignoring non-alphanumerics characters, diacritics and case
-        var nameParts = Regex.Split(Name, "\\W")
+        var nameParts = _splitWordsRegex.Split(Name)
             .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 1)
             .Select(p => p.ToLowerCaseWithoutDiacritics())
             .ToArray();
 
         // Separating site name parts ignoring white spaces, diacritics and case
-        var siteNameParts = Regex.Split(Site.Name, "\\W")
-            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 1)
+        var siteNameParts = _splitWordsRegex.Split(Site.Name)
+            .Where(p => !string.IsNullOrWhiteSpace(p) && p.Length > 1)
             .Select(p => p.ToLowerCaseWithoutDiacritics())
             .ToArray();
 
@@ -150,8 +152,8 @@ public class Alert : BaseModel<AlertId>
         var doubleBarIndex = Site.Uri.AbsoluteUri.IndexOf("//", StringComparison.Ordinal) + 2;
         var siteUri = Site.Uri.AbsoluteUri[doubleBarIndex..].ToLowerCaseWithoutDiacritics();
 
-        var siteUriParts = Regex.Split(siteUri, "\\W")
-            .Where(p => !string.IsNullOrWhiteSpace(p) && !string.IsNullOrEmpty(p) && p.Length > 1)
+        var siteUriParts = _splitWordsRegex.Split(siteUri)
+            .Where(p => !string.IsNullOrWhiteSpace(p) && p.Length > 1)
             .Select(p => p.ToLowerCaseWithoutDiacritics())
             .ToArray();
 

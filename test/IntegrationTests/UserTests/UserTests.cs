@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Reflection;
 using FluentAssertions;
 using IntegrationTests.Setup;
@@ -31,6 +32,7 @@ public class UserTesstBase : BaseTestFixture
     }
 }
 
+[SuppressMessage("Security", "EF1002:Risk of vulnerability to SQL injection.")]
 public class UserTests : BaseTest, IClassFixture<UserTesstBase>, IAsyncLifetime
 {
     private User _userXilapaWithoutChanges = null!;

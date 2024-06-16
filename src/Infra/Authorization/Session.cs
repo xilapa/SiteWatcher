@@ -35,7 +35,7 @@ public class Session : ISession
 
         var userIdString = httpContext?.User.Claims
             .FirstOrDefault(c => c.Type == AuthenticationDefaults.ClaimTypes.Id)?.Value;
-        Guid.TryParse(userIdString, out var userIdGuid);
+        _ = Guid.TryParse(userIdString, out var userIdGuid);
         _userId = new UserId(userIdGuid);
         return _userId.Value;
     }

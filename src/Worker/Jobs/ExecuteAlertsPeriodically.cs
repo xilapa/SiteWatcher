@@ -8,7 +8,7 @@ using SiteWatcher.Domain.DomainServices;
 
 namespace SiteWatcher.Worker.Jobs;
 
-public sealed class ExecuteAlertsPeriodically : BackgroundService
+public sealed partial class ExecuteAlertsPeriodically : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ExecuteAlertsPeriodically> _logger;
@@ -42,9 +42,12 @@ public sealed class ExecuteAlertsPeriodically : BackgroundService
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "Error during alerts execution");
+                LogErrorDuringAlertsExecution(ex);
                 await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
             }
         }
     }
+
+    [LoggerMessage(LogLevel.Error, "Error during alerts execution")]
+    private partial void LogErrorDuringAlertsExecution(Exception ex);
 }

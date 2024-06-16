@@ -1,12 +1,10 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
 using Polly;
-using System;
-using System.Net.Http;
 
 namespace SiteWatcher.Infra.Http;
 
-public static class HttpRetryPolicies
+public static partial class HttpRetryPolicies
 {
     public static IAsyncPolicy<HttpResponseMessage> TransientErrorsRetryWithTimeout(ILogger logger,
         string uri, string requestBody) =>
@@ -28,11 +26,14 @@ public static class HttpRetryPolicies
                     var innerError = outcome.Exception?.InnerException?.Message;
                     if (string.IsNullOrEmpty(error))
                         error = outcome.Result is null ? null : await outcome.Result.Content.ReadAsStringAsync();
-                    logger
-                        .LogError(
-                            "RetryCount: {RetryCount}, Uri : {Uri}, RequestBody: {RequestBody}, StatusCode: {Status}, Error: {Error}, InnerError: {Inner}",
-                            retryCount, uri, requestBody, statusCode, error, innerError);
+                    LogErroOnRequest(logger, retryCount, uri, requestBody, statusCode, error, innerError);
                 });
+
+    [LoggerMessage(
+        LogLevel.Error,
+        "RetryCount: {RetryCount}, Uri : {Uri}, RequestBody: {RequestBody}, StatusCode: {Status}, Error: {Error}, InnerError: {Inner}")]
+    public static partial void LogErroOnRequest(ILogger logger, int retryCount, string uri, string requestBody, HttpStatusCode? status,
+        string? error, string inner);
 
     public static IAsyncPolicy TimeoutPolicy() =>
         Policy.TimeoutAsync(TimeSpan.FromSeconds(15));

@@ -219,7 +219,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         return _contextFactory(TestSettings, mediatorMock.Object);
     }
 
-    private IAuthService CreateAuthServiceForTokens()
+    private AuthService CreateAuthServiceForTokens()
     {
         var authService = RuntimeHelpers.GetUninitializedObject(typeof(AuthService));
         if (authService is not AuthService authServiceInstance)

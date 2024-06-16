@@ -6,7 +6,7 @@
 csharp_style_pattern_matching_over_as_with_null_check = false
 
 # IDE0063: Use simple 'using' statement
-csharp_prefer_simple_using_statement = false
+csharp_prefer_simple_using_statement = true
 
 # private fields must be camel case and starting with underscore
 dotnet_naming_rule.private_members_with_underscore.symbols  = private_fields
@@ -21,3 +21,12 @@ dotnet_naming_style.prefix_underscore.required_prefix = _
 
 # unnused usings
 dotnet_diagnostic.IDE0005.severity = error
+
+# performance rules
+dotnet_analyzer_diagnostic.category-Performance.severity = error
+
+# memory realiability 
+dotnet_analyzer_diagnostic.category-Reliability.severity = error
+
+# security rules
+dotnet_analyzer_diagnostic.category-Security.severity = error
