@@ -21,18 +21,15 @@ public sealed partial class CleanIdempotentConsumersPeriodically : BackgroundSer
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
-        CleanIdempotentConsumers(stoppingToken);
+        CleanIdempotentConsumersLoop(stoppingToken);
 
-    private async Task CleanIdempotentConsumers(CancellationToken cancellationToken)
+    private async Task CleanIdempotentConsumersLoop(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                await using var scope = _scopeFactory.CreateAsyncScope();
-                var handler = scope.ServiceProvider.GetRequiredService<CleanIdempotentConsumers>();
-
-                await handler.Clean(cancellationToken);
+                await CleanIdempotentConsumers(cancellationToken);
 
                 await _timer.WaitForNextTickAsync(cancellationToken);
             }
@@ -42,6 +39,14 @@ public sealed partial class CleanIdempotentConsumersPeriodically : BackgroundSer
                 await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
             }
         }
+    }
+
+    private async Task CleanIdempotentConsumers(CancellationToken cancellationToken)
+    {
+        await using var scope = _scopeFactory.CreateAsyncScope();
+        var handler = scope.ServiceProvider.GetRequiredService<CleanIdempotentConsumers>();
+
+        await handler.Clean(cancellationToken);
     }
 
     [LoggerMessage(LogLevel.Error, "Error on cleaning idempotent consumers table")]
