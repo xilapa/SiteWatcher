@@ -23,7 +23,7 @@ public sealed class AnyChangesRule : Rule
 
     public override async Task<bool> Execute(Stream html)
     {
-        var shaHasher = SHA256.Create();
+        using var shaHasher = SHA256.Create();
         var hashedBytes = await shaHasher.ComputeHashAsync(html);
 
         // Create an hexadecimal string
