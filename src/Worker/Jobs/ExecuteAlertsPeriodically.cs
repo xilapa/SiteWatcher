@@ -23,20 +23,15 @@ public sealed partial class ExecuteAlertsPeriodically : BackgroundService
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
-        ExecuteAlerts(stoppingToken);
+        ExecuteAlertsLoop(stoppingToken);
 
-    private async Task ExecuteAlerts(CancellationToken cancellationToken)
+    private async Task ExecuteAlertsLoop(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                await using var scope = _scopeFactory.CreateAsyncScope();
-                var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
-                var session = scope.ServiceProvider.GetRequiredService<ISession>();
-
-                var frequencies = AlertFrequencies.GetCurrentFrequencies(session.Now);
-                await handler.Handle(new ExecuteAlertsCommand(frequencies), cancellationToken);
+                await ExecuteAlerts(cancellationToken);
 
                 await _timer.WaitForNextTickAsync(cancellationToken);
             }
@@ -46,6 +41,16 @@ public sealed partial class ExecuteAlertsPeriodically : BackgroundService
                 await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
             }
         }
+    }
+
+    private async Task ExecuteAlerts(CancellationToken cancellationToken)
+    {
+        await using var scope = _scopeFactory.CreateAsyncScope();
+        var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
+        var session = scope.ServiceProvider.GetRequiredService<ISession>();
+
+        var frequencies = AlertFrequencies.GetCurrentFrequencies(session.Now);
+        await handler.Handle(new ExecuteAlertsCommand(frequencies), cancellationToken);
     }
 
     [LoggerMessage(LogLevel.Error, "Error during alerts execution")]

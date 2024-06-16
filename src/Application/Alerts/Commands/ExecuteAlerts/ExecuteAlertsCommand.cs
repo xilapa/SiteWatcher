@@ -101,7 +101,6 @@ public sealed partial class ExecuteAlertsCommandHandler
             LogAlertExecutionError(_session.Now, error.AlertId, error.Exception.Message);
     }
 
-
     [LoggerMessage(LogLevel.Information, "{Date} - Execute Alerts: No Frequencies to execute")]
     private partial void LogNoFrequenciesToExecute(DateTime date);
 
