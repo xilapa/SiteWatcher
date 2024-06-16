@@ -9,7 +9,7 @@ namespace SiteWatcher.Benchmark.Benchs;
 [MinColumn, MaxColumn]
 public class LowerCaseAndRemoveDiacrits
 {
-    public string ToLowerCaseWithoutDiacritsOriginal(string text)
+    private static string ToLowerCaseWithoutDiacritsOriginal(string text)
     {
         if (text.Length == 0)
             return text;
@@ -32,13 +32,13 @@ public class LowerCaseAndRemoveDiacrits
 
 
     [Benchmark]
-    public string RemoveDiacrits()
+    public static string RemoveDiacrits()
     {
         return ToLowerCaseWithoutDiacritsOriginal("Macarrão");
     }
 
     [Benchmark]
-    public string RemoveDiacritsUsingSpan()
+    public static string RemoveDiacritsUsingSpan()
     {
         return "Macarrão".ToLowerCaseWithoutDiacritics();
     }

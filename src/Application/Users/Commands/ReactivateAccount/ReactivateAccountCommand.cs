@@ -47,6 +47,6 @@ public class ReactivateAccountCommandHandler : ICommandHandler<ReactivateAccount
         return CommandResult.Empty();
     }
 
-    private static CommandResult ReturnError() =>
+    private static ErrorResult ReturnError() =>
         CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(ReactivateAccountCommand.Token)));
 }

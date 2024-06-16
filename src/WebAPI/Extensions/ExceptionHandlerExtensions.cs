@@ -6,7 +6,7 @@ using SiteWatcher.Application.Common.Constants;
 
 namespace SiteWatcher.WebAPI.Extensions;
 
-public static class ExceptionHandlerExtensions
+public static partial class ExceptionHandlerExtensions
 {
     private static readonly JsonSerializerOptions _opts = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     public static void ConfigureGlobalExceptionHandlerMiddleware(this WebApplication app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
@@ -24,8 +24,7 @@ public static class ExceptionHandlerExtensions
                 var exception = exceptionHandlerFeature.Error;
 
                 var logger = loggerFactory.CreateLogger("GlobalExceptionHandlerMiddleware");
-                logger.LogError(exception, "Exception occurred on Route: {Route} at {Date}, {Type}: {Msg}. TraceId: {TraceId}",
-                    route, DateTime.UtcNow, exception.GetType().Name, exception.Message, traceId);
+                LogError(logger, exception, route, DateTime.UtcNow, exception.GetType().Name, exception.Message, traceId);
 
                 object response;
 
@@ -40,4 +39,8 @@ public static class ExceptionHandlerExtensions
             });
         });
     }
+
+    [LoggerMessage(LogLevel.Error, "Exception occurred on Route: {Route} at {Date}, {Type}: {Msg}. TraceId: {TraceId}")]
+    public static partial void LogError(ILogger logger, Exception ex, string route, DateTime date, string type,
+        string msg, string traceId);
 }

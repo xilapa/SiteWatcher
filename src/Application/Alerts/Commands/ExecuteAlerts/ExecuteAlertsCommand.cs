@@ -5,6 +5,7 @@ using SiteWatcher.Domain.Alerts.Enums;
 using SiteWatcher.Domain.Authentication;
 using SiteWatcher.Domain.Common.Constants;
 using SiteWatcher.Domain.Common.Services;
+using SiteWatcher.Domain.Common.ValueObjects;
 using SiteWatcher.Domain.DomainServices;
 
 namespace SiteWatcher.Application.Alerts.Commands.ExecuteAlerts;
@@ -19,7 +20,7 @@ public sealed class ExecuteAlertsCommand
     public List<Frequencies> Frequencies { get; }
 }
 
-public sealed class ExecuteAlertsCommandHandler
+public sealed partial class ExecuteAlertsCommandHandler
 {
     private readonly ISiteWatcherContext _context;
     private readonly IUserAlertsService _userAlertsService;
@@ -41,23 +42,22 @@ public sealed class ExecuteAlertsCommandHandler
     {
         if (cmmd.Frequencies.Count == 0)
         {
-            _logger.LogInformation("{Date} - Execute Alerts: No Frequencies to execute", _session.Now);
+            LogNoFrequenciesToExecute(_session.Now);
             return;
         }
 
         try
         {
-            _logger.LogInformation("{Date} - Execute Alerts Started: {Frequencies}", _session.Now,
-                cmmd.Frequencies);
+            LogExecuteAlertsStarted(_session.Now, cmmd.Frequencies);
+
             await ExecuteAlertsLoop(cmmd.Frequencies, ct);
             await _cache.DeleteKeysWith(CacheKeys.AlertsKeyPrefix);
-            _logger.LogInformation("{Date} - Execute Alerts Finished: {Frequencies}", _session.Now,
-                cmmd.Frequencies);
+
+            LogExecuteAlertsFinished(_session.Now, cmmd.Frequencies);
         }
         catch(Exception e)
         {
-            _logger.LogError(e, "{Date} - Execute Alerts Can't Finish: {Frequencies}, Exception: {msg}",
-                _session.Now, cmmd.Frequencies, e.Message);
+            LogExecuteAlertsCantFinish(e, _session.Now, cmmd.Frequencies, e.Message);
         }
     }
 
@@ -72,7 +72,7 @@ public sealed class ExecuteAlertsCommandHandler
 
             if (usersWithAlerts.Length == 0)
             {
-                _logger.LogInformation("{Date} - Execute Alerts: No alerts to execute", _session.Now);
+                LogNoAlertsToExecuted(_session.Now);
                 loop = false;
                 continue;
             }
@@ -89,8 +89,7 @@ public sealed class ExecuteAlertsCommandHandler
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "{Date} - Execute Alerts Error Saving Changes - User: {UserId}",
-                        _session.Now, user.Id);
+                    LogErrorSavingChanges(e, _session.Now, user.Id);
                 }
             }
         }
@@ -99,9 +98,28 @@ public sealed class ExecuteAlertsCommandHandler
     private void LogAlertExecutionErrors(List<AlertExecutionError> errors)
     {
         foreach (var error in errors)
-        {
-            _logger.LogError(error.Exception, "{Date} - Execute Alerts Error - AlertId: {AlertId} - {Msg}",
-                _session.Now, error.AlertId, error.Exception.Message);
-        }
+            LogAlertExecutionError(_session.Now, error.AlertId, error.Exception.Message);
     }
+
+
+    [LoggerMessage(LogLevel.Information, "{Date} - Execute Alerts: No Frequencies to execute")]
+    private partial void LogNoFrequenciesToExecute(DateTime date);
+
+    [LoggerMessage(LogLevel.Information, "{Date} - Execute Alerts Started: {Frequencies}")]
+    private partial void LogExecuteAlertsStarted(DateTime date, List<Frequencies> frequencies);
+
+    [LoggerMessage(LogLevel.Information, "{Date} - Execute Alerts: No alerts to execute")]
+    public partial void LogNoAlertsToExecuted(DateTime date);
+
+    [LoggerMessage(LogLevel.Information, "{Date} - Execute Alerts Finished: {Frequencies}")]
+    private partial void LogExecuteAlertsFinished(DateTime date, List<Frequencies> frequencies);
+
+    [LoggerMessage(LogLevel.Error, "{Date} - Execute Alerts Can't Finish: {Frequencies}, Exception: {Msg}")]
+    private partial void LogExecuteAlertsCantFinish(Exception ex, DateTime date, List<Frequencies> frequencies, string msg);
+
+    [LoggerMessage(LogLevel.Error, "{Date} - Execute Alerts Error - AlertId: {AlertId} - {Msg}")]
+    public partial void LogAlertExecutionError(DateTime date, AlertId alertId, string msg);
+
+    [LoggerMessage(LogLevel.Error, "{Date} - Execute Alerts Error Saving Changes - User: {UserId}")]
+    public partial void LogErrorSavingChanges(Exception ex, DateTime date, UserId userId);
 }

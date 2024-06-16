@@ -72,7 +72,7 @@ public class AutoMapperVsManualMapping
 
 public class HashIdMapping : IMappingAction<SimpleAlertViewDto, SimpleAlertView>
 {
-    private readonly IIdHasher _idHasher = new IdHasher(new TestAppSettings());
+    private readonly IdHasher _idHasher = new (new TestAppSettings());
 
     public void Process(SimpleAlertViewDto source, SimpleAlertView destination, ResolutionContext context)
     {

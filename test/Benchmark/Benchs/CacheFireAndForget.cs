@@ -8,7 +8,7 @@ namespace SiteWatcher.Benchmark.Benchs;
 [MinColumn, MaxColumn]
 public class CacheFireAndForget
 {
-    private IConnectionMultiplexer _connectionMultiplexer = null!;
+    private ConnectionMultiplexer _connectionMultiplexer = null!;
     private IDatabase _redisCache = null!;
     private readonly string _value;
 
@@ -39,7 +39,7 @@ public class CacheFireAndForget
     {
         await Task.Delay(5000);
         await _connectionMultiplexer.CloseAsync();
-        _connectionMultiplexer.Dispose();
+        await _connectionMultiplexer.DisposeAsync();
     }
 
     [Benchmark]

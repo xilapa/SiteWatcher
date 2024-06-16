@@ -7,7 +7,7 @@ using SiteWatcher.Domain.Common.Messages;
 
 namespace SiteWatcher.Application.Common.Messages;
 
-public abstract class BaseMessageHandler<T> : IConsumer<T> where T : BaseMessage
+public abstract partial class BaseMessageHandler<T> : IConsumer<T> where T : BaseMessage
 {
     protected readonly ISiteWatcherContext Context;
     private readonly ILogger _logger;
@@ -35,9 +35,11 @@ public abstract class BaseMessageHandler<T> : IConsumer<T> where T : BaseMessage
         Context.MarkMessageAsConsumed(context.Message.Id, _consumerName, Session.Now);
         await Context.SaveChangesAsync(CancellationToken.None);
 
-        _logger.LogInformation("{Date} Message with Id: {Message} has been processed by {Consumer}",
-            Session.Now, context.Message.Id, _consumerName);
+        LogMessageConsumed(Session.Now, context.Message.Id, _consumerName);
     }
+
+    [LoggerMessage(LogLevel.Information, "{Date} Message with Id: {Message} has been processed by {Consumer}")]
+    public partial void LogMessageConsumed(DateTime date, string message, string consumer);
 
     protected abstract Task Handle(ConsumeContext<T> context);
 }

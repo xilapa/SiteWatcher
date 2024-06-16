@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using FluentAssertions;
 using IntegrationTests.Setup;
@@ -36,6 +37,7 @@ public sealed class UserReactivationTokenGeneratedTestBase : BaseTestFixture
     }
 }
 
+[SuppressMessage("Security", "EF1002:Risk of vulnerability to SQL injection.")]
 public sealed class UserReactivationTokenGeneratedTest : BaseTest, IAsyncLifetime,
     IClassFixture<UserReactivationTokenGeneratedTestBase>
 {

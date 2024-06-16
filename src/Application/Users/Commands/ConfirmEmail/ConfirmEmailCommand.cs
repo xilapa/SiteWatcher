@@ -48,6 +48,6 @@ public class ConfirmEmailCommandHandler : ICommandHandler<ConfirmEmailCommand, C
         return CommandResult.Empty();
     }
 
-    private static CommandResult ReturnError() =>
+    private static ErrorResult ReturnError() =>
         CommandResult.FromError(ApplicationErrors.ValueIsInvalid(nameof(ConfirmEmailCommand.Token)));
 }

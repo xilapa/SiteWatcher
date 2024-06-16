@@ -6,7 +6,7 @@ using SiteWatcher.Application.Interfaces;
 
 namespace SiteWatcher.Worker.Jobs;
 
-public sealed class CleanIdempotentConsumersPeriodically : BackgroundService
+public sealed partial class CleanIdempotentConsumersPeriodically : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<CleanIdempotentConsumersPeriodically> _logger;
@@ -38,9 +38,12 @@ public sealed class CleanIdempotentConsumersPeriodically : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error on cleaning idempotent consumers table");
+                LogErrorOnCleaningIdempotentConsumers(ex);
                 await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
             }
         }
     }
+
+    [LoggerMessage(LogLevel.Error, "Error on cleaning idempotent consumers table")]
+    private partial void LogErrorOnCleaningIdempotentConsumers(Exception ex);
 }

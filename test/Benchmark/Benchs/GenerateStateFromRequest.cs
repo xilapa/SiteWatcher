@@ -42,7 +42,7 @@ public class GenerateStateFromRequest
     }
 
     [Benchmark]
-    public string WithStackAllocAndSpans()
+    public static string WithStackAllocAndSpans()
     {
         return Utils.GenerateSafeRandomBase64String();
     }
