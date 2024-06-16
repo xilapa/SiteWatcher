@@ -67,14 +67,13 @@ public sealed class EmailThrottlerTests
     {
         // Arrange
         var stopWatch = new Stopwatch();
-        stopWatch.Start();
-
         var emailDelay = TimeSpan.FromSeconds(_emailSettings.EmailDelaySeconds);
 
         // Simulate an email sending
         await _emailThrottler.WaitToSend(CancellationToken.None);
 
         // Act
+        stopWatch.Start();
         await _emailThrottler.WaitToSend(CancellationToken.None);
         stopWatch.Stop();
 
