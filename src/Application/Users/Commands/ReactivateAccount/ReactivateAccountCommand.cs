@@ -44,7 +44,7 @@ public class ReactivateAccountCommandHandler : ICommandHandler<ReactivateAccount
             return ReturnError();
 
         await _context.SaveChangesAsync(CancellationToken.None);
-        return CommandResult.Empty();
+        return CommandResult.Empty;
     }
 
     private static ErrorResult ReturnError() =>

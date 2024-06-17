@@ -49,7 +49,7 @@ public class DeleteAlertCommandHandler : ICommandHandler<DeleteAlertCommand, Com
         if (deleted != 0)
             await _mediator.Publish(new AlertsChangedEvent(_session.UserId!.Value), CancellationToken.None);
 
-        return deleted != 0 ? CommandResult.Empty() : ReturnError();
+        return deleted != 0 ? CommandResult.Empty : ReturnError();
     }
 
     private static ErrorResult ReturnError() =>

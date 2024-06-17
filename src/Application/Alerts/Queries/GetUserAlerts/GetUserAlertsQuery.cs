@@ -45,7 +45,7 @@ public class GetUserAlertsQueryHandler : IQueryHandler<GetUserAlertsQuery, Comma
     public async ValueTask<CommandResult> Handle(GetUserAlertsQuery request, CancellationToken cancellationToken)
     {
         if (request.Take == 0)
-            return CommandResult.Empty();
+            return CommandResult.Empty;
 
         var take = request.Take > 50 ? 50 : request.Take;
         var lastAlertId = _idHasher.DecodeId(request.LastAlertId!);

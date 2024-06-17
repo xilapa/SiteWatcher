@@ -45,7 +45,7 @@ public class ConfirmEmailCommandHandler : ICommandHandler<ConfirmEmailCommand, C
             return ReturnError();
 
         await _context.SaveChangesAsync(CancellationToken.None);
-        return CommandResult.Empty();
+        return CommandResult.Empty;
     }
 
     private static ErrorResult ReturnError() =>

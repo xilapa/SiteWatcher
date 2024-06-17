@@ -6,8 +6,7 @@ public abstract class CommandResult
     public static ErrorResult FromError(string value) => new (value);
     public static ErrorResult FromErrors(IEnumerable<string> value) => new (value);
 
-    private static readonly EmptyResult _empty = new ();
-    public static CommandResult Empty() => _empty;
+    public static readonly CommandResult Empty = new EmptyResult();
 }
 
 public sealed class ValueResult<T> : CommandResult
@@ -20,8 +19,7 @@ public sealed class ValueResult<T> : CommandResult
     public T Value { get; init; }
 }
 
-public sealed class EmptyResult : CommandResult
-{ }
+public sealed class EmptyResult : CommandResult;
 
 public sealed class ErrorResult: CommandResult
 {
