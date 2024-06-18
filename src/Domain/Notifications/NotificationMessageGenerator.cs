@@ -25,6 +25,7 @@ public static class NotificationMessageGenerator
             var parsedTemplate = fluidParser.Parse(rawTemplate);
             parsedTemplatesMutableDict.Add(lang, parsedTemplate);
         }
+        Console.WriteLine("Fluid Email Templates Parsed");
         return parsedTemplatesMutableDict.ToFrozenDictionary();
     }
 
