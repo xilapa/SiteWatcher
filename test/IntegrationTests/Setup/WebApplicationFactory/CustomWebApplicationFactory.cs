@@ -29,7 +29,6 @@ using SiteWatcher.IntegrationTests.Setup.TestServices;
 using SiteWatcher.IntegrationTests.Utils;
 using StackExchange.Redis;
 using HttpClient = SiteWatcher.Infra.Http.HttpClient;
-using IPublisher = SiteWatcher.Domain.Common.Services.IPublisher;
 using ISession = SiteWatcher.Domain.Authentication.ISession;
 
 namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
@@ -184,7 +183,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
         services.AddSingleton(new EmailSettings());
 
         // Messaging
-        if (!_enableMasstransitTestHarness) services.AddSingleton<IPublisher>(FakePublisher);
+        if (!_enableMasstransitTestHarness) services.AddSingleton<IPublishEndpoint>(FakePublisher);
         if (_addMessageHandlers) services.AddMessageHandlers();
         services.AddMassTransitTestHarness(c =>
         {

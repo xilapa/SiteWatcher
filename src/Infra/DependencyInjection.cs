@@ -80,8 +80,6 @@ public static class DependencyInjection
     public static IServiceCollection SetupMassTransit(this IServiceCollection services, IConfiguration config,
         Action<IBusRegistrationConfigurator>? configureConsumers = null)
     {
-        services.AddScoped<IPublisher, Publisher>();
-
         var rabbitMqSettings = config.Get<RabbitMqSettings>();
 
         services.AddMassTransit(opts =>
