@@ -8,14 +8,14 @@ namespace SiteWatcher.Worker.Jobs;
 
 public sealed partial class CleanIdempotentConsumersPeriodically : BackgroundService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<CleanIdempotentConsumersPeriodically> _logger;
     private readonly PeriodicTimer _timer;
 
-    public CleanIdempotentConsumersPeriodically(IServiceScopeFactory scopeProvider, IAppSettings settings,
+    public CleanIdempotentConsumersPeriodically(IServiceProvider serviceProvider, IAppSettings settings,
         ILogger<CleanIdempotentConsumersPeriodically> logger)
     {
-        _scopeFactory = scopeProvider;
+        _serviceProvider = serviceProvider;
         _logger = logger;
         _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromSeconds(15) : TimeSpan.FromDays(1));
     }
@@ -43,7 +43,7 @@ public sealed partial class CleanIdempotentConsumersPeriodically : BackgroundSer
 
     private async Task CleanIdempotentConsumers(CancellationToken cancellationToken)
     {
-        await using var scope = _scopeFactory.CreateAsyncScope();
+        await using var scope = _serviceProvider.CreateAsyncScope();
         var handler = scope.ServiceProvider.GetRequiredService<CleanIdempotentConsumers>();
 
         await handler.Clean(cancellationToken);

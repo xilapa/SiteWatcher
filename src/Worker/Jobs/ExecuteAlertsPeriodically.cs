@@ -10,14 +10,14 @@ namespace SiteWatcher.Worker.Jobs;
 
 public sealed partial class ExecuteAlertsPeriodically : BackgroundService
 {
-    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ExecuteAlertsPeriodically> _logger;
     private readonly PeriodicTimer _timer;
 
-    public ExecuteAlertsPeriodically(IServiceScopeFactory scopeProvider, IAppSettings settings,
+    public ExecuteAlertsPeriodically(IServiceProvider serviceProvider, IAppSettings settings,
         ILogger<ExecuteAlertsPeriodically> logger)
     {
-        _scopeFactory = scopeProvider;
+        _serviceProvider = serviceProvider;
         _logger = logger;
         _timer = new PeriodicTimer(settings.IsDevelopment ? TimeSpan.FromMinutes(1) : TimeSpan.FromMinutes(10));
     }
@@ -45,7 +45,7 @@ public sealed partial class ExecuteAlertsPeriodically : BackgroundService
 
     private async Task ExecuteAlerts(CancellationToken cancellationToken)
     {
-        await using var scope = _scopeFactory.CreateAsyncScope();
+        await using var scope = _serviceProvider.CreateAsyncScope();
         var handler = scope.ServiceProvider.GetRequiredService<ExecuteAlertsCommandHandler>();
         var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
