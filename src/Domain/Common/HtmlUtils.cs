@@ -6,13 +6,17 @@ namespace SiteWatcher.Domain.Common;
 
 public static class HtmlUtils
 {
-    private static readonly HtmlParser _htmlParser = new();
     private static readonly IMarkupFormatter _markupFormatter = new CustomMarkupFormatter();
     private static readonly string[] _tagsToRemove = ["SCRIPT", "NOSCRIPT", "STYLE", "META", "TITLE", "LINK", "IMG"];
 
     public static async Task<string> ExtractText(Stream html)
     {
-        using var webPageDocument = await _htmlParser.ParseDocumentAsync(html, CancellationToken.None);
+        // HTML Parser is not thread-safe
+        // It's derives from EventTarget, that contains mutable state.
+        // https://github.com/AngleSharp/AngleSharp/blob/main/src/AngleSharp/Dom/EventTarget.cs
+        var htmlParser = new HtmlParser();
+
+        using var webPageDocument = await htmlParser.ParseDocumentAsync(html, CancellationToken.None);
 
         foreach (var element in webPageDocument.All.ToArray())
         {
