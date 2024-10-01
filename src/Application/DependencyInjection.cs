@@ -16,7 +16,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddMessageHandlers(this IServiceCollection services)
+    public static IServiceCollection AddHandlers(this IServiceCollection services)
     {
         services.Scan(scan =>
         {

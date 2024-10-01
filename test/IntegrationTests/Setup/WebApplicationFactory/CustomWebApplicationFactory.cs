@@ -184,7 +184,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
 
         // Messaging
         if (!_enableMasstransitTestHarness) services.AddSingleton<IPublishEndpoint>(FakePublisher);
-        if (_addMessageHandlers) services.AddMessageHandlers();
+        if (_addMessageHandlers) services.AddHandlers();
         services.AddMassTransitTestHarness(c =>
         {
             if (!_enableMasstransitTestHarness) return;
