@@ -93,7 +93,7 @@ public static class DependencyInjection
                 o.QueryMessageLimit = 100;
             });
 
-            opts.AddDelayedMessageScheduler();
+            // opts.AddDelayedMessageScheduler();
 
             configureConsumers?.Invoke(opts);
             opts.SetEndpointNameFormatter(new CustomEndpointNameFormatter());
@@ -109,13 +109,13 @@ public static class DependencyInjection
                 cfg.PrefetchCount = 10;
                 cfg.ConcurrentMessageLimit = 3;
 
-                cfg.UseScheduledRedelivery(r =>
-                    r.Interval(3, TimeSpan.FromMinutes(5)));
+                // cfg.UseScheduledRedelivery(r =>
+                //     r.Interval(3, TimeSpan.FromMinutes(5)));
 
                 cfg.UseMessageRetry(r =>
-                    r.Intervals(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10)));
+                    r.Intervals(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(15)));
 
-                cfg.UseDelayedMessageScheduler();
+                // cfg.UseDelayedMessageScheduler();
                 cfg.ConfigureEndpoints(b);
             });
         });
