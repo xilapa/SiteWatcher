@@ -4,9 +4,9 @@ import { Inject, Injectable } from '@angular/core';
 import { nanoid } from 'nanoid/async';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { LocalStorageService } from '../../storage/local-storage.service';
 import { utils } from '../../utils/utils';
 import { AuthenticationResult } from "./authentication-result";
+import { SessionStorageService } from '../../storage/session-storage.service';
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +19,7 @@ export class AuthService {
     constructor(
         @Inject(DOCUMENT) private readonly document: Document,
         private readonly httpClient: HttpClient,
-        private readonly localStorage: LocalStorageService,
+        private readonly sessionStorage: SessionStorageService,
     ) {
     }
 
@@ -32,7 +32,7 @@ export class AuthService {
     private async generateCodeChallenge(): Promise<string> {
         // generate and store code verifier
         const codeVerifier = await nanoid(128);
-        this.localStorage.setItem(this.codeVerifierKey, codeVerifier);
+        this.sessionStorage.setItem(this.codeVerifierKey, codeVerifier);
 
         // generate code challenge
         // hash256 of code verifier
@@ -43,8 +43,8 @@ export class AuthService {
 
     public exchangeCode(code: string): Observable<AuthenticationResult> {
         // get and remove code verifier
-        const codeVerifier = this.localStorage.getItem(this.codeVerifierKey);
-        this.localStorage.removeItem(this.codeVerifierKey);
+        const codeVerifier = this.sessionStorage.getItem(this.codeVerifierKey);
+        this.sessionStorage.removeItem(this.codeVerifierKey);
 
         // send code verifier and code to server
         return this.httpClient.post<AuthenticationResult>(
