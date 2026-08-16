@@ -1,0 +1,30 @@
+﻿services:      
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  postgres:
+    image: postgres:17.11
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_DB: site-watcher
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+        
+volumes:
+  postgres_data:
+
