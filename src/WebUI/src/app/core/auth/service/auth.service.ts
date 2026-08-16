@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@angular/core';
 import { nanoid } from 'nanoid/async';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { LocalStorageService } from '../../local-storage/local-storage.service';
+import { LocalStorageService } from '../../storage/local-storage.service';
 import { utils } from '../../utils/utils';
 import { AuthenticationResult } from "./authentication-result";
 

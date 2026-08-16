@@ -8,7 +8,7 @@ import { AuthenticationResult } from "../auth/service/authentication-result";
 import { UserRegister } from "../auth/user-register";
 import { RegisterUserResult, UpdateUser, UpdateUserResult, User } from '../interfaces';
 import { ELanguage } from "../lang/language";
-import { LocalStorageService } from "../local-storage/local-storage.service";
+import { LocalStorageService } from "../storage/local-storage.service";
 import { Data } from '../shared-data/shared-data';
 import { ThemeService } from "../theme/theme.service";
 import { TokenService } from '../token/token.service';
