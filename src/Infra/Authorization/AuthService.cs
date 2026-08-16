@@ -28,7 +28,7 @@ public sealed class AuthService : IAuthService
     private const int EmailConfirmationTokenExpiration = 24 * 60 * 60;
     private const int AccountReactivationTokenExpiration = 24 * 60 * 60;
     private const int LoginStateExpiration = 15 * 60 * 60;
-    private const int AuthResExpiration = 200;
+    private const int AuthResExpiration = 20;
 
     public AuthService(IAppSettings appSettings, ICache cache)
     {
@@ -196,29 +196,34 @@ public sealed class AuthService : IAuthService
 
     private sealed class AuthenticationData
     {
-        public AuthenticationData(AuthenticationResult authenticationResult, string codeChallenge)
+        public AuthenticationData(AuthenticationResult authenticationResult, string codeChallenge, string redirectOrigin)
         {
             AuthenticationResult = authenticationResult;
             CodeChallenge = codeChallenge;
+            RedirectOrigin = redirectOrigin;
         }
 
         public AuthenticationResult AuthenticationResult { get; set; }
         public string CodeChallenge { get; set; }
+        public string RedirectOrigin { get; }
     }
 
-    public async Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, string codeChallenge, CancellationToken ct)
+    public async Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, string codeChallenge,
+        string redirectOrigin, CancellationToken ct)
     {
         var code = Utils.GenerateSafeRandomBase64String();
-        var authData = new AuthenticationData(authRes, codeChallenge);
+        var authData = new AuthenticationData(authRes, codeChallenge, redirectOrigin);
         await _cache.SaveAsync(code, authData, TimeSpan.FromSeconds(AuthResExpiration));
         var authCodeRes = new AuthCodeResult(code);
         return authCodeRes;
     }
 
-    public async Task<AuthenticationResult?> GetAuthenticationResult(string code, string codeVerifier, CancellationToken ct)
+    public async Task<AuthenticationResult?> GetAuthenticationResult(string code, string codeVerifier, string redirectOrigin, CancellationToken ct)
     {
         var authData = await _cache.GetAndRemoveAsync<AuthenticationData?>(code, ct);
         if (authData is null) return null;
+
+        if (!authData.RedirectOrigin.SequenceEqual(redirectOrigin)) return null;
 
         // compute the code_verifier hash
         var codeVerifierHash = SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier));

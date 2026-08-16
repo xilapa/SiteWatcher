@@ -26,7 +26,8 @@ export class AuthService {
     public async googleLogin(): Promise<void> {
         // redirect to google login sending code challenge
         const codeChallenge = await this.generateCodeChallenge();
-        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google?codeChallenge=${encodeURIComponent(codeChallenge)}`;
+        this.document.location.href = `${environment.baseApiUrl}/${this.baseRoute}/start/google?codeChallenge=${encodeURIComponent(codeChallenge)}` 
+        + `&redirectOrigin=${encodeURIComponent(this.getCurrentUrl())}`;
     }
 
     private async generateCodeChallenge(): Promise<string> {
@@ -41,6 +42,10 @@ export class AuthService {
         return window.btoa(String.fromCharCode(...codeVerifierHashArr));      
     }
 
+    private getCurrentUrl(): string {
+        return this.document.location.origin + this.document.location.pathname;
+    }
+
     public exchangeCode(code: string): Observable<AuthenticationResult> {
         // get and remove code verifier
         const codeVerifier = this.sessionStorage.getItem(this.codeVerifierKey);
@@ -49,7 +54,7 @@ export class AuthService {
         // send code verifier and code to server
         return this.httpClient.post<AuthenticationResult>(
             `${environment.baseApiUrl}/${this.baseRoute}/exchange-code`,
-            { code, codeVerifier })
+            { code, codeVerifier, redirectOrigin: this.getCurrentUrl() })
     }
 }
 
