@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Domain.Authentication;
 using FluentAssertions;
 using IntegrationTests.Setup;
 using Microsoft.AspNetCore.Authentication;
@@ -26,7 +27,8 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
     internal const string XilapaProfilePic = "http://xilapa.io/profile.jpg";
     internal readonly int ExpectedAuthResExpiration;
     internal const string CodeVerifier = "codeverifier";
-    internal readonly string CodeChallenge;
+    internal static string CodeChallenge;
+    internal const string RedirectOrigin = "https://example.com";
 
     public ExchangeTokenTestsBase()
     {
@@ -69,6 +71,7 @@ public sealed class ExchangeTokenTestsBase : BaseTestFixture
 
         var authTicket = new AuthenticationTicket(claimsPrincipal, AuthenticationDefaults.Schemes.Google);
         authTicket.Properties.Items.Add(AuthenticationDefaults.CodeChallengeKey, CodeChallenge);
+        authTicket.Properties.Items.Add(AuthenticationDefaults.RedirectOriginKey, RedirectOrigin);
         return AuthenticateResult.Success(authTicket);
     }
 }
@@ -100,10 +103,12 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
         var cachedAuthRes = FakeCache.Cache.First().Value;
         cachedAuthRes.Expiration.Should().Be(TimeSpan.FromSeconds(_fixture.ExpectedAuthResExpiration));
 
-        var authRes = JsonSerializer.Deserialize<AuthenticationResult>((cachedAuthRes.Value as string)!);
-        authRes!.Task.Should().Be(AuthTask.Login);
-        authRes.ProfilePicUrl.Should().Be(ExchangeTokenTestsBase.XilapaProfilePic);
-        authRes.Token.Should().NotBeNull();
+        var authRes = JsonSerializer.Deserialize<AuthenticationData>((cachedAuthRes.Value as string)!);
+        authRes!.AuthenticationResult.Task.Should().Be(AuthTask.Login);
+        authRes.AuthenticationResult.ProfilePicUrl.Should().Be(ExchangeTokenTestsBase.XilapaProfilePic);
+        authRes.AuthenticationResult.Token.Should().NotBeNull();
+        authRes.RedirectOrigin.Should().Be(ExchangeTokenTestsBase.RedirectOrigin);
+        authRes.CodeChallenge.Should().Be(ExchangeTokenTestsBase.CodeChallenge);
     }
 
     [Theory]
@@ -117,7 +122,7 @@ public class ExchangeTokenTests : BaseTest, IClassFixture<ExchangeTokenTestsBase
         var googleCallbackRes = await GetAsync("auth/google");
         var redirectUri = googleCallbackRes.HttpResponse!.Headers.Location!.AbsoluteUri;
         var code = redirectUri[(redirectUri.IndexOf(Code, StringComparison.Ordinal) + Code.Length)..];
-        var exchangeCodeCmmd = new ExchangeCodeCommand { Code = code, CodeVerifier = ExchangeTokenTestsBase.CodeVerifier};
+        var exchangeCodeCmmd = new ExchangeCodeCommand { Code = code, CodeVerifier = ExchangeTokenTestsBase.CodeVerifier, RedirectOrigin = ExchangeTokenTestsBase.RedirectOrigin };
 
         // token should not be valid after expiration
         if (delay) await Task.Delay(TimeSpan.FromSeconds(_fixture.ExpectedAuthResExpiration));

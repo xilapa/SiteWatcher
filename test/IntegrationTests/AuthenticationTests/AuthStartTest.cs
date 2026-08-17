@@ -18,7 +18,7 @@ public sealed class AuthStartTest : BaseTest, IClassFixture<BaseTestFixture>
     public async Task StartAuthWorks(string? schema, HttpStatusCode expectedHttpCode)
     {
         // act
-        var res = await GetAsync($"auth/start/{schema}");
+        var res = await GetAsync($"auth/start/{schema}?codeChallenge=test&redirectOrigin=https://example.com");
 
         // assert
         if (HttpStatusCode.Redirect.Equals(expectedHttpCode))

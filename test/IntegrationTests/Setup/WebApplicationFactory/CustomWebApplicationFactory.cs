@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Runtime.CompilerServices;
 using MassTransit;
 using Mediator;
@@ -35,7 +36,7 @@ namespace SiteWatcher.IntegrationTests.Setup.WebApplicationFactory;
 
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
-    private IDictionary<Type, object>? _servicesToReplace;
+    private ReadOnlyDictionary<Type, object>? _servicesToReplace;
 
     private string _connectionString;
     private Func<IAppSettings, IMediator, SiteWatcherContext> _contextFactory;

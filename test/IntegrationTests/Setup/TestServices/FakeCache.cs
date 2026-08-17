@@ -22,8 +22,9 @@ public class FakeCache : ICache
     public Task<string?> GetAndRemoveStringAsync(string key)
     {
         Cache.TryGetValue(key, out var cacheEntry);
-        if (cacheEntry.Value is null)
+        if (cacheEntry.Value is null || cacheEntry.IsExpired)
             return Task.FromResult<string?>(default);
+
         Cache.Remove(key);
         return Task.FromResult(cacheEntry.Value.ToString());
     }
@@ -31,6 +32,9 @@ public class FakeCache : ICache
     public Task<byte[]?> GetAndRemoveBytesAsync(string key)
     {
         Cache.TryGetValue(key, out var entry);
+        if (entry.IsExpired)
+            return Task.FromResult<byte[]?>(default);
+
         Cache.Remove(key);
         return Task.FromResult(entry.Value as byte[] ?? null);
     }
@@ -38,6 +42,8 @@ public class FakeCache : ICache
     public Task<string?> GetStringAsync(string key)
     {
         Cache.TryGetValue(key, out var cacheEntry);
+        if (cacheEntry.IsExpired)
+            return Task.FromResult<string?>(default);
         return cacheEntry.Value is null ? Task.FromResult<string?>(default)
             : Task.FromResult(cacheEntry.Value.ToString());
     }
@@ -45,6 +51,8 @@ public class FakeCache : ICache
     public Task<byte[]?> GetBytesAsync(string key)
     {
         Cache.TryGetValue(key, out var entry);
+        if (entry.IsExpired)
+            return Task.FromResult<byte[]?>(default);
         return Task.FromResult(entry.Value as byte[] ?? null);
     }
 
@@ -60,7 +68,9 @@ public class FakeCache : ICache
     {
         var objectJson = Cache.TryGetValue(key, out var fakeCacheEntry) ?
             fakeCacheEntry.Value.ToString() : null;
-        if (string.IsNullOrEmpty(objectJson)) return Task.FromResult<T?>(default);
+        if (string.IsNullOrEmpty(objectJson) || fakeCacheEntry.IsExpired)
+            return Task.FromResult<T?>(default);
+
         var @object = JsonSerializer.Deserialize<T>(objectJson);
         return Task.FromResult(@object);
     }
@@ -69,7 +79,8 @@ public class FakeCache : ICache
     {
         var objectJson = Cache.TryGetValue(key, out var fakeCacheEntry) ?
             fakeCacheEntry.Value.ToString() : null;
-        if (string.IsNullOrEmpty(objectJson)) return Task.FromResult<T?>(default);
+        if (string.IsNullOrEmpty(objectJson) || fakeCacheEntry.IsExpired)
+            return Task.FromResult<T?>(default);
         var @object = JsonSerializer.Deserialize<T>(objectJson);
         Cache.Remove(key);
         return Task.FromResult(@object);
@@ -88,6 +99,9 @@ public class FakeCache : ICache
     {
         var joinedkey = $"{key}:{fieldName}";
         Cache.TryGetValue(joinedkey, out var result);
+        if (result.IsExpired)
+            return Task.FromResult<string?>(default);
+
         return Task.FromResult(result.Value as string);
     }
 
@@ -116,8 +130,12 @@ public struct FakeCacheEntry
     {
         Value = value;
         Expiration = expiration;
+        CreatedAt = DateTime.UtcNow;
     }
 
     public object Value { get; }
     public TimeSpan Expiration { get; }
+    private DateTime CreatedAt { get; }
+
+    public bool IsExpired => DateTime.UtcNow - CreatedAt > Expiration;
 }
