@@ -194,20 +194,6 @@ public sealed class AuthService : IAuthService
         return token;
     }
 
-    private sealed class AuthenticationData
-    {
-        public AuthenticationData(AuthenticationResult authenticationResult, string codeChallenge, string redirectOrigin)
-        {
-            AuthenticationResult = authenticationResult;
-            CodeChallenge = codeChallenge;
-            RedirectOrigin = redirectOrigin;
-        }
-
-        public AuthenticationResult AuthenticationResult { get; set; }
-        public string CodeChallenge { get; set; }
-        public string RedirectOrigin { get; }
-    }
-
     public async Task<AuthCodeResult> StoreAuthenticationResult(AuthenticationResult authRes, string codeChallenge,
         string redirectOrigin, CancellationToken ct)
     {
