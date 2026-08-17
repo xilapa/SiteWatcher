@@ -31,8 +31,7 @@ builder.Services.AddDataContext();
 builder.Services.AddDapperContext(DatabaseType.Postgres);
 builder.Services.AddApplication();
 
-builder.Services.AddRedisCache(appSettings)
-    .SetupDataProtection(appSettings);
+builder.Services.AddRedisCache(appSettings);
 
 DependencyInjection.AddSession(builder.Services)
     .AddIdHasher()

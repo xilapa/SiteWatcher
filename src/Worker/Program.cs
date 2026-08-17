@@ -61,7 +61,6 @@ var host = new HostBuilder()
             .SetupJobs(workerSettings)
             .SetupEmail(emailSettings!)
             .AddRedisCache(appSettings)
-            .SetupDataProtection(appSettings)
             .SetupMassTransit(hostContext.Configuration, c =>
             {
                 c.AddConsumer<ProcessNotificationOnAlertTriggeredMessageHandler>();

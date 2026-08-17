@@ -123,22 +123,6 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection SetupDataProtection(this IServiceCollection services, IAppSettings appSettings)
-    {
-        if (appSettings.DisableDataProtectionRedisStore)
-        {
-            services.AddDataProtection();
-            return services;
-        }
-
-        var redisMultiplexer = services.BuildServiceProvider().GetRequiredService<IConnectionMultiplexer>();
-        services
-            .AddDataProtection()
-            .PersistKeysToStackExchangeRedis(redisMultiplexer);
-
-        return services;
-    }
-
     public static IServiceCollection AddAuthService(this IServiceCollection services)
     {
         services.AddScoped<IAuthService,AuthService>();
