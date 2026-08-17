@@ -7,6 +7,7 @@ public static class AuthenticationDefaults
     public const string UserIdKey = nameof(UserIdKey);
     public const string ClaimsKey = nameof(ClaimsKey);
     public const string CodeChallengeKey = nameof(CodeChallengeKey);
+    public static string RedirectOriginKey = nameof(RedirectOriginKey);
 
     public static class ClaimTypes
     {

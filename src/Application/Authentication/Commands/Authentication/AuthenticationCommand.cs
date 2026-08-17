@@ -18,12 +18,14 @@ public class AuthenticationCommand : ICommand<AuthCodeResult>
     public string? Name { get; set; }
     public string? Locale { get; set; }
     public string? CodeChallenge { get; set; }
+    public string? RedirectOrigin { get; set; }
 
     public bool IsValid()
     {
         if (string.IsNullOrEmpty(GoogleId)) return false;
         if (string.IsNullOrEmpty(Email)) return false;
         if (string.IsNullOrEmpty(CodeChallenge)) return false;
+        if (string.IsNullOrEmpty(RedirectOrigin)) return false;
         return true;
     }
 
@@ -87,6 +89,6 @@ public class AuthenticationCommandHandler : ICommandHandler<AuthenticationComman
             authRes = new AuthenticationResult(AuthTask.Activate, user.Id.ToString(), null);
 
         // store auth result
-        return await _authService.StoreAuthenticationResult(authRes, request.CodeChallenge!, ct);
+        return await _authService.StoreAuthenticationResult(authRes, request.CodeChallenge!, request.RedirectOrigin!, ct);
     }
 }

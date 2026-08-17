@@ -1,6 +1,6 @@
 import { DOCUMENT } from "@angular/common";
 import { Inject, Injectable } from '@angular/core';
-import { LocalStorageService } from "../local-storage/local-storage.service";
+import { LocalStorageService } from "../storage/local-storage.service";
 import { UserService } from '../user/user.service';
 import { ETheme } from "./theme";
 

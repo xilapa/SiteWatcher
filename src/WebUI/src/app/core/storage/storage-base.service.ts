@@ -1,15 +1,9 @@
-import {Inject, Injectable} from '@angular/core';
-import {DOCUMENT} from "@angular/common";
-
-@Injectable({
-  providedIn: 'root'
-})
-export class LocalStorageService {
+export abstract class StorageBaseService {
 
     private storage: Storage;
 
-    constructor(@Inject(DOCUMENT) doc: Document){
-        this.storage = doc.defaultView?.localStorage as Storage;
+    constructor(storage: Storage){
+        this.storage = storage;
     }
 
     public setItem = (key: string, value: any): void =>

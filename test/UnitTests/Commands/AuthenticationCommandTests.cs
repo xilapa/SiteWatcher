@@ -21,6 +21,7 @@ public sealed class AuthenticationCommandTests
     private const string GoogleId = nameof(GoogleId);
     private const string Email = nameof(Email);
     private const string CodeChallenge = nameof(CodeChallenge);
+    private const string RedirectOrigin = nameof(RedirectOrigin);
 
     public AuthenticationCommandTests()
     {
@@ -32,7 +33,7 @@ public sealed class AuthenticationCommandTests
             .Returns(RegisterToken);
 
         _authServiceMock
-            .Setup(a => a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(a => a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new AuthCodeResult(RegisterToken, RegisterToken));
     }
 
@@ -44,7 +45,7 @@ public sealed class AuthenticationCommandTests
 
         var commandHandler = new AuthenticationCommandHandler(contextMock.Object, _queries, _authServiceMock.Object);
 
-        var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email, CodeChallenge = CodeChallenge };
+        var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email, CodeChallenge = CodeChallenge, RedirectOrigin = RedirectOrigin };
 
         // Act
         await commandHandler.Handle(command, default);
@@ -56,7 +57,7 @@ public sealed class AuthenticationCommandTests
             .Verify(a => a.GenerateLoginToken(It.IsAny<UserViewModel>()), Times.Never);
         _authServiceMock
             .Verify(a =>
-                    a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<string>(),It.IsAny<CancellationToken>()),
+                    a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
                 Times.Once);
     }
 
@@ -77,7 +78,7 @@ public sealed class AuthenticationCommandTests
         var commandHandler =
             new AuthenticationCommandHandler(dapperContextMock.Object, _queries, _authServiceMock.Object);
 
-        var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email, CodeChallenge = CodeChallenge};
+        var command = new AuthenticationCommand { GoogleId = GoogleId, Email = Email, CodeChallenge = CodeChallenge, RedirectOrigin = RedirectOrigin };
 
         // Act
         await commandHandler.Handle(command, default);
@@ -89,7 +90,7 @@ public sealed class AuthenticationCommandTests
             .Verify(a => a.GenerateLoginToken(It.IsAny<UserViewModel>()), Times.Never);
         _authServiceMock
             .Verify(a =>
-                    a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+                    a.StoreAuthenticationResult(It.IsAny<AuthenticationResult>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
                 Times.Once);
     }
 

@@ -26,8 +26,11 @@ public class AuthController : ControllerBase
 
     [HttpGet]
     [Route("start/{schema:required}")]
-    public IActionResult StartAuth([FromRoute] string schema, [FromQuery] string codeChallenge)
+    public IActionResult StartAuth([FromRoute] string schema, [FromQuery] string codeChallenge, [FromQuery] string redirectOrigin)
     {
+        if (string.IsNullOrEmpty(schema) || string.IsNullOrEmpty(codeChallenge) || string.IsNullOrEmpty(redirectOrigin))
+            return BadRequest();
+
         var callBackUrl = schema switch
         {
             AuthenticationDefaults.Schemes.Google => Url.Action(nameof(GoogleAuthCallback)),
@@ -38,6 +41,7 @@ public class AuthController : ControllerBase
 
         var authProp = new AuthenticationProperties { RedirectUri = callBackUrl };
         authProp.Items.Add(AuthenticationDefaults.CodeChallengeKey, codeChallenge);
+        authProp.Items.Add(AuthenticationDefaults.RedirectOriginKey, redirectOrigin);
         return Challenge(authProp, schema);
     }
 
@@ -49,6 +53,7 @@ public class AuthController : ControllerBase
         if (!authRes.Succeeded) return Unauthorized();
 
         authRes.Properties.Items.TryGetValue(AuthenticationDefaults.CodeChallengeKey, out var codeChallenge);
+        authRes.Properties.Items.TryGetValue(AuthenticationDefaults.RedirectOriginKey, out var redirectOrigin);
 
         var authCommand = new AuthenticationCommand
         {
@@ -57,7 +62,8 @@ public class AuthController : ControllerBase
             Email = authRes.Principal.FindFirstValue(ClaimTypes.Email),
             Name = authRes.Principal.FindFirstValue(ClaimTypes.Name),
             Locale = authRes.Principal.FindFirstValue(AuthenticationDefaults.ClaimTypes.Locale),
-            CodeChallenge = codeChallenge ?? string.Empty
+            CodeChallenge = codeChallenge ?? string.Empty,
+            RedirectOrigin = redirectOrigin ?? string.Empty
         };
 
         var authCodeRes = await _mediator.Send(authCommand, ct);
