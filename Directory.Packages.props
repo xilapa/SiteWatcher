@@ -50,7 +50,7 @@
     <PackageVersion Include="Hashids.net" Version="1.7.0" />
     <PackageVersion Include="MailKit" Version="4.6.0" />
     <PackageVersion Include="Polly" Version="8.4.0" />
-    <PackageVersion Include="StackExchange.Redis" Version="2.7.33" />
+    <PackageVersion Include="StackExchange.Redis" Version="3.1.13" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.5.2" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
