@@ -33,7 +33,7 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     <PackageVersion Include="NSubstitute" Version="5.1.0" />
     <PackageVersion Include="ReflectionMagic" Version="5.0.1" />
-    <PackageVersion Include="Roslynator.Analyzers" Version="4.12.3">
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.16.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
